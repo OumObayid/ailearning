@@ -71,17 +71,13 @@ export default function ProfilePage() {
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [history, setHistory] = useState<ExamHistoryItem[]>([]);
-  const [historyLoading, setHistoryLoading] = useState<boolean>(true);
+  const [historyLoading, setHistoryLoading] = useState<boolean>(false);
 
   const totalPassedCount = Object.values(passedModules).reduce((acc, curr) => acc + curr.length, 0);
 
   useEffect(() => {
+    if (!user) return;
     let isMounted = true;
-    if (!user) {
-      setHistory([]);
-      setHistoryLoading(false);
-      return;
-    }
 
     const fetchHistory = async () => {
       setHistoryLoading(true);

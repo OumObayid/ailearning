@@ -2,88 +2,104 @@ import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
 import { CodeBlock } from '@/components/courses/CodeBlock';
 
-# Chapitre 2 — Préparer l'environnement frontend
+# Chapitre 2 — Préparer l'environnement Frontend et le relier au Backend
 
-### 1. Création du projet React avec TypeScript
+Dans le premier chapitre, nous avons compris le rôle du frontend.  
+Nous allons maintenant mettre les mains dans le code ! Dans ce chapitre, nous allons créer notre application React avec **TypeScript**, bien ranger nos fichiers, et fabriquer un petit service propre qui appelle notre serveur Node.js du Module 1.
 
-Pour bâtir des applications frontend modernes, rapides et rigoureusement typées, nous privilégions **Vite** ou **Next.js** avec le support natif de **TypeScript**.
-
-Pour initialiser une application frontend avec Vite :
-
-```bash
-# 1. Initialiser le projet avec le template React-TypeScript
-npm create vite@latest frontend-ia -- --template react-ts
-
-# 2. Entrer dans le répertoire du projet
-cd frontend-ia
-
-# 3. Installer les dépendances
-npm install
-
-# 4. Lancer le serveur de développement local
-npm run dev
-```
+Pas de panique si vous débutez avec React ou les appels réseau : chaque concept sera expliqué avec des images simples du quotidien.
 
 ---
 
-### 2. Architecture recommandée du projet
+### 1. Créer son projet React avec Vite en 30 secondes
 
-Une organisation claire des répertoires permet de séparer nettement les composants visuels réutilisables, les services de communication HTTP et les interfaces de typage TypeScript :
+Pour créer un projet React moderne aujourd'hui, les développeurs n'utilisent plus l'ancien *Create React App* (qui était lourd et lent).  
+On utilise **Vite** : un outil ultra-rapide qui prépare votre projet en un clin d'œil.
+
+Ouvrez votre terminal et tapez ces quelques commandes :
+
+```bash
+# 1. Créer le projet avec React et TypeScript
+npm create vite@latest frontend-ia -- --template react-ts
+
+# 2. Entrer dans le dossier
+cd frontend-ia
+
+# 3. Télécharger les outils nécessaires
+npm install
+
+# 4. Lancer le serveur local pour voir le résultat sur son écran
+npm run dev
+```
+
+Vite vous affiche une adresse (par exemple `http://localhost:5173`). Ouvrez-la dans votre navigateur : votre application React fonctionne déjà !
+
+---
+
+### 2. Organiser son projet : la méthode des tiroirs bien rangés
+
+Pour que votre projet reste facile à comprendre et agréable à travailler au fil des semaines, nous séparons les rôles dans des dossiers précis :
 
 ```text
 frontend-ia/
 ├── src/
-│   ├── components/
-│   │   ├── Chat/             # Fenêtre et bulles de messages
-│   │   │   ├── ChatWindow.tsx
-│   │   │   ├── ChatInput.tsx
-│   │   │   └── Message.tsx
-│   │   ├── AI/               # Indicateurs de chargement et bandeaux d'erreurs
-│   │   │   ├── LoadingIndicator.tsx
-│   │   │   └── ErrorMessage.tsx
-│   │   └── Layout/           # En-tête, sidebar et conteneur principal
-│   │       └── MainLayout.tsx
-│   ├── services/             # Fonctions d'appel HTTP vers le backend
+│   ├── components/       (Les éléments visuels réutilisables)
+│   │   ├── Chat/         (La fenêtre de discussion et ses bulles)
+│   │   ├── AI/           (Les animations de chargement et bandeaux d'alerte)
+│   │   └── Layout/       (La barre du haut et le cadre de la page)
+│   │
+│   ├── services/         (Le messager : celui qui envoie les requêtes au serveur)
 │   │   └── ai.service.ts
-│   ├── hooks/                # Hooks personnalisés (gestion d'état et streaming)
-│   │   └── useAI.ts
-│   ├── types/                # Définitions de contrats TypeScript
+│   │
+│   ├── types/            (Le dictionnaire : décrit la forme exacte des données)
 │   │   └── ai.types.ts
-│   ├── pages/
+│   │
+│   ├── pages/            (Les écrans complets de l'application)
 │   │   └── Home.tsx
-│   ├── App.tsx
-│   └── main.tsx
-├── .env                      # Variables d'environnement publiques
+│   │
+│   ├── App.tsx           (Le composant racine)
+│   └── main.tsx          (Le point de départ qui allume React)
+│
+├── .env                  (L'adresse de votre serveur backend)
 └── package.json
 ```
 
+Pourquoi cette organisation est-elle rassurante ?  
+Parce que si un jour vous voulez changer la couleur d'un bouton, vous savez exactement qu'il faut ouvrir le dossier `components/`. Et si vous devez changer l'adresse de votre serveur, vous ouvrez simplement le dossier `services/` ou le fichier `.env` !
+
 ---
 
-### 3. Configurer l'URL du backend
+### 3. Configurer l'adresse du serveur backend
 
-Créez un fichier `.env` à la racine de votre projet frontend pour centraliser l'adresse de votre API backend :
+Dans le dossier de votre frontend, créez un fichier nommé `.env` :
 
 ```bash
-# URL de l'API backend Node.js / Express développé au Module 1
+# L'adresse de notre serveur Node.js créé au Module 1
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
-<Callout type="warning" title="Vigilance sur les variables d'environnement">
-Les variables préfixées par `VITE_` (ou `NEXT_PUBLIC_` dans Next.js) sont injectées dans le code JavaScript envoyé au client. Elles ne doivent contenir **que des URLs publiques**, jamais de clés secrètes.
+<Callout type="note" title="Pourquoi le préfixe VITE_ ?">
+Dans les projets Vite, toute variable qui commence par `VITE_` est automatiquement rendue accessible dans votre code React via `import.meta.env.VITE_API_BASE_URL`.  
+Comme ces variables sont publiques, rappelez-vous : **uniquement des adresses de serveurs, jamais de clés secrètes !**
 </Callout>
 
 ---
 
-### 4. Créer un service API modulaire
+### 4. Le messager : Créer un service d'API propre
 
-Dans le fichier `src/services/ai.service.ts`, nous regroupons les fonctions d'appel HTTP à l'aide de l'API standard `fetch` :
+Au lieu de faire des requêtes `fetch()` éparpillées au hasard dans vos boutons React, nous créons un petit fichier spécialisé : `src/services/ai.service.ts`.  
+C'est notre coursier dédié aux échanges avec le serveur backend :
 
-```typescript
-// src/services/ai.service.ts
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+<CodeBlock language="typescript" filename="src/services/ai.service.ts">
+{`// 1. On lit l'adresse de notre backend depuis les variables d'environnement
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
+/**
+ * Envoie une question à notre serveur backend et attend la réponse de Gemini
+ */
 export async function generateText(prompt: string) {
-  const response = await fetch(`${API_URL}/generate`, {
+  // On envoie le message via la fonction fetch standard du navigateur
+  const response = await fetch(\`\${API_URL}/generate\`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -91,89 +107,90 @@ export async function generateText(prompt: string) {
     body: JSON.stringify({ prompt }),
   });
 
+  // Si le serveur nous répond avec une erreur (ex: code 400 ou 500)
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
-    throw new Error(errorBody.message || `Erreur serveur HTTP ${response.status}`);
+    throw new Error(errorBody.message || \`Erreur du serveur (code \${response.status})\`);
   }
 
+  // Tout s'est bien passé : on renvoie les données décodées
   return response.json();
-}
-```
-
-#### Analyse des instructions :
-1. `fetch()` : Effectue une requête asynchrone sécurisée sans dépendance externe lourde.
-2. `method: 'POST'` : Indique que nous transmettons un corps de données au serveur.
-3. `JSON.stringify({ prompt })` : Sérialise l'objet JavaScript en chaîne JSON standard.
-4. `response.ok` : Propriété booléenne vérifiant si le code HTTP retourné est compris entre 200 et 299.
+}`}
+</CodeBlock>
 
 ---
 
-### 5. Définir des contrats TypeScript fiables
+### 5. Décrire ses données avec TypeScript
 
-Dans `src/types/ai.types.ts`, nous déclarons la structure exacte des données échangées entre le frontend et le backend :
+Pour que notre code soit sûr et que l'éditeur (VS Code) nous aide à autocompléter chaque propriété sans faute d'orthographe, nous décrivons la forme attendue dans `src/types/ai.types.ts` :
 
-```typescript
-// src/types/ai.types.ts
-export interface GenerateResponse {
-  success: boolean;
-  result: string;
-  tokensCount?: number;
-  message?: string;
-}
-
-export interface ApiError {
-  message: string;
-  code?: string;
-}
-```
+<CodeBlock language="typescript" filename="src/types/ai.types.ts">
+{`export interface GenerateResponse {
+  success: boolean;       // Est-ce que tout s'est bien passé ? (true ou false)
+  result: string;         // Le texte rédigé par Gemini
+  tokensCount?: number;   // Optionnel : nombre de tokens consommés
+  message?: string;       // Optionnel : message explicatif si besoin
+}`}
+</CodeBlock>
 
 ---
 
-### 6. Créer un composant React complet avec gestion d'états
+### 6. Créer notre premier composant React complet
 
-Voici l'implémentation du composant principal dans `src/pages/Home.tsx` :
+Créons la page d'accueil dans `src/pages/Home.tsx`.  
+Ce composant va écouter ce que tape l'utilisateur, appeler notre coursier `generateText`, et afficher le résultat ou les erreurs de façon élégante :
 
-```tsx
-// src/pages/Home.tsx
-import React, { useState } from 'react';
+<CodeBlock language="tsx" filename="src/pages/Home.tsx">
+{`import React, { useState } from 'react';
 import { generateText } from '../services/ai.service';
 import type { GenerateResponse } from '../types/ai.types';
 
 export default function Home() {
+  // 1. La boîte à souvenirs (les états de notre écran)
   const [prompt, setPrompt] = useState('');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 2. La fonction déclenchée quand l'utilisateur clique sur le bouton
   async function handleGenerate() {
+    // Si le champ est vide ou qu'une génération est déjà en cours, on ne fait rien
     if (!prompt.trim() || loading) return;
 
     try {
-      setLoading(true);
-      setError('');
-      setResult('');
+      setLoading(true); // On allume le voyant "chargement"
+      setError('');     // On efface les anciennes erreurs
+      setResult('');    // On nettoie l'ancien texte
 
+      // Appel de notre service (qui appelle Express, qui appelle Gemini)
       const data: GenerateResponse = await generateText(prompt.trim());
       setResult(data.result);
     } catch (err) {
+      // Si la connexion coupe ou si le serveur renvoie une erreur
       setError(err instanceof Error ? err.message : 'Une erreur inattendue est survenue.');
     } finally {
+      // Dans tous les cas (succès ou erreur), on éteint le voyant "chargement"
       setLoading(false);
     }
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-6 space-y-5">
-      <h1 className="text-2xl font-bold text-slate-900">Assistant Éditorial IA</h1>
+    <main className="max-w-2xl mx-auto p-6 space-y-5 font-sans">
+      <h1 className="text-2xl font-bold text-slate-900">
+        Mon Premier Assistant IA avec React
+      </h1>
 
+      {/* Zone de saisie du texte */}
       <textarea
         rows={4}
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Décrivez votre besoin en quelques phrases..."
+        disabled={loading}
+        placeholder="Posez votre question ou décrivez votre besoin..."
         className="w-full rounded-xl border border-slate-300 p-3 text-sm focus:border-indigo-500 focus:outline-none"
       />
 
+      {/* Barre d'action avec compteur et bouton */}
       <div className="flex items-center justify-between">
         <span className="text-sm text-slate-500">
           {prompt.length} / 500 caractères
@@ -181,115 +198,67 @@ export default function Home() {
         <button
           onClick={handleGenerate}
           disabled={loading || !prompt.trim() || prompt.length > 500}
-          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition"
         >
-          {loading ? 'Génération en cours...' : 'Générer la réponse'}
+          {loading ? 'L\'IA réfléchit...' : 'Générer la réponse'}
         </button>
       </div>
 
+      {/* Affichage d'un message d'erreur si besoin */}
       {error && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
-          {error}
+          ⚠️ {error}
         </div>
       )}
 
+      {/* Affichage de la réponse réussie */}
       {result && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm text-sm text-slate-800 whitespace-pre-wrap">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">
+          <div className="text-xs font-bold text-indigo-600 uppercase mb-2">
+            Réponse de Gemini :
+          </div>
           {result}
         </div>
       )}
     </main>
   );
-}
-```
+}`}
+</CodeBlock>
 
 ---
 
-### 7. Comprendre les états d'une interface IA
+### 7. Comprendre l'asynchronisme : L'analogie du biper de restaurant
 
-Dans une application d'intelligence artificielle, l'interface doit refléter en permanence le cycle de vie de la requête :
+Pourquoi avons-nous écrit `async` et `await` dans notre fonction ?
 
-| Variable d'état | Rôle dans l'interface | Rendu recommandé |
-| :--- | :--- | :--- |
-| `prompt` | Stocke la saisie en cours | Champ de texte contrôlé avec compteur de caractères |
-| `loading` | Indique qu'un appel LLM est en cours | Spinner ou pulsation visuelle, bouton désactivé |
-| `result` | Contient le texte généré par Gemini | Boîte de réponse structurée avec mise en forme |
-| `error` | Contient le message d'échec éventuel | Bannière d'alerte claire avec option de reprise |
+Imaginez que vous commandiez un burger au restaurant :
+- Si le système était **synchrone (bloquant)** : vous resteriez debout devant le caissier sans bouger pendant 5 minutes, personne d'autre ne pourrait commander, et vous n'auriez même pas le droit de cligner des yeux !
+- Avec le système **asynchrone (`async / await`)** : le caissier vous donne un petit boîtier électronique qui sonnera quand le burger sera prêt (`await`). Pendant ce temps, vous allez vous asseoir, vous discutez avec vos amis, et l'écran de votre téléphone reste totalement fluide et réactif !
 
----
-
-### 8. Synchronisme et asynchronisme en JavaScript
-
-La communication réseau est intrinsèquement **asynchrone**. Une requête vers un LLM peut prendre de 1 à plusieurs secondes.
-
-- Le mot-clé `async` permet de déclarer une fonction retournant une promesse (`Promise`).
-- Le mot-clé `await` suspend temporairement l'exécution de la fonction asynchrone jusqu'à la résolution de la promesse, **sans jamais bloquer le thread principal** d'animation et de rendu de l'interface utilisateur.
-
----
-
-### 9. Gestion des erreurs réseau et robustesse
-
-Il convient de distinguer trois niveaux de défaillance :
-1. **Erreur réseau brute** : Perte de connexion Internet ou serveur éteint (l'exception est levée immédiatement au niveau de `fetch`).
-2. **Erreur HTTP** : Le serveur répond mais renvoie un statut d'erreur (ex. `429 Too Many Requests` ou `500 Internal Error`).
-3. **Erreur de payload** : La réponse est reçue avec succès mais son format JSON est tronqué ou non conforme au contrat attendu.
-
-Un frontend professionnel intercepte chacun de ces cas pour afficher un message intelligible sans exposer de traces de pile internes à l'utilisateur.
+C'est exactement ce que fait React : pendant que Google réfléchit, votre site ne se fige pas. L'utilisateur peut encore scroller, cliquer ou lire d'autres articles.
 
 ---
 
 <PracticalWork
-  title="Travail Pratique 2 — Connexion au backend et validation des entrées"
-  objective="Relier le formulaire React au serveur Express du Module 1 et sécuriser les interactions de bout en bout."
+  title="Travail Pratique 2 — Relier votre Frontend React à votre Backend Node.js"
+  objective="Faire communiquer votre interface React avec le serveur Express créé au Module 1 et tester la solidité de la connexion."
   duration="45 minutes"
   steps={[
-    "Configurer le fichier `.env.local` du frontend : `NEXT_PUBLIC_API_URL=http://localhost:3000/api`.",
-    "Créer le service `src/services/ai.service.ts` contenant la fonction asynchrone `generateText(prompt: string)` effectuant un appel `fetch()` vers `${NEXT_PUBLIC_API_URL}/generate`.",
-    "Structurer la requête en `POST` avec en-têtes `Content-Type: application/json` et un corps `{ prompt }` sérialisé.",
-    "Ajouter une vérification client stricte : prompt non vide, sans espaces superflus, limité à 500 caractères maximum.",
-    "Désactiver le bouton d'envoi et afficher une icône animée tant que la promesse HTTP est en attente.",
-    "Tester deux scénarios de panne : éteindre le serveur Node.js (erreur réseau 'Failed to fetch') puis injecter une mauvaise clé API côté serveur (code 401/500) pour vérifier que l'interface affiche une alerte lisible plutôt qu'un écran blanc."
+    "Lancez votre serveur backend Node.js dans un premier terminal : `npm run dev` sur le port 3000.",
+    "Lancez votre projet frontend Vite dans un second terminal : `npm run dev` sur le port 5173.",
+    "Vérifiez que votre fichier `.env` côté frontend pointe bien vers `http://localhost:3000/api`.",
+    "Ouvrez la page dans votre navigateur, saisissez une question simple (*'Explique-moi le rôle d'une base de données'*) et cliquez sur 'Générer'.",
+    "Observez le voyage complet : le clic dans React déclenche le service, qui appelle Express, qui interroge Gemini, puis la réponse s'affiche à l'écran !",
+    "Faites le test du crash : éteignez volontairement votre serveur Node.js (Ctrl + C), puis recliquez sur le bouton pour vérifier que votre React affiche une erreur bienveillante au lieu d'un écran blanc !"
   ]}
   validationCriteria={[
-    "Le frontend communique avec succès avec le backend via fetch et reçoit la véritable réponse de Gemini.",
-    "Les erreurs réseau et codes HTTP non-200 sont interceptés et restitués en français compréhensible.",
-    "Aucun clignotement ni double soumission n'est possible lors des clics répétés."
+    "Le frontend reçoit et affiche la véritable réponse rédigée par Gemini.",
+    "Le bouton devient inactif pendant la réflexion de l'IA pour éviter les doubles clics.",
+    "Si le serveur est coupé, l'utilisateur est prévenu avec douceur par un message d'erreur clair."
   ]}
 >
 
-#### Exemple de service client sécurisé :
-```typescript
-// src/services/ai.service.ts
-export interface GenerateResponse {
-  success: boolean;
-  result?: string;
-  error?: { message: string };
-}
-
-export async function requestGeneration(prompt: string): Promise<string> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
-  try {
-    const res = await fetch(`${apiUrl}/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
-    });
-
-    const data: GenerateResponse = await res.json();
-
-    if (!res.ok || !data.success) {
-      throw new Error(data.error?.message || `Erreur serveur (${res.status})`);
-    }
-
-    return data.result || 'Aucune réponse reçue.';
-  } catch (err: any) {
-    if (err.name === 'TypeError' && err.message.includes('fetch')) {
-      throw new Error('Impossible de contacter le serveur backend. Vérifiez que le serveur est démarré.');
-    }
-    throw err;
-  }
-}
-```
+<Callout type="success" title="Bravo !">
+Vous venez de relier les deux morceaux fondamentaux d'une application moderne : un frontend React élégant et un backend Node.js sécurisé communicant avec Google Gemini !
+</Callout>
 </PracticalWork>
-

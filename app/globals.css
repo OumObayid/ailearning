@@ -25,12 +25,16 @@ html {
   font-size: 17px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* Curseur main (pointer) au survol de tous les boutons et liens */

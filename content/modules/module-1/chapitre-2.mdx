@@ -5,86 +5,118 @@ import { PracticalWork } from '@/components/courses/PracticalWork';
 
 # Chapitre 2 — Installation et configuration de Gemini avec Node.js et TypeScript
 
-### 1. Architecture de travail
+Bienvenue dans la partie pratique ! Dans ce chapitre, nous allons construire pas à pas notre tout premier serveur capable de discuter directement avec l'intelligence artificielle Gemini de Google.
 
-Nous allons développer une API backend qui communique avec Gemini.
+Pas d'inquiétude si vous débutez : chaque étape, chaque outil et chaque ligne de code vous seront expliqués avec des mots simples de tous les jours.
 
-Le fonctionnement sera le suivant :
+---
+
+### 1. Pourquoi créer un backend plutôt que d'appeler l'IA directement ?
+
+Imaginez un grand restaurant :
+- **Le client à table**, c'est votre application Frontend (React, votre site web sur mobile ou PC).
+- **Le serveur en salle**, c'est votre API Backend (Node.js & Express).
+- **Le grand chef cuisinier**, c'est l'intelligence artificielle de Google Gemini.
+
+Si vous donniez directement la clé secrète de votre compte Google au client à table, n'importe quel visiteur pourrait faire un clic droit *"Inspecter"* sur votre site web, voler votre clé secrète, et faire des milliers de requêtes payantes à vos frais !
+
+<Callout type="warning" title="La règle d'or de la sécurité">
+**Ne mettez jamais votre clé API dans le code d'un site web public.**  
+C'est toujours votre propre serveur backend (votre "vigile") qui garde la clé bien cachée au chaud dans un coffre-fort sécurisé, et qui fait l'intermédiaire avec Google.
+</Callout>
+
+Voici le voyage que fait chaque question posée par un utilisateur :
 
 <ArchitectureDiagram
-  title="Flux de travail de l'architecture"
-  diagram={`Utilisateur
+  title="Le voyage d'une question vers Gemini"
+  diagram={`Utilisateur (dans son navigateur)
     |
+    | 1. Tape une question ("Explique-moi la photosynthèse")
     v
-Frontend React
+Frontend React (Site web)
     |
+    | 2. Envoie la question à notre serveur
     v
-API Node.js / Express
+API Node.js / Express (Notre Backend)
     |
+    | 3. Récupère la clé secrète protégée
     v
-Service Gemini
+Service Gemini (Notre code TypeScript)
     |
+    | 4. Envoie la demande officielle via le SDK @google/genai
     v
-SDK officiel @google/genai
+Google Gemini API (Les supercalculateurs de Google)
     |
-    v
-Google Gemini API
-    |
+    | 5. Calcule et génère la réponse
     v
 Réponse du modèle
     |
+    | 6. Reçue par notre serveur backend
     v
 API Node.js
     |
+    | 7. Renvoie la réponse propre au site web
     v
-Frontend React`}
+Frontend React (L'utilisateur lit la réponse)`}
 />
 
-Le frontend ne communique pas directement avec Gemini dans notre architecture de production.  
-Le backend conserve la clé API et contrôle les requêtes.
+---
+
+### 2. Les outils dont nous avons besoin
+
+Pour fabriquer ce serveur, nous allons utiliser une petite boîte à outils très courante dans le monde professionnel :
+
+- **Node.js** : C'est le moteur qui permet de faire fonctionner du code JavaScript sur votre ordinateur, comme un vrai programme, sans avoir besoin d'ouvrir un navigateur.
+- **npm** : C'est le "magasin d'applications" des développeurs. Il permet de télécharger en une seconde des blocs de code tout prêts créés par Google ou d'autres ingénieurs.
+- **TypeScript** : C'est du JavaScript avec une ceinture de sécurité. Il vérifie votre code au fur et à mesure que vous tapez et vous alerte si vous faites une faute d'orthographe ou de logique.
+- **Express** : Une bibliothèque très populaire et légère pour créer des "portes d'entrée" (les routes d'une API web).
+- **Postman** : Une petite application gratuite qui agit comme une télécommande. Elle vous permet d'envoyer des questions à votre serveur et de lire les réponses, sans avoir à coder tout un site web pour tester.
+- **Google AI Studio** : Le site de Google où vous pouvez générer gratuitement votre clé d'accès (la clé API) pour parler à Gemini.
 
 ---
 
-### 2. Prérequis logiciels
+### 3. Création et préparation du projet
 
-Installer :
-- Node.js, dans une version LTS compatible avec les dépendances.
-- npm.
-- Visual Studio Code ou un éditeur équivalent.
-- Postman.
-- Un compte Google AI Studio.
-- Une clé API Gemini autorisée à utiliser le modèle sélectionné.
+Ouvrez votre terminal (l'invite de commandes ou le terminal intégré de VS Code) et suivez ces quelques étapes :
 
----
-
-### 3. Création du projet
-
-Créer un dossier :
+#### Étape A : Créer le dossier de travail
+Tapez ces deux commandes pour créer un dossier neuf et entrer dedans :
 ```bash
 mkdir module1-gemini
 cd module1-gemini
 ```
 
-Initialiser le projet :
+#### Étape B : Démarrer un projet Node.js
+Cette commande crée automatiquement un fichier d'identité pour votre projet nommé `package.json` :
 ```bash
 npm init -y
 ```
 
-Installer les dépendances :
+#### Étape C : Installer les outils nécessaires
+Nous allons maintenant télécharger les bibliothèques indispensables :
 ```bash
 npm install @google/genai express dotenv cors zod
 ```
 
-Installer les dépendances de développement :
+Que font ces outils ?
+- `@google/genai` : La bibliothèque officielle fournie par Google pour parler à Gemini facilement.
+- `express` : Le chef d'orchestre pour recevoir les demandes web et renvoyer les réponses.
+- `dotenv` : L'outil qui lit notre fichier secret (`.env`) contenant notre clé API.
+- `cors` : Le gardien qui autorise notre site web à discuter avec notre serveur.
+- `zod` : Un contrôleur rigoureux qui s'assure que les données reçues ont bien la bonne forme (on l'utilisera beaucoup plus loin).
+
+#### Étape D : Installer les outils de développement
+Ces outils nous aident pendant l'écriture du code (ils ne servent plus une fois le projet terminé) :
 ```bash
 npm install -D typescript tsx @types/node @types/express @types/cors vitest supertest @types/supertest
 ```
+*Astuce : `tsx` est un petit outil génial qui redémarre instantanément votre serveur dès que vous modifiez et sauvegardez un fichier.*
 
 ---
 
-### 4. Configuration de TypeScript
+### 4. Configuration de TypeScript et des scripts
 
-Créer le fichier `tsconfig.json` :
+Pour que TypeScript comprenne comment traduire notre code moderne, créons un fichier nommé `tsconfig.json` à la racine de votre dossier :
 
 <CodeBlock language="json" filename="tsconfig.json">
 {`{
@@ -103,7 +135,7 @@ Créer le fichier `tsconfig.json` :
 }`}
 </CodeBlock>
 
-Dans `package.json`, configurer :
+Ouvrez ensuite le fichier `package.json` et configurez les scripts pour lancer votre projet facilement :
 
 <CodeBlock language="json" filename="package.json">
 {`{
@@ -117,67 +149,65 @@ Dans `package.json`, configurer :
 }`}
 </CodeBlock>
 
-Conserve également les dépendances générées par npm dans ton fichier `package.json`.
+> **Que fait `"dev": "tsx watch src/server.ts"` ?**  
+> Dès que vous taperez `npm run dev` dans votre terminal, votre serveur démarrera. Si vous changez une seule ligne de code, `tsx` le détecte et recharge le serveur automatiquement sans vous forcer à le couper et le relancer à la main !
 
 ---
 
-### 5. Organisation des fichiers
+### 5. Une organisation propre : la méthode des tiroirs bien rangés
 
-Créer la structure suivante :
+Dans une vraie entreprise, on ne met jamais tout son code dans un seul gros fichier géant. On organise son projet en plusieurs "tiroirs" (dossiers), où chaque fichier a un rôle précis :
 
 <ArchitectureDiagram
-  title="Arborescence du projet module1-gemini"
+  title="Arborescence claire du projet"
   diagram={`module1-gemini/
 │
-├── src/
-│   ├── config/
+├── src/                          (Tout notre code source)
+│   ├── config/                   (Le coffre-fort : configuration et clés)
 │   │   └── gemini.ts
 │   │
-│   ├── services/
+│   ├── services/                 (Les spécialistes métier : celui qui parle à Gemini)
 │   │   └── gemini.service.ts
 │   │
-│   ├── controllers/
+│   ├── controllers/              (Les réceptionnistes : vérifient les demandes des utilisateurs)
 │   │   └── gemini.controller.ts
 │   │
-│   ├── routes/
+│   ├── routes/                   (Les panneaux indicateurs : dirigent les requêtes web)
 │   │   └── gemini.routes.ts
 │   │
-│   ├── schemas/
+│   ├── schemas/                  (Les règles de validation des données)
 │   │   └── analysis.schema.ts
 │   │
-│   └── server.ts
+│   └── server.ts                 (L'interrupteur général qui démarre l'application)
 │
-├── .env
-├── .gitignore
+├── .env                          (Fichier secret avec votre vraie clé API)
+├── .gitignore                    (La liste des fichiers que Git ne doit jamais publier)
 ├── package.json
 └── tsconfig.json`}
 />
 
-Cette organisation sépare :
-- La configuration.
-- Les services IA.
-- Les contrôleurs HTTP.
-- Les routes.
-- Les schémas de validation.
-- Le serveur.
-
-Cette séparation sera réutilisée dans les modules backend et agents.
+Pourquoi cette organisation est-elle idéale pour un débutant ?
+- **`config/`** : Si demain Google change sa méthode de connexion, vous ne modifiez qu'un seul petit fichier.
+- **`services/`** : C'est ici que se trouve le vrai dialogue avec l'intelligence artificielle.
+- **`controllers/`** : Ce fichier vérifie que l'utilisateur n'a pas envoyé une phrase vide ou un texte invalide.
+- **`routes/`** : Il dit : *"Quand quelqu'un envoie une demande sur `/api/generate`, transmets-la au contrôleur"*.
+- **`server.ts`** : Il allume la lumière et met le serveur sur écoute sur un port (par exemple le port 3000).
 
 ---
 
-### 6. Configuration de la clé API
+### 6. Stocker sa clé API en toute sécurité
 
-Créer un fichier `.env` :
+Créez un fichier nommé `.env` à la racine de votre dossier :
 
 <CodeBlock language="bash" filename=".env">
-{`API_KEY_GEMINI=TA_CLE_API_GEMINI
+{`API_KEY_GEMINI=VOTRE_VRAIE_CLE_API_ICI
 GEMINI_MODEL=gemini-3.8-flash
 PORT=3000`}
 </CodeBlock>
 
-Le nom `API_KEY_GEMINI` est volontairement conservé pour rester cohérent avec tes précédents exercices.
+Remplacez `VOTRE_VRAIE_CLE_API_ICI` par la clé obtenue sur Google AI Studio.
 
-Créer `.gitignore` :
+Créez immédiatement à côté un fichier `.gitignore` :
 
 <CodeBlock language="bash" filename=".gitignore">
 {`node_modules/
@@ -185,86 +215,80 @@ dist/
 .env`}
 </CodeBlock>
 
-<Callout type="warning" title="Attention">
-Ne jamais publier le fichier .env sur GitHub.
+<Callout type="note" title="Pourquoi le fichier .gitignore est crucial ?">
+Si vous envoyez un jour votre travail sur GitHub pour le partager avec vos collègues, Git lira ce fichier `.gitignore` et ignorera automatiquement votre fichier `.env`. Votre clé restera donc secrète sur votre machine personnelle.
 </Callout>
 
 ---
 
-### 7. Initialiser le client Gemini
+### 7. Initialiser la connexion avec Gemini
 
-Créer `src/config/gemini.ts` :
+Créons maintenant le fichier `src/config/gemini.ts`. C'est le trousseau de clés qui prépare la connexion avec Google :
 
 <CodeBlock language="typescript" filename="src/config/gemini.ts">
 {`import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
+// 1. On charge les variables secrètes contenues dans le fichier .env
 dotenv.config();
 
+// 2. On récupère notre clé API
 const apiKey = process.env.API_KEY_GEMINI;
 
+// 3. Si la clé est introuvable, on arrête tout avec une alerte claire
 if (!apiKey) {
-  throw new Error("La clé API Gemini est absente.");
+  throw new Error("Erreur fatale : La variable API_KEY_GEMINI est absente dans le fichier .env !");
 }
 
+// 4. On crée le client officiel GoogleGenAI avec notre clé
 export const ai = new GoogleGenAI({
   apiKey
 });
 
+// 5. On choisit le modèle par défaut (modifiable dans le .env sans toucher au code)
 export const GEMINI_MODEL =
   process.env.GEMINI_MODEL || "gemini-3.8-flash";`}
 </CodeBlock>
 
-#### Explication
-`GoogleGenAI` représente le client principal du SDK.
-
-```typescript
-new GoogleGenAI({
-  apiKey
-});
-```
-
-Cette initialisation permet d'authentifier les appels au service Google Gemini.  
-La variable `GEMINI_MODEL` permet de changer de modèle sans modifier les fichiers du projet.  
-Le nom du modèle est un identifiant à vérifier dans la documentation et dans les modèles accessibles à ton compte.
-
 ---
 
-### 8. Premier appel à Gemini
+### 8. Écrire le premier appel à Gemini
 
-Créer `src/services/gemini.service.ts` :
+Créons notre premier service dans `src/services/gemini.service.ts`. Ce fichier ne fait qu'une seule chose : recevoir un texte (le prompt), le transmettre à Gemini, et attendre gentiment sa réponse.
 
 <CodeBlock language="typescript" filename="src/services/gemini.service.ts">
 {`import { ai, GEMINI_MODEL } from "../config/gemini.js";
 
+/**
+ * Envoie une question à Gemini et renvoie sa réponse sous forme de texte.
+ * @param prompt La question ou consigne destinée à l'IA
+ */
 export async function generateText(prompt: string) {
+  // On demande à Gemini d'ouvrir une interaction
   const interaction = await ai.interactions.create({
     model: GEMINI_MODEL,
     input: prompt
   });
 
+  // On extrait le texte rédigé par l'IA
   return interaction.output_text;
 }`}
 </CodeBlock>
 
-#### Explication du code
-`ai.interactions.create()` crée une interaction avec le modèle.
-
-Les propriétés principales de cet exemple sont :
-- `model` : identifiant du modèle.
-- `input` : contenu transmis au modèle.
-
-La réponse est récupérée avec :
-```typescript
-interaction.output_text
-```
-Cette propriété permet de récupérer le texte final produit par le modèle lorsqu'il existe.
+#### Ce qui se passe en coulisses :
+1. **`await ai.interactions.create(...)`** : Le mot-clé `await` ("attends") est essentiel. Poser une question à une IA prend quelques centaines de millisecondes. Votre serveur ne se bloque pas : il attend tranquillement la réponse de Google.
+2. **`model: GEMINI_MODEL`** : On indique quel cerveau utiliser (ici, `gemini-3.8-flash`, un modèle rapide et économique).
+3. **`input: prompt`** : C'est votre phrase d'instruction.
+4. **`interaction.output_text`** : C'est le résultat textuel tout propre rédigé par Gemini.
 
 ---
 
-### 9. Créer une première route Express
+### 9. Créer notre première route d'API avec Express
 
-Créer `src/controllers/gemini.controller.ts` :
+Il ne nous reste plus qu'à rendre ce service accessible via le web pour que n'importe qui (ou Postman) puisse lui envoyer des messages.
+
+#### Le Contrôleur (`src/controllers/gemini.controller.ts`)
+Il fait office de réceptionniste : il vérifie la demande avant d'embêter le service d'IA :
 
 <CodeBlock language="typescript" filename="src/controllers/gemini.controller.ts">
 {`import type { Request, Response } from "express";
@@ -275,35 +299,41 @@ export async function generateController(
   res: Response
 ) {
   try {
+    // On extrait le champ "prompt" envoyé dans le corps (body) du message
     const { prompt } = req.body;
 
+    // Vérification de sécurité élémentaire : est-ce bien du texte non vide ?
     if (
       typeof prompt !== "string" ||
       !prompt.trim()
     ) {
       return res.status(400).json({
         success: false,
-        message: "Le prompt est obligatoire."
+        message: "Erreur : Vous devez fournir un champ 'prompt' contenant du texte non vide."
       });
     }
 
+    // Tout est bon : on interroge Gemini !
     const result = await generateText(prompt);
 
+    // On renvoie un statut 200 (Succès) avec la réponse générée
     return res.status(200).json({
       success: true,
       result
     });
   } catch (error) {
-    console.error("Erreur Gemini :", error);
+    // Si Google rencontre un problème ou si la connexion coupe :
+    console.error("Erreur survenue lors de l'appel Gemini :", error);
     return res.status(500).json({
       success: false,
-      message: "Une erreur est survenue."
+      message: "Une erreur interne est survenue sur le serveur."
     });
   }
 }`}
 </CodeBlock>
 
-Créer `src/routes/gemini.routes.ts` :
+#### La Route (`src/routes/gemini.routes.ts`)
+Elle relie une adresse URL à notre contrôleur :
 
 <CodeBlock language="typescript" filename="src/routes/gemini.routes.ts">
 {`import { Router } from "express";
@@ -311,12 +341,14 @@ import { generateController } from "../controllers/gemini.controller.js";
 
 const router = Router();
 
+// Quand une requête POST arrive sur "/generate", on déclenche generateController
 router.post("/generate", generateController);
 
 export default router;`}
 </CodeBlock>
 
-Créer `src/server.ts` :
+#### Le Serveur Principal (`src/server.ts`)
+C'est le point d'entrée qui met tout en marche :
 
 <CodeBlock language="typescript" filename="src/server.ts">
 {`import express from "express";
@@ -324,72 +356,91 @@ import cors from "cors";
 import dotenv from "dotenv";
 import geminiRoutes from "./routes/gemini.routes.js";
 
+// Charger les variables d'environnement
 dotenv.config();
 
 const app = express();
 
+// Autoriser les requêtes cross-origin et décoder le format JSON
 app.use(cors());
 app.use(express.json());
 
+// Brancher nos routes sous le préfixe /api
 app.use("/api", geminiRoutes);
 
+// Définir le port d'écoute (par défaut 3000)
 const PORT = Number(process.env.PORT) || 3000;
 
+// Démarrer l'écoute sur le réseau
 app.listen(PORT, () => {
-  console.log(\`Serveur lancé sur http://localhost:\${PORT}\`);
+  console.log(\`✅ Serveur démarré avec succès sur http://localhost:\${PORT}\`);
 });`}
 </CodeBlock>
 
-Démarrer le serveur :
+Lancez maintenant votre serveur dans le terminal :
 ```bash
 npm run dev
 ```
 
+Vous devez voir s'afficher :
+```text
+✅ Serveur démarré avec succès sur http://localhost:3000
+```
+Bravo ! Votre serveur est allumé et prêt à recevoir ses premières demandes.
+
 ---
 
-### 10. Tester avec Postman
+### 10. Tester avec Postman pas à pas
 
-Créer une requête dans Postman :
-- **Méthode :** `POST`
-- **URL :** `http://localhost:3000/api/generate`
-- **Headers :** `Content-Type: application/json`
-- **Body :**
+Postman vous permet d'envoyer un message à votre serveur exactement comme le ferait une vraie application :
+
+1. Ouvrez l'application **Postman**.
+2. Créez une nouvelle requête en cliquant sur le bouton **"+"**.
+3. Choisissez la méthode **POST** dans le menu déroulant à gauche.
+4. Dans la barre d'adresse, tapez : `http://localhost:3000/api/generate`
+5. Cliquez sur l'onglet **Headers** et assurez-vous d'avoir :  
+   `Content-Type` : `application/json`
+6. Cliquez sur l'onglet **Body**, cochez la case **raw**, et assurez-vous que le format sélectionné tout à droite est bien **JSON**.
+7. Écrivez le contenu suivant dans la zone de texte :
+
 <CodeBlock language="json">
 {`{
-  "prompt": "Explique-moi simplement le fonctionnement de Node.js en cinq lignes."
+  "prompt": "Explique-moi simplement ce qu'est une API en deux phrases faciles."
 }`}
 </CodeBlock>
 
-Résultat attendu :
+8. Cliquez sur le gros bouton bleu **Send** !
+
+En moins d'une seconde, votre serveur reçoit la demande, interroge Gemini, et vous renvoie ce résultat dans la fenêtre du bas :
+
 <CodeBlock language="json">
 {`{
   "success": true,
-  "result": "Node.js est un environnement..."
+  "result": "Une API est comme un serveur dans un restaurant qui prend votre commande et l'apporte en cuisine pour vous rapporter votre plat. Elle permet à deux programmes informatiques différents de communiquer et de s'échanger des informations facilement."
 }`}
 </CodeBlock>
 
-La formulation exacte de la réponse dépend du modèle.
+Félicitations ! Vous venez de réaliser votre première intégration professionnelle complète d'une intelligence artificielle générative !
 
 ---
 
-<PracticalWork title="Travail pratique 2 — Construction et durcissement de l'API">
-L'objectif de ce premier atelier est d'implémenter intégralement l'API Express connectée à Gemini, puis de lui ajouter les mécanismes de contrôle indispensables en production.
+<PracticalWork title="Travail pratique 2 — Solidifier et tester votre API">
+L'objectif de cet atelier est de vous approprier le code en y ajoutant les bons réflexes qu'on attend d'un développeur junior en entreprise.
 
-#### Étape 1 : Implémentation du socle de base
-1. Reproduire l'arborescence complète (`src/config`, `src/services`, `src/controllers`, `src/routes`, `src/server.ts`).
-2. Configurer le client Gemini dans `src/config/gemini.ts` avec la variable d'environnement `GEMINI_API_KEY`.
-3. Développer le service `generateContent(prompt: string)` dans `src/services/gemini.service.ts`.
-4. Exposer la route `POST /api/generate` et tester un premier échange avec Postman ou cURL.
+#### Étape 1 : Recréer la structure et tester le bon fonctionnement
+1. Créez l'arborescence des dossiers sur votre machine.
+2. Créez le fichier `.env` avec votre clé API Gemini.
+3. Lancez le serveur avec `npm run dev` et envoyez une requête avec Postman pour vérifier que vous obtenez bien une réponse.
 
-#### Étape 2 : Durcissement et extensions obligatoires
-1. **Validation du type de prompt** : Vérifier que le corps de requête contient bien une propriété `prompt` de type chaîne de caractères non vide. Renvoyer un code HTTP `400 Bad Request` avec un message d'erreur clair si ce n'est pas le cas.
-2. **Longueur maximale configurable** : Imposer une limite de 2 000 caractères au prompt. Si la longueur dépasse cette valeur, tronquer proprement ou renvoyer une erreur `400` détaillée.
-3. **Gestion centralisée des erreurs** : Ajouter un middleware Express `(err, req, res, next)` interceptant toutes les exceptions non capturées et renvoyant une réponse JSON harmonisée `{ "success": false, "error": { "message": "..." } }` avec le code HTTP adapté (ex. `500` pour incident interne, `401` pour défaut de clé).
-4. **Route de santé `/api/health`** : Créer une route `GET /api/health` qui renvoie immédiatement `{ "status": "ok", "uptime": process.uptime() }` sans interroger Gemini.
-5. **Route de test `/api/test-gemini`** : Créer une route `GET /api/test-gemini` qui envoie un prompt figé (*"Réponds uniquement par le mot OK"*) afin de diagnostiquer rapidement la connectivité avec les serveurs de Google.
+#### Étape 2 : Ajouter des protections simples (Durcissement)
+1. **Tester les erreurs volontairement** : Dans Postman, envoyez un body vide `{}` ou un prompt qui n'est qu'un espace `" "`. Vérifiez que votre contrôleur renvoie bien une réponse avec le code `400` et un message expliquant le problème sans faire planter le serveur.
+2. **Limiter la taille de la question** : Ajoutez une condition dans le contrôleur : si le texte du prompt dépasse 2 000 caractères, renvoyez une erreur `400` disant que le texte est trop long. Cela évite qu'un utilisateur n'abuse de votre quota de tokens.
+3. **Créer une route de vérification d'état (`/api/health`)** :  
+   Ajoutez dans vos routes une méthode `GET /health` qui renvoie immédiatement `{ "status": "ok", "uptime": process.uptime() }`. Cette petite route permet de vérifier en un coup d'œil si votre serveur est en vie, sans consommer de tokens Gemini !
+4. **Créer une route de test ultra-rapide (`/api/test-gemini`)** :  
+   Ajoutez une route `GET /test-gemini` qui pose automatiquement une micro-question fixe (*"Réponds uniquement par le mot OK"*). Si elle répond "OK", vous savez immédiatement que votre clé API et la connexion aux serveurs de Google fonctionnent à 100 %.
 
-<Callout type="success" title="Critère de validation du TP">
-Vous devez être capable d'expliquer le cheminement exact d'une requête : de son arrivée sur la route Express jusqu'à l'interrogation du SDK Gemini, le traitement par le contrôleur et la réponse au client.
+<Callout type="success" title="Ce que vous devez retenir">
+Vous savez désormais expliquer le cheminement complet d'une demande : le client formule une question, votre route l'accueille, votre contrôleur vérifie qu'elle est propre, votre service l'envoie à Gemini avec la clé secrète, et la réponse revient au client au format JSON.
 </Callout>
 </PracticalWork>
-

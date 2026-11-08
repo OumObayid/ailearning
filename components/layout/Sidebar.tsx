@@ -203,7 +203,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {user ? user.name : 'Connexion Membre'}
               </span>
               <span className="text-sm font-semibold text-slate-600 truncate">
-                {user ? 'Espace Membre actif' : 'Accéder au profil'}
+                {user ? (user.role === 'admin' ? '🛡️ Administrateur' : 'Espace Membre actif') : 'Accéder au profil'}
               </span>
             </div>
           )}

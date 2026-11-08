@@ -115,7 +115,7 @@ export const Chapitre14Content: React.FC = () => {
           {checklistCriteria.map((criterion, idx) => (
             <label
               key={idx}
-              className="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition select-none"
+              className="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition select-text"
             >
               <input
                 type="checkbox"

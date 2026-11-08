@@ -48,13 +48,13 @@ export const Chapitre6Content: React.FC = () => {
           <div className="p-4 rounded-2xl bg-white border-2 border-amber-300 bg-amber-50/30 space-y-1.5">
             <h3 className="font-black text-base text-amber-950">B. Erreurs intermittentes (Heisenbugs)</h3>
             <p className="text-xs text-slate-700 font-medium">
-              N&apos;apparaissent que sporadiquement : concurrence asynchrone, double-clic utilisateur ou réseau instable.
+              N&apos;apparaissent que sporadiquement (De temps en temps) : concurrence asynchrone, double-clic utilisateur ou réseau instable.
             </p>
           </div>
           <div className="p-4 rounded-2xl bg-white border-2 border-slate-200 space-y-1.5">
             <h3 className="font-black text-base text-slate-950">C. Erreurs dépendantes des données</h3>
             <p className="text-xs text-slate-700 font-medium">
-              Fonctionnent parfaitement avec des jeux normaux, mais crashent sur des valeurs limites (nombres négatifs, apostrophes, emojis, <code>null</code>).
+              Fonctionnent parfaitement dans des situations normales, mais crashent sur des valeurs limites (nombres négatifs, apostrophes, emojis, <code>null</code>).
             </p>
           </div>
           <div className="p-4 rounded-2xl bg-white border-2 border-slate-200 space-y-1.5">

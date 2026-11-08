@@ -1,162 +1,168 @@
 import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
+import { MultimodalVisionSimulator } from '@/components/interactive/MultimodalVisionSimulator';
 
-# Chapitre 7 — Analyser des images et des documents avec Gemini
+# Chapitre 7 — Analyser des images et des documents avec Gemini (La Multimodalité)
 
-### 1. Qu'est-ce que la multimodalité ?
+Jusqu'à présent, nous avons fait dialoguer notre serveur avec Gemini uniquement par écrit. C'est déjà impressionnant, mais c'est un peu comme discuter au téléphone dans le noir : l'IA ne voit rien de ce qui l'entoure !
 
-Un modèle multimodal peut traiter plusieurs types de contenus.
+Dans ce chapitre, nous allons donner **des yeux** à notre application. Grâce à la **multimodalité**, Gemini est capable d'observer des photos, de lire le texte sur un ticket de caisse froissé, de repérer un défaut sur un vêtement ou d'expliquer un schéma technique complexe.
 
-Selon le modèle et les fonctionnalités disponibles, cela peut inclure :
-- Texte.
-- Images.
-- Audio.
-- Vidéo.
-- Documents.
-
-L'intérêt est de ne plus limiter les applications IA aux seules données textuelles.
+Pas à pas, nous allons voir comment préparer une image avec Node.js et l'envoyer à Gemini pour qu'il l'analyse avec une précision remarquable.
 
 ---
 
-### 2. Exemple d'analyse d'image
+### 1. Qu'est-ce que la multimodalité ?
 
-Une application de gestion de produits peut permettre à un utilisateur de transmettre une photographie.
+Le mot **multimodal** signifie simplement *"capable de comprendre plusieurs modes d'expression"*.
 
-Gemini peut alors être utilisé pour :
-- Décrire le produit.
-- Identifier des caractéristiques visibles.
-- Extraire du texte présent sur l'image.
-- Répondre à des questions sur le contenu visuel.
+Un humain n'utilise pas seulement des mots : il regarde des images, écoute des voix, lit des graphiques et regarde des vidéos.  
+Les modèles de la famille Gemini ont été conçus dès le départ pour traiter simultanément :
+- Du texte (des questions, des consignes).
+- Des images (photos JPEG, PNG, captures d'écran).
+- Des documents numérisés (factures, devis, fiches techniques au format PDF).
+- De l'audio et de la vidéo.
 
-Exemple de scénario :
+---
+
+### 2. Cas d'usage concrets en entreprise
+
+Pourquoi la vision par IA révolutionne-t-elle le développement d'applications ?
+
+- **La comptabilité sans saisie manuelle :** Un employé prend en photo son ticket de restaurant avec son smartphone. L'IA lit immédiatement le commerçant, la date, la TVA et le total TTC, puis remplit la note de frais toute seule !
+- **L'e-commerce automatique :** Vous photographiez un meuble ou une paire de chaussures. L'IA rédige la description du produit, identifie sa couleur dominante, son matériau et son état.
+- **L'accessibilité pour tous :** L'IA décrit précisément ce qui figure sur une image pour que les personnes malvoyantes puissent écouter la description grâce à un lecteur d'écran (balise `alt` en HTML).
+- **Le dépannage technique :** Un utilisateur envoie la capture d'écran d'un message d'erreur ou la photo d'un voyant allumé sur son tableau de bord : l'IA identifie la panne et guide l'utilisateur.
+
+Voici le chemin suivi par une image :
 
 <ArchitectureDiagram
-  title="Scénario d'analyse d'image multimodale"
-  diagram={`Utilisateur
+  title="Parcours d'une analyse d'image"
+  diagram={`Utilisateur (prend une photo avec son téléphone)
     |
     v
-Upload d'une image dans React
+Frontend React (sélectionne le fichier image)
     |
     v
-API Node.js
+API Node.js (notre serveur)
+  -> Vérifie le format (JPEG/PNG) et la taille (ex: max 5 Mo)
+  -> Convertit l'image en données exploitables
     |
     v
-Transmission de l'image à Gemini
+Google Gemini (analyse les pixels et la question)
     |
     v
-Analyse multimodale
+Réponse de l'IA (texte explicatif ou JSON structuré)
     |
     v
-Réponse textuelle ou structurée
-    |
-    v
-Frontend`}
+Frontend React (affiche les résultats à l'utilisateur)`}
 />
 
 ---
 
-### Atelier interactif : Analyse visuelle et extraction d'images
+### 3. Atelier interactif : Testez la vision artificielle
 
-Explorez ci-dessous comment Gemini extrait des caractéristiques visuelles, lit des documents imprimés (OCR) et produit du JSON structuré à partir d'une image :
+Découvrez dans ce laboratoire interactif comment Gemini décompose une image, lit les textes imprimés (OCR) et en extrait des données prêtes pour votre base de données :
 
 <MultimodalVisionSimulator />
 
 ---
 
-### 3. Préparer un fichier
+### 4. Comment transmettre une image à Gemini en Node.js ?
 
-Dans une application réelle, il faut :
-- Recevoir le fichier.
-- Vérifier son type MIME.
-- Contrôler sa taille.
-- Contrôler les permissions.
-- Vérifier que le contenu correspond au type annoncé.
-- Transmettre le fichier selon les modalités prises en charge par le SDK et l'API.
+Un fichier image n'est pas une simple phrase. C'est une suite d'octets binaires représentant des pixels de couleur.  
+Pour transmettre une image à Gemini dans une requête, il existe deux manières simples :
 
-Les fichiers volumineux ou réutilisés peuvent nécessiter l'utilisation du service de fichiers plutôt qu'un transfert répété dans chaque requête.
+1. **L'encodage Base64 (pour les images légères, moins de 10-20 Mo)** : On transforme les octets de l'image en une longue chaîne de caractères textuelle que l'on glisse directement dans la requête.
+2. **Le service de fichiers (File API de Google)** : Pour les très gros fichiers (vidéos de plusieurs centaines de mégaoctets ou gros documents PDF), on téléverse d'abord le fichier chez Google puis on donne son adresse à Gemini.
+
+Pour 95 % des besoins web et mobile du quotidien, **l'encodage Base64** est la méthode la plus rapide et la plus directe !
 
 ---
 
-### 4. Comprendre les entrées multimodales
+### 5. Exemple concret : Analyser une photo locale en TypeScript
 
-Une entrée multimodale peut combiner du texte et des contenus média.
+Voici comment lire une image présente sur votre disque dur et demander à Gemini de la décrire :
 
-**Exemple conceptuel :**  
-- **Instruction :** Décris cette image.  
-- **Contenu transmis :**  
-  - Texte : `Décris cette image.`  
-  - Image : photographie fournie par l'utilisateur.
+<CodeBlock language="typescript" filename="src/services/vision.service.ts">
+{`import { ai, GEMINI_MODEL } from "../config/gemini.js";
+import fs from "fs";
 
-La représentation technique dépend du type de média et du mécanisme utilisé : données inline, fichier téléversé ou référence de fichier.  
-Il faut utiliser le format d'entrée documenté pour le type de contenu choisi.
+/**
+ * Lit un fichier image local et le transforme en objet Base64 pour Gemini
+ */
+function fileToGenerativePart(filePath: string, mimeType: string) {
+  // 1. On lit le fichier sur le disque dur
+  const fileBuffer = fs.readFileSync(filePath);
+
+  // 2. On le convertit en texte Base64
+  return {
+    inlineData: {
+      data: fileBuffer.toString("base64"),
+      mimeType
+    }
+  };
+}
+
+export async function analyzeProductPhoto(imagePath: string) {
+  // Préparation de l'image
+  const imagePart = fileToGenerativePart(imagePath, "image/jpeg");
+
+  // On envoie à la fois le texte d'instruction ET l'image à Gemini
+  const interaction = await ai.interactions.create({
+    model: GEMINI_MODEL,
+    input: [
+      {
+        text: "Décris cet objet avec précision. Indique sa couleur, son état général et sa catégorie."
+      },
+      imagePart
+    ]
+  });
+
+  return interaction.output_text;
+}`}
+</CodeBlock>
+
+#### Ce qui se passe ici :
+- `input` n'est plus seulement une simple phrase ! C'est maintenant un tableau qui contient **à la fois votre question textuelle ET votre image**.
+- Gemini observe les pixels de l'image tout en lisant votre consigne, puis formule sa réponse exactement comme un être humain qui regarde une photo qu'on lui montre.
 
 ---
 
-### 5. Exemple d'analyse d'image avec un fichier téléversé
+### 6. Les contrôles de sécurité obligatoires sur les fichiers
 
-Pour les exercices pratiques, tu commenceras par tester le traitement d'une image dans Google AI Studio, puis tu reproduiras le traitement côté Node.js avec le mécanisme de fichiers ou d'entrée multimodale pris en charge par la version du SDK utilisée.
+Dans une application en production, ne transmettez jamais un fichier à l'IA les yeux fermés ! Appliquez toujours ces 3 règles d'or :
 
-La séquence sera :
-1. Sélectionner une image.
-2. Vérifier son format.
-3. Transmettre le contenu à Gemini.
-4. Poser une question précise.
-5. Récupérer le résultat.
-6. Afficher la description dans React.
+1. **Limiter la taille maximale** : Bloquez les fichiers de plus de 5 ou 10 Mo pour ne pas saturer la mémoire vive de votre serveur.
+2. **Vérifier le type MIME** : N'acceptez que des images légitimes (`image/jpeg`, `image/png`, `image/webp`).
+3. **Se protéger contre les fichiers malveillants** : Vérifiez que l'extension correspond au contenu réel avant tout traitement.
 
-<Callout type="warning" title="Documentation de référence">
-Il faudra consulter la documentation de l'API pour la forme exacte des objets de contenu et des références de fichiers. Ne pas inventer un format de fichier ou une propriété du SDK.
+---
+
+<PracticalWork title="Travail pratique 7 — L'œil de lynx : Du reçu papier au JSON propre">
+**Votre mission :** Vous concevez une fonctionnalité pour une application de gestion de notes de frais. Vos utilisateurs prennent en photo leurs reçus de restaurant et votre API doit extraire les chiffres automatiquement.
+
+#### Étape 1 : Préparer une image de test
+- Prenez en photo un ticket de caisse, une facturette de café ou un reçu de supermarché avec votre téléphone (ou téléchargez une image de test libre de droits).
+- Enregistrez l'image sous le nom `ticket-test.jpg` dans un dossier de votre projet.
+
+#### Étape 2 : Créer le prompt d'extraction de données
+Rédigez une consigne stricte demandant à Gemini :
+1. Le nom du commerce.
+2. La date de l'achat.
+3. La liste des produits achetés.
+4. Le montant total payé.
+5. **Règle absolue :** Si un chiffre est coupé ou illisible sur la photo, Gemini doit renvoyer `null` plutôt que d'inventer une valeur imaginaire.
+
+#### Étape 3 : Structurer la réponse avec Zod
+Combinez ce que nous avons appris au **Chapitre 6** avec la vision du **Chapitre 7** :
+- Définissez un schéma Zod pour la note de frais (`nomCommerce`, `date`, `totalTTC`).
+- Forcez la réponse au format JSON avec `response_format`.
+- Validez le résultat avec `safeParse()`.
+
+<Callout type="success" title="Ce que vous avez accompli">
+Vous savez maintenant combiner la vision artificielle et la validation de données pour créer des fonctionnalités professionnelles à très haute valeur ajoutée !
 </Callout>
-
----
-
-### 6. Travaux pratiques
-
-<PracticalWork title="TP 1 — Générateur de descriptions et d'accessibilité (Alt Text)">
-**Objectif :** Générer automatiquement des descriptions textuelles riches et des textes alternatifs (balise HTML `alt`) conformes aux normes d'accessibilité numérique WCAG.
-
-1. **Instructions :**
-   - Convertir une image locale (JPEG/PNG) en base64.
-   - Envoyer l'image avec un prompt demandant :
-     - Une description générale en une phrase pour la balise `alt` (sans expressions superflues comme *"Image de..."*).
-     - Une description détaillée des couleurs, de la composition et des éléments clés.
-2. **Critère de réussite :** Vérifier que la description est concise, précise et utilisable directement par un lecteur d'écran.
 </PracticalWork>
-
-<PracticalWork title="TP 2 — Contrôle qualité visuel et caractéristiques de produit e-commerce">
-**Objectif :** Analyser la photographie d'un article mis en vente pour alimenter automatiquement une fiche e-commerce.
-
-1. **Instructions :**
-   - Transmettre la photo d'un produit (ex. montre connectée, paire de baskets ou bouteille isotherme).
-   - Demander à Gemini d'extraire :
-     - Le type d'objet et la catégorie.
-     - La couleur dominante et les matières visibles.
-     - L'état visuel du produit (neuf, usagé, présence de défauts ou rayures).
-2. **Format de sortie :** Forcer une réponse sous format JSON structuré validé avec Zod.
-</PracticalWork>
-
-<PracticalWork title="TP 3 — Extraction de données d'un document ou d'une facture">
-**Objectif :** Réaliser une extraction OCR intelligente à partir d'une photo de document papier ou d'un reçu de caisse.
-
-1. **Instructions :**
-   - Prendre une photo d'un reçu, d'un ticket de caisse ou d'un devis.
-   - Demander au modèle d'extraire :
-     - Le nom du commerçant / fournisseur.
-     - La date de la transaction.
-     - La liste des articles achetés avec leur prix unitaire.
-     - Le montant total TTC et le taux de TVA détecté.
-2. **Gestion de l'incertitude :** Si un champ est illisible ou tronqué sur la photo, le modèle doit renvoyer la valeur `null` plutôt que d'inventer un montant imaginaire.
-</PracticalWork>
-
-<PracticalWork title="TP 4 — Assistant conversationnel multimodal complet">
-**Objectif :** Développer un endpoint d'API Express recevant simultanément une question utilisateur et un fichier image.
-
-1. **Instructions :**
-   - Mettre en place `multer` sur la route `POST /api/multimodal/ask`.
-   - L'utilisateur envoie en `multipart/form-data` :
-     - Le champ texte `question` (ex. : *"Comment réparer la pièce visible au centre ?"*).
-     - Le champ fichier `image` (JPEG/PNG).
-   - Le contrôleur transforme le buffer image en structure exploitable par le SDK Gemini et retourne la réponse explicative de l'IA.
-</PracticalWork>
-

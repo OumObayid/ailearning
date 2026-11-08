@@ -3,212 +3,165 @@ import { PracticalWork } from '@/components/courses/PracticalWork';
 import { CodeBlock } from '@/components/courses/CodeBlock';
 import { GenerativeUISimulator } from '@/components/interactive/GenerativeUISimulator';
 
-# Chapitre 7 — Sorties structurées et UI générative
+# Chapitre 7 — Sorties structurées et UI générative (Generative UI)
 
-### 1. Pourquoi utiliser des réponses structurées dans le frontend ?
+Jusqu'à maintenant, toutes les réponses que Gemini nous a renvoyées s'affichaient sous la forme de texte dans une bulle de discussion.  
+C'est très utile pour lire un poème ou une explication, mais posez-vous cette question :  
+Quand vous consultez la météo sur votre smartphone, préférez-vous lire un long paragraphe ou voir une jolie icône de soleil avec la température en gros caractères et un bouton cliquable ?
 
-Une réponse textuelle brute est adaptée à un échange de conversation, mais insuffisante pour concevoir des interfaces riches, interactives et actionnables.
+C'est exactement l'objectif de **l'UI générative** (*Generative UI*) !  
+Dans ce chapitre, nous allons apprendre à faire produire à Gemini des données structurées que React transforme instantanément en de superbes **cartes interactives, graphiques et boutons d'action**.
 
-Imaginons un assistant qui évalue les performances d'une boutique e-commerce. Si le LLM retourne du texte libre, le frontend ne peut que l'afficher dans un paragraphe. S'il produit un objet JSON conforme à un contrat de données strict :
+---
 
+### 1. Qu'est-ce que l'UI générative contrôlée ?
+
+Une idée fausse très répandue chez les débutants est de croire que l'IA va "écrire du code React" en direct pour fabriquer un bouton.  
+Ce serait extrêmement dangereux : si l'IA faisait une faute de syntaxe ou générait un script malveillant, votre site planterait immédiatement !
+
+En ingénierie professionnelle, on utilise **l'UI générative contrôlée** :
+1. **L'IA fournit la matière première** : elle extrait ou calcule des données sous forme de données JSON ultra-propres (validées par Zod).
+2. **React fournit le costume sur mesure** : vous avez préalablement préparé de magnifiques composants React (carte météo, fiche produit, jauge de performance).
+3. **Le mariage parfait** : dès que les données JSON arrivent, React les injecte dans le composant adapté pour l'afficher à l'écran !
+
+---
+
+### 2. Exemple comparatif : Texte brut vs Carte interactive
+
+Regardez la différence :
+
+#### ❌ Réponse en texte brut (difficile à lire)
+> *"Le produit est le Clavier Sans Fil Pro. Il coûte 79 euros. Il est actuellement en stock avec 14 exemplaires disponibles. La note moyenne des clients est de 4,7 sur 5."*
+
+#### ✅ UI Générative (immédiat, beau et cliquable)
+React reçoit ce JSON :
 ```json
 {
-  "score": 82,
-  "summary": "Les commandes progressent avec un panier moyen solide.",
-  "strengths": ["Fidélisation client élevée", "Croissance des ventes mobiles"],
-  "weaknesses": ["Délais de livraison allongés le week-end"]
+  "nom": "Clavier Sans Fil Pro",
+  "prix": 79,
+  "enStock": true,
+  "quantite": 14,
+  "note": 4.7
 }
 ```
-
-Le frontend peut instantanément transformer ces données en une **carte de score circulaire**, une **jauge de performance**, une **liste de puces colorées** et des **boutons d'actions immédiates**.
-
----
-
-### 2. Définir le contrat de données avec Zod
-
-La bibliothèque **Zod** permet de définir la structure exacte attendue et d'inférer automatiquement les types TypeScript correspondants :
-
-```typescript
-// shared/schemas/analysis.schema.ts
-import { z } from 'zod';
-
-export const BusinessAnalysisSchema = z.object({
-  score: z.number().min(0).max(100).describe("Note globale de santé commerciale sur 100"),
-  summary: z.string().describe("Synthèse exécutive en deux phrases"),
-  strengths: z.array(z.string()).describe("Liste des 2 à 4 points forts détectés"),
-  weaknesses: z.array(z.string()).describe("Liste des axes d'amélioration critiques"),
-});
-
-export type BusinessAnalysis = z.infer<typeof BusinessAnalysisSchema>;
-```
+Et affiche instantanément cette carte graphique avec une photo, un badge vert *"En stock (14 restants)"*, des étoiles dorées et un bouton bleu *"Ajouter au panier"* !
 
 ---
 
-### 3. Génération d'objets avec generateObject
+### 3. Atelier interactif : Expérimentez l'UI générative
 
-Vercel AI SDK propose la fonction `generateObject`, qui contraint Google Gemini à produire une réponse rigoureusement conforme au schéma Zod :
-
-```typescript
-// server/services/analysis.service.ts
-import { generateObject } from 'ai';
-import { google } from './gemini-provider.js';
-import { BusinessAnalysisSchema } from '../schemas/analysis.schema.js';
-
-export async function analyzeStorePerformance(reportText: string) {
-  const { object } = await generateObject({
-    model: google('gemini-2.5-flash'),
-    schema: BusinessAnalysisSchema,
-    prompt: `Analyse le rapport d'activité suivant et fournis une évaluation objective :\n${reportText}`,
-  });
-
-  // 'object' est garanti être de type BusinessAnalysis
-  return object;
-}
-```
-
----
-
-### 4. Le concept de UI générative contrôlée
-
-La **UI générative** consiste à faire choisir à l'IA les composants d'interface les plus pertinents à afficher, sans jamais lui permettre d'exécuter du code arbitraire dans le navigateur.
-
-<Callout type="warning" title="Règle d'or de la UI générative">
-Le modèle IA peut choisir parmi un catalogue fermé de **composants React pré-approuvés et sécurisés**. Il ne doit **jamais** pouvoir injecter du code JSX ou JavaScript dynamique non contrôlé.
-</Callout>
-
-Pour cela, nous utilisons un **type union discriminé** :
-
-```typescript
-// src/types/widgets.types.ts
-export type UIWidget =
-  | { type: 'summary'; title: string; content: string }
-  | { type: 'list'; title: string; items: string[] }
-  | { type: 'score'; title: string; value: number; max: number };
-```
-
-Puis un composant routeur affiche le widget approprié selon la propriété `type` :
-
-```tsx
-// src/components/AI/WidgetRenderer.tsx
-import React from 'react';
-import type { UIWidget } from '@/types/widgets.types';
-
-export const WidgetRenderer: React.FC<{ widget: UIWidget }> = ({ widget }) => {
-  switch (widget.type) {
-    case 'summary':
-      return (
-        <section className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-5">
-          <h3 className="text-base font-bold text-indigo-900">{widget.title}</h3>
-          <p className="mt-1 text-sm text-slate-700 leading-relaxed">{widget.content}</p>
-        </section>
-      );
-    case 'list':
-      return (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="text-base font-bold text-slate-900">{widget.title}</h3>
-          <ul className="mt-3 space-y-2">
-            {widget.items.map((item, idx) => (
-              <li key={idx} className="flex items-center gap-2 text-sm text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-indigo-600" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      );
-    case 'score':
-      return (
-        <section className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5 flex items-center justify-between">
-          <h3 className="text-base font-bold text-emerald-950">{widget.title}</h3>
-          <span className="text-3xl font-black text-emerald-600">{widget.value} / {widget.max}</span>
-        </section>
-      );
-  }
-};
-```
-
----
-
-### 5. Atelier interactif : Rendu contrôlé de composants React
-
-Explorez la transformation de flux JSON typés en interfaces graphiques réactives :
+Essayez ci-dessous ce laboratoire interactif pour voir comment une même information se métamorphose d'un simple JSON en une interface riche et cliquable :
 
 <GenerativeUISimulator />
 
 ---
 
-<PracticalWork
-  title="Travail Pratique 7 — Interface d'analyse et UI générative contrôlée"
-  objective="Valider des données structurées avec Zod via generateObject et les projeter dynamiquement dans des composants React spécialisés."
-  duration="50 minutes"
-  steps={[
-    "Définir le contrat Zod de données dans `src/schemas/audit.schema.ts` : note globale de 1 à 100, jauge de risque ('FAIBLE', 'MOYEN', 'ELEVE'), liste de points forts et tableau d'actions recommandées avec niveau de priorité.",
-    "Créer la route Express `POST /api/audit` utilisant `generateObject({ model: google('gemini-2.5-flash'), schema: AuditSchema, prompt })` pour garantir la conformité absolue de l'objet retourné.",
-    "Développer le composant de tableau de bord `AuditDashboard.tsx` qui reçoit l'objet validé et l'affiche : jauge colorée (vert/orange/rouge), barres de progression et tableau d'actions stylisé.",
-    "Créer un composant polymorphe `WidgetRenderer.tsx` capable d'afficher soit un graphique circulaire, soit une carte métrique selon la nature des données.",
-    "Ajouter un bouton 'Exporter en JSON' permettant à l'utilisateur de télécharger le fichier de données brut sur sa machine via `URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))`."
-  ]}
-  validationCriteria={[
-    "La réponse du serveur respecte rigoureusement l'interface TypeScript sans aucun `any`.",
-    "Le rendu graphique s'adapte instantanément : badge rouge si risque élevé, vert si faible.",
-    "Aucune balise HTML ou script arbitraire n'est interprété de façon brute (sécurité XSS totale)."
-  ]}
->
+### 4. Comment construire un composant d'UI générative ?
 
-#### Schéma Zod et rendu React du tableau de bord :
-```tsx
-import React from 'react';
-import { z } from 'zod';
+Prenons le cas d'un assistant de santé financière pour une boutique en ligne.
 
-export const AuditReportSchema = z.object({
-  title: z.string(),
-  score: z.number().min(0).max(100),
-  riskLevel: z.enum(['FAIBLE', 'MOYEN', 'CRITIQUE']),
-  highlights: z.array(z.string()),
-  actions: z.array(
-    z.object({
-      task: z.string(),
-      priority: z.enum(['P1', 'P2', 'P3']),
-      deadline: z.string(),
-    })
-  ),
-});
+#### Étape 1 : Le composant React prêt à accueillir les données (`ScoreCard.tsx`)
+<CodeBlock language="tsx" filename="src/components/ScoreCard.tsx">
+{`import React from 'react';
 
-export type AuditReport = z.infer<typeof AuditReportSchema>;
+export interface AuditData {
+  score: number;         // Note sur 100
+  titre: string;
+  pointsForts: string[];
+  alerte?: string;
+}
 
-export const AuditDashboard: React.FC<{ report: AuditReport }> = ({ report }) => {
-  const riskColors = {
-    FAIBLE: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-    MOYEN: 'bg-amber-100 text-amber-800 border-amber-300',
-    CRITIQUE: 'bg-rose-100 text-rose-800 border-rose-300',
-  };
+export const ScoreCard: React.FC<{ data: AuditData }> = ({ data }) => {
+  const isBon = data.score >= 70;
 
   return (
-    <div className="p-6 border rounded-2xl bg-white shadow-sm space-y-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h3 className="text-xl font-bold text-slate-900">{report.title}</h3>
-          <p className="text-sm text-slate-500">Score de conformité : {report.score} / 100</p>
-        </div>
-        <span className={`px-3 py-1 rounded-full text-sm font-bold border ${riskColors[report.riskLevel]}`}>
-          Risque : {report.riskLevel}
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 max-w-md">
+      {/* En-tête avec note circulaire */}
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold text-slate-900">{data.titre}</h3>
+        <span className={\`text-lg font-black px-3 py-1 rounded-full \${
+          isBon ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+        }\`}>
+          {data.score} / 100
         </span>
       </div>
 
-      <div className="space-y-2">
-        <h4 className="font-bold text-sm text-slate-700">Actions correctives :</h4>
-        <div className="space-y-2">
-          {report.actions.map((act, i) => (
-            <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border">
-              <span className="text-sm font-medium">{act.task}</span>
-              <span className="text-sm px-2 py-0.5 bg-slate-200 rounded font-mono">{act.priority}</span>
-            </div>
+      {/* Points forts */}
+      <div>
+        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Points forts</span>
+        <ul className="mt-1 space-y-1 text-sm text-slate-700">
+          {data.pointsForts.map((pt, i) => (
+            <li key={i} className="flex items-center gap-1.5">
+              <span className="text-emerald-500 font-bold">✓</span> {pt}
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
+
+      {/* Alerte éventuelle */}
+      {data.alerte && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+          ⚠️ <strong>Attention :</strong> {data.alerte}
+        </div>
+      )}
+
+      {/* Bouton d'action concrète */}
+      <button className="w-full py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition">
+        Télécharger le rapport détaillé
+      </button>
     </div>
   );
-};
-```
-</PracticalWork>
+};`}
+</CodeBlock>
 
+#### Étape 2 : L'appel sécurisé côté serveur avec Zod
+Côté serveur, nous demandons à Gemini de remplir exactement cette structure :
+
+<CodeBlock language="typescript">
+{`import { generateObject } from 'ai';
+import { google } from '@ai-sdk/google';
+import { z } from 'zod';
+
+const AuditSchema = z.object({
+  score: z.number().min(0).max(100),
+  titre: z.string(),
+  pointsForts: z.array(z.string()).min(1),
+  alerte: z.string().optional()
+});
+
+export async function genererAudit(texteRapport: string) {
+  const { object } = await generateObject({
+    model: google('gemini-2.5-flash'),
+    schema: AuditSchema,
+    prompt: \`Analyse ce rapport d'activité et produis l'audit : \${texteRapport}\`,
+  });
+
+  return object; // Les données sont validées et prêtes pour React !
+}`}
+</CodeBlock>
+
+Dès que React reçoit `object`, il lui suffit de faire `<ScoreCard data={object} />`, et la magie visuelle opère !
+
+---
+
+<PracticalWork
+  title="Travail Pratique 7 — Créer votre premier composant d'UI générative"
+  objective="Concevoir une carte d'itinéraire touristique enrichie générée dynamiquement par Gemini."
+  duration="45 minutes"
+  steps={[
+    "Définissez un schéma Zod pour une recommandation de voyage : `ville: string`, `dureeJours: number`, `activites: string[]`, `budgetEstime: number`, `saisonIdeale: string`.",
+    "Créez le composant visuel React `TravelCard.tsx` qui affiche ces informations avec de jolis badges colorés, une jauge de budget et un bouton 'Réserver mon train'.",
+    "Créez la route backend qui appelle `generateObject` avec Gemini 2.5 Flash.",
+    "Dans votre page React, saisissez une envie de vacances (ex: *'Je veux partir 3 jours au soleil en Europe pour moins de 400€'*) et regardez votre carte personnalisée se construire sous vos yeux !"
+  ]}
+  validationCriteria={[
+    "La réponse n'est pas un bloc de texte brut, mais un vrai composant interactif stylisé.",
+    "Toutes les valeurs affichées proviennent du schéma Zod strictement validé.",
+    "L'interface est claire, ergonomique et visuellement séduisante."
+  ]}
+>
+
+<Callout type="success" title="Bravo !">
+Vous venez de franchir l'étape qui sépare les applications d'IA amateurs des interfaces professionnelles haut de gamme. Vos utilisateurs bénéficient désormais d'une expérience visuelle sur mesure !
+</Callout>
+</PracticalWork>

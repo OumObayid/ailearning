@@ -60,6 +60,7 @@ interface AdminExamItem {
   userId: number;
   userName: string;
   userEmail: string;
+  userRole?: string;
   courseId: string;
   moduleId: string;
   score: number;
@@ -155,20 +156,10 @@ function AdminContent() {
 
   const { user, isLoading: authLoading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<AdminTab>(
-    tabParam && ['overview', 'users', 'exams', 'courses', 'settings'].includes(tabParam)
-      ? tabParam
-      : 'overview'
-  );
-
-  useEffect(() => {
-    if (tabParam && ['overview', 'users', 'exams', 'courses', 'settings'].includes(tabParam)) {
-      setActiveTab(tabParam);
-    }
-  }, [tabParam]);
+  const VALID_TABS: AdminTab[] = ['overview', 'users', 'exams', 'courses', 'settings'];
+  const activeTab: AdminTab = tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'overview';
 
   const handleSelectTab = (tab: AdminTab) => {
-    setActiveTab(tab);
     router.replace(`/admin?tab=${tab}`, { scroll: false });
   };
 
@@ -209,6 +200,9 @@ function AdminContent() {
   const [userExamsList, setUserExamsList] = useState<AdminExamItem[]>([]);
   const [userExamsLoading, setUserExamsLoading] = useState(false);
 
+  // Modale Examen (Voir détails complets)
+  const [viewingExam, setViewingExam] = useState<AdminExamItem | null>(null);
+
   const [editingUser, setEditingUser] = useState<{
     id: number;
     name: string;
@@ -246,6 +240,8 @@ function AdminContent() {
       if (e.key === 'Escape') {
         if (confirmModal.isOpen) {
           setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } else if (viewingExam) {
+          setViewingExam(null);
         } else if (editingUser) {
           setEditingUser(null);
         } else if (viewingUser) {
@@ -255,12 +251,11 @@ function AdminContent() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [confirmModal.isOpen, editingUser, viewingUser]);
+  }, [confirmModal.isOpen, viewingExam, editingUser, viewingUser]);
 
   // 1. Chargement des statistiques
   const fetchStats = useCallback(async () => {
     if (!user || user.role !== 'admin') return;
-    setStatsLoading(true);
     try {
       const res = await fetch('/api/admin/stats', { cache: 'no-store' });
       if (res.ok) {
@@ -282,7 +277,6 @@ function AdminContent() {
   // 2. Chargement des utilisateurs
   const fetchUsers = useCallback(async () => {
     if (!user || user.role !== 'admin') return;
-    setUsersLoading(true);
     try {
       const res = await fetch('/api/admin/users', { cache: 'no-store' });
       if (res.ok) {
@@ -299,7 +293,6 @@ function AdminContent() {
   // 3. Chargement des examens
   const fetchExams = useCallback(async () => {
     if (!user || user.role !== 'admin') return;
-    setExamsLoading(true);
     try {
       const params = new URLSearchParams();
       if (examCourseFilter !== 'all') params.set('courseId', examCourseFilter);
@@ -321,7 +314,6 @@ function AdminContent() {
   // 4. Chargement des paramètres système
   const fetchSettings = useCallback(async () => {
     if (!user || user.role !== 'admin') return;
-    setSettingsLoading(true);
     try {
       const res = await fetch('/api/admin/settings', { cache: 'no-store' });
       if (res.ok) {
@@ -337,17 +329,96 @@ function AdminContent() {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (user && user.role === 'admin') {
-      fetchStats();
-    }
-  }, [user, fetchStats]);
+  const handleRefreshStats = () => {
+    setStatsLoading(true);
+    void fetchStats();
+  };
+
+  const handleRefreshUsers = () => {
+    setUsersLoading(true);
+    void fetchUsers();
+  };
+
+  const handleRefreshExams = () => {
+    setExamsLoading(true);
+    void fetchExams();
+  };
+
+  const handleRefreshSettings = () => {
+    setSettingsLoading(true);
+    void fetchSettings();
+  };
 
   useEffect(() => {
-    if (activeTab === 'users') fetchUsers();
-    if (activeTab === 'exams') fetchExams();
-    if (activeTab === 'settings') fetchSettings();
-  }, [activeTab, fetchUsers, fetchExams, fetchSettings]);
+    let ignore = false;
+    if (user && user.role === 'admin') {
+      fetch('/api/admin/stats', { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!ignore && data) {
+            setStats(data.stats);
+            setCourseStats(data.courseStats || []);
+            setRecentActivity(data.recentActivity || []);
+            if (data.systemSettings) {
+              setSettings(data.systemSettings);
+            }
+          }
+        })
+        .catch((err) => console.error('Erreur chargement stats admin:', err))
+        .finally(() => {
+          if (!ignore) setStatsLoading(false);
+        });
+    }
+    return () => {
+      ignore = true;
+    };
+  }, [user]);
+
+  useEffect(() => {
+    let ignore = false;
+    if (!user || user.role !== 'admin') return;
+
+    if (activeTab === 'users') {
+      fetch('/api/admin/users', { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!ignore && data) setUsers(data.users || []);
+        })
+        .catch((err) => console.error('Erreur chargement utilisateurs admin:', err))
+        .finally(() => {
+          if (!ignore) setUsersLoading(false);
+        });
+    } else if (activeTab === 'exams') {
+      const params = new URLSearchParams();
+      if (examCourseFilter !== 'all') params.set('courseId', examCourseFilter);
+      if (examStatusFilter !== 'all') params.set('status', examStatusFilter);
+      if (examSearch.trim()) params.set('search', examSearch.trim());
+
+      fetch(`/api/admin/exams?${params.toString()}`, { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!ignore && data) setExams(data.exams || []);
+        })
+        .catch((err) => console.error('Erreur chargement examens admin:', err))
+        .finally(() => {
+          if (!ignore) setExamsLoading(false);
+        });
+    } else if (activeTab === 'settings') {
+      fetch('/api/admin/settings', { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!ignore && data?.settings) setSettings(data.settings);
+        })
+        .catch((err) => console.error('Erreur chargement paramètres:', err))
+        .finally(() => {
+          if (!ignore) setSettingsLoading(false);
+        });
+    }
+
+    return () => {
+      ignore = true;
+    };
+  }, [activeTab, user, examCourseFilter, examStatusFilter, examSearch]);
 
   // Action utilisateur : Changement de Rôle avec confirmation personnalisée
   const handleRoleChange = (targetUser: AdminUser, newRole: string) => {
@@ -437,7 +508,12 @@ function AdminContent() {
       const res = await fetch(`/api/admin/exams?userId=${targetUser.id}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        setUserExamsList(data.exams || []);
+        const exams: AdminExamItem[] = data.exams || [];
+        setUserExamsList(exams);
+        const realPassedCount = exams.filter((e) => e.score >= 80).length;
+        setViewingUser((prev) =>
+          prev ? { ...prev, totalExams: exams.length, passedExams: realPassedCount } : null
+        );
       }
     } catch (err) {
       console.error('Erreur chargement examens utilisateur:', err);
@@ -494,28 +570,6 @@ function AdminContent() {
       showNotification('Erreur réseau.', 'error');
     } finally {
       setEditLoading(false);
-    }
-  };
-
-  // Action examen : Valider / Invalider
-  const handleToggleExamStatus = async (examId: number, currentPassed: boolean) => {
-    const newPassed = !currentPassed;
-    try {
-      const res = await fetch('/api/admin/exams', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ examId, passed: newPassed }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showNotification(`Épreuve ${newPassed ? 'validée manuellement' : 'invalidée'}.`);
-        fetchExams();
-        fetchStats();
-      } else {
-        showNotification(data.error || 'Erreur modification épreuve.', 'error');
-      }
-    } catch {
-      showNotification('Erreur réseau.', 'error');
     }
   };
 
@@ -641,7 +695,7 @@ function AdminContent() {
   const allCourses = CourseService.getAllCourses();
 
   return (
-    <div className="space-y-8 w-full max-w-7xl mx-auto select-none">
+    <div className="space-y-8 w-full max-w-7xl mx-auto select-text">
       {/* Toast Notification */}
       {notification && (
         <div
@@ -672,7 +726,7 @@ function AdminContent() {
               </p>
             </div>
             <button
-              onClick={fetchStats}
+              onClick={handleRefreshStats}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-xs cursor-pointer"
             >
               <span>Actualiser ↻</span>
@@ -794,22 +848,22 @@ function AdminContent() {
                 </div>
               </div>
               <div className="pt-2 border-t border-slate-100 text-xs font-medium text-slate-500">
-                Ratio global des épreuves validées
+                Taux global de réussite (score ≥ 80%)
               </div>
             </div>
 
-            {/* KPI 4 : Certifications Validées */}
+            {/* KPI 4 : Épreuves Réussies */}
             <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm space-y-2 flex flex-col justify-between">
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-500">Certifications Validées</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-500">Épreuves Réussies</span>
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-700 text-sm">🏆</span>
                 </div>
                 <div className="text-3xl font-black text-slate-950 font-mono">
                   {statsLoading ? '...' : stats?.passedAttempts || 0}
                 </div>
                 <div className="text-xs font-semibold text-slate-600">
-                  Seuil d&apos;exigence fixé à {settings.default_passing_score}%
+                  Seuil de réussite fixé à {settings.default_passing_score}%
                 </div>
               </div>
               <div className="pt-2 border-t border-slate-100">
@@ -864,7 +918,7 @@ function AdminContent() {
                       </div>
                       <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
                         <span>
-                          {cs.totalAttempts} épreuve(s) • {cs.passedAttempts} validée(s)
+                          {cs.totalAttempts} épreuve(s) • {cs.passedAttempts} réussie(s)
                         </span>
                         <span>
                           Score moyen : {cs.totalAttempts > 0 ? `${cs.avgScore}%` : 'N/A'}
@@ -933,12 +987,12 @@ function AdminContent() {
                           </div>
                           <span
                             className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full border ${
-                              act.passed
+                              act.score >= 80
                                 ? 'bg-emerald-100 text-emerald-950 border-emerald-300'
                                 : 'bg-amber-100 text-amber-950 border-amber-300'
                             }`}
                           >
-                            {act.passed ? 'Validé ✓' : 'Non validé'}
+                            {act.score >= 80 ? '✓ Réussi' : 'Échoué'}
                           </span>
                         </div>
                       </div>
@@ -967,7 +1021,7 @@ function AdminContent() {
               </p>
             </div>
             <button
-              onClick={fetchUsers}
+              onClick={handleRefreshUsers}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-xs cursor-pointer"
             >
               <span>Actualiser ↻</span>
@@ -992,7 +1046,7 @@ function AdminContent() {
                 {/* Filtre Rôle */}
                 <select
                   value={userRoleFilter}
-                  onChange={(e) => setUserRoleFilter(e.target.value as any)}
+                  onChange={(e) => setUserRoleFilter(e.target.value as 'all' | 'admin' | 'student')}
                   className="px-3 py-2 text-sm rounded-xl border-2 border-slate-300 bg-slate-50 focus:outline-none font-bold text-slate-800"
                 >
                   <option value="all">Tous les rôles</option>
@@ -1070,13 +1124,13 @@ function AdminContent() {
                           </select>
                         </td>
 
-                        {/* 3. Épreuves & Validations */}
+                        {/* 3. Épreuves passées & réussies */}
                         <td className="py-3 px-2 text-center whitespace-nowrap">
                           <span className="font-mono font-black text-slate-950 text-sm">
                             {u.totalExams}
                           </span>
                           <span className="text-xs text-slate-500 font-medium ml-1">
-                            ({u.passedExams} validée{u.passedExams > 1 ? 's' : ''})
+                            ({u.passedExams} réussie{u.passedExams > 1 ? 's' : ''})
                           </span>
                         </td>
 
@@ -1143,7 +1197,7 @@ function AdminContent() {
       )}
 
       {/* ========================================================= */}
-      {/* ONGLET 3 : SURVEILLANCE & VALIDATION DES EXAMENS          */}
+      {/* ONGLET 3 : SUPERVISION & HISTORIQUE DES EXAMENS           */}
       {/* ========================================================= */}
       {activeTab === 'exams' && (
         <div className="space-y-6">
@@ -1158,7 +1212,7 @@ function AdminContent() {
               </p>
             </div>
             <button
-              onClick={fetchExams}
+              onClick={handleRefreshExams}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-xs cursor-pointer"
             >
               <span>Actualiser ↻</span>
@@ -1166,25 +1220,22 @@ function AdminContent() {
           </div>
 
           <div className="space-y-6 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
-            {/* Outils & Filtres */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-b-2 border-slate-100 pb-5">
-              <span className="text-sm font-bold text-slate-700">Filtrer les épreuves :</span>
-
-              <div className="flex flex-wrap items-center gap-3">
+            {/* Outils & Filtres (sans le texte "Filtrer les épreuves") */}
+            <div className="flex flex-wrap items-center gap-3 border-b-2 border-slate-100 pb-5">
               {/* Recherche */}
               <input
                 type="text"
                 placeholder="Filtrer par étudiant ou module..."
                 value={examSearch}
                 onChange={(e) => setExamSearch(e.target.value)}
-                className="px-3 py-2 text-sm rounded-xl border-2 border-slate-300 bg-slate-50 focus:bg-white focus:outline-none font-medium min-w-[200px]"
+                className="px-3.5 py-2 text-sm rounded-xl border-2 border-slate-300 bg-slate-50 focus:bg-white focus:outline-none font-medium min-w-[220px]"
               />
 
               {/* Filtre Cursus */}
               <select
                 value={examCourseFilter}
                 onChange={(e) => setExamCourseFilter(e.target.value)}
-                className="px-3 py-2 text-sm rounded-xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800"
+                className="px-3.5 py-2 text-sm rounded-xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none"
               >
                 <option value="all">Tous les cursus</option>
                 <option value="ai-engineering">AI Engineering</option>
@@ -1193,112 +1244,98 @@ function AdminContent() {
                 <option value="debugging">Ingénierie du Débogage</option>
               </select>
 
-              {/* Filtre Statut */}
+              {/* Filtre Statut / Résultat */}
               <select
                 value={examStatusFilter}
-                onChange={(e) => setExamStatusFilter(e.target.value as any)}
-                className="px-3 py-2 text-sm rounded-xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800"
+                onChange={(e) => setExamStatusFilter(e.target.value as 'all' | 'passed' | 'failed')}
+                className="px-3.5 py-2 text-sm rounded-xl border-2 border-slate-300 bg-slate-50 font-bold text-slate-800 focus:outline-none"
               >
-                <option value="all">Tous les statuts</option>
-                <option value="passed">Validés uniquement</option>
-                <option value="failed">Non validés uniquement</option>
+                <option value="all">Tous les résultats</option>
+                <option value="passed">Réussis (≥ 80%)</option>
+                <option value="failed">Échoués (&lt; 80%)</option>
               </select>
             </div>
-          </div>
 
-          {/* Table Examens */}
-          {examsLoading ? (
-            <div className="py-12 text-center text-sm font-bold text-slate-500">
-              Chargement des épreuves...
-            </div>
-          ) : exams.length === 0 ? (
-            <div className="py-12 text-center text-sm font-bold text-slate-500">
-              Aucune épreuve trouvée selon ces filtres.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr className="border-b-2 border-slate-200 text-xs font-black uppercase text-slate-500 tracking-wider">
-                    <th className="py-3 px-3">Candidat</th>
-                    <th className="py-3 px-3">Cursus &amp; Module</th>
-                    <th className="py-3 px-3 text-center">Score</th>
-                    <th className="py-3 px-3 text-center">Temps</th>
-                    <th className="py-3 px-3 text-center">Statut</th>
-                    <th className="py-3 px-3">Date</th>
-                    <th className="py-3 px-3 text-right">Actions Admin</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {exams.map((ex) => {
-                    const meta = COURSE_META[ex.courseId];
-                    const modTitle = getModuleTitle(ex.courseId, ex.moduleId);
-                    return (
-                      <tr key={ex.id} className="hover:bg-slate-50/80 transition">
-                        <td className="py-3 px-3">
-                          <div className="font-black text-slate-950">{ex.userName}</div>
-                          <div className="text-xs text-slate-600">{ex.userEmail}</div>
-                        </td>
+            {/* Table Examens Minimisée */}
+            {examsLoading ? (
+              <div className="py-12 text-center text-sm font-bold text-slate-500">
+                Chargement des épreuves...
+              </div>
+            ) : exams.length === 0 ? (
+              <div className="py-12 text-center text-sm font-bold text-slate-500">
+                Aucune épreuve trouvée selon ces filtres.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b-2 border-slate-200 text-xs font-black uppercase text-slate-500 tracking-wider">
+                      <th className="py-3 px-3">Candidat</th>
+                      <th className="py-3 px-3">Cursus &amp; Module</th>
+                      <th className="py-3 px-3 text-center">Score</th>
+                      <th className="py-3 px-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {exams.map((ex) => {
+                      const meta = COURSE_META[ex.courseId];
+                      const modTitle = getModuleTitle(ex.courseId, ex.moduleId);
+                      return (
+                        <tr key={ex.id} className="hover:bg-slate-50/80 transition">
+                          <td className="py-3 px-3">
+                            <div className="font-black text-slate-950">{ex.userName}</div>
+                            <div className="text-xs text-slate-600">{ex.userEmail}</div>
+                          </td>
 
-                        <td className="py-3 px-3">
-                          <span className={`inline-block px-2 py-0.5 rounded text-xs font-black border ${meta?.badge || 'bg-slate-100'}`}>
-                            {meta?.label || ex.courseId}
-                          </span>
-                          <div className="text-xs font-bold text-slate-800 truncate max-w-[240px]" title={modTitle}>
-                            {modTitle}
-                          </div>
-                        </td>
+                          <td className="py-3 px-3">
+                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-black border ${meta?.badge || 'bg-slate-100'}`}>
+                              {meta?.label || ex.courseId}
+                            </span>
+                            <div className="text-xs font-bold text-slate-800 truncate max-w-[280px]" title={modTitle}>
+                              {modTitle}
+                            </div>
+                          </td>
 
-                        <td className="py-3 px-3 text-center">
-                          <span className="font-black text-slate-950 font-mono text-base">{ex.score}%</span>
-                          <div className="text-[11px] text-slate-500">{ex.correctAnswersCount}/{ex.totalQuestions}</div>
-                        </td>
+                          <td className="py-3 px-3 text-center">
+                            <span className={cn(
+                              "font-black font-mono text-base",
+                              ex.score >= 80 ? "text-emerald-700" : "text-amber-700"
+                            )}>
+                              {ex.score}%
+                            </span>
+                            <div className="text-[11px] text-slate-500">{ex.correctAnswersCount}/{ex.totalQuestions}</div>
+                          </td>
 
-                        <td className="py-3 px-3 text-center text-xs text-slate-600 font-medium whitespace-nowrap">
-                          {formatDuration(ex.timeSpentSeconds)}
-                        </td>
+                          <td className="py-3 px-3 text-right space-x-1.5 whitespace-nowrap">
+                            {/* Bouton icône Voir détails */}
+                            <button
+                              type="button"
+                              onClick={() => setViewingExam(ex)}
+                              className="inline-flex items-center justify-center h-8 w-8 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-950 transition cursor-pointer"
+                              title="Voir les détails complets de l'épreuve"
+                              aria-label="Voir l'examen"
+                            >
+                              <Icon name="eye" className="w-4 h-4" />
+                            </button>
 
-                        <td className="py-3 px-3 text-center">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-black whitespace-nowrap border ${
-                              ex.passed
-                                ? 'bg-emerald-100 text-emerald-950 border-emerald-300'
-                                : 'bg-amber-100 text-amber-950 border-amber-300'
-                            }`}
-                          >
-                            {ex.passed ? 'Validé ✓' : 'Non validé'}
-                          </span>
-                        </td>
-
-                        <td className="py-3 px-3 text-xs text-slate-600 whitespace-nowrap">
-                          {formatDate(ex.createdAt)}
-                        </td>
-
-                        <td className="py-3 px-3 text-right space-x-1.5 whitespace-nowrap">
-                          <button
-                            onClick={() => handleToggleExamStatus(ex.id, ex.passed)}
-                            className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition cursor-pointer ${
-                              ex.passed
-                                ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
-                                : 'bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100'
-                            }`}
-                          >
-                            {ex.passed ? 'Invalider' : 'Valider'}
-                          </button>
-                          <button
-                            onClick={() => handleDeleteExam(ex.id)}
-                            className="px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-50 text-rose-800 border border-rose-300 hover:bg-rose-100 transition cursor-pointer"
-                          >
-                            Supprimer
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+                            {/* Bouton icône Supprimer */}
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteExam(ex.id)}
+                              className="inline-flex items-center justify-center h-8 w-8 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-950 transition cursor-pointer"
+                              title="Supprimer cette épreuve"
+                              aria-label="Supprimer l'examen"
+                            >
+                              <Icon name="trash" className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1390,7 +1427,7 @@ function AdminContent() {
             </div>
             <button
               type="button"
-              onClick={fetchSettings}
+              onClick={handleRefreshSettings}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-xs cursor-pointer"
             >
               <span>Actualiser ↻</span>
@@ -1549,20 +1586,29 @@ function AdminContent() {
 
               {/* 3 mini stats compactes en ligne + bouton fermer */}
               <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-center">
-                  <span className="text-[10px] font-black uppercase text-slate-500">Épreuves</span>
-                  <span className="text-xs font-black text-slate-950 font-mono">{viewingUser.totalExams}</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1 text-center">
-                  <span className="text-[10px] font-black uppercase text-emerald-700">Validées</span>
-                  <span className="text-xs font-black text-emerald-800 font-mono">{viewingUser.passedExams}</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 rounded-lg px-2.5 py-1 text-center">
-                  <span className="text-[10px] font-black uppercase text-indigo-700">Succès</span>
-                  <span className="text-xs font-black text-indigo-800 font-mono">
-                    {viewingUser.totalExams > 0 ? Math.round((viewingUser.passedExams / viewingUser.totalExams) * 100) : 0}%
-                  </span>
-                </div>
+                {(() => {
+                  const total = userExamsLoading ? viewingUser.totalExams : userExamsList.length;
+                  const passed = userExamsLoading
+                    ? viewingUser.passedExams
+                    : userExamsList.filter((e) => e.score >= 80).length;
+                  const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
+                  return (
+                    <>
+                      <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-center">
+                        <span className="text-[10px] font-black uppercase text-slate-500">Épreuves</span>
+                        <span className="text-xs font-black text-slate-950 font-mono">{total}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1 text-center">
+                        <span className="text-[10px] font-black uppercase text-emerald-700">Réussies</span>
+                        <span className="text-xs font-black text-emerald-800 font-mono">{passed}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 rounded-lg px-2.5 py-1 text-center">
+                        <span className="text-[10px] font-black uppercase text-indigo-700">Succès</span>
+                        <span className="text-xs font-black text-indigo-800 font-mono">{rate}%</span>
+                      </div>
+                    </>
+                  );
+                })()}
 
                 <button
                   type="button"
@@ -1620,12 +1666,12 @@ function AdminContent() {
                           <span
                             className={cn(
                               "inline-block text-[10px] font-black px-2 py-0.2 rounded-full border",
-                              exam.passed
+                              exam.score >= 80
                                 ? "bg-emerald-100 text-emerald-950 border-emerald-300"
                                 : "bg-amber-100 text-amber-950 border-amber-300"
                             )}
                           >
-                            {exam.passed ? 'Validé ✓' : 'Échoué'}
+                            {exam.score >= 80 ? '✓ Réussi' : 'Échoué'}
                           </span>
                         </div>
                       </div>
@@ -1776,6 +1822,141 @@ function AdminContent() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2.5 Modale d'inspection complète d'une épreuve candidat */}
+      {viewingExam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
+            {/* En-tête */}
+            <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <h3 className="text-lg font-black text-slate-950">
+                  Détails de l&apos;examen
+                </h3>
+                <span
+                  className={cn(
+                    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border",
+                    viewingExam.score >= 80
+                      ? "bg-emerald-100 text-emerald-950 border-emerald-300"
+                      : "bg-amber-100 text-amber-950 border-amber-300"
+                  )}
+                >
+                  {viewingExam.score >= 80 ? '✓ Réussi (≥ 80%)' : 'Échoué (< 80%)'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingExam(null)}
+                className="h-8 w-8 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition flex items-center justify-center cursor-pointer"
+                aria-label="Fermer"
+                title="Fermer (Échap)"
+              >
+                <Icon name="x" className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Informations Candidat & Formation (Grille 2 colonnes harmonieuse) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Candidat */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
+                  👤 Candidat
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-slate-950 text-sm truncate">{viewingExam.userName}</span>
+                  <span
+                    className={cn(
+                      "inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-black border shrink-0",
+                      viewingExam.userRole === 'admin'
+                        ? "bg-purple-100 text-purple-950 border-purple-300"
+                        : "bg-slate-200 text-slate-800 border-slate-300"
+                    )}
+                  >
+                    {viewingExam.userRole === 'admin' ? '🛡️ Admin' : 'Étudiant'}
+                  </span>
+                </div>
+                <div className="text-xs text-slate-600 font-medium truncate" title={viewingExam.userEmail}>
+                  {viewingExam.userEmail}
+                </div>
+              </div>
+
+              {/* Formation & Module */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
+                  📚 Formation &amp; Module
+                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-black border shrink-0 ${COURSE_META[viewingExam.courseId]?.badge || 'bg-slate-200 text-slate-800 border-slate-300'}`}
+                  >
+                    {COURSE_META[viewingExam.courseId]?.label || viewingExam.courseId}
+                  </span>
+                </div>
+                <div className="text-xs font-bold text-slate-900 truncate" title={getModuleTitle(viewingExam.courseId, viewingExam.moduleId)}>
+                  {getModuleTitle(viewingExam.courseId, viewingExam.moduleId)}
+                </div>
+              </div>
+            </div>
+
+            {/* 4 Métriques compactes */}
+            <div className="grid grid-cols-4 gap-2">
+              <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center">
+                <span className="text-[10px] font-black uppercase text-slate-500 block">Score</span>
+                <span
+                  className={cn(
+                    "text-base sm:text-lg font-black font-mono block mt-0.5",
+                    viewingExam.score >= 80 ? "text-emerald-700" : "text-amber-700"
+                  )}
+                >
+                  {viewingExam.score}%
+                </span>
+              </div>
+              <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center">
+                <span className="text-[10px] font-black uppercase text-slate-500 block">Réussite</span>
+                <span className="text-base sm:text-lg font-black font-mono text-slate-900 block mt-0.5">
+                  {viewingExam.correctAnswersCount}/{viewingExam.totalQuestions}
+                </span>
+              </div>
+              <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center">
+                <span className="text-[10px] font-black uppercase text-slate-500 block">Temps</span>
+                <span className="text-xs sm:text-sm font-black font-mono text-slate-900 block mt-1">
+                  {formatDuration(viewingExam.timeSpentSeconds)}
+                </span>
+              </div>
+              <div className="p-2.5 rounded-xl border border-slate-200 bg-white text-center">
+                <span className="text-[10px] font-black uppercase text-slate-500 block">Date</span>
+                <span className="text-xs font-bold text-slate-900 block mt-1 truncate" title={formatDate(viewingExam.createdAt)}>
+                  {formatShortDate(viewingExam.createdAt)}
+                </span>
+              </div>
+            </div>
+
+            {/* Pied de modal avec actions */}
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  const exId = viewingExam.id;
+                  setViewingExam(null);
+                  handleDeleteExam(exId);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-950 transition text-xs font-bold cursor-pointer"
+              >
+                <Icon name="trash" className="w-3.5 h-3.5" />
+                <span>Supprimer cette épreuve</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setViewingExam(null)}
+                className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-200 transition cursor-pointer"
+              >
+                Fermer
+              </button>
+            </div>
           </div>
         </div>
       )}

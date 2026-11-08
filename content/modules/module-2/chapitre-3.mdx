@@ -5,114 +5,163 @@ import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
 
 # Chapitre 3 — Développer un Chat IA avec React
 
-### 1. Qu'est-ce qu'une interface conversationnelle ?
+Dans le chapitre précédent, nous avons créé un formulaire simple qui répond à une question isolée.  
+Mais dans la vraie vie, personne ne discute par formulaires séparés !  
+Quand nous utilisons une application de messagerie comme WhatsApp, Slack ou ChatGPT, nous voulons un **fil de discussion fluide** : des bulles de messages qui s'empilent, une distinction visuelle claire entre l'utilisateur et l'IA, et un écran qui défile tout seul vers le bas au fur et à mesure.
 
-Une interface conversationnelle permet à l'utilisateur d'entretenir un dialogue interactif multi-tours avec un assistant IA. Elle se distingue fondamentalement d'un formulaire de génération ponctuelle :
+Dans ce chapitre, nous allons construire de A à Z notre propre **interface de Chat conversationnelle** avec React et TypeScript !
+
+---
+
+### 1. Formulaire ponctuel vs Chat conversationnel
+
+Quelle est la différence fondamentale ?
 
 <ArchitectureDiagram
-  title="Formulaire ponctuel versus Interface conversationnelle multi-tours"
-  diagram={`A. FORMULAIRE CLASSIQUE (One-shot) :
-[ Prompt unique ] ---> [ Appel Backend ] ---> [ Résultat final ]
+  title="Formulaire ponctuel versus Fil de conversation continu"
+  diagram={`A. Formulaire classique (Question isolée) :
+[ Votre question ] ---> [ Appel Backend ] ---> [ Réponse isolée ]
+(À la question suivante, tout s'efface et on repart de zéro)
 
-B. INTERFACE CONVERSATIONNELLE (Multi-turn) :
-[ Message Utilisateur 1 ] ---> [ Assistant IA ] ---> [ Réponse 1 ]
-                                                          |
-[ Message Utilisateur 2 (avec contexte 1) ] ------------->+
-                                                          |
-                                                          v
-                                                  [ Réponse 2 contextualisée ]`}
+--------------------------------------------------------------
+
+B. Interface de Chat (Conversation continue) :
+[ Vous : "Bonjour !" ]
+        |
+        v
+[ IA : "Bonjour ! Comment puis-je vous aider ?" ]
+        |
+        v
+[ Vous : "Explique-moi ce qu'est une variable." ]
+        |
+        v
+[ IA : "Une variable est comme une boîte étiquetée..." ]
+(Tout l'historique reste visible à l'écran, comme sur WhatsApp !)`}
 />
 
+Dans un chat, chaque message reste affiché à l'écran et contribue à l'impression d'une véritable discussion humaine.
+
 ---
 
-### 2. Le modèle de données d'un message
+### 2. Comment représenter un message en TypeScript ?
 
-Dans une application conversationnelle, chaque message doit être représenté par un objet contenant son identifiant unique, son auteur, son contenu textuel et son horodatage :
+Pour que React puisse afficher une liste de messages, nous devons définir la carte d'identité d'un message.  
+Chaque message a besoin de 4 informations essentielles :
+1. **Un identifiant unique (`id`)** : pour que React sache distinguer chaque bulle sans s'emmêler.
+2. **L'auteur (`role`)** : est-ce l'utilisateur (`user`) ou l'assistant IA (`assistant`) ?
+3. **Le texte (`content`)** : le contenu du message.
+4. **La date et l'heure (`createdAt`)** : pour afficher à quel moment le message a été envoyé.
 
-```typescript
-// src/types/chat.types.ts
-export type MessageRole = 'user' | 'assistant' | 'system';
+Créons ce dictionnaire dans `src/types/chat.types.ts` :
+
+<CodeBlock language="typescript" filename="src/types/chat.types.ts">
+{`export type MessageRole = 'user' | 'assistant' | 'system';
 
 export interface ChatMessage {
-  id: string;
-  role: MessageRole;
-  content: string;
-  createdAt: Date;
-  status?: 'sending' | 'sent' | 'error';
-}
-
-export interface ConversationSession {
-  id: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  messages: ChatMessage[];
-}
-```
+  id: string;             // Un identifiant unique généré avec crypto.randomUUID()
+  role: MessageRole;      // 'user' pour vous, 'assistant' pour Gemini
+  content: string;        // Le texte du message
+  createdAt: Date;        // L'heure de l'envoi
+  status?: 'sending' | 'sent' | 'error'; // Optionnel : l'état d'acheminement
+}`}
+</CodeBlock>
 
 ---
 
-### 3. Créer un composant Message modulaire
+### 3. Créer le composant visuel de la Bulle (`Message.tsx`)
 
-Le composant `Message` affiche distinctement les bulles selon qu'elles proviennent de l'utilisateur ou du modèle :
+Regardez vos applications de messagerie habituelles :
+- Vos messages sont toujours alignés **à droite**, souvent avec un fond coloré (bleu ou indigo).
+- Les réponses de l'autre personne (ou de l'IA) sont alignées **à gauche**, avec un fond clair ou gris doux.
 
-```tsx
-// src/components/Chat/Message.tsx
-import React from 'react';
-import type { ChatMessage } from '@/types/chat.types';
+Créons ce composant dans `src/components/Chat/Message.tsx` :
+
+<CodeBlock language="tsx" filename="src/components/Chat/Message.tsx">
+{`import React from 'react';
+import type { ChatMessage } from '../../types/chat.types';
 
 interface MessageProps {
   message: ChatMessage;
 }
 
 export const Message: React.FC<MessageProps> = ({ message }) => {
+  // Est-ce un message envoyé par l'utilisateur ou par l'IA ?
   const isUser = message.role === 'user';
 
   return (
-    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} my-2`}>
+    <div className={\`flex w-full \${isUser ? 'justify-end' : 'justify-start'} my-2\`}>
       <div
-        className={`max-w-[80%] rounded-2xl p-4 text-sm leading-relaxed ${
+        className={\`max-w-[80%] rounded-2xl p-4 text-sm leading-relaxed shadow-xs \${
           isUser
-            ? 'bg-indigo-600 text-white rounded-br-none shadow-sm'
-            : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-xs'
-        }`}
+            ? 'bg-indigo-600 text-white rounded-br-none' // Bulle bleue à droite
+            : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none' // Bulle blanche à gauche
+        }\`}
       >
+        {/* En-tête de la bulle : nom de l'auteur et heure */}
         <div className="flex items-center justify-between mb-1.5 gap-4">
-          <span className={`text-sm font-bold uppercase tracking-wider ${isUser ? 'text-indigo-200' : 'text-slate-400'}`}>
-            {isUser ? 'Vous' : 'Assistant Gemini'}
+          <span className={\`text-xs font-bold uppercase tracking-wider \${
+            isUser ? 'text-indigo-200' : 'text-slate-400'
+          }\`}>
+            {isUser ? 'Vous' : '🤖 Assistant Gemini'}
           </span>
-          <span className={`text-sm ${isUser ? 'text-indigo-200' : 'text-slate-400'}`}>
+          <span className={\`text-xs \${isUser ? 'text-indigo-200' : 'text-slate-400'}\`}>
             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
+
+        {/* Le texte du message */}
         <p className="whitespace-pre-wrap">{message.content}</p>
       </div>
     </div>
   );
-};
-```
+};`}
+</CodeBlock>
 
 ---
 
-### 4. Gérer l'historique et l'envoi d'un message
+### 4. Le secret de l'expérience utilisateur : La "Mise à jour optimiste"
 
-Dans la fenêtre de discussion, les messages de l'utilisateur sont ajoutés immédiatement (mise à jour optimiste), puis l'assistant est mis en attente :
+Quand vous tapez un message et cliquez sur *"Envoyer"*, si votre message n'apparaissait qu'au bout de 3 secondes (après la réponse de Google), vous penseriez que l'application a planté !
 
-```tsx
-// src/components/Chat/ChatWindow.tsx
-import React, { useState } from 'react';
+La bonne pratique professionnelle s'appelle la **mise à jour optimiste** :
+1. Dès que l'utilisateur clique sur *"Envoyer"*, **on ajoute immédiatement son message dans la liste**.
+2. On vide la zone de texte pour lui montrer qu'on a bien pris sa demande en compte.
+3. On affiche une bulle temporaire discrète : *"L'assistant rédige sa réponse..."*.
+4. Dès que Gemini répond, on remplace cette bulle par la véritable réponse.
+
+---
+
+### 5. Assembler la fenêtre de Chat complète (`ChatWindow.tsx`)
+
+Voici le cœur de notre composant de discussion dans `src/components/Chat/ChatWindow.tsx` :
+
+<CodeBlock language="tsx" filename="src/components/Chat/ChatWindow.tsx">
+{`import React, { useState, useRef, useEffect } from 'react';
 import { Message } from './Message';
-import type { ChatMessage } from '@/types/chat.types';
+import type { ChatMessage } from '../../types/chat.types';
 
 export const ChatWindow: React.FC = () => {
+  // 1. La liste de tous les messages échangés
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // 2. Le texte que l'utilisateur est en train d'écrire
   const [input, setInput] = useState('');
+  // 3. Est-ce que l'IA est en train de réfléchir ?
   const [isTyping, setIsTyping] = useState(false);
 
+  // Référence pour le défilement automatique vers le bas
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // À chaque fois qu'un nouveau message arrive, on fait glisser la vue vers le bas
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  // Fonction d'envoi du message
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isTyping) return;
 
+    // 1. On fabrique le message de l'utilisateur
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -120,35 +169,35 @@ export const ChatWindow: React.FC = () => {
       createdAt: new Date(),
     };
 
-    // 1. Ajout optimiste du message utilisateur
+    // 2. Mise à jour optimiste : affichage immédiat
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
 
     try {
-      // 2. Appel du backend en transmettant l'historique
-      const res = await fetch('/api/chat', {
+      // 3. Appel de notre API backend
+      const res = await fetch('http://localhost:3000/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage.content }),
+        body: JSON.stringify({ prompt: userMessage.content }),
       });
 
       const data = await res.json();
 
-      // 3. Ajout de la réponse de l'assistant
+      // 4. On ajoute la réponse de l'assistant Gemini
       const assistantMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: data.reply,
+        content: data.result || data.reply,
         createdAt: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch {
-      // Gestion de l'échec
+      // En cas d'erreur de connexion
       const errorMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: "Désolé, je n'ai pas pu obtenir de réponse.",
+        content: '⚠️ Désolé, je n\'ai pas réussi à contacter les serveurs. Vérifiez votre connexion.',
         createdAt: new Date(),
         status: 'error',
       };
@@ -159,116 +208,106 @@ export const ChatWindow: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[550px] rounded-2xl border border-slate-200 bg-slate-50/50 overflow-hidden">
-      {/* Liste des messages avec défilement automatique */}
+    <div className="flex flex-col h-[600px] max-w-2xl mx-auto rounded-2xl border border-slate-200 bg-slate-50/50 shadow-sm overflow-hidden font-sans">
+      {/* En-tête du Chat */}
+      <div className="p-4 bg-white border-b border-slate-200 flex justify-between items-center">
+        <div>
+          <h2 className="text-base font-bold text-slate-800">Discussion avec Gemini</h2>
+          <span className="text-xs text-emerald-600 flex items-center gap-1.5 font-medium">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            Connecté et prêt
+          </span>
+        </div>
+        <button
+          onClick={() => setMessages([])}
+          className="text-xs font-semibold text-slate-500 hover:text-rose-600 transition"
+        >
+          Effacer la discussion
+        </button>
+      </div>
+
+      {/* Zone centrale : Liste des messages avec défilement */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        {messages.map((msg) => (
-          <Message key={msg.id} message={msg} />
-        ))}
+        {messages.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 p-6">
+            <span className="text-4xl mb-2">💬</span>
+            <p className="text-sm font-medium">Aucun message pour le moment.</p>
+            <p className="text-xs mt-1">Posez une question pour démarrer la conversation !</p>
+          </div>
+        ) : (
+          messages.map((msg) => <Message key={msg.id} message={msg} />)
+        )}
+
+        {/* Indicateur de saisie quand l'IA réfléchit */}
         {isTyping && (
           <div className="flex justify-start my-2">
-            <div className="rounded-2xl bg-white border border-slate-200 p-3 text-sm text-slate-500 italic">
-              L&apos;assistant rédige sa réponse...
+            <div className="rounded-2xl bg-white border border-slate-200 p-3 text-xs text-slate-500 italic shadow-xs flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce" />
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:0.2s]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:0.4s]" />
+              L'assistant rédige sa réponse...
             </div>
           </div>
         )}
+
+        {/* Repère invisible pour l'auto-scroll vers le bas */}
+        <div ref={bottomRef} />
       </div>
 
-      {/* Formulaire de saisie */}
+      {/* Barre de saisie en bas */}
       <form onSubmit={handleSend} className="p-3 border-t border-slate-200 bg-white flex gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Posez votre question à Gemini..."
-          className="flex-1 rounded-xl border border-slate-200 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          placeholder="Écrivez votre message..."
+          className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none"
         />
         <button
           type="submit"
           disabled={!input.trim() || isTyping}
-          className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition"
         >
           Envoyer
         </button>
       </form>
     </div>
   );
-};
-```
+};`}
+</CodeBlock>
 
 ---
 
-### 5. Distinction essentielle des identifiants
+### 6. Les 3 identifiants à ne jamais confondre
 
-Dans une application conversationnelle professionnelle, il est crucial de ne pas mélanger trois notions distinctes :
+Dans un chat professionnel, il existe trois numéros d'identification aux rôles bien distincts :
 
-| Identifiant | Propriétaire | Description |
+| Identifiant | Qui le crée ? | À quoi sert-il ? |
 | :--- | :--- | :--- |
-| `conversationId` | **Votre Application** | Identifie la session d'échange dans votre base de données applicative (ex. PostgreSQL). |
-| `interactionId` | **Google Gemini** | Identifiant de contexte renvoyé par l'Interactions API (`previous_interaction_id`). |
-| `messageId` | **Frontend / React** | Clé unique (`crypto.randomUUID()`) attribuée à chaque bulle pour le rendu de liste dans le DOM. |
-
-<Callout type="note" title="Bonne pratique d'isolation">
-Le frontend ne doit manipuler que le `conversationId`. C'est le serveur backend qui effectue la correspondance avec les identifiants techniques de Google Gemini.
-</Callout>
+| **`messageId`** | Le Frontend React (`crypto.randomUUID()`) | Sert de `key={msg.id}` pour que React affiche chaque bulle sans clignotement. |
+| **`conversationId`** | Votre Base de données (MySQL / PostgreSQL) | Permet de retrouver l'historique quand l'utilisateur se reconnecte demain. |
+| **`interactionId`** | Google Gemini (`previous_interaction_id`) | C'est le ticket de Google pour que l'IA se souvienne de la phrase précédente *(vu au Module 1, Chapitre 5)*. |
 
 ---
 
 <PracticalWork
-  title="Travail Pratique 3 — Interface de Chat complète avec mémoire"
-  objective="Développer un composant de dialogue conversationnel avec historique, bulles différenciées et défilement automatique."
-  duration="50 minutes"
+  title="Travail Pratique 3 — Votre premier Chat intelligent complet"
+  objective="Créer le composant de chat, gérer le défilement automatique et tester les touches du clavier."
+  duration="40 minutes"
   steps={[
-    "Créer le fichier de types `src/types/chat.types.ts` avec les interfaces `ChatMessage` (`id`, `role: 'user' | 'assistant'`, `content`, `timestamp`) et `ConversationState` (`conversationId: string | null`, `messages: ChatMessage[]`, `isGenerating: boolean`).",
-    "Développer le composant de bulle de message `MessageItem.tsx` : bulles utilisateur alignées à droite avec fond indigo, bulles IA alignées à gauche avec fond gris clair et badge 'Gemini'.",
-    "Implémenter l'envoi de message au clavier : soumission automatique sur `Entrée` (sauf si `Shift + Entrée` pour insérer un saut de ligne).",
-    "Ajouter le défilement automatique vers le bas via un `useRef<HTMLDivElement>` : exécuter `messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })` à chaque nouveau message ajouté.",
-    "Intégrer le bouton 'Nouvelle conversation' qui réinitialise `conversationId = null`, vide la liste des messages et replace le focus sur le champ de saisie.",
-    "Relier l'interface aux endpoints de session créés au Chapitre 5 du Module 1 (`POST /api/conversations` pour initialiser puis `POST /api/conversations/:id/messages` pour continuer la discussion)."
+    "Implémentez les composants `Message.tsx` et `ChatWindow.tsx` dans votre projet frontend.",
+    "Ajoutez le confort du clavier : quand l'utilisateur tape sur la touche 'Entrée', le message part automatiquement sans avoir besoin de cliquer sur le bouton avec la souris.",
+    "Testez l'auto-scroll : envoyez 5 questions d'affilée pour remplir l'écran et vérifiez que la fenêtre glisse doucement vers le bas pour toujours afficher le dernier message.",
+    "Testez le bouton 'Effacer la discussion' pour vérifier que la liste se vide proprement."
   ]}
   validationCriteria={[
-    "Le message de l'utilisateur apparaît immédiatement dans la liste avant même la réponse du serveur (mise à jour optimiste).",
-    "L'état 'L'assistant est en train d'écrire...' s'affiche avec trois points animés pendant l'attente du backend.",
-    "La continuité contextuelle est validée : dire son prénom dans le premier message puis demander 'Quel est mon prénom ?' dans le second."
+    "Les bulles de l'utilisateur sont bien bleues et à droite, celles de l'IA sont blanches et à gauche.",
+    "Le texte s'affiche instantanément dès l'envoi (mise à jour optimiste).",
+    "L'écran défile tout seul vers le bas lors de l'arrivée de la réponse."
   ]}
 >
 
-#### Snippet du scroll automatique en React :
-```tsx
-import React, { useEffect, useRef } from 'react';
-import { ChatMessage } from '@/types/chat.types';
-
-export const MessageList: React.FC<{ messages: ChatMessage[] }> = ({ messages }) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {messages.map((m) => (
-        <div
-          key={m.id}
-          className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-        >
-          <div
-            className={`max-w-[80%] rounded-2xl p-4 ${
-              m.role === 'user'
-                ? 'bg-indigo-600 text-white rounded-br-none'
-                : 'bg-slate-100 text-slate-900 rounded-bl-none border border-slate-200'
-            }`}
-          >
-            <p className="whitespace-pre-wrap">{m.content}</p>
-            <span className="text-sm opacity-70 mt-1 block text-right">
-              {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
-          </div>
-        </div>
-      ))}
-      <div ref={bottomRef} />
-    </div>
-  );
-};
-```
+<Callout type="success" title="Félicitations !">
+Vous venez de fabriquer une véritable interface de discussion conversationnelle, identique à ce qu'on trouve sur les meilleurs logiciels d'intelligence artificielle du marché !
+</Callout>
 </PracticalWork>

@@ -22,6 +22,7 @@ export async function GET(request: Request) {
         ue.user_id,
         COALESCE(u.name, 'Utilisateur supprimé') as user_name,
         COALESCE(u.email, '-') as user_email,
+        COALESCE(u.role, 'student') as user_role,
         ue.course_id,
         ue.module_id,
         ue.score,
@@ -29,12 +30,13 @@ export async function GET(request: Request) {
         ue.correct_answers_count,
         ue.passed,
         ue.time_spent_seconds,
+        ue.answers,
         ue.created_at
       FROM user_exams ue
       LEFT JOIN users u ON ue.user_id = u.id
       WHERE 1=1
     `;
-    const params: unknown[] = [];
+    const params: (string | number)[] = [];
 
     if (userId) {
       sql += ' AND ue.user_id = ?';
@@ -47,9 +49,9 @@ export async function GET(request: Request) {
     }
 
     if (status === 'passed') {
-      sql += ' AND ue.passed = 1';
+      sql += ' AND ue.score >= 80';
     } else if (status === 'failed') {
-      sql += ' AND ue.passed = 0';
+      sql += ' AND ue.score < 80';
     }
 
     if (search && search.trim()) {
@@ -60,7 +62,7 @@ export async function GET(request: Request) {
 
     sql += ' ORDER BY ue.created_at DESC LIMIT 100';
 
-    const rows = await query<RowDataPacket[]>(sql, params as any);
+    const rows = await query<RowDataPacket[]>(sql, params);
 
     return NextResponse.json({
       success: true,
@@ -69,64 +71,21 @@ export async function GET(request: Request) {
         userId: r.user_id,
         userName: r.user_name,
         userEmail: r.user_email,
+        userRole: r.user_role || 'student',
         courseId: r.course_id,
         moduleId: r.module_id,
         score: Number(r.score),
         totalQuestions: Number(r.total_questions),
         correctAnswersCount: Number(r.correct_answers_count),
-        passed: Boolean(r.passed),
+        passed: Number(r.score) >= 80,
         timeSpentSeconds: Number(r.time_spent_seconds),
+        answers: r.answers,
         createdAt: r.created_at,
       })),
     });
   } catch (error) {
     console.error('Erreur API Admin Exams GET:', error);
     return NextResponse.json({ error: 'Erreur récupération des épreuves.' }, { status: 500 });
-  }
-}
-
-export async function PATCH(request: Request) {
-  try {
-    const session = await getCurrentUser();
-    if (!session || session.role !== 'admin') {
-      return NextResponse.json({ error: 'Accès réservé aux administrateurs.' }, { status: 403 });
-    }
-
-    const body = await request.json();
-    const { examId, passed, score } = body;
-
-    if (!examId) {
-      return NextResponse.json({ error: 'ID examen manquant.' }, { status: 400 });
-    }
-
-    const updates: string[] = [];
-    const params: unknown[] = [];
-
-    if (typeof passed === 'boolean') {
-      updates.push('passed = ?');
-      params.push(passed ? 1 : 0);
-    }
-
-    if (typeof score === 'number' && score >= 0 && score <= 100) {
-      updates.push('score = ?');
-      params.push(score);
-    }
-
-    if (updates.length === 0) {
-      return NextResponse.json({ error: 'Aucune modification fournie.' }, { status: 400 });
-    }
-
-    params.push(Number(examId));
-
-    await query<ResultSetHeader>(
-      `UPDATE user_exams SET ${updates.join(', ')} WHERE id = ?`,
-      params as any
-    );
-
-    return NextResponse.json({ success: true, message: 'Épreuve mise à jour avec succès.' });
-  } catch (error) {
-    console.error('Erreur API Admin Exams PATCH:', error);
-    return NextResponse.json({ error: 'Erreur lors de la mise à jour de l’épreuve.' }, { status: 500 });
   }
 }
 

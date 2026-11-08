@@ -19,7 +19,7 @@ export async function GET() {
         u.avatar_url,
         u.created_at,
         COUNT(ue.id) as total_exams,
-        SUM(CASE WHEN ue.passed = 1 THEN 1 ELSE 0 END) as passed_exams,
+        SUM(CASE WHEN ue.score >= 80 THEN 1 ELSE 0 END) as passed_exams,
         MAX(ue.created_at) as last_exam_at
        FROM users u
        LEFT JOIN user_exams ue ON u.id = ue.user_id
@@ -70,7 +70,7 @@ export async function PATCH(request: Request) {
     }
 
     const updates: string[] = [];
-    const params: unknown[] = [];
+    const params: (string | number)[] = [];
 
     if (role && (role === 'admin' || role === 'student')) {
       updates.push('role = ?');
@@ -119,7 +119,7 @@ export async function PATCH(request: Request) {
 
     await query<ResultSetHeader>(
       `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
-      params as any
+      params
     );
 
     return NextResponse.json({ success: true, message: 'Utilisateur mis à jour avec succès.' });

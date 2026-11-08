@@ -4,189 +4,193 @@ import { PracticalWork } from '@/components/courses/PracticalWork';
 
 # Chapitre 4 — Comprendre et utiliser l'Interactions API
 
-### 1. Qu'est-ce qu'une API ?
+Dans les chapitres précédents, nous avons vu comment formuler des consignes claires et envoyer un premier texte à Gemini.  
+Nous allons maintenant plonger au cœur du moteur : **l'Interactions API** du SDK officiel de Google (`@google/genai`).
 
-Une API (Application Programming Interface) est une interface permettant à des logiciels de communiquer entre eux.
-
-Dans notre cas :
-1. Notre application envoie une requête.
-2. Google reçoit la requête.
-3. Gemini traite les informations.
-4. Google renvoie un résultat.
-5. Notre application exploite ce résultat.
+Ne soyez pas intimidé par ce nom technique : nous allons voir ensemble ce que signifie une API, pourquoi Google a choisi le mot *"Interaction"*, et comment fabriquer des fonctions propres et réutilisables dans vos projets professionnels.
 
 ---
 
-### 2. Qu'est-ce que l'Interactions API ?
+### 1. Qu'est-ce qu'une API dans la vraie vie ?
 
-L'Interactions API est une interface permettant de créer et de gérer des interactions avec les modèles Gemini et certaines capacités d'agents.
+Le mot **API** (*Application Programming Interface*) peut sembler barbare. En réalité, c'est simplement une **passerelle de communication** entre deux programmes qui ne parlent pas forcément la même langue :
 
-Une interaction représente un tour de traitement.  
-Elle peut contenir différentes étapes :
-- Entrée utilisateur.
-- Traitement du modèle.
-- Appel d'outil.
-- Résultat d'outil.
-- Sortie finale.
+1. **Votre application** pose une question dans un format convenu (une requête JSON).
+2. **Le réseau Internet** achemine la demande jusqu'aux serveurs de Google.
+3. **Gemini** réfléchit et produit une réponse.
+4. **Google** renvoie le résultat dans un colis numérique bien emballé.
+5. **Votre application** ouvre le colis et affiche la réponse à vos utilisateurs.
 
-Cette approche permet de gérer des scénarios plus complexes qu'une simple génération de texte.
+C'est exactement comme une prise électrique murale : vous n'avez pas besoin de comprendre le fonctionnement d'une centrale nucléaire ou d'un barrage hydraulique pour brancher votre chargeur. La prise vous fournit une interface standardisée et sécurisée.
 
 ---
 
-### 3. Première interaction
+### 2. Pourquoi parle-t-on d'"Interactions API" ?
+
+Historiquement, les intelligences artificielles fonctionnaient comme un simple distributeur de confiseries : on glissait une pièce (un texte) et une friandise sortait (la réponse), puis la machine oubliait tout immédiatement.
+
+Google a introduit une approche beaucoup plus moderne appelée **Interactions API** :
+- Une **Interaction** n'est pas seulement un texte jetable.
+- C'est un **échange identifié** qui possède son propre numéro de dossier unique (un `id`).
+- Elle peut contenir plusieurs étapes : une question, une réflexion, l'utilisation d'un outil externe (comme une calculette ou une météo), et la réponse finale.
+- Elle permet de continuer facilement une conversation au tour suivant en rappelant simplement cet identifiant !
+
+---
+
+### 3. Anatomie d'un premier appel d'interaction
+
+Regardons en détail comment s'écrit cet appel en TypeScript :
 
 <CodeBlock language="typescript">
 {`import { ai, GEMINI_MODEL } from "./config/gemini.js";
 
+// On demande à Gemini d'ouvrir une nouvelle interaction
 const interaction = await ai.interactions.create({
   model: GEMINI_MODEL,
-  input: "Explique le fonctionnement d'une API REST."
+  input: "Explique le fonctionnement d'une API en une seule phrase simple."
 });
 
+// On affiche le texte final répondu par l'IA
+console.log("Réponse de Gemini :");
 console.log(interaction.output_text);`}
 </CodeBlock>
 
-#### Explication :
-- `ai.interactions.create()` crée une interaction.
-- `model` indique le modèle utilisé.
-- `input` contient la demande.
-- `output_text` contient le texte final disponible.
+#### Que signifie chaque élément ?
+- **`ai.interactions.create()`** : C'est la méthode du SDK qui compose le numéro de Google et ouvre la session de travail.
+- **`model: GEMINI_MODEL`** : Vous désignez quel modèle de la famille Gemini doit répondre (par exemple `gemini-3.8-flash`).
+- **`input: "..."`** : C'est le contenu que vous donnez au modèle (votre texte ou votre question).
+- **`interaction.output_text`** : C'est la propriété magique qui contient le texte rédigé par l'IA.
 
 ---
 
-### 4. Les propriétés importantes
+### 4. Le trousseau d'options disponibles
 
-Les propriétés courantes à étudier comprennent :
+Lorsque vous appelez `ai.interactions.create()`, vous pouvez lui passer plusieurs options pour personnaliser l'interaction selon vos besoins :
 
-| Propriété | Fonction |
-| :--- | :--- |
-| `model` | Sélection du modèle |
-| `input` | Entrée transmise au modèle |
-| `system_instruction` | Instructions générales |
-| `tools` | Outils disponibles |
-| `response_format` | Format de sortie attendu |
-| `previous_interaction_id` | Continuité d'une interaction précédente |
-| `stream` | Activation du streaming |
-| `background` | Exécution en arrière-plan lorsque prise en charge |
-
-<Callout type="note" title="Prise en charge">
-La présence d'une propriété ne signifie pas que tous les modèles ou tous les environnements prennent en charge toutes les fonctionnalités.
-</Callout>
+| Option | Rôle en clair | Exemple d'utilisation |
+| :--- | :--- | :--- |
+| **`model`** | Le cerveau choisi pour la tâche | `"gemini-3.8-flash"` |
+| **`input`** | La consigne ou question utilisateur | `"Résume ce texte en 3 points."` |
+| **`system_instruction`** | Les règles générales de comportement | `"Tu es un professeur de mathématiques bienveillant."` |
+| **`previous_interaction_id`** | Le numéro de l'interaction précédente | Utilisé pour se souvenir de ce qu'on disait juste avant *(voir Chapitre 5)* |
+| **`response_format`** | Forcer l'IA à répondre dans un format strict | `"application/json"` *(voir Chapitre 6)* |
+| **`stream`** | Recevoir la réponse mot par mot en direct | Pour créer un effet d'écriture en direct *(voir Chapitre 8)* |
+| **`tools`** | Donner des outils externes à l'IA | Permet à l'IA de consulter une base de données ou une météo |
 
 ---
 
-### 5. Créer une fonction réutilisable
+### 5. Construire une fonction utilitaire propre et réutilisable
 
-<CodeBlock language="typescript">
-{`import { ai, GEMINI_MODEL } from "./config/gemini.js";
+Dans un projet réel, vous n'allez pas réécrire `ai.interactions.create(...)` dans chaque fichier de votre serveur.  
+Vous allez créer **une seule fonction helper bien propre**, que tous vos contrôleurs pourront appeler en une ligne :
 
-interface GenerateOptions {
+<CodeBlock language="typescript" filename="src/services/gemini.service.ts">
+{`import { ai, GEMINI_MODEL } from "../config/gemini.js";
+
+// On définit les options acceptées par notre fonction
+interface AskGeminiOptions {
   prompt: string;
-  systemInstruction?: string;
+  systemInstruction?: string; // Optionnel
+  model?: string;             // Optionnel (on prendra le modèle par défaut sinon)
 }
 
-export async function generate(
-  options: GenerateOptions
-) {
+// On définit la forme propre de ce qu'on renvoie
+interface AskGeminiResponse {
+  id: string;                 // L'identifiant unique de l'échange
+  text: string;               // Le texte produit par Gemini
+  modelUsed: string;          // Le modèle qui a répondu
+}
+
+/**
+ * Fonction réutilisable pour interroger Gemini en toute simplicité
+ */
+export async function askGemini(options: AskGeminiOptions): Promise<AskGeminiResponse> {
+  const model = options.model || GEMINI_MODEL;
+
   const interaction = await ai.interactions.create({
-    model: GEMINI_MODEL,
+    model,
     input: options.prompt,
     system_instruction: options.systemInstruction
   });
 
   return {
     id: interaction.id,
-    text: interaction.output_text
+    text: interaction.output_text || "",
+    modelUsed: model
   };
 }`}
 </CodeBlock>
 
-Cette fonction pourra être réutilisée par plusieurs contrôleurs.
+Grâce à cette fonction, dans n'importe quel autre fichier de votre projet, interroger l'IA devient un jeu d'enfant :
+```typescript
+const { text } = await askGemini({ prompt: "Bonjour !" });
+```
 
 ---
 
-### 6. Comprendre les réponses
+### 6. Décortiquer la réponse : que nous renvoie vraiment Google ?
 
-Il faut distinguer :
-- L'objet complet d'interaction.
-- Les étapes d'exécution.
-- La sortie textuelle finale.
-- Les éventuels appels de fonctions.
-- Les informations d'utilisation disponibles.
+Quand vous faites un `console.log(interaction)`, Google ne vous renvoie pas juste une simple chaîne de caractères. Il vous renvoie un objet riche en informations :
 
-**Exemple :**
 <CodeBlock language="typescript">
 {`const interaction = await ai.interactions.create({
   model: GEMINI_MODEL,
-  input: "Donne trois avantages de TypeScript."
+  input: "Donne trois qualités d'un bon développeur."
 });
 
-console.log("ID :", interaction.id);
-console.log("Réponse :", interaction.output_text);
-console.log("Interaction complète :", interaction);`}
+console.log("ID de l'échange :", interaction.id);
+// Exemple : "interactions/abc-123-xyz"
+
+console.log("Texte généré :", interaction.output_text);
+// "1. La curiosité, 2. La rigueur, 3. L'esprit d'équipe."
+
+console.log("Statistiques de tokens :", interaction.usage);
+// { prompt_tokens: 12, candidates_tokens: 35, total_tokens: 47 }`}
 </CodeBlock>
 
-<Callout type="warning" title="Bonne pratique">
-Il est préférable de ne pas exposer directement l'objet complet au frontend en production.
+<Callout type="warning" title="Règle d'or pour le frontend">
+Ne renvoyez jamais l'objet `interaction` brut et complet à votre application React ou mobile.  
+Renvoyez uniquement ce dont le visiteur a besoin (par exemple `{ success: true, text: interaction.output_text }`). Cela allège la connexion Internet et évite de divulguer des détails techniques inutiles de votre infrastructure.
 </Callout>
 
 ---
 
-### 7. Comprendre l'API historique de génération
+### 7. Bon à savoir : `generateContent` vs `interactions`
 
-Le SDK officiel contient également d'autres interfaces, notamment :
+Si vous regardez d'anciens tutoriels sur Internet ou la documentation historique de Google Gemini, vous verrez souvent cette méthode :
 ```typescript
-ai.models.generateContent()
+ai.models.generateContent(...)
 ```
-Cette méthode permet d'utiliser l'API de génération de contenu.
+C'est l'ancienne interface, centrée uniquement sur un appel textuel isolé sans suivi de conversation.
 
-Dans cette formation, nous privilégierons l'Interactions API pour les nouveaux exercices portant sur les conversations, les outils et les agents.
-
-Il reste utile de connaître les autres interfaces afin de comprendre les exemples existants et les différences entre les API.
+Dans cette formation, nous nous concentrons sur la nouvelle **Interactions API** (`ai.interactions.create`), car c'est la norme moderne recommandée par Google pour gérer la mémoire, les agents intelligents et les appels d'outils.
 
 ---
 
-<PracticalWork title="Travail pratique 4 — Interactions API, réutilisabilité et benchmarking">
-Cet atelier vous guide pas-à-pas pour maîtriser l'Interactions API et concevoir une fonction modulaire réutilisable dans vos applications Express.
+<PracticalWork title="Travail pratique 4 — Explorer l'Interactions API et créer votre boîte à outils">
+**Objectif :** Développer une fonction utilitaire complète, observer les informations renvoyées par Google et mesurer la rapidité de l'IA.
 
-#### Étape 1 : Création de la fonction utilitaire réutilisable
-Dans `src/services/gemini.service.ts`, implémentez une fonction TypeScript typée :
-```typescript
-interface InteractionResult {
-  id: string;
-  text: string;
-  model: string;
-  rawUsage?: any;
-}
+#### Étape 1 : Mettre en place la fonction réutilisable
+1. Dans votre fichier `src/services/gemini.service.ts`, implémentez la fonction `askGemini` vue ci-dessus.
+2. Ajoutez un typage clair avec TypeScript pour les paramètres d'entrée et le résultat retourné.
 
-export async function askGemini(
-  prompt: string,
-  modelName: string = "gemini-2.5-flash"
-): Promise<InteractionResult> {
-  const interaction = await ai.interactions.create({
-    model: modelName,
-    input: prompt
-  });
+#### Étape 2 : Découvrir les coulisses d'une réponse
+1. Lancez un script de test qui pose une question technique (par exemple : *"Explique ce qu'est une variable en TypeScript"*).
+2. Affichez dans votre terminal :
+   - `interaction.id` : observez le format de cet identifiant unique.
+   - `interaction.output_text` : observez le texte rédigé avec sa mise en page en puces Markdown.
+   - `interaction.usage` (si disponible sur votre modèle) : observez combien de tokens ont été nécessaires pour la question et pour la réponse.
 
-  return {
-    id: interaction.id,
-    text: interaction.output_text,
-    model: modelName,
-    rawUsage: interaction.usage
-  };
-}
-```
+#### Étape 3 : Chronométrer et comparer
+1. Utilisez l'outil de chronométrage intégré de Node.js :
+   ```typescript
+   console.time("Appel Gemini");
+   const res = await askGemini({ prompt: "Raconte une blague très courte." });
+   console.timeEnd("Appel Gemini");
+   ```
+2. Notez le temps mis par Google pour répondre (généralement entre 500 millisecondes et 1,5 seconde).
 
-#### Étape 2 : Exploration et comparaison des métadonnées
-1. **Extraction de l'interaction** : Exécutez la fonction avec un prompt d'analyse technique et affichez dans la console Node.js :
-   - L'identifiant unique `interaction.id` (indispensable pour les conversations au Chapitre 5).
-   - Le texte retourné `interaction.output_text`.
-   - La structure complète de l'objet pour observer les `steps` générées.
-2. **Comparaison de modèles** :
-   - Exécutez la même requête sur `gemini-2.5-flash` puis sur un modèle plus spécialisé ou plus léger.
-   - Comparez la latence d'exécution (mesurée avec `console.time()`) et la richesse rédactionnelle du résultat.
-3. **Robustesse aux variations** :
-   - Testez des prompts courts, des prompts longs et un prompt contenant du balisage Markdown.
-   - Vérifiez que la propriété `output_text` conserve correctement le formatage attendu.
+<Callout type="success" title="Bravo !">
+Vous disposez désormais d'une fonction d'interrogation universelle, propre, sécurisée et réutilisable dans toutes vos futures applications.
+</Callout>
 </PracticalWork>
-

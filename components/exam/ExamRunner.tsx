@@ -381,7 +381,7 @@ export const ExamRunner: React.FC<ExamRunnerProps> = ({
   // 1. ÉCRAN D'ACCUEIL ET CONSIGNES
   if (examState === 'intro') {
     return (
-      <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-8 shadow-sm space-y-6 select-none">
+      <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-8 shadow-sm space-y-6 select-text">
         {/* Synthèse en 4 métriques clés — Strictement 2 lignes de texte par carte */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <div className="flex flex-col items-center justify-center text-center p-3.5 sm:p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 shadow-2xs h-full">
@@ -522,7 +522,7 @@ export const ExamRunner: React.FC<ExamRunnerProps> = ({
     const results = calculateResults();
 
     return (
-      <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-10 shadow-md space-y-8 select-none">
+      <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-10 shadow-md space-y-8 select-text">
         {/* En-tête du résultat */}
         <div
           className={`rounded-2xl p-6 sm:p-8 text-center border-4 ${
@@ -619,7 +619,7 @@ export const ExamRunner: React.FC<ExamRunnerProps> = ({
               <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-indigo-300 border-t border-indigo-800/80 gap-3">
                 <span>Délivré le {new Date().toLocaleDateString('fr-FR')}</span>
                 <span>Plateforme d&apos;Évaluation AiLearning</span>
-                <span>ID d&apos;authenticité : {Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+                <span>ID d&apos;authenticité : {`${moduleId.slice(-4).toUpperCase()}-${((results.percentage * 104729 + questions.length * 7919) % 900000 + 100000).toString(36).toUpperCase()}`}</span>
               </div>
             </div>
           </div>
@@ -732,7 +732,7 @@ export const ExamRunner: React.FC<ExamRunnerProps> = ({
   return (
     <div
       ref={runnerContainerRef}
-      className="fixed inset-0 z-[100] bg-slate-100 p-4 sm:p-6 flex flex-col justify-between overflow-y-auto select-none"
+      className="fixed inset-0 z-[100] bg-slate-100 p-4 sm:p-6 flex flex-col justify-between overflow-y-auto select-text"
     >
       {/* Alerte Anti-Triche Modale */}
       {antiCheatModal.show && (

@@ -1,239 +1,158 @@
 import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
 import { CodeBlock } from '@/components/courses/CodeBlock';
+import { MultimodalVisionSimulator } from '@/components/interactive/MultimodalVisionSimulator';
 
-# Chapitre 8 — Multimodalité et interactions avancées
+# Chapitre 8 — La Multimodalité Côté Frontend : Images et Fichiers
 
-### 1. Qu'est-ce qu'une interface multimodale ?
+Au Module 1, nous avons découvert que Gemini possède des yeux : il est capable d'analyser une photographie aussi bien que du texte écrit.  
+Mais comment permettre à un visiteur sur votre site web d'ajouter une photo facilement ?
 
-Une interface multimodale permet à l'utilisateur de combiner différents médias au sein d'une même interaction avec l'intelligence artificielle :
-- Du texte naturel.
-- Des photographies et captures d'écran.
-- Des documents administratifs ou techniques (PDF).
-- Des fichiers audios et vidéos lorsque le modèle le permet.
-
-Grâce aux capacités natives multimodales de **Google Gemini**, une application peut analyser simultanément une image et des consignes textuelles d'accompagnement.
+Dans ce chapitre, nous allons concevoir une **zone de dépôt d'images (Drag & Drop)** avec React, afficher une **vignette de prévisualisation instantanée**, et envoyer le tout de façon propre et sécurisée vers notre serveur.
 
 ---
 
-### 2. Prévisualiser un fichier dans React
+### 1. Pourquoi la prévisualisation est-elle indispensable ?
 
-Lorsqu'un utilisateur sélectionne une image, l'interface doit la prévisualiser immédiatement pour lui permettre de vérifier son choix avant l'envoi :
+Imaginez que vous envoyiez une photo sur un site :
+- Si rien ne s'affiche, vous doutez : *"Est-ce que le fichier a bien été sélectionné ? Est-ce la bonne photo ?"*.
+- En affichant immédiatement une **vignette miniature**, l'utilisateur est rassuré. Il peut vérifier son image, voir son nom et sa taille, ou cliquer sur une petite croix rouge pour la retirer s'il s'est trompé.
 
-```tsx
-// src/components/Upload/ImageUpload.tsx
-import React, { useState, useEffect } from 'react';
+---
 
-export const ImageUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSelect }) => {
+### 2. Le secret de la prévisualisation rapide : `URL.createObjectURL`
+
+Pour afficher une image locale dans une balise `<img />` avant même qu'elle ne soit envoyée sur Internet, le navigateur possède une fonction magique : **`URL.createObjectURL(file)`**.
+
+Elle crée une fausse adresse temporaire interne pointant directement vers la mémoire vive de l'ordinateur.  
+Attention à la règle d'hygiène : quand l'utilisateur change d'image ou quitte la page, on appelle `URL.revokeObjectURL()` pour libérer la mémoire vive !
+
+<CodeBlock language="tsx" filename="src/components/Upload/ImagePreview.tsx">
+{`import React, { useState, useEffect } from 'react';
+
+export const ImagePreview: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      alert('Veuillez sélectionner un format d’image valide (PNG, JPEG, WebP).');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert('La taille de l’image ne doit pas dépasser 5 Mo.');
-      return;
-    }
-
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-    onFileSelect(file);
-  };
-
-  // Libération mémoire de l'URL objet lors du démontage
+  // Dès qu'un fichier est choisi, on fabrique son adresse de prévisualisation
   useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
-  return (
-    <div className="space-y-4">
-      <input
-        type="file"
-        accept="image/png, image/jpeg, image/webp"
-        onChange={handleFileChange}
-        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
-      />
-
-      {previewUrl && (
-        <div className="relative inline-block rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-          <img src={previewUrl} alt="Aperçu du fichier" className="max-h-64 object-cover" />
-          <span className="absolute bottom-2 left-2 rounded-md bg-slate-900/80 px-2.5 py-0.5 text-sm text-white">
-            {(selectedFile!.size / 1024).toFixed(0)} Ko
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
-```
-
----
-
-### 3. Envoyer le fichier au backend avec FormData
-
-Pour transmettre des fichiers binaires accompagnés d'instructions texte, nous utilisons l'objet standard `FormData` :
-
-```typescript
-// src/services/upload.service.ts
-export async function analyzeImageWithPrompt(file: File, prompt: string) {
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('prompt', prompt);
-
-  const response = await fetch('/api/analyze-image', {
-    method: 'POST',
-    // IMPORTANT : Ne JAMAIS spécifier 'Content-Type' manuellement ici !
-    // Le navigateur doit injecter lui-même 'multipart/form-data' avec son 'boundary'.
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error("Échec lors de l'analyse multimodale.");
-  }
-
-  return response.json();
-}
-```
-
-<Callout type="note" title="Règle technique FormData">
-Ne définissez jamais l'en-tête `Content-Type: multipart/form-data` manuellement dans vos requêtes `fetch`. Le navigateur doit obligatoirement calculer et adjoindre le paramètre `boundary` sous peine de rendre le corps de requête illisible pour le serveur.
-</Callout>
-
----
-
-### 4. Sécurité et validation des fichiers
-
-Le contrôle de l'attribut HTML `accept="image/*"` est une simple commodité ergonomique côté client. Le serveur backend doit impérativement réitérer les vérifications suivantes :
-1. **Contrôle du type MIME réel** via l'inspection des octets magiques (*magic bytes*) du fichier.
-2. **Plafond de taille stricte** (ex. 5 ou 10 Mo maximum) pour éviter l'épuisement mémoire du serveur.
-3. **Nettoyage du nom de fichier** pour neutraliser tout risque d'attaque par traversée de répertoire (*path traversal*).
-
----
-
-### 5. Exemples concrets d'applications multimodales
-
-| Cas d'usage | Entrée utilisateur | Traitement Gemini | Résultat frontend |
-| :--- | :--- | :--- | :--- |
-| **Boutique de mode** | Photo d'un vêtement | Détection de la coupe, des matières et du style | Fiche produit e-commerce pré-remplie |
-| **Gestion documentaire** | Facture ou reçu PDF | Extraction des montants HT/TTC, date et émetteur | Formulaire de note de frais validé par Zod |
-| **Support technique** | Capture d'écran d'un bug | Analyse du message d'erreur et de la pile d'appels | Recommandation de correction avec code |
-
----
-
-<PracticalWork
-  title="Travail Pratique 8 — Interface d'analyse multimodale avec prévisualisation"
-  objective="Développer un composant d'upload drag & drop avec prévisualisation instantanée, libération mémoire et envoi multipart vers le backend."
-  duration="45 minutes"
-  steps={[
-    "Créer le composant `src/components/ImageAnalyzer.tsx` avec une zone de glisser-déposer (Drag & Drop) et un sélecteur de fichier (`<input type=\"file\" accept=\"image/png, image/jpeg, image/webp\" />`).",
-    "Générer une URL d'aperçu temporaire via `URL.createObjectURL(file)` et l'afficher dans une balise `<img>` avec un bouton de suppression.",
-    "Assurer la gestion de la mémoire navigateur : appeler systématiquement `URL.revokeObjectURL(previewUrl)` dans la fonction de nettoyage de `useEffect` ou lors de la suppression de l'image.",
-    "Ajouter un champ de texte permettant d'associer une question personnalisée à l'image (ex. 'Quelle est la référence de cette pièce ?').",
-    "Construire un `FormData` (`formData.append('image', file); formData.append('prompt', prompt)`) et l'envoyer via `fetch()` vers la route Express du Module 1.",
-    "Afficher le résultat de l'analyse dans une carte avec badge de confiance et liste des éléments visuels détectés."
-  ]}
-  validationCriteria={[
-    "L'aperçu de l'image s'affiche en moins de 100 ms dès le dépôt du fichier.",
-    "Les fichiers non-images ou excédant 5 Mo sont bloqués avant tout envoi avec un message d'alerte rouge.",
-    "La suppression de l'image libère immédiatement la mémoire sans fuite de blobs dans le navigateur."
-  ]}
->
-
-#### Gestion de l'aperçu et du nettoyage mémoire en React :
-```tsx
-import React, { useState, useEffect } from 'react';
-
-export const ImageDropzone: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<string>('');
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!file) {
+    if (!selectedFile) {
       setPreviewUrl(null);
       return;
     }
-    const objectUrl = URL.createObjectURL(file);
+
+    const objectUrl = URL.createObjectURL(selectedFile);
     setPreviewUrl(objectUrl);
 
-    // Nettoyage impératif pour éviter les fuites de mémoire
+    // Nettoyage de la mémoire quand l'image change
     return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) {
-      if (selected.size > 5 * 1024 * 1024) {
-        alert('Image trop volumineuse (limite : 5 Mo).');
-        return;
-      }
-      setFile(selected);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) return;
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('prompt', 'Décris les éléments principaux de cette image.');
-
-    try {
-      const res = await fetch('http://localhost:3000/api/analyze-image', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      setAnalysis(data.result);
-    } catch (err) {
-      alert('Erreur lors de l\'analyse');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [selectedFile]);
 
   return (
-    <div className="p-6 border rounded-2xl bg-white space-y-4">
-      <input type="file" accept="image/*" onChange={handleFileChange} />
+    <div className="space-y-3">
+      <input
+        type="file"
+        accept="image/png, image/jpeg, image/webp"
+        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+        className="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+      />
+
+      {/* Affichage de la vignette miniature */}
       {previewUrl && (
-        <div className="relative w-48 h-48 border rounded-xl overflow-hidden">
-          <img src={previewUrl} alt="Aperçu" className="w-full h-full object-cover" />
+        <div className="relative inline-block border rounded-xl overflow-hidden shadow-xs">
+          <img src={previewUrl} alt="Aperçu" className="h-36 w-36 object-cover" />
           <button
-            onClick={() => setFile(null)}
-            className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 text-sm"
+            onClick={() => setSelectedFile(null)}
+            className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 text-xs hover:bg-black transition"
+            title="Supprimer la photo"
           >
             ✕
           </button>
         </div>
       )}
-      <button
-        onClick={handleUpload}
-        disabled={!file || loading}
-        className="px-5 py-2 bg-indigo-600 text-white rounded-xl font-bold disabled:opacity-50"
-      >
-        {loading ? 'Analyse en cours...' : 'Lancer l\'analyse visuelle'}
-      </button>
-      {analysis && (
-        <div className="p-4 bg-slate-50 rounded-xl border mt-4">
-          <h4 className="font-bold text-sm text-slate-800">Résultat Gemini :</h4>
-          <p className="mt-1 text-slate-700 whitespace-pre-wrap">{analysis}</p>
-        </div>
-      )}
     </div>
   );
-};
+};`}
+</CodeBlock>
+
+---
+
+### 3. Atelier interactif : Testez la vision multimodale
+
+Redécouvrez dans ce laboratoire interactif comment Gemini analyse une image, lit les étiquettes et extrait les données visuelles :
+
+<MultimodalVisionSimulator />
+
+---
+
+### 4. Comment convertir l'image pour l'envoyer à Gemini ?
+
+Pour envoyer votre image dans une requête JSON classique, la méthode la plus simple consiste à la transformer en chaîne de texte **Base64** grâce à l'outil standard `FileReader` du navigateur :
+
+<CodeBlock language="typescript">
+{`/**
+ * Transforme un fichier image en texte Base64
+ */
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      // Le résultat ressemble à : "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+      // On retire l'en-tête pour ne garder que les données pures si besoin :
+      const base64String = (reader.result as string).split(',')[1];
+      resolve(base64String);
+    };
+
+    reader.onerror = (error) => reject(error);
+  });
+}`}
+</CodeBlock>
+
+Il vous suffit ensuite d'envoyer votre question et votre chaîne Base64 dans le corps de votre requête :
+```typescript
+const imageBase64 = await fileToBase64(selectedFile);
+
+await fetch('/api/vision', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    prompt: "Que contient cette photo ?",
+    imageBase64,
+    mimeType: selectedFile.type
+  })
+});
 ```
+
+---
+
+### 5. Les contrôles de sécurité indispensables sur le frontend
+
+Avant même d'appeler le serveur, votre composant React doit faire ces deux vérifications pour protéger l'utilisateur :
+1. **La taille maximale** : Si le fichier dépasse 5 Mo, affichez immédiatement une alerte *"Votre image est trop lourde (maximum 5 Mo)"*. Cela évite de ralentir le navigateur et d'engorger la bande passante.
+2. **Le format autorisé** : Vérifiez que `file.type` commence bien par `image/` (refusez les fichiers `.exe`, `.zip` ou inconnus).
+
+---
+
+<PracticalWork
+  title="Travail Pratique 8 — Créer une boîte de dialogue avec envoi d'image"
+  objective="Développer une zone de dépôt de photos et poser une question à Gemini sur l'image."
+  duration="45 minutes"
+  steps={[
+    "Créez un composant React avec un champ de texte et un bouton d'ajout de photo (icône de trombone 📎).",
+    "Ajoutez la prévisualisation instantanée de l'image sélectionnée au-dessus de la barre de saisie.",
+    "Ajoutez la validation : si l'utilisateur choisit une photo de plus de 5 Mo, refusez-la avec un message explicite.",
+    "Envoyez la question et l'image à votre serveur pour demander à Gemini de décrire la scène ou d'extraire les textes visibles."
+  ]}
+  validationCriteria={[
+    "La vignette de prévisualisation apparaît instantanément sans délai.",
+    "L'utilisateur peut supprimer l'image en cliquant sur la petite croix.",
+    "La réponse de l'IA analyse précisément le contenu de l'image envoyée."
+  ]}
+>
+
+<Callout type="success" title="Bravo !">
+Votre application React est désormais pleinement multimodale : elle sait lire du texte, afficher du streaming et regarder des images !
+</Callout>
 </PracticalWork>

@@ -5,193 +5,166 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 # Chapitre 1 — Comprendre les modèles de langage et Google Gemini
 
-### 1. Qu'est-ce qu'un modèle de langage ?
+Bienvenue dans le monde de l'intelligence artificielle ! Dans ce premier chapitre, nous allons poser les bases essentielles avec des mots simples de tous les jours. Pas de jargon inutile : l'objectif est de comprendre exactement comment fonctionne une IA avant de lui apprendre à communiquer avec nos applications.
 
-Un modèle de langage (LLM, Large Language Model) est un système d'intelligence artificielle entraîné sur de grandes quantités de données afin d'apprendre les structures du langage et de produire des réponses à partir d'une entrée.
+---
 
-Il peut notamment :
-- Comprendre des instructions formulées en langage naturel.
-- Générer du texte.
-- Résumer des documents.
-- Extraire des informations.
-- Classifier des données.
-- Traduire des contenus.
-- Analyser des images.
-- Produire des réponses structurées.
-- Utiliser des outils externes lorsqu'il en a la possibilité.
+### 1. Qu'est-ce qu'un modèle de langage (LLM) ?
 
-Contrairement à un programme classique, dont les instructions sont explicitement écrites par le développeur, un modèle de langage produit ses réponses à partir de mécanismes appris pendant son entraînement et de son contexte d'exécution.
+Pour faire simple, un **modèle de langage** (souvent abrégé en **LLM**, pour *Large Language Model*) est un programme informatique géant qui a lu des milliards de textes (livres, articles, discussions, pages web).
 
-#### Exemple
-Une application classique peut rechercher une valeur précise dans une base de données.
+Grâce à cette immense lecture, il a appris comment les humains construisent leurs phrases, posent des questions et formulent des idées.
 
-Un modèle de langage peut recevoir une demande comme :
-> « Analyse ces commentaires clients et indique les trois problèmes les plus fréquents. »
+#### Que sait faire un modèle de langage ?
+- **Comprendre vos demandes** rédigées en français courant ou dans n'importe quelle autre langue.
+- **Rédiger du texte** : écrire un email, un poème, un article de blog ou du code informatique.
+- **Résumer** un document de 50 pages en 3 puces claires.
+- **Extraire des infos clés** : trouver un numéro de téléphone, une date ou un montant dans une facture.
+- **Classer des données** : deviner si l'avis d'un client est satisfait, neutre ou mécontent.
+- **Observer des images** : décrire ce qui se trouve sur une photo ou lire un schéma.
 
-Il va interpréter la demande, examiner le contenu fourni et générer une synthèse.
+#### La différence avec un programme informatique classique
+- **Dans un programme classique** : Le développeur doit tout anticiper à l'avance. Si une situation imprévue arrive, le programme affiche une erreur.
+- **Avec un modèle d'IA** : Vous formulez votre demande en français naturel, exactement comme à un collègue de travail. L'IA analyse votre phrase et calcule la réponse la plus pertinente et logique.
 
-<Callout type="warning" title="Attention">
-Le modèle ne connaît pas automatiquement les données privées de ton application. Il faut lui transmettre les informations nécessaires ou lui donner accès à des outils contrôlés.
+> **Exemple concret :**  
+> Un programme classique peut chercher le mot *« panne »* dans une base de données.  
+> Un modèle d'IA, lui, peut lire 100 messages de clients et vous dire :  
+> *« Les 3 problèmes les plus fréquents cette semaine sont le délai de livraison, l'oubli du mot de passe et l'emballage abîmé. »*
+
+<Callout type="warning" title="À retenir absolument">
+L'IA n'est pas omnisciente et ne lit pas dans vos pensées ! Elle ne connaît pas par magie les données privées de vos clients ou de votre entreprise. Pour qu'elle travaille sur vos données, vous devez lui envoyer les informations nécessaires dans votre demande.
 </Callout>
 
 ---
 
 ### 2. Qu'est-ce que Google Gemini ?
 
-Google Gemini est une famille de modèles d'intelligence artificielle développés par Google.
+**Google Gemini** est la famille d'intelligence artificielle créée par les chercheurs de Google.
 
-Ces modèles peuvent être utilisés dans des applications pour :
-- Générer du contenu.
-- Analyser des informations.
-- Comprendre des images et d'autres médias.
-- Extraire des données.
-- Répondre à des questions.
-- Utiliser des fonctions et des outils.
-- Participer à des workflows intelligents.
+C'est l'un des modèles les plus avancés au monde. Sa grande force est d'être **multimodal de naissance** : il a été conçu dès le premier jour pour comprendre en même temps le texte, le code, les images, l'audio et la vidéo.
 
-Dans cette formation, Gemini sera notre fournisseur IA principal.
-
-Nous utiliserons le SDK officiel Google pour JavaScript et TypeScript : `@google/genai`.
+Dans cette formation, Gemini sera notre moteur principal. Nous allons utiliser la bibliothèque officielle de Google pour JavaScript et TypeScript : `@google/genai`.
 
 ---
 
-### 3. Comprendre les tokens
+### 3. Comprendre les tokens : comment l'IA découpe les mots
 
-Un token est une unité de texte traitée par un modèle.
+Quand nous lisons une phrase, nous voyons des mots et des lettres. L'ordinateur, lui, découpe le texte en petits morceaux appelés **tokens**.
 
-Un token peut représenter :
-- Un mot complet.
-- Une partie d'un mot.
-- Un signe de ponctuation.
-- Un espace ou une unité de texte.
+- Un token peut être un mot court entier (*« chat »*).
+- Il peut être un morceau de mot (*« déve »* + *« lopper »*).
+- Il peut être un simple espace ou une virgule.
 
-**Exemple :**  
-Une phrase comme :  
-*« Je développe une application avec React. »*  
-est transformée en unités internes avant son traitement.
+> **Règle pratique à retenir :**  
+> En français, **1 mot équivaut en moyenne à 1,3 token**.  
+> Par exemple, un paragraphe de 100 mots correspondra environ à 130 tokens pour l'IA.
 
-Le nombre de tokens ne correspond donc pas exactement au nombre de mots.
-
-**Pourquoi est-ce important ?**  
-Parce que les tokens interviennent dans :
-- La capacité de contexte du modèle.
-- Le volume de données envoyé.
-- La consommation des ressources.
-- Le calcul des coûts selon le modèle et la tarification applicable.
+#### Pourquoi devez-vous comprendre les tokens ?
+1. **Pour la vitesse** : Moins il y a de tokens à lire et à écrire, plus l'IA vous répond rapidement.
+2. **Pour le coût** : Les services d'IA comme Google Gemini facturent au nombre de tokens traités (quelques centimes pour plusieurs milliers de tokens).
+3. **Pour la limite de mémoire** : L'IA a une capacité maximale de tokens qu'elle peut lire d'un coup.
 
 {/* Atelier Interactif Tokenisation */}
 <TokenSimulator />
 
 ---
 
-### 4. Comprendre la fenêtre de contexte
+### 4. La fenêtre de contexte : la mémoire de travail de l'IA
 
-La fenêtre de contexte correspond à la quantité d'informations qu'un modèle peut prendre en compte dans une interaction.
+Imaginez que l'IA est assise à un bureau et dispose d'un carnet de notes ouvert devant elle.  
+La **fenêtre de contexte**, c'est la taille maximale de ce carnet.
 
-Elle peut inclure :
-- Les instructions système.
-- La question de l'utilisateur.
-- Les messages précédents.
-- Les documents transmis.
-- Les résultats des outils.
-- Les informations supplémentaires nécessaires à la réponse.
+Tout ce qui est posé sur ce bureau, l'IA peut le voir et l'utiliser pour vous répondre :
+- Votre question actuelle.
+- Les consignes de rôle que vous lui avez fixées (*« Tu es un expert comptable »*).
+- Les questions et réponses précédentes de la conversation.
+- Les documents ou fichiers que vous venez de lui téléverser.
 
-**Exemple :**  
-Un utilisateur demande :  
-*« Analyse ce document. »*  
-Puis :  
-*« Quels sont les trois risques principaux ? »*  
-Pour répondre correctement, le système doit conserver ou retrouver le document concerné.
-
-La gestion du contexte sera donc essentielle dans les applications conversationnelles.
+Si la conversation devient trop longue et dépasse la taille du carnet, les premières pages tombent du bureau : **l'IA oublie le début de la conversation**. Heureusement, Google Gemini possède l'une des plus grandes fenêtres de contexte au monde (jusqu'à 1 million de tokens, soit l'équivalent de plusieurs livres entiers lus en une seule fois !).
 
 ---
 
-### 5. Comprendre les hallucinations
+### 5. Attention aux « hallucinations » !
 
-Une hallucination est une réponse produite par un modèle qui contient une information incorrecte, inventée ou insuffisamment fondée.
+Une **hallucination**, c'est quand l'IA vous donne une réponse complètement fausse ou inventée, mais avec un ton extrêmement convaincant, poli et sûr d'elle !
 
-**Exemple :**  
-Un utilisateur demande une fonction qui n'existe pas dans une bibliothèque.  
-Le modèle peut proposer une méthode fictive qui semble pourtant plausible.
+#### Pourquoi l'IA hallucine-t-elle ?
+L'IA ne vérifie pas la vérité comme un être humain le ferait : son travail mathématique est de deviner les mots qui se marient le mieux ensemble. Si une question est trop floue ou si l'information lui manque, elle préfère souvent inventer une réponse plausible plutôt que de dire *« je ne sais pas »*.
 
-**Pour limiter ce risque :**
-- Fournir des informations pertinentes.
-- Formuler des instructions précises.
-- Utiliser des sources documentaires fiables.
-- Demander au modèle de signaler les incertitudes.
-- Valider les réponses structurées.
-- Effectuer des vérifications métier côté serveur.
-- Utiliser des tests.
+> **Exemple :**  
+> Si vous lui demandez : *« Donne-moi la commande pour activer le mode fusée sur mon lave-vaisselle »*, l'IA pourrait inventer une combinaison de touches très détaillée qui n'existe absolument pas !
 
-Une réponse bien formulée n'est pas nécessairement une réponse exacte.
+#### Comment éviter les hallucinations dans vos projets ?
+- **Donnez des consignes ultra-claires** : dites-lui ce qu'elle a le droit de faire ou de ne pas faire.
+- **Donnez-lui la permission de douter** : écrivez dans votre consigne : *« Si tu n'es pas sûr à 100% ou si l'information n'est pas dans le texte, réponds simplement : Je ne sais pas »*.
+- **Fournissez les documents sources** : demandez-lui de répondre uniquement en vous basant sur le texte fourni.
+- **Faites vérifier les réponses** : votre code applicatif doit toujours contrôler les données importantes.
 
 ---
 
-### 6. Les principales catégories d'utilisation
+### 6. Tableau récapitulatif : Ce que vous pouvez créer avec Gemini
 
-| Catégorie | Exemple |
+| Mission | Exemple simple dans la vraie vie |
 | :--- | :--- |
-| **Génération** | Rédiger une description de produit |
-| **Synthèse** | Résumer un rapport |
-| **Extraction** | Extraire le nom et l'adresse d'un texte |
-| **Classification** | Identifier le sentiment d'un commentaire |
-| **Analyse** | Examiner des données métier |
-| **Multimodal** | Décrire une image |
-| **Conversation** | Répondre à plusieurs questions liées |
-| **Tool calling** | Appeler une fonction externe |
+| **Générer** | Écrire une description séduisante pour un produit e-commerce. |
+| **Résumer** | Transformer un rapport de réunion de 10 pages en 5 points clés. |
+| **Extraire** | Récupérer automatiquement le nom, l'email et le numéro de téléphone dans un message. |
+| **Classer** | Détecter automatiquement si un email entrant est urgent ou secondaire. |
+| **Traduire & Adapter** | Traduire un texte technique en langage accessible pour un enfant de 10 ans. |
+| **Analyser des images** | Lire le montant d'un ticket de caisse à partir d'une simple photo. |
+| **Converser** | Créer un assistant d'aide en ligne disponible 24h/24 pour guider les utilisateurs. |
 
 ---
 
 {/* Quiz interactif d'auto-évaluation */}
 <QuickQuiz
-  title="Auto-évaluation : Fondations des LLM et Gemini"
+  title="Auto-évaluation : Vérifiez vos connaissances"
   questions={[
     {
       id: 1,
-      question: "Pourquoi le nombre de tokens ne correspond-il pas au nombre de mots ?",
+      question: "Pourquoi le nombre de tokens n'est-il pas tout à fait égal au nombre de mots ?",
       options: [
-        "Car un token équivaut toujours à exactement 10 caractères.",
-        "Car un token peut représenter un mot, une partie de mot ou un signe de ponctuation.",
-        "Car seuls les verbes et les noms comptent comme des tokens."
+        "Parce qu'un token vaut toujours exactement 10 lettres.",
+        "Parce que l'IA découpe le texte en petits morceaux (mots, syllabes ou ponctuations).",
+        "Parce que seuls les mots en anglais comptent comme des tokens."
       ],
       correctIndex: 1,
-      explanation: "Les modèles découpent le texte en sous-mots et signes typographiques. En moyenne en français, 100 mots représentent entre 130 et 150 tokens."
+      explanation: "L'IA découpe les phrases en petits morceaux appelés tokens. En français, 100 mots représentent généralement environ 130 tokens."
     },
     {
       id: 2,
-      question: "Quelle est la principale cause d'une hallucination de modèle ?",
+      question: "Qu'appelle-t-on une 'hallucination' chez une intelligence artificielle ?",
       options: [
-        "Un bug dans le navigateur de l'utilisateur.",
-        "Le modèle prédit des mots plausibles sans vérifier la vérité factuelle dans ses sources.",
-        "Le serveur Google est saturé par trop de requêtes."
+        "Un virus qui attaque l'ordinateur.",
+        "Une réponse fausse ou inventée que l'IA affirme avec grande assurance.",
+        "Une coupure de connexion internet chez Google."
       ],
       correctIndex: 1,
-      explanation: "Un LLM fonctionne par génération probabiliste. Si l'information est absente ou ambiguë, il peut formuler avec grande assurance une réponse pourtant inventée."
+      explanation: "L'IA prédit les mots les plus probables. Si elle manque de contexte, elle peut formuler une réponse totalement imaginaire mais très convaincante."
     },
     {
       id: 3,
-      question: "Pourquoi un LLM ne connaît-il pas automatiquement les données de votre entreprise ?",
+      question: "Comment s'appelle l'espace mémoire dont dispose l'IA pour traiter vos questions et documents ?",
       options: [
-        "Parce qu'il n'a été entraîné que sur des données publiques et n'a pas accès à vos bases privées sans outils dédiés.",
-        "Parce que la clé API bloque l'accès aux données privées.",
-        "Parce que TypeScript masque les données du serveur."
+        "La fenêtre de contexte.",
+        "Le disque dur virtuel.",
+        "La mémoire vive locale."
       ],
       correctIndex: 0,
-      explanation: "Les données privées doivent être transmises dans le contexte du prompt ou rendues accessibles via des techniques comme le RAG ou le Function Calling."
+      explanation: "La fenêtre de contexte est la quantité maximale d'informations (consignes, historique, documents) que l'IA peut garder sous les yeux lors d'un échange."
     }
   ]}
 />
 
 ---
 
-<PracticalWork title="Travail pratique 1">
-À partir de Google AI Studio, réalise les expériences suivantes :
-- Demander une explication simple de Node.js.
-- Demander un résumé d'un texte.
-- Faire analyser plusieurs commentaires clients.
-- Demander une classification positive, neutre ou négative.
-- Comparer une instruction vague avec une instruction précise.
+<PracticalWork title="Atelier pratique n°1 : Vos premiers pas">
+Rendez-vous sur **Google AI Studio** (l'espace de test gratuit de Google) et amusez-vous à tester ces 4 demandes :
+1. Demandez-lui : *« Explique-moi ce qu'est une API comme si j'avais 8 ans »*.
+2. Donnez-lui un article de journal et demandez : *« Résume cet article en 3 phrases simples »*.
+3. Donnez-lui 3 avis clients et demandez : *« Classe chaque avis en Positif ou Négatif »*.
+4. Testez une consigne vague (*« Parle-moi de Paris »*) puis une consigne précise (*« Donne-moi 3 anecdotes historiques insolites sur Paris pour des enfants »*).
 
-Note les différences de qualité, de précision et de structure.
+Observez à quel point la précision de votre consigne transforme la qualité de la réponse !
 </PracticalWork>

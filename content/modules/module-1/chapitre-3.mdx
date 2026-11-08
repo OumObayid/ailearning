@@ -3,247 +3,208 @@ import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
 import { TemperatureSimulator } from '@/components/interactive/TemperatureSimulator';
 
-# Chapitre 3 — Concevoir des instructions efficaces pour Gemini
+# Chapitre 3 — Concevoir des instructions efficaces pour Gemini (Prompt Engineering)
 
-### 1. Qu'est-ce que le prompt engineering ?
+Avez-vous déjà confié une mission à quelqu'un en lui disant simplement : *"Fais-moi un résumé du projet"* ?  
+Il y a de fortes chances qu'il revienne avec un texte de 3 pages alors que vous vouliez 3 puces, ou qu'il passe à côté des chiffres essentiels.
 
-Le prompt engineering consiste à concevoir et organiser les instructions transmises à un modèle afin d'obtenir des réponses adaptées à un objectif précis.
+Avec une intelligence artificielle comme Gemini, c'est exactement la même chose !  
+Gemini a des connaissances encyclopédiques immenses, mais il ne sait pas deviner ce qui se passe dans votre tête. Si votre consigne est floue, sa réponse sera floue.
 
-Un prompt ne se limite pas à poser une question.
-
-Il peut contenir :
-- Un rôle.
-- Un objectif.
-- Un contexte.
-- Des données.
-- Des contraintes.
-- Une méthode de traitement.
-- Un format de réponse.
-- Des règles de comportement.
+C'est là qu'intervient le **Prompt Engineering** : l'art de formuler des consignes claires, structurées et sans ambiguïté pour obtenir exactement le résultat que vous voulez, du premier coup.
 
 ---
 
-### 2. Prompt simple et prompt structuré
+### 1. Qu'est-ce qu'un bon prompt ?
 
-**Exemple d'instruction simple :**
-> Analyse ces commentaires clients.
+Le mot anglais **prompt** signifie simplement *"instruction"* ou *"consigne"*.
 
-Cette instruction est peu précise.  
-Le modèle doit décider lui-même de ce qu'il faut analyser et de la forme de la réponse.
+Beaucoup de débutants pensent qu'un prompt se résume à une question comme sur Google :  
+> *"Parle-moi du marketing digital."*
 
-**Une instruction structurée :**
-> **Rôle :**  
-> Tu es un analyste spécialisé dans l'expérience client.  
->  
-> **Objectif :**  
-> Analyser les commentaires fournis.  
->  
-> **Contexte :**  
-> Ces commentaires proviennent d'une boutique en ligne.  
->  
-> **Tâches :**  
-> 1. Identifier les problèmes fréquents.  
-> 2. Identifier les points positifs.  
-> 3. Détecter les demandes récurrentes.  
-> 4. Proposer des améliorations.  
->  
-> **Contraintes :**  
-> Ne pas inventer d'informations.  
-> Utiliser uniquement les commentaires fournis.  
->  
-> **Format :**  
-> Présenter une synthèse avec des titres.  
-
-La deuxième instruction réduit les ambiguïtés.
+Mais pour un développeur ou une entreprise, un vrai prompt est comme un **cahier des charges miniature**. Il peut préciser :
+- **Qui est l'IA** (son rôle d'expert).
+- **Ce qu'elle doit faire** (son objectif précis).
+- **La situation de départ** (le contexte).
+- **Les informations à traiter** (les données).
+- **Ce qu'elle n'a PAS le droit de faire** (les contraintes et garde-fous).
+- **La forme exacte attendue** (titres, liste à puces, tableau, format JSON).
 
 ---
 
-### 3. Les composants d'un prompt professionnel
+### 2. Comparaison : un prompt flou contre un prompt structuré
 
-#### A. Le rôle
-Il définit la fonction que le modèle doit adopter.  
-*Exemple :* `Tu es un expert en analyse de données.`
+Prenons un cas très fréquent dans une entreprise : vous recevez des avis de clients et vous voulez que l'IA vous aide à faire le tri.
 
-#### B. L'objectif
-Il précise le résultat attendu.  
-*Exemple :* `Ton objectif est d'identifier les tendances présentes dans les données.`
+#### ❌ Le prompt flou (résultat imprévisible)
+> *"Analyse ces commentaires clients."*
 
-#### C. Le contexte
-Il décrit la situation.  
-*Exemple :* `Les données proviennent d'un formulaire de satisfaction client.`
+Pourquoi ce prompt pose problème ?
+- L'IA ne sait pas si vous voulez une synthèse de 50 lignes ou de 3 mots.
+- Elle ne sait pas si vous cherchez les plaintes techniques, les problèmes de livraison ou la politesse du livreur.
+- Elle risque de broder ou de disserter sur des généralités inutiles.
 
-#### D. Les données
-Elles représentent le contenu à analyser.  
-```text
-Voici les données à analyser :
-${data}
-```
+#### ✅ Le prompt structuré (résultat impeccable)
+> **Rôle :** Tu es un responsable de la relation client expérimenté.  
+> **Objectif :** Analyser les avis reçus pour aider l'équipe technique à corriger les pannes.  
+> **Contexte :** Nous gérons une boutique en ligne d'accessoires connectés.  
+> **Tâches à réaliser :**  
+> 1. Énumérer les pannes techniques signalées.  
+> 2. Lister les points forts appréciés par les acheteurs.  
+> 3. Donner 2 recommandations concrètes d'actions immédiates.  
+> **Contraintes strictes :**  
+> - N'invente aucun fait : base-toi uniquement sur les avis fournis ci-dessous.  
+> - Si un avis est flou, indique *"Non précisé"*.  
+> **Format attendu :**  
+> Utilise des puces courtes avec des mots simples.
 
-#### E. Les contraintes
-Elles limitent les comportements indésirables.  
-- Ne pas inventer de chiffres.
-- Ne pas ajouter de données absentes.
-- Signaler les informations insuffisantes.
-
-#### F. Le format de sortie
-Il définit la présentation.  
-```text
-Présente les résultats sous forme de :
-- Résumé.
-- Points positifs.
-- Problèmes identifiés.
-- Recommandations.
-```
+En ajoutant ce cadre, l'IA sait exactement où aller et vous obtenez un résultat directement exploitable dans votre application.
 
 ---
 
-### 4. Les instructions système
+### 3. Les 6 composants d'un prompt professionnel
 
-Une instruction système définit le comportement général du modèle pour une interaction.
+Pour ne jamais rien oublier quand vous écrivez une consigne pour Gemini, retenez ces 6 ingrédients :
+
+| Composant | À quoi ça sert ? | Exemple concret |
+| :--- | :--- | :--- |
+| **1. Le Rôle** | Donne une casquette ou un métier à l'IA | *"Tu es un tuteur pédagogique pour débutants en informatique."* |
+| **2. L'Objectif** | Explique la mission finale en une phrase | *"Explique le concept des boucles en programmation."* |
+| **3. Le Contexte** | Décrit la situation et le public visé | *"L'étudiant n'a jamais codé de sa vie et a besoin d'images concrètes."* |
+| **4. Les Données** | Le texte, les chiffres ou le code à examiner | *"Voici le message d'erreur que l'étudiant a reçu : [Message]"* |
+| **5. Les Contraintes** | Les interdits et les limites à ne pas franchir | *"Ne donne pas la réponse toute faite. Utilise une analogie de la vie courante."* |
+| **6. Le Format** | La mise en page exacte souhaitée | *"Réponds en 3 étapes numérotées, maximum 10 lignes au total."* |
+
+---
+
+### 4. Les instructions système (`system_instruction`)
+
+Imaginez que vous embauchez un stagiaire.  
+Au lieu de lui répéter chaque matin : *"Bonjour, souviens-toi que tu travailles dans un cabinet médical et que tout ce que tu dis doit rester secret et poli"*, vous lui donnez ce règlement intérieur dès son premier jour.
+
+En programmation avec Gemini, c'est exactement le rôle de la **System Instruction** (l'instruction système).  
+Elle fixe la personnalité de l'IA, son ton et ses règles absolues de manière permanente pour toute la conversation :
 
 <CodeBlock language="typescript">
 {`const interaction = await ai.interactions.create({
   model: GEMINI_MODEL,
+  // 1. La règle générale permanente (le "règlement intérieur")
   system_instruction: \`
-    Tu es un assistant technique spécialisé en développement web.
-    Tu dois fournir des réponses précises,
-    pédagogiques et compréhensibles.
-    Lorsque tu présentes du code,
-    explique les parties importantes.
-    Si une information est incertaine,
-    indique clairement cette incertitude.
+    Tu es un assistant pédagogique bienveillant spécialisé en programmation.
+    Règles absolues :
+    - Explique toujours les concepts avec des analogies simples de la vie de tous les jours.
+    - Évite le jargon complexe sans le définir immédiatement.
+    - Sois encourageant et concis.
   \`,
-  input: "Explique la différence entre Node.js et Express."
+  // 2. La question ponctuelle posée par l'utilisateur
+  input: "Quelle est la différence entre Node.js et Express ?"
 });
 
 console.log(interaction.output_text);`}
 </CodeBlock>
 
-<Callout type="note" title="Remarque">
-L'instruction système n'est pas une garantie absolue : les réponses doivent toujours être vérifiées.
+Grâce à cette séparation, votre utilisateur peut poser des questions très courtes, l'IA conservera toujours son ton pédagogique et respectera les règles de votre application.
+
+<Callout type="note" title="Conseil de pro">
+Même avec une excellente instruction système, vérifiez toujours les données critiques reçues par vos utilisateurs : l'IA reste un modèle probabiliste.
 </Callout>
 
 ---
 
-### 5. Paramètres de génération
+### 5. Les paramètres de réglage du modèle
 
-Les paramètres de génération permettent d'influencer le comportement du modèle.
+Quand vous interrogez Gemini, vous pouvez régler son comportement avec quelques curseurs, un peu comme le thermostat d'un radiateur ou l'égaliseur d'une enceinte musicale.
 
-Parmi les paramètres à connaître :
+#### A. La Température (`temperature`) : Le curseur de fantaisie
+La température est un nombre généralement compris entre `0.0` et `1.0` (voire jusqu'à `2.0` selon les modèles) :
+- **Température proche de 0 (froide, ex: 0.1)** : L'IA devient très sérieuse, prévisible, logique et factuelle. Elle choisit toujours les mots les plus probables.  
+  *Idéal pour : extraire des données d'une facture, classer des tickets de support, traduire du code.*
+- **Température proche de 1 (chaude, ex: 0.8)** : L'IA devient inventive, créative et varie son vocabulaire.  
+  *Idéal pour : inventer une histoire, trouver des idées de slogans publicitaires, rédiger un email avec du style.*
 
-| Paramètre | Rôle |
-| :--- | :--- |
-| `temperature` | Influence la variabilité de génération |
-| `top_p` | Contrôle l'échantillonnage probabiliste |
-| `top_k` | Limite les candidats considérés |
-| `max_output_tokens` | Limite la longueur de sortie |
-| `seed` | Peut contribuer à la reproductibilité lorsque le modèle et l'API le permettent |
+Testez par vous-même l'effet de la température avec ce simulateur interactif :
 
-<Callout type="info" title="Compatibilité des paramètres">
-Ces paramètres ne sont pas universellement disponibles ou identiques pour tous les modèles et toutes les surfaces API. Il faut vérifier leur compatibilité dans la documentation du modèle utilisé avant de les ajouter à une requête Interactions API.
-</Callout>
-
-#### Comprendre temperature
-Une température basse favorise généralement des réponses plus prévisibles.  
-Une température plus élevée peut favoriser des formulations plus variées.
-
-**Exemples d'utilisation :**
-- Extraction de données : privilégier la cohérence.
-- Classification : privilégier la stabilité.
-- Rédaction créative : autoriser davantage de variété.
-
-Une température basse ne garantit toutefois pas une réponse exacte.
-
-{/* Laboratoire interactif sur la temperature */}
 <TemperatureSimulator />
 
-#### Comprendre seed
-Le paramètre `seed` peut être utilisé dans certains contextes pour favoriser la reproductibilité.  
-Il ne garantit pas une réponse strictement identique à chaque exécution.  
-Sa disponibilité et les valeurs autorisées dépendent du modèle et de l'API.  
-Ne pas considérer arbitrairement `seed: 100` comme une valeur universelle.
+#### B. Les autres paramètres utiles
+- **`max_output_tokens`** : La longueur maximale de la réponse. Si vous mettez `200`, l'IA s'arrêtera avant de dépasser environ 150 mots. C'est idéal pour éviter les réponses trop bavardes et maîtriser vos coûts.
+- **`top_p` et `top_k`** : D'autres filtres statistiques sur le choix des mots (utilisés pour affiner la variété du vocabulaire).
+- **`seed`** : Une graine numérique qui permet, lorsque le modèle le permet, d'essayer de reproduire exactement la même réponse à deux moments différents.
 
 ---
 
-### 6. Gestion des prompts dans le code
+### 6. La bonne pratique : Fabriquer des prompts propres dans votre code
 
-Éviter de mélanger les longues instructions et la logique métier.
+En TypeScript, ne collez pas de gros blocs de texte au milieu de vos routes ou de vos contrôleurs.  
+Créez plutôt une petite fonction dédiée qui assemble le texte proprement avec des variables :
 
 <CodeBlock language="typescript">
-{`export function createAnalysisPrompt(data: string) {
+{`/**
+ * Fabrique un prompt propre et structuré pour analyser des données
+ * @param data Le texte ou les données brutes envoyées par l'utilisateur
+ */
+export function createAnalysisPrompt(data: string): string {
   return \`
-    Analyse les informations suivantes.
+Tu es un expert en audit de processus d'entreprise.
 
-    Objectif :
-    Identifier les tendances et les problèmes.
+Mission :
+Analyse les notes ci-dessous et fais ressortir les priorités.
 
-    Données :
-    \${data}
+Données fournies par l'utilisateur :
+"""
+\${data}
+"""
 
-    Contraintes :
-    - Ne pas inventer d'informations.
-    - Signaler les données manquantes.
-    - Fournir des recommandations concrètes.
-  \`;
+Consignes :
+1. Liste les 3 points les plus urgents à régler.
+2. Identifie les risques éventuels.
+3. Propose 2 solutions simples et économiques.
+
+Règles strictes :
+- N'invente aucun chiffre qui n'apparaît pas dans les données.
+- Utilise un style direct avec des listes à puces claires.
+\`;
 }`}
 </CodeBlock>
 
-Cette méthode rend les prompts plus faciles à maintenir.
+Cette fonction est facile à lire, facile à modifier par un collègue, et totalement séparée du reste de votre serveur !
 
 ---
 
 ### 7. Travaux pratiques
 
-<PracticalWork title="TP 1 — Analyse et synthèse de commentaires clients">
-**Contexte métier :** Vous développez une fonctionnalité pour une équipe Support qui reçoit quotidiennement des dizaines d'avis clients non structurés.
+<PracticalWork title="TP 1 — Créer un synthétiseur d'avis clients">
+**Votre mission :** Vous créez une fonctionnalité pour le service après-vente d'une boutique en ligne. Chaque matin, le responsable reçoit des dizaines d'avis et n'a pas le temps de tout lire.
 
-**Consigne :** Construire un prompt structuré complet (Rôle, Objectif, Contexte, Données, Contraintes, Format) qui prend en entrée un ensemble d'avis textuels et produit une synthèse analytique.
+**Consigne :**  
+1. Écrivez un prompt structuré qui intègre les 6 composants (Rôle, Objectif, Contexte, Données, Contraintes, Format).
+2. L'IA doit obligatoirement classer la réponse en 4 parties claires :
+   - 👍 **Points positifs** (ce que les clients ont aimé).
+   - ⚠️ **Points négatifs** (les reproches).
+   - 🔍 **Top 2 des pannes fréquentes**.
+   - 💡 **Recommandations concrètes** pour l'équipe technique.
 
-**Structure attendue dans la réponse du modèle :**
-1. **Avis positifs :** Liste à puces des points forts cités par les clients.
-2. **Avis négatifs :** Liste à puces des griefs et déceptions exprimés.
-3. **Problèmes fréquents récurrents :** Synthèse des 3 dysfonctionnements majeurs identifiés.
-4. **Recommandations concrètes :** Actions opérationnelles prioritaires à mener par l'équipe produit.
-
-**Jeu d'essai suggéré :**
-> *"Le produit est arrivé rapidement et l'emballage est soigné. Par contre impossible de configurer le Wi-Fi, l'application mobile plante dès l'étape 2. Le support a mis 4 jours à me répondre mais l'agent a été poli. Très déçu par la batterie qui ne tient que 3 heures au lieu des 10 promises."*
+**Exemple de texte à tester dans votre prompt :**
+> *"Le colis est arrivé avec un jour d'avance, emballage impeccable. En revanche la notice est illisible et l'appareil refuse de se connecter au Bluetooth de mon téléphone Samsung. Le SAV m'a répondu gentiment au bout de 48h mais sans résoudre la panne. La batterie se vide en moins de deux heures."*
 </PracticalWork>
 
-<PracticalWork title="TP 2 — Analyseur de données métier brutes">
-**Contexte métier :** Une plateforme RH souhaite transformer des notes de réunions ou des descriptions de postes informelles en fiches synthétiques exploitables.
+<PracticalWork title="TP 2 — Le tuteur bienveillant pour débutants">
+**Votre mission :** Vous configurez une IA pour aider des personnes qui débutent tout juste le code informatique.
 
-**Consigne :**
-1. Concevoir une fonction JavaScript/TypeScript `analyzeBusinessData(rawText: string)` qui injecte le texte issu d'un champ de saisie (`textarea`) dans un template de prompt dédié.
-2. Le prompt doit imposer au modèle d'extraire :
-   - Le secteur d'activité et la finalité principale du texte.
-   - Les indicateurs clés (chiffres, budgets, délais mentionnés).
-   - Les risques potentiels ou points de blocage.
-3. Tester le comportement du modèle avec un texte contenant des informations contradictoires et vérifier comment le prompt gère ces incertitudes.
+**Consigne :**  
+1. Rédigez une **instruction système (`system_instruction`)** pour que l'IA :
+   - Soit toujours chaleureuse, encourageante et sans jugement.
+   - N'utilise jamais de jargon technique sans l'expliquer immédiatement avec une image simple du quotidien.
+   - Ne donne jamais la solution toute cuite ! Elle doit poser une petite question de réflexion pour aider l'élève à trouver la réponse par lui-même (la méthode socratique).
+2. Posez-lui la question suivante : *"J'ai une erreur 'variable is not defined', je ne comprends rien, aide-moi !"*
+3. Observez comment l'IA formule sa réponse pour guider sans frustrer.
 </PracticalWork>
 
-<PracticalWork title="TP 3 — Création d'un assistant technique pédagogique">
-**Contexte métier :** Vous créez un tuteur d'apprentissage informatique pour étudiants débutants en programmation.
+<PracticalWork title="TP 3 — Expérimenter l'effet de la Température">
+**Consigne :**  
+Prenez une demande identique : *"Trouve 3 slogans originaux pour un café qui propose aussi des cours de programmation informatique."*
 
-**Consigne :**
-1. Configurer une **instruction système** (`systemInstruction`) imposant les règles suivantes :
-   - Adopter un ton bienveillant, clair et pédagogique.
-   - Ne jamais donner la solution complète directement : guider l'étudiant avec la méthode socratique (questions réflexives, indices progressifs).
-   - Expliquer les concepts complexes à l'aide d'analogies de la vie courante.
-   - Interdire l'utilisation de jargon avancé sans en donner immédiatement une définition simple.
-2. Soumettre au modèle une question type : *"Mon code TypeScript me dit 'Object is possibly undefined', qu'est-ce que je dois faire ?"*.
-3. Valider que le modèle guide l'utilisateur sans écraser sa réflexion par un bloc de code brut prêt à copier-coller.
-</PracticalWork>
-
-<PracticalWork title="TP 4 — Évaluation comparative : Simple vs Structuré vs Instruction Système">
-**Consigne :** Pour une même demande métier complexe (*"Génère un plan de lancement pour un logiciel SaaS B2B de facturation électronique"*), tester successivement trois stratégies d'instruction et consigner les observations :
-
-1. **Version A (Prompt simple) :** *"Fais-moi un plan de lancement pour un SaaS B2B de facturation."*
-2. **Version B (Prompt structuré) :** Prompt intégrant Rôle (Directeur Marketing Produit), Objectif, Contraintes budgétaires, Cibles et Plan en 4 phases chronologiques.
-3. **Version C (Prompt structuré + Instruction système) :** Version B exécutée avec une instruction système fixant la rigueur analytique, l'absence de superlatifs publicitaires et des métriques chiffrées obligatoires.
-
-**Livrable attendu :** Un tableau comparatif évaluant :
-- Le respect du format attendu.
-- La précision des actions proposées.
-- Le degré de personnalisation au secteur de la facturation.
-- Le nombre approximatif de tokens consommés pour chaque test.
+1. Testez d'abord la demande avec une **température de 0.1** : observez les slogans très sages et classiques.
+2. Testez ensuite avec une **température de 0.9** : observez les jeux de mots, la créativité et les surprises dans le vocabulaire.
+3. Notez dans quelles situations professionnelles vous choisirez une température basse plutôt qu'une température haute.
 </PracticalWork>

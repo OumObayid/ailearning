@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Icon } from '@/components/common/Icon';
-import { cn } from '@/lib/utils';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -26,17 +26,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const router = useRouter();
   const { login, register } = useAuth();
 
   // Synchronisation du mode et reset des états lors de l'ouverture
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setMode(initialMode);
       setError(null);
       setPassword('');
       setShowPassword(false);
     }
-  }, [isOpen, initialMode]);
+  }
 
   // Fermeture via la touche Échap
   useEffect(() => {
@@ -63,6 +66,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         if (res.success) {
           onSuccess?.();
           onClose();
+          if (res.user?.role === 'admin') {
+            router.push('/admin');
+          }
         } else {
           setError(res.error || 'Identifiants invalides. Vérifiez votre email et mot de passe.');
         }
@@ -71,6 +77,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         if (res.success) {
           onSuccess?.();
           onClose();
+          if (res.user?.role === 'admin') {
+            router.push('/admin');
+          }
         } else {
           setError(res.error || 'Erreur lors de l’inscription.');
         }

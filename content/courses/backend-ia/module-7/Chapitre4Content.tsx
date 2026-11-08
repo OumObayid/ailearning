@@ -196,7 +196,7 @@ router.post("/", analyze);
 export default router;`}
         />
         <p className="text-sm text-slate-700">
-          Dans <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">src/app.ts</code>, montez la route : <code className="font-mono bg-slate-100 px-1 py-0.5 rounded font-bold">app.use("/api/analyses", analysisRoutes);</code>.
+          Dans <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">src/app.ts</code>, montez la route : <code className="font-mono bg-slate-100 px-1 py-0.5 rounded font-bold">app.use(&quot;/api/analyses&quot;, analysisRoutes);</code>.
         </p>
       </section>
 

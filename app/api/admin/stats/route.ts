@@ -26,7 +26,7 @@ export async function GET() {
     const examStats = await query<RowDataPacket[]>(
       `SELECT 
         COUNT(*) as total_attempts,
-        SUM(CASE WHEN passed = 1 THEN 1 ELSE 0 END) as passed_attempts,
+        SUM(CASE WHEN score >= 80 THEN 1 ELSE 0 END) as passed_attempts,
         AVG(score) as avg_score,
         AVG(time_spent_seconds) as avg_time_spent
        FROM user_exams`
@@ -37,7 +37,7 @@ export async function GET() {
       `SELECT 
         course_id,
         COUNT(*) as total_attempts,
-        SUM(CASE WHEN passed = 1 THEN 1 ELSE 0 END) as passed_attempts,
+        SUM(CASE WHEN score >= 80 THEN 1 ELSE 0 END) as passed_attempts,
         ROUND(AVG(score), 1) as avg_score
        FROM user_exams
        GROUP BY course_id`

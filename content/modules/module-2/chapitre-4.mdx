@@ -1,183 +1,194 @@
 import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
 import { CodeBlock } from '@/components/courses/CodeBlock';
+import { DebounceAbortLab } from '@/components/interactive/DebounceAbortLab';
 
-# Chapitre 4 — Expérience utilisateur IA (UX/UI)
+# Chapitre 4 — Expérience utilisateur IA (UX/UI) : Rassurer et Guider
 
-### 1. Pourquoi l'expérience utilisateur est-elle différente avec l'IA ?
+Quand vous cliquez sur un bouton dans une application web traditionnelle (par exemple *"Mettre dans le panier"*), la réponse arrive en moins de 100 millisecondes. C'est presque instantané.
 
-Dans une application traditionnelle, une action de l'utilisateur (comme enregistrer un formulaire ou cliquer sur un filtre) produit un résultat déterministe et quasi instantané (généralement inférieur à 200 ms).
+Avec une intelligence artificielle, tout change !
+- **La réflexion prend du temps** : selon la complexité de la demande, Gemini peut mettre entre 1 et 8 secondes pour formuler sa réponse.
+- **La taille est imprévisible** : l'IA peut répondre en 2 lignes ou en 5 paragraphes détaillés.
+- **Le résultat varie** : chaque génération apporte des nuances différentes.
 
-Dans une application enrichie par un modèle de langage (LLM) :
-- **La latence est variable** : La réponse peut nécessiter entre 1 et 10 secondes selon la longueur du prompt et la charge de travail du modèle.
-- **Le résultat est non-déterministe** : La formulation varie à chaque génération.
-- **La longueur est imprévisible** : Le modèle peut produire deux phrases comme plusieurs paragraphes.
-- **Le risque d'imprécision existe** : L'utilisateur doit pouvoir relire, corriger et valider le contenu avant son utilisation finale.
-
-L'interface doit accompagner cette dynamique sans frustrer l'utilisateur.
-
----
-
-### 2. La machine à états d'une interface IA
-
-Une interface IA professionnelle doit implémenter une machine à états exhaustive :
-
-| État | Comportement de l'interface | Recommandation visuelle |
-| :--- | :--- | :--- |
-| **Idle** | En attente d'une consigne | Formulaire net, suggestions d'exemples de prompts cliquables |
-| **Loading** | Préparation de la requête | Indicateur de traitement discret, saisie verrouillée |
-| **Streaming** | Réception progressive des tokens | Curseur clignotant, texte apparaissant mot à mot, bouton d'arrêt actif |
-| **Success** | Génération terminée avec succès | Actions disponibles (copier, régénérer, insérer), formatage riche |
-| **Error** | Incident réseau, quota ou sécurité | Message compréhensible, bouton d'essai avec conservation du prompt |
-| **Cancelled** | Interruption demandée par l'utilisateur | Mention d'arrêt propre, possibilité de relancer une consigne |
-| **Empty** | Réponse vide ou filtrée par sécurité | Explication pédagogue invitant à reformuler la demande |
+Si l'écran reste figé sans rien dire pendant 5 secondes, l'utilisateur va paniquer, croire que votre site est en panne et fermer l'onglet !  
+Dans ce chapitre, nous allons apprendre à concevoir une **expérience utilisateur (UX) rassurante, agréable et interactive**.
 
 ---
 
-### 3. Afficher un indicateur de chargement transparent
+### 1. Les 4 règles d'or d'une interface IA réussie
 
-Il est recommandé d'utiliser des indicateurs honnêtes plutôt que des animations trompeuses :
-
-```tsx
-// src/components/AI/LoadingIndicator.tsx
-import React from 'react';
-
-export const LoadingIndicator: React.FC<{ stage?: string }> = ({ stage = "Gemini analyse votre demande..." }) => {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-indigo-100 bg-indigo-50/60 p-4 text-sm text-indigo-900" role="status" aria-live="polite">
-      <div className="flex gap-1">
-        <span className="h-2 w-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]" />
-        <span className="h-2 w-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]" />
-        <span className="h-2 w-2 rounded-full bg-indigo-600 animate-bounce" />
-      </div>
-      <span className="font-medium">{stage}</span>
-    </div>
-  );
-};
-```
+1. ⏱️ **Ne laissez jamais l'utilisateur dans le noir** : dès le clic, montrez une animation ou un squelette visuel (*skeleton*) prouvant que le système est au travail.
+2. 🛑 **Donnez le contrôle (Le bouton "Arrêter")** : si l'IA s'emballe et écrit un roman fleuve inutile, l'utilisateur doit pouvoir stopper la génération d'un clic.
+3. 📋 **Facilitez la vie de l'utilisateur** : ajoutez un petit bouton pour copier le texte dans le presse-papier en un clic au lieu de devoir tout surligner à la souris.
+4. 🔁 **Proposez de régénérer** : une IA peut avoir une inspiration moyenne au premier essai. Un simple bouton *"Essayer une autre réponse"* transforme une déception en satisfaction !
 
 ---
 
-### 4. Afficher du Markdown en toute sécurité
+### 2. L'indicateur de chargement transparent
 
-Les LLM structurent naturellement leurs réponses avec des listes, des titres, des citations et des blocs de code au format Markdown.
+Évitez les fausses barres de chargement qui avancent à 95% puis se bloquent bêtement !  
+Préférez un indicateur moderne avec des mots clairs qui expliquent ce qui se passe :
 
-Pour afficher ce contenu dans React sans risque d'injection XSS :
+<CodeBlock language="tsx" filename="src/components/AI/LoadingIndicator.tsx">
+{`import React from 'react';
 
-```bash
-npm install react-markdown remark-gfm
-```
-
-```tsx
-// src/components/AI/MarkdownResponse.tsx
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
-interface Props {
-  content: string;
+interface LoadingProps {
+  message?: string;
 }
 
-export const MarkdownResponse: React.FC<Props> = ({ content }) => {
+export const LoadingIndicator: React.FC<LoadingProps> = ({
+  message = "Gemini analyse votre question et prépare sa réponse..."
+}) => {
   return (
-    <div className="prose prose-slate max-w-none text-sm sm:text-base leading-relaxed text-slate-800">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          // Rendu contrôlé des liens pour forcer l'ouverture sécurisée
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline hover:text-indigo-800">
-              {children}
-            </a>
-          ),
-        }}
-      >
-        {content}
-      </ReactMarkdown>
+    <div className="flex items-center gap-3 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4 text-sm text-indigo-900 shadow-xs">
+      {/* 3 petits points qui sautillent en rythme */}
+      <div className="flex gap-1.5 items-center">
+        <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 animate-bounce" />
+      </div>
+      <span className="font-medium">{message}</span>
     </div>
   );
-};
-```
-
-<Callout type="warning" title="Alerte Sécurité XSS">
-N'utilisez jamais `dangerouslySetInnerHTML` pour restituer une réponse issue d'un modèle d'IA. Un prompt malveillant pourrait manipuler le modèle pour injecter des balises `<script>` malveillantes.
-</Callout>
+};`}
+</CodeBlock>
 
 ---
 
-### Atelier interactif : Rendu Markdown sécurisé et bouclier anti-XSS
+### 3. Le bouton "Arrêter" : Maîtriser `AbortController`
 
-Observez ci-dessous comment `ReactMarkdown` neutralise en direct les tentatives d'injections de balises `<script>` et d'iframes malveillantes sans dégrader le rendu des tableaux ou du code :
+Avez-vous déjà voulu couper la parole poliment à quelqu'un qui parle trop longtemps ?  
+En JavaScript, nous avons un outil standard formidable pour cela : **`AbortController`** !
 
-<MarkdownSanitizerLab />
+C'est comme une télécommande d'arrêt d'urgence :
+1. Quand on lance `fetch()`, on lui confie le signal d'arrêt (`signal: controller.signal`).
+2. Si l'utilisateur clique sur le bouton rouge *"Arrêter"*, on appelle `controller.abort()`.
+3. Le navigateur coupe immédiatement la connexion réseau avec le serveur, sans aucun gaspillage !
+
+<CodeBlock language="typescript">
+{`// 1. On prépare la télécommande d'arrêt
+const controller = new AbortController();
+
+try {
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: "Écris une histoire sans fin..." }),
+    // On relie le signal à notre requête :
+    signal: controller.signal
+  });
+
+  const data = await res.json();
+} catch (err: any) {
+  if (err.name === 'AbortError') {
+    console.log("L'utilisateur a interrompu la génération.");
+  } else {
+    console.error("Autre erreur :", err);
+  }
+}
+
+// 2. Si l'utilisateur clique sur le bouton "Arrêter" :
+function onUserClickStop() {
+  controller.abort(); // Coupure nette et immédiate !
+}`}
+</CodeBlock>
 
 ---
 
-### 5. Actions contextuelles et accessibilité
+### 4. Atelier interactif : Expérimentez l'interruption et le debouncing
 
-Chaque bloc de réponse doit comporter une barre d'outils d'actions rapides :
-- **Bouton Copier** : Place le contenu brut dans le presse-papier via l'API standard `navigator.clipboard.writeText()`.
-- **Régénération** : Relance la requête avec les mêmes paramètres si la réponse est insatisfaisante.
-- **Régions ARIA (`aria-live="polite"`)** : Informe les lecteurs d'écran dès qu'une nouvelle réponse commence à s'écrire.
+Testez ci-dessous comment `AbortController` permet d'annuler une requête en plein vol, et comment le *debouncing* évite d'envoyer 20 requêtes inutiles pendant qu'un utilisateur tape sur son clavier :
+
+<DebounceAbortLab />
+
+---
+
+### 5. Les boutons d'action indispensables (Copier, Régénérer, Avis)
+
+Une fois que l'IA a rédigé une belle réponse, offrez une expérience 5 étoiles à vos utilisateurs grâce à une petite barre d'outils discrète :
+
+<CodeBlock language="tsx" filename="src/components/AI/MessageActions.tsx">
+{`import React, { useState } from 'react';
+
+interface ActionsProps {
+  content: string;
+  onRegenerate: () => void;
+}
+
+export const MessageActions: React.FC<ActionsProps> = ({ content, onRegenerate }) => {
+  const [copied, setCopied] = useState(false);
+  const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
+
+  // Copie automatique dans le presse-papier
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); // Remet le bouton à l'état normal après 2 secondes
+  };
+
+  return (
+    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 text-xs text-slate-500">
+      {/* Bouton Copier */}
+      <button
+        onClick={handleCopy}
+        className="flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-slate-100 transition font-medium text-slate-600"
+      >
+        {copied ? '✅ Copié !' : '📋 Copier'}
+      </button>
+
+      {/* Bouton Régénérer */}
+      <button
+        onClick={onRegenerate}
+        className="flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-slate-100 transition font-medium text-slate-600"
+      >
+        🔄 Réessayer
+      </button>
+
+      <div className="ml-auto flex items-center gap-1">
+        {/* Pouce haut */}
+        <button
+          onClick={() => setFeedback('up')}
+          className={\`p-1.5 rounded-md hover:bg-slate-100 \${feedback === 'up' ? 'text-emerald-600 font-bold' : ''}\`}
+          title="Réponse utile"
+        >
+          👍
+        </button>
+        {/* Pouce bas */}
+        <button
+          onClick={() => setFeedback('down')}
+          className={\`p-1.5 rounded-md hover:bg-slate-100 \${feedback === 'down' ? 'text-rose-600 font-bold' : ''}\`}
+          title="Réponse imprécise"
+        >
+          👎
+        </button>
+      </div>
+    </div>
+  );
+};`}
+</CodeBlock>
 
 ---
 
 <PracticalWork
-  title="Travail Pratique 4 — Rendu Markdown sécurisé et barre d'actions"
-  objective="Enrichir l'affichage conversationnel avec coloration syntaxique des blocs de code, rendu de tableaux GFM et copie en un clic."
-  duration="45 minutes"
+  title="Travail Pratique 4 — Perfectionner l'expérience utilisateur de votre Chat"
+  objective="Ajouter les boutons d'arrêt d'urgence, de copie et d'animation de chargement sur votre interface React."
+  duration="40 minutes"
   steps={[
-    "Installer les dépendances requises : `npm install react-markdown remark-gfm`.",
-    "Créer le composant `src/components/MarkdownView.tsx` encapsulant `ReactMarkdown` avec le plugin `remarkGfm` pour le support des tableaux et listes de tâches.",
-    "Personnaliser le rendu des blocs de code `<pre><code>` pour leur donner un style sombre soigné avec bordure arrondie et police monospace.",
-    "Intégrer sur chaque message de l'IA une barre d'actions avec un bouton 'Copier' : utiliser `await navigator.clipboard.writeText(content)` et afficher un badge temporaire 'Copié !' pendant 2 secondes.",
-    "Ajouter l'attribut d'accessibilité `aria-live=\"polite\"` sur le conteneur de message pour avertir les lecteurs d'écran lors de la génération.",
-    "Tester le rendu avec un prompt type demandant à Gemini d'écrire un tableau comparatif et un script TypeScript."
+    "Dans votre composant de chat, remplacez le simple mot 'Chargement...' par le composant `LoadingIndicator` avec les 3 petits points animés.",
+    "Ajoutez le bouton d'arrêt : pendant que l'IA réfléchit, transformez le bouton 'Envoyer' en un bouton rouge 'Arrêter' relié à un `AbortController`.",
+    "Vérifiez qu'en cliquant sur 'Arrêter', la requête se coupe proprement sans afficher de message d'erreur rouge effrayant.",
+    "Sous chaque réponse de l'IA, ajoutez le composant `MessageActions` pour tester la copie dans votre presse-papier."
   ]}
   validationCriteria={[
-    "Les blocs de code, les listes à puces et les tableaux Markdown s'affichent avec une typographie lisible et aérée.",
-    "La copie dans le presse-papier est instantanée et fournit un retour visuel sans recharger la page.",
-    "Les balises HTML brutes malveillantes sont neutralisées pour éliminer tout risque d'attaque XSS."
+    "L'utilisateur peut interrompre une réponse trop longue en un clic.",
+    "Le bouton 'Copier' affiche un feedback vert pendant 2 secondes avant de revenir à son état initial.",
+    "L'interface est claire, élégante et agréable à utiliser même lors de ralentissements réseau."
   ]}
 >
 
-#### Implémentation du composant Markdown sécurisé avec copie :
-```tsx
-import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
-interface MarkdownViewProps {
-  content: string;
-}
-
-export const MarkdownView: React.FC<MarkdownViewProps> = ({ content }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="relative group">
-      <div className="prose prose-slate max-w-none text-slate-800" aria-live="polite">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {content}
-        </ReactMarkdown>
-      </div>
-
-      <button
-        onClick={handleCopy}
-        aria-label="Copier le texte"
-        className="absolute top-0 right-0 p-1.5 text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        {copied ? '✅ Copié !' : '📋 Copier'}
-      </button>
-    </div>
-  );
-};
-```
+<Callout type="success" title="Bravo !">
+Votre application possède maintenant les mêmes finitions soignées que les grands produits commerciaux comme ChatGPT ou Claude !
+</Callout>
 </PracticalWork>
-

@@ -79,7 +79,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   };
 
   const sidebarContent = (
-    <div className="flex h-full flex-col justify-between overflow-y-auto bg-slate-950 text-slate-100 select-none">
+    <div className="flex h-full flex-col justify-between overflow-y-auto bg-slate-950 text-slate-100 select-text">
       {/* Admin Profile Header & Collapse Control */}
       <div>
         <div

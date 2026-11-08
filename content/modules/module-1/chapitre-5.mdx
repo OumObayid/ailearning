@@ -2,208 +2,191 @@ import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
 import { CodeBlock } from '@/components/courses/CodeBlock';
 import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ConversationContextSimulator } from '@/components/interactive/ConversationContextSimulator';
 
-# Chapitre 5 — Gérer les conversations avec Gemini
+# Chapitre 5 — Gérer les conversations et la mémoire avec Gemini
 
-### 1. Différence entre une requête et une conversation
+Avez-vous déjà essayé de discuter avec quelqu'un qui oublie tout ce que vous venez de dire dès que vous reprenez votre souffle ? C'est frustrant, n'est-ce pas ?
 
-Une requête indépendante ne possède pas nécessairement le contexte d'une requête précédente.
+C'est pourtant exactement comme cela que fonctionne une intelligence artificielle par défaut ! Chaque fois que vous lui envoyez un message, elle repart d'une feuille totalement blanche, sans aucun souvenir du passé.
 
-**Exemple :**  
-- **Requête 1 :** « Je développe une application avec React. »  
-- **Requête 2 :** « Quel framework frontend ai-je mentionné ? »  
-
-Si la deuxième requête est envoyée indépendamment, le modèle n'a pas nécessairement connaissance de la première.  
-Pour maintenir la continuité, il faut gérer le contexte.
+Dans ce chapitre, nous allons découvrir comment donner de la mémoire à nos applications pour créer de véritables conversations fluides, comme sur ChatGPT ou WhatsApp, grâce à une fonctionnalité puissante de Gemini : le **`previous_interaction_id`**.
 
 ---
 
-### 2. Comprendre previous_interaction_id
+### 1. Pourquoi l'IA est-elle amnésique par défaut ?
 
-L'Interactions API permet de poursuivre une conversation en transmettant l'identifiant de l'interaction précédente.
+Prenons un exemple très simple :
+- **Message 1 envoyé à l'IA :** *"Je m'appelle Thomas et je prépare un marathon."*
+- **Message 2 envoyé 5 secondes plus tard :** *"Quel est mon prénom ?"*
 
+Si vous envoyez ces deux messages comme des requêtes indépendantes, l'IA vous répondra :  
+> *"Je suis désolé, je ne connais pas votre prénom car vous ne me l'avez pas indiqué."*
+
+Pourquoi cette réaction ?  
+Parce que les serveurs web fonctionnent en mode **"sans état" (stateless)** : chaque requête est traitée comme si c'était la toute première fois de sa vie que le serveur vous rencontrait.
+
+Pour qu'une conversation fonctionne, nous devons **relier le fil conducteur** entre les questions successives.
+
+---
+
+### 2. La solution magique de Google : `previous_interaction_id`
+
+Pour résoudre ce problème sans vous forcer à renvoyer tout le texte de la discussion à chaque message (ce qui consommerait énormément de tokens et coûterait cher), Google utilise un système de **ticket de suivi** :
+
+1. Lorsque vous envoyez votre premier message, Gemini vous répond et vous remet un identifiant unique (par exemple `interaction.id = "conv_abc123"`).
+2. Lorsque vous posez la question suivante, vous joignez simplement ce ticket dans l'option `previous_interaction_id`.
+3. Gemini retrouve instantanément le fil de la discussion dans ses serveurs et répond en connaissant tout le contexte précédent !
+
+Regardons le code en action :
+
+#### Étape 1 : Le premier échange
 <CodeBlock language="typescript">
 {`const firstInteraction = await ai.interactions.create({
   model: GEMINI_MODEL,
-  input: "Je développe une application avec React."
+  input: "Je m'appelle Thomas et je développe un site web avec React."
 });
 
-console.log(firstInteraction.output_text);`}
+console.log("Réponse 1 :", firstInteraction.output_text);
+// Gemini : "Enchanté Thomas ! React est une excellente bibliothèque pour le web."
+
+// On note précieusement le ticket de l'échange :
+const ticketId = firstInteraction.id;`}
 </CodeBlock>
 
-Deuxième interaction :
-
+#### Étape 2 : La question suivante qui profite de la mémoire
 <CodeBlock language="typescript">
 {`const secondInteraction = await ai.interactions.create({
   model: GEMINI_MODEL,
-  previous_interaction_id: firstInteraction.id,
-  input: "Quel framework frontend ai-je mentionné ?"
+  // 🔑 Le lien magique : on rappelle l'identifiant du tour précédent !
+  previous_interaction_id: ticketId,
+  input: "Quel est mon prénom et quelle technologie ai-je choisie ?"
 });
 
-console.log(secondInteraction.output_text);`}
+console.log("Réponse 2 :", secondInteraction.output_text);
+// Gemini : "Tu t'appelles Thomas et tu as choisi la technologie React !"`}
 </CodeBlock>
 
-Le deuxième appel poursuit le contexte associé à la première interaction.  
-Cette approche permet de construire des conversations sans renvoyer manuellement tout l'historique à chaque appel.
+Gemini a parfaitement retenu vos informations sans que vous ayez eu besoin de recopier votre première phrase. C'est simple, élégant et très économe en bande passante.
 
 ---
 
-### Atelier interactif : Continuité contextuelle et previous_interaction_id
+### 3. Atelier interactif : Testez la continuité en direct
 
-Expérimentez ci-dessous la différence concrète entre une interaction liée par son identifiant de contexte et des requêtes isolées (amnésiques) :
+Essayez ce simulateur pour voir concrètement la différence entre une IA amnésique et une IA qui conserve le fil de la conversation :
 
 <ConversationContextSimulator />
 
 ---
 
-### 3. Comprendre la différence entre état et mémoire
+### 4. Les trois niveaux de mémoire à bien distinguer
 
-Il faut distinguer trois notions.
+En ingénierie logicielle, le mot "mémoire" regroupe trois réalités différentes qu'un développeur ne doit pas confondre :
 
-- **Historique :** Ensemble des messages échangés.
-- **État conversationnel :** Informations nécessaires pour poursuivre une conversation ou un traitement.
-- **Mémoire applicative :** Informations sélectionnées et conservées par ton application pour être réutilisées ultérieurement.
+1. **L'Historique d'affichage** : C'est la liste de toutes les bulles de messages (bleues et grises) que l'utilisateur voit défiler sur son écran dans son navigateur React.
+2. **L'État de la session en cours (`previous_interaction_id`)** : C'est le ticket temporaire géré par Google pendant que l'utilisateur discute sur votre site.
+3. **La Mémoire permanente (Base de données MySQL)** : Si l'utilisateur ferme son navigateur et revient demain matin, le ticket temporaire ne suffit plus. Vous devez avoir sauvegardé la conversation dans votre base de données pour pouvoir la recharger plus tard.
 
-L'Interactions API peut gérer la continuité des interactions, mais cela ne remplace pas automatiquement une base de données applicative.  
-Dans une application professionnelle, il faudra généralement conserver les informations nécessaires dans MySQL.
-
----
-
-### 4. Gérer les conversations dans une application
-
-Architecture simplifiée :
+Voici comment ces éléments s'organisent dans une vraie application :
 
 <ArchitectureDiagram
-  title="Flux de gestion des conversations"
-  diagram={`Utilisateur
+  title="Cycle d'une conversation avec sauvegarde"
+  diagram={`Utilisateur (pose une question)
     |
     v
-Frontend React
+Frontend React (affiche la bulle de chat)
     |
     v
-API Express
+API Express (notre serveur backend)
     |
     v
-Recherche de la conversation dans MySQL
-    |
-    v
-Récupération du previous_interaction_id
+Base de données MySQL
+  -> Retrouve le 'last_interaction_id' de cet utilisateur
     |
     v
 Appel Gemini
+  -> input: question
+  -> previous_interaction_id: last_interaction_id
     |
     v
-Enregistrement du nouvel identifiant
+Réponse reçue de Gemini (avec un nouvel id d'interaction)
     |
     v
-Retour de la réponse`}
+Mise à jour dans MySQL (on enregistre le nouvel identifiant)
+    |
+    v
+Retour de la réponse au Frontend React`}
 />
-
-Exemple de structure de table :
-
-<CodeBlock language="sql" filename="schema.sql">
-{`CREATE TABLE conversations (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  last_interaction_id VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP
-);`}
-</CodeBlock>
-
-<Callout type="note" title="Précision">
-Cette table est un exemple pédagogique. En production, il faudra également définir les relations, les index et les règles de sécurité.
-</Callout>
 
 ---
 
-### 5. Exemple de service conversationnel
+### 5. Créer une fonction de conversation universelle
 
-<CodeBlock language="typescript">
-{`export async function continueConversation(
-  prompt: string,
-  previousId?: string
-) {
+Voici comment structurer un service propre dans votre code TypeScript pour gérer aussi bien le premier message que les messages suivants :
+
+<CodeBlock language="typescript" filename="src/services/gemini.service.ts">
+{`import { ai, GEMINI_MODEL } from "../config/gemini.js";
+
+interface ChatMessageOptions {
+  message: string;
+  previousInteractionId?: string; // Facultatif au tout début
+}
+
+export async function sendChatMessage(options: ChatMessageOptions) {
+  // On prépare la requête vers Gemini
   const interaction = await ai.interactions.create({
     model: GEMINI_MODEL,
-    input: prompt,
-    ...(previousId
-      ? { previous_interaction_id: previousId }
+    input: options.message,
+    // Si on a un ticket précédent, on le transmet, sinon on démarre à zéro
+    ...(options.previousInteractionId
+      ? { previous_interaction_id: options.previousInteractionId }
       : {})
   });
 
   return {
-    interactionId: interaction.id,
-    response: interaction.output_text
+    reply: interaction.output_text,
+    newInteractionId: interaction.id
   };
 }`}
 </CodeBlock>
 
-Le backend devra récupérer le bon identifiant à partir de la conversation de l'utilisateur authentifié.
+---
 
-<Callout type="warning" title="Sécurité">
-Il ne faut jamais accepter aveuglément un identifiant de conversation fourni par un utilisateur sans vérifier ses droits d'accès.
+### 6. Que faire quand une conversation devient gigantesque ?
+
+Imaginez une discussion qui dure depuis 3 semaines avec plus de 200 questions.  
+La mémoire de travail de l'IA (sa "fenêtre de contexte") n'est pas infinie, et faire relire 200 messages finit par ralentir le système et coûter cher en tokens.
+
+Voici les 2 réflexes professionnels pour gérer les longues conversations :
+- **Faire une synthèse automatique** : De temps en temps, on demande à Gemini : *"Résume les 20 derniers messages en 5 lignes de faits essentiels (nom du client, problème rencontré, solutions déjà tentées)"*, puis on repart sur une nouvelle session propre avec ce résumé en instruction système !
+- **Purger l'historique obsolète** : Ne conserver que les 10 derniers échanges récents, ce qui est amplement suffisant pour 95 % des cas d'usage courants.
+
+---
+
+<PracticalWork title="Travail pratique 5 — Créer une API de Chat avec mémoire">
+**Votre mission :** Construire un mini-serveur Express qui permet à un utilisateur de discuter avec Gemini tout au long d'une session sans perdre le fil.
+
+#### Étape 1 : Créer la route de démarrage (`POST /api/chat/start`)
+- L'utilisateur envoie son premier message : `{ "message": "Bonjour, je m'appelle Sarah et je cherche une recette végétarienne." }`
+- Votre serveur appelle Gemini, enregistre le `interaction.id` dans une variable en mémoire (ou un tableau), et renvoie :
+  ```json
+  {
+    "conversationId": "session-1",
+    "reply": "Bonjour Sarah ! Que diriez-vous d'un délicieux curry de lentilles corail ?"
+  }
+  ```
+
+#### Étape 2 : Créer la route de suite (`POST /api/chat/reply`)
+- L'utilisateur renvoie un message lié :  
+  `{ "conversationId": "session-1", "message": "Combien de temps faut-il pour le préparer ?" }`
+- Votre serveur retrouve le `lastInteractionId` associé à cette session, appelle Gemini avec `previous_interaction_id`, puis renvoie la réponse.
+- **Vérification :** Gemini doit répondre sur le temps de cuisson des lentilles corail, prouvant qu'il se souvient parfaitement du plat proposé au message précédent !
+
+#### Étape 3 : Tester l'isolation entre deux utilisateurs
+1. Ouvrez deux onglets dans Postman : l'un simule Sarah (recette de cuisine), l'autre simule Marc (réparation de vélo).
+2. Vérifiez que la conversation de Sarah ne se mélange jamais avec celle de Marc.
+
+<Callout type="success" title="Félicitations !">
+Vous venez de comprendre le mécanisme fondamental utilisé par tous les assistants virtuels modernes pour tenir des dialogues intelligents et continus !
 </Callout>
-
----
-
-### 6. Gestion des limites du contexte
-
-Une conversation peut devenir très longue.  
-Il faut donc réfléchir à :
-- La taille du contexte.
-- La pertinence des anciens messages.
-- La conservation des informations importantes.
-- La suppression des éléments inutiles.
-- La synthèse des conversations longues.
-- La durée de conservation des données.
-
-Les mécanismes de mémoire avancés seront approfondis dans le module consacré aux agents.
-
----
-
-<PracticalWork title="Travail pratique 5 — Mini-API conversationnelle à état">
-L'objectif de cet atelier est de mettre en œuvre une véritable mémoire conversationnelle côté serveur en tirant parti du mécanisme `previous_interaction_id` de l'Interactions API.
-
-#### Spécification fonctionnelle des endpoints à implémenter :
-
-```text
-POST /api/conversations
-Body: { "initialMessage": "Bonjour, je m'appelle Alice et je prépare un marathon." }
-```
-- **Action attendue :** 
-  1. Crée la première interaction avec `ai.interactions.create({ model, input: initialMessage })`.
-  2. Stocke en mémoire serveur (ex. `Map<string, { userId: string, lastInteractionId: string, messages: any[] }>`) une nouvelle entrée indexée par un identifiant de session unique (UUID).
-  3. Retourne au client :
-     ```json
-     {
-       "conversationId": "conv-uuid-1234",
-       "reply": interaction.output_text
-     }
-     ```
-
-```text
-POST /api/conversations/:id/messages
-Body: { "message": "Quelle distance dois-je courir cette semaine selon mon prénom ?" }
-```
-- **Action attendue :**
-  1. Récupère la conversation via `:id`. Si la conversation n'existe pas, renvoyer un code `404 Not Found`.
-  2. Extrait le `lastInteractionId` de la conversation.
-  3. Envoie la nouvelle interaction à Gemini en injectant le paramètre de liaison :
-     ```typescript
-     const interaction = await ai.interactions.create({
-       model: GEMINI_MODEL,
-       previous_interaction_id: conversation.lastInteractionId,
-       input: message
-     });
-     ```
-  4. Met à jour la conversation en écrasant `lastInteractionId = interaction.id`.
-  5. Retourne au client la nouvelle réponse.
-
-#### Exercices de validation :
-1. **Validation du contexte :** Vérifiez que Gemini se souvient du prénom *"Alice"* et du contexte de course sans que vous ayez réécrit ces informations dans le second message.
-2. **Cloisonnement multi-utilisateurs :** Simulez deux conversations simultanées (Bob qui cuisine des pâtes, Alice qui court un marathon). Vérifiez que les réponses d'Alice ne contiennent aucune allusion aux pâtes de Bob.
-3. **Gestion des sessions perdues :** Testez l'envoi d'un message sur un identifiant de conversation inexistant ou expiré et assurez-vous que l'API renvoie une erreur `404` propre sans planter Node.js.
 </PracticalWork>
-
