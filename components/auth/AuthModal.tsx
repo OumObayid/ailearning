@@ -137,7 +137,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {mode === 'register' && (
             <div>
               <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">
-                Nom complet
+                Nom complet (nom et prénom)
               </label>
               <input
                 type="text"
