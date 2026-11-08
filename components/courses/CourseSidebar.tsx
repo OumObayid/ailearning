@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getChaptersForModule } from '@/lib/courseNavigation';
 import { Icon } from '@/components/common/Icon';
 import { cn } from '@/lib/utils';
+import { useChapterProgress } from '@/context/ChapterProgressContext';
 
 interface CourseSidebarProps {
   moduleId: string;
@@ -111,6 +112,8 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
   theme,
 }) => {
   const chapters = getChaptersForModule(moduleId);
+  const { isChapterCompleted, getModuleProgress } = useChapterProgress();
+
   const basePath =
     baseHref ||
     (moduleId.startsWith('prompt-engineering-')
@@ -122,6 +125,16 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
       : moduleId.startsWith('module-')
       ? `/cours/ai-engineering/${moduleId}`
       : `/cours/${moduleId}`);
+
+  const resolvedCourseId = React.useMemo(() => {
+    const path = `${basePath} ${moduleId}`;
+    if (path.includes('prompt-engineering')) return 'prompt-engineering-ide';
+    if (path.includes('backend-ia')) return 'backend-ia';
+    if (path.includes('debugging')) return 'debugging';
+    return 'ai-engineering';
+  }, [basePath, moduleId]);
+
+  const moduleProgress = getModuleProgress(resolvedCourseId, moduleId);
 
   const resolvedTheme = React.useMemo(() => {
     if (theme) return theme;
@@ -136,7 +149,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
   const currentTheme = SIDEBAR_THEMES[resolvedTheme] || SIDEBAR_THEMES.indigo;
 
   return (
-    <div className={cn('rounded-2xl border-2 bg-white p-3.5 sm:p-4 shadow-sm space-y-3.5', currentTheme.containerBorder)}>
+    <div className={cn('rounded-2xl border-2 bg-white p-3.5 sm:p-4 shadow-sm space-y-3', currentTheme.containerBorder)}>
       {/* Header : titre compact avec pastille du nombre de chapitres */}
       <div className={cn('flex items-center justify-between gap-2 border-b-2 pb-2.5', currentTheme.headerBorder)}>
         <div className="flex items-center gap-2 min-w-0">
@@ -150,11 +163,30 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
         </span>
       </div>
 
+      {/* Barre de progression de lecture du module */}
+      {chapters.length > 0 && (
+        <div className="space-y-1.5 p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+          <div className="flex items-center justify-between text-[11px] font-bold">
+            <span className="text-slate-600">Lecture terminée :</span>
+            <span className="font-mono font-black text-emerald-700">
+              {moduleProgress.completedCount}/{chapters.length} ({moduleProgress.percent}%)
+            </span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-all duration-300"
+              style={{ width: `${moduleProgress.percent}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Flat Chapters List : menus épurés sans préfixe "Chapitre" ou "Partie" */}
-      <nav aria-label="Liste des chapitres" className="space-y-1.5">
+      <nav aria-label="Liste des chapitres" className="space-y-1.5 pt-0.5">
         {chapters.map((chapter) => {
           const isActive = chapter.slug === activeSlug;
           const displayTitle = cleanMenuTitle(chapter.title);
+          const isCompleted = isChapterCompleted(resolvedCourseId, moduleId, chapter.slug);
 
           return (
             <Link
@@ -169,11 +201,16 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span
                   className={cn(
-                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-black',
-                    isActive ? currentTheme.numberActive : currentTheme.numberInactive
+                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-black transition-all',
+                    isCompleted
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : isActive
+                        ? currentTheme.numberActive
+                        : currentTheme.numberInactive
                   )}
+                  title={isCompleted ? "Chapitre terminé" : undefined}
                 >
-                  {chapter.number ? chapter.number : '•'}
+                  {isCompleted ? '✓' : chapter.number ? chapter.number : '•'}
                 </span>
                 <span className="line-clamp-2 leading-snug break-words" title={displayTitle}>
                   {displayTitle}

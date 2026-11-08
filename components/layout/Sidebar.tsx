@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { APP_NAME } from '@/lib/constants';
 import { Icon, IconName } from '@/components/common/Icon';
 import { cn } from '@/lib/utils';
@@ -38,8 +38,13 @@ const NAV_ITEMS: NavItem[] = [
     icon: 'academic-cap',
   },
   {
-    label: 'Espace Membre',
-    href: '/profil',
+    label: 'Ma progression',
+    href: '/profil?tab=progression',
+    icon: 'chart-bar',
+  },
+  {
+    label: 'Mon Profil',
+    href: '/profil?tab=profile',
     icon: 'user',
   },
 ];
@@ -51,6 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
 }) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
 
   const navItems: NavItem[] = React.useMemo(() => {
@@ -67,6 +73,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isItemActive = (href: string) => {
     if (href === '/') return pathname === '/';
+    if (href.includes('?tab=')) {
+      const [path, query] = href.split('?');
+      const tabName = query.replace('tab=', '');
+      const currentTab = searchParams ? (searchParams.get('tab') || 'progression') : 'progression';
+      return pathname === path && currentTab === tabName;
+    }
     return pathname.startsWith(href);
   };
 
@@ -182,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             'flex items-center gap-3.5 rounded-xl p-3 text-left hover:bg-slate-100 transition group',
             isCollapsed && !isMobileOpen ? 'justify-center p-2' : ''
           )}
-          title={isCollapsed && !isMobileOpen ? (user ? user.name : 'Espace Membre') : undefined}
+          title={isCollapsed && !isMobileOpen ? (user ? user.name : 'Mon Profil') : undefined}
         >
           {user?.avatarUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
@@ -203,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {user ? user.name : 'Connexion Membre'}
               </span>
               <span className="text-sm font-semibold text-slate-600 truncate">
-                {user ? (user.role === 'admin' ? '🛡️ Administrateur' : 'Espace Membre actif') : 'Accéder au profil'}
+                {user ? (user.role === 'admin' ? '🛡️ Administrateur' : 'Mon Profil actif') : 'Accéder au profil'}
               </span>
             </div>
           )}

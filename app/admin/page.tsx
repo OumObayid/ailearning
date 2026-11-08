@@ -685,7 +685,7 @@ function AdminContent() {
             href="/profil"
             className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white hover:bg-slate-800 transition cursor-pointer"
           >
-            ← Retour à mon Espace Membre
+            ← Retour à Mon Profil
           </Link>
         </div>
       </div>
@@ -1053,6 +1053,22 @@ function AdminContent() {
                   <option value="student">Étudiants uniquement</option>
                   <option value="admin">Administrateurs</option>
                 </select>
+
+                {/* Bouton icône Réinitialisation des filtres utilisateurs */}
+                {(userSearch.trim() !== '' || userRoleFilter !== 'all') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUserSearch('');
+                      setUserRoleFilter('all');
+                    }}
+                    className="h-9 w-9 rounded-xl border-2 border-slate-300 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition flex items-center justify-center cursor-pointer shadow-xs shrink-0"
+                    title="Réinitialiser les filtres"
+                    aria-label="Réinitialiser les filtres"
+                  >
+                    <Icon name="rotate-ccw" className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -1152,6 +1168,16 @@ function AdminContent() {
                             >
                               <Icon name="eye" className="w-4 h-4" />
                             </button>
+
+                            {/* Bouton Schéma de Progression */}
+                            <Link
+                              href={`/admin/progression?userId=${u.id}`}
+                              className="h-8 w-8 rounded-lg border border-indigo-200 bg-indigo-50/80 text-indigo-700 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 hover:shadow-xs transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+                              title="Voir les schémas et l'étude de progression"
+                              aria-label="Voir la progression"
+                            >
+                              <Icon name="chart-bar" className="w-4 h-4" />
+                            </Link>
 
                             {/* Bouton Modifier */}
                             <button
@@ -1254,6 +1280,23 @@ function AdminContent() {
                 <option value="passed">Réussis (≥ 80%)</option>
                 <option value="failed">Échoués (&lt; 80%)</option>
               </select>
+
+              {/* Bouton icône Réinitialisation des filtres examens */}
+              {(examSearch.trim() !== '' || examCourseFilter !== 'all' || examStatusFilter !== 'all') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExamSearch('');
+                    setExamCourseFilter('all');
+                    setExamStatusFilter('all');
+                  }}
+                  className="h-9 w-9 rounded-xl border-2 border-slate-300 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition flex items-center justify-center cursor-pointer shadow-xs shrink-0"
+                  title="Réinitialiser tous les filtres"
+                  aria-label="Réinitialiser les filtres"
+                >
+                  <Icon name="rotate-ccw" className="w-4 h-4" />
+                </button>
+              )}
             </div>
 
             {/* Table Examens Minimisée */}
@@ -1682,7 +1725,14 @@ function AdminContent() {
             </div>
 
             {/* Pied de modale */}
-            <div className="flex justify-end pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <Link
+                href={`/admin/progression?userId=${viewingUser.id}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-900 hover:bg-indigo-100 transition text-xs font-bold"
+              >
+                <Icon name="chart-bar" className="w-3.5 h-3.5 text-indigo-700" />
+                <span>Schémas de progression →</span>
+              </Link>
               <button
                 type="button"
                 onClick={() => setViewingUser(null)}

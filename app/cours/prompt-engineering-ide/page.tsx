@@ -5,6 +5,8 @@ import { CourseService } from '@/services/courseService';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Icon } from '@/components/common/Icon';
 import { ModulePassedBadge } from '@/components/courses/ModulePassedBadge';
+import { CourseReadingProgressBar } from '@/components/courses/CourseReadingProgressBar';
+import { ModuleReadingProgressBar } from '@/components/courses/ModuleReadingProgressBar';
 
 export const metadata = {
   title: 'Prompt Engineering pour les Agents IA dans les IDE — Programme du cours • AiLearning',
@@ -38,6 +40,11 @@ export default function PromptEngineeringIdeCoursePage() {
           priority
           className="w-full h-auto max-h-[360px] object-cover"
         />
+      </div>
+
+      {/* Progression de lecture générale du cours */}
+      <div className="p-4 sm:p-5 rounded-3xl border-2 border-purple-200 bg-purple-50/70 shadow-sm">
+        <CourseReadingProgressBar courseId="prompt-engineering-ide" />
       </div>
 
       {/* 3. Une carte pour chaque module avec Titre, Petite description et Lien */}
@@ -77,6 +84,11 @@ export default function PromptEngineeringIdeCoursePage() {
                 <p className="text-sm sm:text-base font-medium text-slate-700 leading-relaxed">
                   {module.description}
                 </p>
+              </div>
+
+              {/* Progression de lecture du module */}
+              <div className="pt-2 border-t border-purple-200/80">
+                <ModuleReadingProgressBar courseId="prompt-engineering-ide" moduleId={module.order} />
               </div>
             </div>
           </div>

@@ -38,12 +38,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             />
           </React.Suspense>
         ) : (
-          <Sidebar
-            isMobileOpen={isMobileOpen}
-            onCloseMobile={handleCloseMobile}
-            isCollapsed={isCollapsed}
-            onToggleCollapse={handleToggleCollapse}
-          />
+          <React.Suspense fallback={<aside className="hidden lg:flex w-72 bg-white h-screen sticky top-0" />}>
+            <Sidebar
+              isMobileOpen={isMobileOpen}
+              onCloseMobile={handleCloseMobile}
+              isCollapsed={isCollapsed}
+              onToggleCollapse={handleToggleCollapse}
+            />
+          </React.Suspense>
         )
       )}
 

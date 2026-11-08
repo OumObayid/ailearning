@@ -41,4 +41,18 @@ CREATE TABLE IF NOT EXISTS system_settings (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Table de suivi de lecture des chapitres par les utilisateurs
+CREATE TABLE IF NOT EXISTS user_chapter_progress (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  course_id VARCHAR(50) NOT NULL,
+  module_id VARCHAR(50) NOT NULL,
+  chapter_slug VARCHAR(120) NOT NULL,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_user_chapters_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_user_chapter (user_id, course_id, module_id, chapter_slug),
+  INDEX idx_user_course_module (user_id, course_id, module_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 

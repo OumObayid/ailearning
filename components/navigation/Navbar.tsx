@@ -2,23 +2,31 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { label: 'Tableau de bord', href: '/' },
   { label: 'Cours', href: '/cours' },
   { label: 'Examens', href: '/examens' },
-  { label: 'Profil', href: '/profil' },
+  { label: 'Ma progression', href: '/profil?tab=progression' },
+  { label: 'Mon Profil', href: '/profil?tab=profile' },
 ];
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (href: string) => {
     if (href === '/') {
       return pathname === '/';
+    }
+    if (href.includes('?tab=')) {
+      const [path, query] = href.split('?');
+      const tabName = query.replace('tab=', '');
+      const currentTab = searchParams ? (searchParams.get('tab') || 'progression') : 'progression';
+      return pathname === path && currentTab === tabName;
     }
     return pathname.startsWith(href);
   };

@@ -4,7 +4,9 @@ import './globals.css';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { AuthProvider } from '@/context/AuthContext';
 import { ExamProgressProvider } from '@/context/ExamProgressContext';
+import { ChapterProgressProvider } from '@/context/ChapterProgressContext';
 import { CourseDisplayProvider } from '@/context/CourseDisplayContext';
+import { ExtensionCleanUp } from '@/components/common/ExtensionCleanUp';
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
 
 const inter = Inter({
@@ -35,42 +37,15 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Neutralisation préventive des attributs injectés par des extensions (ex: Bitdefender TrafficLight)
-              (function() {
-                try {
-                  const origSetAttr = Element.prototype.setAttribute;
-                  Element.prototype.setAttribute = function(name, value) {
-                    if (
-                      name === 'bis_skin_checked' ||
-                      name === 'bis_register' ||
-                      (typeof name === 'string' && (name.startsWith('__processed_') || name.startsWith('bis_')))
-                    ) {
-                      return;
-                    }
-                    return origSetAttr.apply(this, arguments);
-                  };
-                  if (typeof document !== 'undefined') {
-                    document.querySelectorAll?.('[bis_skin_checked]').forEach(function(el) {
-                      el.removeAttribute('bis_skin_checked');
-                    });
-                    document.body?.removeAttribute('bis_register');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body suppressHydrationWarning className="min-h-full bg-slate-50 text-slate-900 font-sans">
+        <ExtensionCleanUp />
         <AuthProvider>
           <ExamProgressProvider>
-            <CourseDisplayProvider>
-              <MainLayout>{children}</MainLayout>
-            </CourseDisplayProvider>
+            <ChapterProgressProvider>
+              <CourseDisplayProvider>
+                <MainLayout>{children}</MainLayout>
+              </CourseDisplayProvider>
+            </ChapterProgressProvider>
           </ExamProgressProvider>
         </AuthProvider>
       </body>

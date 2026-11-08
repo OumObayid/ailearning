@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Course } from '@/types/course';
 import { Icon } from '@/components/common/Icon';
+import { CourseReadingProgressBar } from '@/components/courses/CourseReadingProgressBar';
 
 interface CourseCardProps {
   course: Course;
@@ -141,6 +142,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         <p className="text-base text-slate-800 font-medium leading-relaxed flex-1">
           {course.description}
         </p>
+
+        {/* Progression de lecture globale du cours */}
+        <CourseReadingProgressBar courseId={course.id} className="pt-2" />
       </div>
 
       {/* Action Footer */}

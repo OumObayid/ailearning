@@ -5,6 +5,8 @@ import { CourseService } from '@/services/courseService';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Icon } from '@/components/common/Icon';
 import { ModulePassedBadge } from '@/components/courses/ModulePassedBadge';
+import { CourseReadingProgressBar } from '@/components/courses/CourseReadingProgressBar';
+import { ModuleReadingProgressBar } from '@/components/courses/ModuleReadingProgressBar';
 
 export const metadata = {
   title: 'AI Engineering — Programme du cours • AiLearning',
@@ -38,6 +40,11 @@ export default function AiEngineeringCoursePage() {
           priority
           className="w-full h-auto max-h-[360px] object-cover"
         />
+      </div>
+
+      {/* Progression de lecture générale du cours */}
+      <div className="p-4 sm:p-5 rounded-3xl border-2 border-blue-200 bg-blue-50/70 shadow-sm">
+        <CourseReadingProgressBar courseId="ai-engineering" />
       </div>
 
       {/* 3. Une carte pour chaque module avec Titre, Petite description et Lien */}
@@ -77,6 +84,11 @@ export default function AiEngineeringCoursePage() {
                 <p className="text-sm sm:text-base font-medium text-slate-700 leading-relaxed">
                   {module.description}
                 </p>
+              </div>
+
+              {/* Progression de lecture du module */}
+              <div className="pt-2 border-t border-blue-200/80">
+                <ModuleReadingProgressBar courseId="ai-engineering" moduleId={module.order} />
               </div>
             </div>
           </div>
