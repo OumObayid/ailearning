@@ -1,0 +1,180 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 6 — Schéma MySQL et persistance des vecteurs dans Qdrant
+
+### 1. Le schéma relationnel MySQL
+
+Pour gérer les documents importés et leurs fragments découpés, exécutez le script SQL suivant dans votre base de données :
+
+```sql
+USE backend_rag;
+
+-- Table des documents importés
+CREATE TABLE IF NOT EXISTS documents (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
+  status ENUM('pending', 'processing', 'indexed', 'failed') DEFAULT 'pending',
+  error_message TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_user_docs (user_id)
+) ENGINE=InnoDB;
+
+-- Table des fragments de texte (Chunks)
+CREATE TABLE IF NOT EXISTS document_chunks (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  document_id BIGINT UNSIGNED NOT NULL,
+  chunk_index INT UNSIGNED NOT NULL,
+  content LONGTEXT NOT NULL,
+  qdrant_point_id CHAR(36) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_chunks_document
+    FOREIGN KEY (document_id)
+    REFERENCES documents(id)
+    ON DELETE CASCADE,
+  UNIQUE KEY uq_doc_chunk (document_id, chunk_index),
+  UNIQUE KEY uq_qdrant_point (qdrant_point_id),
+  INDEX idx_chunk_doc (document_id)
+) ENGINE=InnoDB;
+```
+
+---
+
+### 2. Anatomie d'un point vectoriel dans Qdrant
+
+Un **point** dans Qdrant se compose de trois éléments indissociables :
+
+```json
+{
+  "id": "c0a8012e-1234-4000-8000-000000000001",
+  "vector": [0.0142, -0.0418, 0.0891, "... (768 valeurs)"],
+  "payload": {
+    "user_id": 12,
+    "document_id": 4,
+    "chunk_id": 18,
+    "title": "guide-conditions-remboursement.pdf"
+  }
+}
+```
+
+- `id` : Un identifiant unique universel (UUID v4) conforme aux exigences de Qdrant.
+- `vector` : Le tableau numérique de 768 dimensions généré par Gemini.
+- `payload` : Les métadonnées indexées permettant de filtrer instantanément par utilisateur (`user_id`) lors de la recherche.
+
+---
+
+### 3. Service d'insertion vectorielle avec le client Qdrant
+
+Installez le générateur d'UUID standard :
+
+```bash
+npm install uuid
+npm install -D @types/uuid
+```
+
+Dans `src/services/qdrant.service.ts`, ajoutez la méthode d'insertion d'un point :
+
+```typescript
+// src/services/qdrant.service.ts (suite)
+import { v4 as uuidv4 } from 'uuid';
+import { qdrant } from '../config/qdrant.js';
+import { DOCUMENTS_COLLECTION } from './qdrant.service.js';
+
+export interface ChunkPayload {
+  userId: number;
+  documentId: number;
+  chunkId: number;
+  title: string;
+}
+
+export async function insertChunkVector(
+  vector: number[],
+  payload: ChunkPayload
+): Promise<string> {
+  const pointId = uuidv4();
+
+  // Opération upsert idempotente
+  await qdrant.upsert(DOCUMENTS_COLLECTION, {
+    wait: true, // Attendre que le point soit effectivement persisté
+    points: [
+      {
+        id: pointId,
+        vector,
+        payload: {
+          user_id: payload.userId,
+          document_id: payload.documentId,
+          chunk_id: payload.chunkId,
+          title: payload.title,
+        },
+      },
+    ],
+  });
+
+  return pointId;
+}
+```
+
+<Callout type="note" title="Liaison bilatérale infaillible">
+Le point vectoriel connaît le `chunk_id` de MySQL via son `payload`, et MySQL conserve le `qdrant_point_id` dans sa colonne dédiée. Cette double référence permet de naviguer dans les deux sens et garantit la cohérence des opérations de suppression.
+</Callout>
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Double enregistrement synchronisé MySQL & Qdrant"
+  objective="Persister le fragment textuel dans MySQL, générer son vecteur 768d avec Gemini, l'insérer dans Qdrant avec payload, et lier les deux enregistrements par clé croisée."
+  duration="40 minutes"
+  steps={[
+    "Créer la table `documents` et la table `document_chunks` dans MySQL comportant la colonne `qdrant_point_id VARCHAR(36) NULL`.",
+    "Développer la fonction `saveChunkInMySQL(documentId, chunkIndex, content)` insérant le fragment et retournant l'identifiant auto-incrémenté `chunkId`.",
+    "Calculer le vecteur de dimension 768 du fragment via `generateEmbedding(content)`.",
+    "Insérer le point dans Qdrant avec un UUID v4 aléatoire (`crypto.randomUUID()`) et une charge utile contenant `{ chunk_id: chunkId, document_id: documentId, user_id: userId }`.",
+    "Mettre à jour MySQL avec une requête préparée `UPDATE document_chunks SET qdrant_point_id = ? WHERE id = ?`.",
+    "Vérifier la double persistance : constater la ligne dans MySQL avec son UUID et inspecter le point correspondant dans le dashboard web Qdrant."
+  ]}
+  validationCriteria={[
+    "Le texte complet et les métadonnées de document sont enregistrés dans MySQL.",
+    "Le point vectoriel et son payload `{ chunk_id, user_id }` sont visibles dans Qdrant.",
+    "La clé croisée (`qdrant_point_id` dans MySQL <-> `chunk_id` dans Qdrant) permet la navigation bidirectionnelle."
+  ]}
+>
+
+#### Transaction de synchronisation croisée :
+```typescript
+import crypto from 'crypto';
+import { pool } from '../config/database.js';
+import { qdrant, DOCUMENTS_COLLECTION } from '../services/qdrant.service.js';
+import { generateEmbedding } from '../services/embedding.service.js';
+
+export async function indexSingleChunk(documentId: number, userId: number, chunkIndex: number, text: string) {
+  // 1. Sauvegarde du texte dans MySQL
+  const [res]: any = await pool.execute(
+    'INSERT INTO document_chunks (document_id, chunk_index, content) VALUES (?, ?, ?)',
+    [documentId, chunkIndex, text]
+  );
+  const chunkId = res.insertId;
+
+  // 2. Vectorisation
+  const vector = await generateEmbedding(text);
+
+  // 3. Stockage dans Qdrant avec UUID v4
+  const pointId = crypto.randomUUID();
+  await qdrant.upsert(DOCUMENTS_COLLECTION, {
+    points: [{
+      id: pointId,
+      vector,
+      payload: { chunk_id: chunkId, document_id: documentId, user_id: userId }
+    }]
+  });
+
+  // 4. Liaison retour dans MySQL
+  await pool.execute('UPDATE document_chunks SET qdrant_point_id = ? WHERE id = ?', [pointId, chunkId]);
+  return { chunkId, pointId };
+}
+```
+</PracticalWork>
+

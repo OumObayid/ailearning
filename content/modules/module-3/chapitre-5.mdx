@@ -1,0 +1,112 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { BackendRequestSimulator } from '@/components/interactive/BackendRequestSimulator';
+
+# Chapitre 5 — Responsabilités des couches logicielles
+
+### 1. Découpage en couches architecturales
+
+Dans un projet backend industriel, mélanger la logique HTTP, la validation des paramètres, les requêtes SQL et les appels d'API dans un fichier unique conduit inévitablement à un code fragile et difficilement maintenable (*code spaghetti*).
+
+L'architecture en couches sépare rigoureusement les préoccupations logicielles :
+
+| Couche logicielle | Emplacement | Responsabilité exclusive | Ce qu'elle ne doit JAMAIS faire |
+| :--- | :--- | :--- | :--- |
+| **Routes** | `src/routes/` | Associe une méthode HTTP et une URL aux middlewares et au contrôleur | Exécuter des calculs ou appeler des APIs externes |
+| **Middlewares** | `src/middlewares/` | Intercepte la requête pour valider, authentifier ou tracer | Renvoyer la réponse finale sauf en cas d'erreur ou de rejet |
+| **Contrôleurs** | `src/controllers/` | Récupère les données validées, orchestre les services et forme la réponse HTTP | Contenir des requêtes SQL ou du code de SDK externe |
+| **Services** | `src/services/` | Héberge la logique métier pure, interroge Gemini et MySQL | Manipuler les objets HTTP `req` et `res` d'Express |
+
+---
+
+### 2. Exemple concret de séparation nette
+
+#### Le contrôleur reste purement axé sur le protocole HTTP :
+
+```typescript
+// src/controllers/ai.controller.ts
+export const classifyTextController: RequestHandler = async (req, res, next) => {
+  try {
+    const { text, categories } = req.body;
+    // Appel du service sans connaissance des objets Express
+    const classification = await classifyWithGemini(text, categories);
+
+    res.status(200).json({
+      success: true,
+      category: classification,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+```
+
+#### Le service reste totalement indépendant du protocole HTTP :
+
+```typescript
+// src/services/classification.service.ts
+export async function classifyWithGemini(text: string, categories: string[]): Promise<string> {
+  // Logique purement métier et IA, testable unitairement sans serveur web
+  const interaction = await ai.interactions.create({
+    model: DEFAULT_GEMINI_MODEL,
+    input: `Classe ce texte dans l'une des catégories suivantes [${categories.join(', ')}] :\n${text}`,
+  });
+  return interaction.outputs?.[0]?.text?.trim() || 'Inconnu';
+}
+```
+
+---
+
+### 3. Le cheminement complet d'une requête
+
+<ArchitectureDiagram
+  title="Cycle de vie d'une requête entrante à travers les 5 couches logicielles"
+  diagram={`REQUÊTE DU NAVIGATEUR (POST /api/ai/generate)
+       |
+       v
+[ 1. ROUTE EXPRESS ] -------------> Détecte la méthode et la cible
+       |
+       v
+[ 2. MIDDLEWARE SÉCURITÉ ] -------> Helmet (en-têtes) & express-rate-limit
+       |
+       v
+[ 3. MIDDLEWARE VALIDATION ] -----> Zod safeParse() (Rejette avec 400 si invalide)
+       |
+       v
+[ 4. CONTRÔLEUR HTTP ] -----------> Extrait req.body et orchestre l'opération
+       |
+       v
+[ 5. SERVICE MÉTIER IA ] ---------> Interroge Google Gemini et MySQL Pool
+       |
+       v
+RÉPONSE HTTP JSON PROPRE (HTTP 200 OK)`}
+/>
+
+---
+
+### 4. Atelier interactif : Simulation du cycle de requête
+
+Expérimentez ci-dessous les différents scénarios de franchissement des couches : observez comment une erreur Zod ou un dépassement de quota bloque immédiatement la requête avant d'atteindre le service Gemini :
+
+<BackendRequestSimulator />
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Refactorisation complète en couches industrielles"
+  objective="Découpler rigoureusement la logique HTTP (contrôleur), la logique métier (service) et la validation Zod sur une fonctionnalité d'analyse de sentiment."
+  duration="40 minutes"
+  steps={[
+    "Créer un nouveau schéma `src/schemas/sentiment.schema.ts` validant un texte de commentaire client compris entre 10 et 2 000 caractères.",
+    "Créer le service `src/services/sentiment.service.ts` : cette fonction pure prend en entrée une chaîne de caractères et retourne un objet `{ sentiment: string, confidence: number }` sans jamais importer d'objet `req` ou `res` d'Express.",
+    "Créer le contrôleur `src/controllers/sentiment.controller.ts` : il extrait les données validées de `req.body`, appelle le service, et renvoie la réponse formatée avec `res.json()`.",
+    "Exposer la route `POST /api/ai/sentiment` dans `src/routes/ai.routes.ts` en intercalant le middleware `validateBody(sentimentSchema)`.",
+    "Tester avec Postman et vérifier qu'en cas d'erreur dans le service (ex. simulation d'exception), le contrôleur délègue bien l'erreur à `next(error)` sans bloquer le serveur."
+  ]}
+  validationCriteria={[
+    "Le fichier de service ne contient aucun import d'Express (`Request`, `Response`).",
+    "Le contrôleur ne contient aucun appel direct au SDK Gemini (délégation exclusive au service).",
+    "Le code HTTP et la structure de réponse JSON sont strictement standardisés."
+  ]}
+/>
+

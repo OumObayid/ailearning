@@ -1,0 +1,128 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 2 — Architecture interne et composants fondamentaux d'un agent IA
+
+### 1. Les composants clés d'un agent professionnel
+
+Pour construire un agent robuste destiné à la production d'entreprise, il est impératif de dissocier les différentes responsabilités logicielles en six piliers fondamentaux :
+
+#### A. Le modèle d'intelligence artificielle (Le Cerveau)
+C'est le composant cognitif responsable de l'interprétation des intentions, du raisonnement et de la proposition d'actions. Dans notre écosystème, nous nous appuyons sur **Google Gemini (Gemini 2.5 Flash)**.
+Le modèle remplit quatre tâches vitales :
+1. Comprendre la finalité de la demande utilisateur.
+2. Déceler les informations manquantes pour accomplir la tâche.
+3. Proposer un outil adéquat et formuler les arguments d'entrée.
+4. Synthétiser les résultats retournés par le système pour produire la réponse finale.
+
+#### B. Les instructions système (Le Contrat de Comportement)
+Le prompt système délimite le cadre opérationnel, le ton, les règles d'éthique et les interdictions strictes :
+
+<CodeBlock
+  language="text"
+  title="Exemple de consigne système pour agent de support technique"
+  code={`Tu es un assistant technique expert en diagnostic d'applications web.
+Tes capacités autorisées :
+- Rechercher dans la documentation technique officielle.
+- Consulter le statut des services et les commandes autorisées.
+- Analyser les traces de piles d'erreurs (stacktraces).
+
+Tes interdictions formelles :
+- Tu ne dois jamais tenter de supprimer un enregistrement utilisateur.
+- Tu ne dois jamais inventer un paramètre de configuration inexistant.
+- Tu ne dois jamais divulguer de jetons d'authentification ou d'adresses IP privées.
+- Si une information est absente de la documentation, indique-le clairement sans extrapoler.`}
+/>
+
+<Callout type="warning" title="Les consignes système ne sont pas une barrière de sécurité">
+Bien que le prompt système guide le comportement probabiliste du modèle, <strong>il ne garantit aucune sécurité informatique infaillible</strong>. Une injection de prompt adroite peut contourner ces règles. La véritable sécurité (contrôle d&apos;accès, permissions, intégrité des types) doit obligatoirement être implémentée dans le code TypeScript de votre serveur.
+</Callout>
+
+#### C. Les outils (Les Bras du Système)
+Un outil est une fonction informatique concrète que l'agent peut solliciter auprès de votre serveur :
+- `searchDocumentation(query: string)`
+- `getOrderDetails(orderId: number)`
+- `searchKnowledgeBase(vector: number[])`
+- `sendSlackNotification(channel: string, text: string)`
+
+#### D. La mémoire (L'Historique et le Contexte)
+La mémoire conserve l'état nécessaire entre les différents tours de parole et étapes intermédiaires :
+- *Mémoire à court terme* : Messages de la session courante, résultats intermédiaires des outils appelés lors du tour en cours.
+- *Mémoire à long terme* : Préférences persistées de l'utilisateur, historique des interventions archivé dans MySQL, base documentaire dans Qdrant.
+
+#### E. Le moteur d'exécution (Le Cœur Logique)
+C'est le code TypeScript qui encadre l'agent. Il reçoit les recommandations du modèle, vérifie si l'outil existe, valide ses arguments avec **Zod**, applique les permissions, exécute la fonction réelle et réinjecte la sortie dans le modèle.
+
+#### F. Le contrôle de sécurité (Le Garde-Fou)
+Il sépare la consultation de la mutation. Un agent peut avoir le droit de consulter l'historique d'une facture, mais nécessitera une vérification stricte des permissions ou une confirmation humaine pour déclencher son annulation.
+
+---
+
+### 2. Diagramme d'architecture générale en production
+
+<ArchitectureDiagram
+  title="Topologie d'un agent IA complet en production"
+  diagram={`                  UTILISATEUR (Client React)
+                             |
+                             v
+                     API BACKEND EXPRESS
+                             |
+                             v
+               BOUCLE D'AGENT TYPESCRIPT
+                             |
+        +--------------------+--------------------+
+        |                    |                    |
+        v                    v                    v
+  GOOGLE GEMINI        MÉMOIRE D'ÉTAT      CONTRÔLE DE SÉCURITÉ
+  (Raisonnement)      (Session / MySQL)     (Permissions Zod)
+        |
+        v
+  RECOMMANDATION : Function Call { name, arguments }
+        |
+        v
+  MOTEUR D'EXÉCUTION DU TOOL REGISTRY
+        |
+   +----+--------------------+
+   |                         |
+   v                         v
+APIs EXTERNES REST    MYSQL & QDRANT ENGINE
+   |                         |
+   +----+--------------------+
+        |
+        v
+  RÉSULTATS DE L'OUTIL RETOURNÉS AU SERVEUR
+        |
+        v
+  RÉINJECTION DANS GEMINI POUR ANALYSE ET SYNTHÈSE
+        |
+        v
+  RÉPONSE FINALE CONTEXTUALISÉE TRANSMISE AU CLIENT`}
+/>
+
+---
+
+### 3. Séparation stricte : Le modèle propose, le moteur exécute
+
+Pourquoi est-il crucial d'interdire au modèle d'exécuter directement du code sur votre machine ?
+- **Non-déterminisme des LLM** : Un modèle peut halluciner un nom de table SQL ou générer un paramètre erroné.
+- **Principe d'isolation hermétique** : Gemini génère un simple objet JSON textuel contenant le nom de la fonction et les arguments proposés.
+- **Autorité souveraine du backend** : Votre serveur Node.js est le seul maître à bord. C'est lui qui inspecte la proposition, s'assure que l'utilisateur détient le rôle nécessaire, valide les bornes numériques avec Zod, et appelle la base de données via une requête préparée hermétique.
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Quelle entité est responsable de l'exécution réelle d'une fonction (ex. interroger la base MySQL) lors d'un appel d'outil par un agent ?"
+  options={[
+    "Les serveurs de Google Gemini exécutent directement la requête SQL sur votre base",
+    "Votre propre application backend Node.js / TypeScript qui valide les arguments et déclenche le code",
+    "Le navigateur web de l'utilisateur final via une iframe cachée",
+    "Le protocole DNS du nom de domaine"
+  ]}
+  correctIndex={1}
+  explanation="Le modèle Gemini ne fait que suggérer le nom de la fonction et ses arguments sous forme de JSON textuel. C'est obligatoirement le moteur applicatif TypeScript du serveur qui prend la décision d'exécuter ou non la fonction."
+/>
+

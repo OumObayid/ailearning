@@ -1,0 +1,105 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 11 — Intégration de n8n par Webhooks sécurisés et workflows asynchrones
+
+### 1. Architecture de couplage entre Express et n8n
+
+Dans notre plateforme, le serveur Node.js délègue les tâches d'arrière-plan complexes (envoi de notifications Slack/Email, génération de rapports PDF, synchronisation avec des CRMs tiers) à une instance dédiée de **n8n**.
+
+Ce découplage apporte des avantages fondamentaux :
+- **Soulagement de la boucle d'événements Node.js** : Les opérations d'E/S lentes ne bloquent pas l'API principale.
+- **Observabilité visuelle des workflows** : Les équipes opérationnelles peuvent auditer les exécutions et réparer un flux sans modifier le code source TypeScript de l'API.
+- **Gestion intégrée des retries** : Si un serveur SMTP distant subit une défaillance transitoire, n8n gère la reprise automatique avec temporisation exponentielle.
+
+---
+
+### 2. Sécurisation des webhooks par header X-Webhook-Secret
+
+Pour empêcher que des tiers n'appellent arbitrairement les points d'entrée de vos flux n8n, chaque requête émise depuis Express transporte un secret partagé :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/automations/n8nClient.service.ts — Appel webhook sécurisé"
+  code={`export async function triggerN8nWorkflow(workflowPath: string, payload: Record<string, unknown>) {
+  const baseUrl = process.env.N8N_BASE_URL || 'http://localhost:5678';
+  const secret = process.env.N8N_WEBHOOK_SECRET;
+
+  if (!secret) {
+    throw new Error("N8N_WEBHOOK_SECRET non configuré dans le backend.");
+  }
+
+  const endpoint = \`\${baseUrl}/webhook/\${workflowPath}\`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Webhook-Secret': secret,
+    },
+    body: JSON.stringify({
+      ...payload,
+      triggeredAt: new Date().toISOString(),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(\`Erreur lors de l'appel du webhook n8n (HTTP \${response.status})\`);
+  }
+
+  return await response.json();
+}`}
+/>
+
+---
+
+### 3. Workflow 1 : Notification de nouveau document indexé
+
+Ce premier workflow est amorcé dès que le pipeline RAG achève l'indexation vectorielle d'un fichier dans Qdrant :
+
+<ArchitectureDiagram
+  title="Workflow n8n de notification et audit documentaire"
+  diagram={`[ EXPRESS BACKEND ]
+         |
+         | (POST /webhook/document-indexed avec X-Webhook-Secret)
+         v
+[ n8n : WEBHOOK TRIGGER ]
+         |
+         v
+[ n8n : CODE NODE (Vérification du secret) ]
+         |
+         v
+[ n8n : SLACK NODE ] --------> Notification canal #veille-documentaire
+         |
+         v
+[ n8n : RESEND EMAIL NODE ] -> Accusé de réception envoyé au propriétaire du fichier`}
+/>
+
+---
+
+### 4. Workflow 2 : Génération planifiée de rapport d'audit
+
+Le second workflow fonctionne de manière autonome grâce au nœud **Schedule Trigger (Cron)** :
+- **Déclenchement** : Chaque vendredi à 18h00 (`0 18 * * 5`).
+- **Action 1** : Requête MySQL vers la table `documents` pour recenser les fichiers ajoutés au cours des 7 derniers jours.
+- **Action 2** : Requête vers l'Interactions API de Gemini pour rédiger une synthèse analytique des thématiques abordées.
+- **Action 3** : Compilation d'un rapport PDF et diffusion par email à l'équipe de direction.
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi sécurise-t-on les webhooks de n8n avec un en-tête 'X-Webhook-Secret' émis par le backend Express ?"
+  options={[
+    "Pour accélérer l'envoi des emails",
+    "Pour garantir que seules les requêtes légitimes provenant de votre propre serveur backend peuvent déclencher l'exécution des workflows automatisés",
+    "Parce que n8n refuse les connexions HTTP sans en-tête",
+    "Pour masquer les adresses IP dans la console"
+  ]}
+  correctIndex={1}
+  explanation="Sans secret partagé dans les en-têtes, n'importe quel internaute connaissant l'URL publique de votre instance n8n pourrait déclencher des automatisations, envoyer des emails et consommer vos ressources de manière incontrôlée."
+/>
+

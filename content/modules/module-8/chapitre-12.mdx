@@ -1,0 +1,137 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 12 — Frontend React, streaming temps réel et gestion documentaire
+
+### 1. Conception de l'interface avec React et Tailwind CSS
+
+L'interface de la plateforme s'articule autour de trois espaces principaux conçus pour offrir une ergonomie irréprochable :
+1. **La barre latérale de navigation (*Sidebar*)** : Historique des sessions de discussion classées chronologiquement, raccourcis d'accès à l'espace documentaire et profil utilisateur.
+2. **La zone conversationnelle centrale** : Affichage des messages avec formatage Markdown complet, bulles différenciées (Utilisateur vs Assistant), indicateurs de frappe et volet de sources rétractable.
+3. **Le gestionnaire de documents** : Tableau récapitulatif des fichiers indexés avec badges de statut (`processing`, `indexed`, `failed`), taille, nombre de fragments et boutons d'action.
+
+---
+
+### 2. Intégration du streaming fluide de tokens
+
+Attendre 3 ou 4 secondes qu'un LLM termine la génération complète d'un long paragraphe crée une friction inacceptable pour l'utilisateur.
+
+En exploitant le **Streaming HTTP avec l'API Fetch et ReadableStream** (ou le hook `useChat` du **Vercel AI SDK**), les tokens sont affichés instantanément sur l'écran :
+
+<CodeBlock
+  language="typescript"
+  title="src/components/chat/useStreamChat.ts — Hook de consommation du flux streamé"
+  code={`import { useState } from 'react';
+
+export function useStreamChat(conversationId: string) {
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  const sendMessage = async (prompt: string) => {
+    setIsStreaming(true);
+    // Ajout immédiat du message utilisateur
+    setMessages((prev) => [...prev, { role: 'user', content: prompt }]);
+
+    // Initialisation d'une réponse assistant vide
+    setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+
+    const response = await fetch(\`/api/conversations/\${conversationId}/messages\`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: \`Bearer \${localStorage.getItem('token')}\`,
+      },
+      body: JSON.stringify({ prompt }),
+    });
+
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (!reader) return;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+
+      // Concaténation en direct du fragment reçu
+      setMessages((prev) => {
+        const updated = [...prev];
+        const lastIndex = updated.length - 1;
+        updated[lastIndex].content += chunk;
+        return updated;
+      });
+    }
+
+    setIsStreaming(false);
+  };
+
+  return { messages, sendMessage, isStreaming };
+}`}
+/>
+
+---
+
+### 3. Composant d'affichage des sources interactives
+
+Pour chaque réponse produite par le pipeline RAG, un composant d'ancrage affiche les références documentaires sous forme de cartes rétractables :
+
+<CodeBlock
+  language="tsx"
+  title="src/components/chat/SourceBadge.tsx — Composant de citation"
+  code={`import React, { useState } from 'react';
+
+interface SourceProps {
+  documentTitle: string;
+  pageNumber: number;
+  relevanceScore: number;
+  snippet: string;
+}
+
+export const SourceBadge: React.FC<SourceProps> = ({ documentTitle, pageNumber, relevanceScore, snippet }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 text-sm">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-2.5 font-medium hover:bg-slate-100 rounded-lg text-left"
+      >
+        <span className="flex items-center gap-2">
+          <span className="font-bold text-indigo-600">📄 {documentTitle}</span>
+          <span className="text-slate-500">(Page {pageNumber})</span>
+        </span>
+        <span className="text-emerald-700 font-semibold text-sm">
+          Similarité : {Math.round(relevanceScore * 100)} %
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="p-3 border-t border-slate-200 text-sm bg-white font-serif italic text-slate-700">
+          « {snippet} »
+        </div>
+      )}
+    </div>
+  );
+};`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Quel est le bénéfice principal de consommer l'API de génération en mode 'Streaming' (ReadableStream) sur l'interface React ?"
+  options={[
+    "Cela réduit la mémoire du disque dur",
+    "Cela diminue drastiquement la latence perçue par l'utilisateur : le premier mot s'affiche en quelques centaines de millisecondes au lieu de subir un temps de chargement bloquant de plusieurs secondes",
+    "Cela empêche les utilisateurs d'écrire des messages en majuscules",
+    "Cela remplace la base de données MySQL"
+  ]}
+  correctIndex={1}
+  explanation="Le streaming HTTP délivre les tokens textuels à mesure de leur production par le modèle, offrant un retour visuel quasi-instantané qui transforme l'expérience utilisateur."
+/>
+

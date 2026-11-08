@@ -1,0 +1,132 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 9 — Gestion centralisée des erreurs et codes HTTP
+
+### 1. Pourquoi centraliser la gestion d'erreurs ?
+
+Sans gestion centralisée, chaque contrôleur risque de formater ses erreurs de façon hétérogène (parfois du texte brut, parfois une propriété `err`, parfois un tableau `errors`), obligeant le frontend à multiplier les conditions de traitement.
+
+De plus, laisser Express afficher ses erreurs par défaut expose les **traces d'appels internes** (*stack traces*), révélant la structure des répertoires du serveur et les versions des bibliothèques à des attaquants potentiels.
+
+---
+
+### 2. Implémenter le middleware d'erreur global
+
+Un middleware de gestion d'erreur dans Express se caractérise obligatoirement par **quatre arguments** : `(err, req, res, next)`.
+
+Dans `src/middlewares/error.middleware.ts` :
+
+```typescript
+// src/middlewares/error.middleware.ts
+import type { ErrorRequestHandler } from 'express';
+
+export const errorMiddleware: ErrorRequestHandler = (err, req, res, next) => {
+  // 1. Journalisation technique complète côté serveur (dans la console ou les fichiers de logs)
+  console.error('[Erreur Serveur Non Gérée] :', {
+    message: err?.message,
+    path: req.originalUrl,
+    method: req.method,
+    timestamp: new Date().toISOString(),
+  });
+
+  // 2. Si les en-têtes HTTP ont déjà été envoyés (ex: flux streaming), déléguer à Express
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  // 3. Détermination du code HTTP et du message public
+  const statusCode = err.status || err.statusCode || 500;
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  res.status(statusCode).json({
+    success: false,
+    message: statusCode === 500 && isProduction
+      ? "Une erreur interne est survenue. Veuillez réessayer ultérieurement."
+      : err.message || "Erreur interne du serveur.",
+    ...(isProduction ? {} : { stack: err.stack }), // Stack visible uniquement en développement
+  });
+};
+```
+
+Puis rattachez ce middleware **tout à la fin** de `src/app.ts`, impérativement après toutes les routes :
+
+```typescript
+import { errorMiddleware } from './middlewares/error.middleware.js';
+
+// IMPORTANT : Le middleware d'erreur doit être le dernier middleware enregistré
+app.use(errorMiddleware);
+```
+
+---
+
+### 3. La nomenclature des codes d'état HTTP pour l'IA
+
+| Code HTTP | Définition standard | Exemple d'utilisation dans une API IA |
+| :--- | :--- | :--- |
+| **`200 OK`** | Succès de l'opération | Réponse textuelle ou JSON générée avec succès |
+| **`201 Created`** | Nouvelle ressource créée | Nouvelle session de conversation enregistrée en BDD |
+| **`400 Bad Request`** | Données entrantes non conformes | Rejet Zod : prompt manquant ou dépassant 10 000 caractères |
+| **`401 Unauthorized`** | Identité de l'utilisateur non vérifiée | Requête sans jeton d'authentification valide |
+| **`403 Forbidden`** | Droits d'accès insuffisants | Tentative de lire une conversation appartenant à un autre `user_id` |
+| **`404 Not Found`** | Ressource introuvable | L'identifiant de conversation spécifié n'existe pas en base |
+| **`429 Too Many Requests`** | Quota de requêtes épuisé | Déclenchement du rate limiter par minute ou par jour |
+| **`500 Internal Error`** | Erreur inattendue du serveur | Exception de code non interceptée ou crash BDD |
+| **`502 Bad Gateway`** | Fournisseur tiers en défaut | Google Gemini renvoie un code de réponse invalide |
+| **`503 Service Unavailable`** | Service temporairement surchargé | API Google Gemini momentanément saturée |
+| **`504 Gateway Timeout`** | Dépassement du délai d'attente | La réponse de Gemini a excédé le délai maximal autorisé |
+
+---
+
+### 4. Règle absolue de confidentialité
+
+<Callout type="warning" title="Zéro fuite d'informations sensibles">
+Une réponse HTTP d'erreur ne doit **jamais** révéler de chaîne de connexion SQL, de mot de passe, de clé d'API Google ou de trace de pile interne en environnement de production.
+</Callout>
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Middleware d'erreur et simulation de panne"
+  objective="Centraliser toutes les exceptions applicatives dans un middleware Express dédié et valider la résilience du serveur face aux pannes réseau ou d'API."
+  duration="35 minutes"
+  steps={[
+    "Créer le middleware centralisé `src/middlewares/error.middleware.ts` avec la signature obligatoire à 4 paramètres `(err, req, res, next)`.",
+    "Structurer la réponse d'erreur au format standardisé `{ success: false, error: { message, code, details? } }` avec masquage de `stack` en mode production.",
+    "Rattacher impérativement ce middleware **tout à la fin** du pipeline Express dans `src/app.ts`, après toutes les routes.",
+    "Créer une route éphémère de diagnostic `GET /api/test-error` qui déclenche délibérément `throw new Error('Panne simulée du service')`.",
+    "Tester l'interception : appeler `/api/test-error` et constater que le serveur retourne un statut HTTP 500 propre et **ne plante pas**.",
+    "Simuler une invalidation de clé API Gemini : vérifier que l'erreur remontée par le SDK est traduite en statut HTTP 502 Bad Gateway ou 500 sans bloquer les requêtes concurrentes."
+  ]}
+  validationCriteria={[
+    "100 % des erreurs non interceptées sont captées par le middleware d'erreur unifié.",
+    "Le serveur Node.js reste continuellement actif et continue de servir les autres clients même après une exception critique.",
+    "Aucune clé de secret, variable d'environnement ou mot de passe de base de données n'apparaît dans la réponse JSON."
+  ]}
+>
+
+#### Middleware de traitement d'erreur unifié :
+```typescript
+// src/middlewares/error.middleware.ts
+import type { ErrorRequestHandler } from 'express';
+import { env } from '../config/env.js';
+
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  const statusCode = err.statusCode || (err.status ? Number(err.status) : 500);
+
+  // Journalisation interne pour les développeurs
+  console.error(`[ERREUR HTTP ${statusCode}] :`, err.message);
+
+  res.status(statusCode).json({
+    success: false,
+    error: {
+      message: err.message || 'Une erreur interne est survenue sur le serveur.',
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      ...(env.NODE_ENV === 'development' ? { stack: err.stack } : {}),
+    },
+  });
+};
+```
+</PracticalWork>
+

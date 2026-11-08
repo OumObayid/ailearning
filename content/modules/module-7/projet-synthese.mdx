@@ -1,0 +1,127 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+
+# Projet de synthèse — API IA sécurisée, testée et optimisée
+
+### 1. Cahier des charges global du projet
+
+L'objectif de ce projet de synthèse est de concevoir et déployer une **plateforme d'API backend d'intelligence artificielle complète, durcie pour la production**.
+
+Votre application doit satisfaire aux exigences industrielles suivantes :
+1. **Sécurité inviolable** : Clés API confinées au serveur, authentification par jetons JWT, contrôle d'accès RBAC et sanitisation stricte des prompts contre les injections directes et indirectes.
+2. **Couverture de tests exhaustive** : Suites de tests unitaires Vitest avec mock hermétique des LLMs, et tests d'intégration HTTP Supertest validant les codes d'état.
+3. **Observabilité & Haute Performance** : Mesure de la latence, journalisation structurée JSON avec masquage automatique des secrets, et mise en cache Redis des questions récurrentes.
+4. **Ancrage & Anti-Hallucination** : Pipeline RAG avec Qdrant forçant le modèle à avouer son incertitude dès qu'une information est absente des sources.
+
+---
+
+### 2. Architecture technique unifiée
+
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-6">
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Serveur API</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">Node.js + Express</p>
+  </div>
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Moteur IA</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">@google/genai</p>
+  </div>
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Banc de Tests</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">Vitest + Supertest</p>
+  </div>
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Validation</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">Zod Schemas</p>
+  </div>
+</div>
+
+<ArchitectureDiagram
+  title="Diagramme d'architecture complète de l'API sécurisée"
+  diagram={`                  REQUÊTE CLIENT (React / Mobile)
+                                 |
+                                 v
+          [ MIDDLEWARE 1 : Correlation ID & Rate Limiting ]
+                                 |
+                                 v
+          [ MIDDLEWARE 2 : Authentification JWT & Scope ]
+                                 |
+                                 v
+          [ MIDDLEWARE 3 : Validation Zod & Anti-Injection ]
+                                 |
+                                 v
+          [ VÉRIFICATION DU CACHE REDIS (Questions FAQ) ]
+              /                                     \\
+          (HIT : 4 ms)                          (MISS : Poursuite)
+              |                                     |
+              v                                     v
+       [ RETOUR DIRECT ]              [ RECHERCHE VECTORIELLE QDRANT ]
+                                                    |
+                                                    v
+                                      [ REQUÊTE PARAMÉTRÉE MYSQL ]
+                                                    |
+                                                    v
+                                      [ INSTRUCTION D'ANCRAGE STRICT ]
+                                                    |
+                                                    v
+                                      [ GOOGLE GEMINI 2.5 FLASH ]
+                                                    |
+                                                    v
+                                      [ LOGGING STRUCTURÉ PINO ]
+                                                    |
+                                                    v
+                                      [ RETOUR RÉPONSE VALIDÉE ]`}
+/>
+
+---
+
+### 3. Guide d'implémentation méthodique
+
+<PracticalWork
+  title="Mise en œuvre intégrale du projet de synthèse de sécurité & tests"
+  difficulty="Avancé"
+  duration="120 minutes"
+  objectives={[
+    "Configurer l'application Express avec séparation app.ts / server.ts",
+    "Développer le middleware JWT et le filtre heuristique anti-injections",
+    "Mettre en place la validation d'entrées et de sorties avec Zod",
+    "Rédiger la suite complète de tests unitaires Vitest et d'intégration Supertest",
+    "Auditer la latence, les métadonnées de consommation de tokens et les logs structurés"
+  ]}
+>
+<p className="text-sm text-slate-700 leading-relaxed">
+Réalisez ce projet en respectant la chronologie industrielle suivante :
+</p>
+
+#### Phase 1 : La couche de sécurité défensive
+- Mettez en place le middleware d'authentification `requireAuth` vérifiant les jetons JWT.
+- Développez le validateur Zod `userPromptSchema` refusant les chaînes vides, les textes de plus de 4 000 caractères et les balises d'écrasement de délimiteurs.
+- Créez le filtre heuristique interceptant les patterns de jailbreak évidents (*« ignore previous instructions »*).
+
+#### Phase 2 : Le service d'IA ancré
+- Initialisez le SDK `@google/genai` avec la clé lue depuis `process.env.GEMINI_API_KEY`.
+- Rédigez le prompt d'ancrage imposant au modèle d'avouer formellement son ignorance si une information demandée est absente des sources fournies.
+
+#### Phase 3 : Les suites de tests automatisées
+- **Tests unitaires (Vitest)** : Testez la fonction de validation de prompt et le calcul des clés de cache sans aucun appel réseau.
+- **Tests d'intégration (Supertest)** : Validez que `POST /api/ai/chat` retourne `401` sans jeton, `400` avec un body malformé, et `200` avec une charge utile conforme.
+
+#### Phase 4 : Observabilité & Mesure
+- Intégrez le logger structuré Pino masquant automatiquement les clés d'API et les mots de passe.
+- Mesurez la latence avec `performance.now()` et journalisez les tokens consommés via `response.usageMetadata`.
+</PracticalWork>
+
+---
+
+### 4. Critères d'acceptation et recette finale
+
+Pour certifier votre projet comme prêt pour un déploiement en production, vérifiez les critères suivants :
+
+- [ ] **Clés protégées à 100 %** : Aucune clé d'API n'apparaît en clair dans le code, dans Git ou dans les logs serveur.
+- [ ] **Étanchéité des données** : Les requêtes SQL vers MySQL sont strictement paramétrées avec l'identifiant extrait du JWT.
+- [ ] **Résistance aux jailbreaks** : Les tentatives d'injections directes sont interceptées en amont et retournent un code 400.
+- [ ] **Zéro régression logicielle** : La commande `npm run test:run` s'exécute avec 100 % de tests réussis en moins de 3 secondes.
+- [ ] **Traçabilité totale** : Chaque requête génère un Correlation ID unique propagé dans les logs et dans les en-têtes HTTP de réponse.
+

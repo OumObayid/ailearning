@@ -1,0 +1,137 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { WorkflowSimulator } from '@/components/interactive/WorkflowSimulator';
+
+# Chapitre 1 — Comprendre l'automatisation intelligente et découvrir n8n
+
+### 1. Qu'est-ce que l'automatisation de processus ?
+
+Dans toute organisation ou système applicatif, un **processus** désigne une suite ordonnée d'actions répétitives visant à transformer une entrée en un résultat prévisible.
+
+Par exemple, le traitement d'une demande client classique implique fréquemment :
+1. Réceptionner un email ou un formulaire web.
+2. Copier les coordonnées du client dans un fichier ou un CRM.
+3. Vérifier le statut de sa facture dans la base de données.
+4. Notifier l'équipe responsable sur Slack ou Microsoft Teams.
+5. Rédiger et envoyer un email d'accusé de réception.
+
+Réalisées manuellement, ces étapes consomment un temps précieux, introduisent des erreurs de saisie et créent des retards de traitement. L'**automatisation de processus** consiste à confier l'exécution de ces chaînes logiques à des programmes informatiques capables de s'exécuter 24h/24 sans friction.
+
+---
+
+### 2. Qu'est-ce que l'automatisation intelligente avec l'IA ?
+
+L'automatisation traditionnelle (dite déterministe ou *RPA*) repose exclusivement sur des règles strictes du type :
+> *« Si le sujet contient "Urgent", envoyer une notification Slack. »*
+
+Cette approche présente des limites majeures face au monde réel :
+- **Absence de compréhension contextuelle** : Si l'utilisateur écrit *« Mon système est en flammes, tout est bloqué ! »*, la règle déterministe échoue car le mot exact *« Urgent »* est absent.
+- **Incapacité à traiter les données non structurées** : Les emails, avis clients et messages vocaux ne respectent pas un schéma JSON prévisible.
+- **Routage fragile** : Prévoir des centaines de règles `if/else` imbriquées devient impossible à maintenir en production.
+
+L'**automatisation intelligente** comble ce fossé en insérant un modèle de langage (**Google Gemini**) au cœur du pipeline :
+
+<ArchitectureDiagram
+  title="Comparaison : Automatisation déterministe vs Automatisation cognitive"
+  diagram={`FLUX DÉTERMINISTE CLASSIQUE :
+Message reçu ----> Règle mot-clé stricte ("facture") ----> Erreur si synonyme ou faute de frappe
+
+FLUX INTELLIGENT AUGMENTÉ PAR L'IA :
+Message reçu ----> Analyse sémantique Gemini (Intention + Urgence + Synthèse) ----> Routage dynamique fiable`}
+/>
+
+---
+
+### 3. Présentation de la plateforme n8n
+
+**n8n** (prononcé *n-eight-n*) est une plateforme d'orchestration de workflows open-source et node-based. Contrairement à des solutions SaaS fermées comme Zapier ou Make, n8n offre des avantages décisifs pour les équipes d'ingénierie :
+
+- **Auto-hébergement complet (Self-hosted)** : Vous pouvez déployer n8n sur votre propre serveur ou conteneur Docker. Vos données confidentielles et clés d'API ne transitent pas par un tiers non maîtrisé.
+- **Extensibilité en JavaScript / TypeScript** : Chaque nœud peut exécuter du code Node.js natif pour transformer des structures de données complexes.
+- **Modèle de facturation prévisible** : Pas de tarification prohibitive par nombre d'étapes exécutées.
+- **Écosystème natif d'intégrations IA** : Intégrations directes avec LangChain, Google Gemini, OpenAI, Qdrant et MySQL.
+
+---
+
+### 4. Pourquoi combiner n8n avec Node.js et Express ?
+
+Bien que n8n propose des déclencheurs Webhooks visuels, **une application web en production ne doit jamais connecter son frontend directement aux webhooks de n8n** :
+1. **Sécurité et protection des endpoints** : L'URL de n8n ne doit pas être exposée publiquement aux navigateurs web pour éviter les attaques par déni de service (DDoS) ou le spamming.
+2. **Validation stricte des types** : Une passerelle Node.js/Express filtre, valide avec **Zod** et assainit chaque requête avant d'alimenter les automates.
+3. **Réactivité de l'interface** : Le serveur Express peut immédiatement répondre avec un code HTTP 202 (*Accepted*) au frontend React, tout en déléguant l'orchestration lourde en arrière-plan à n8n.
+
+---
+
+### 5. Matrice des responsabilités de l'architecture
+
+Pour concevoir des systèmes industriels robustes, chaque brique technique assume un rôle unique :
+
+| Composant | Rôle précis | Ce qu'il NE doit PAS faire |
+| :--- | :--- | :--- |
+| **React (Frontend)** | Interface utilisateur, affichage réactif de l'état, formulaires ergonomiques | Ne jamais stocker de secrets d'API, ne pas appeler n8n directement |
+| **Node.js / Express** | Passerelle d'API sécurisée, validation Zod, authentification JWT, dispatch | Ne pas gérer l'orchestration complexe multi-services |
+| **n8n (Orchestrateur)** | Logique de workflow, aiguillage, reconnexions réseau, gestion des retries | Ne pas remplacer la base de données de persistance transactionnelle |
+| **Google Gemini** | Analyse sémantique, extraction d'entités, classification d'intention | Ne pas prendre de décisions exécutives critiques sans validation |
+| **MySQL (Base relationnelle)** | Persistance fiable, historique des tickets, relations transactionnelles | Ne pas stocker des flux de travail temporaires ou des logs éphémères |
+
+---
+
+### 6. Installation locale avec npm ou Docker
+
+Pour démarrer votre environnement d'apprentissage sur votre poste de travail, deux méthodes principales s'offrent à vous :
+
+#### Méthode 1 : Démarrage direct avec npx (Node.js requis)
+
+<CodeBlock
+  language="bash"
+  title="Démarrage rapide de n8n en ligne de commande"
+  code={`# Lancer n8n sans installation préalable
+npx n8n
+
+# Ou installation globale pour une utilisation quotidienne
+npm install -g n8n
+n8n start`}
+/>
+
+#### Méthode 2 : Démarrage via Docker (Recommandé en production)
+
+<CodeBlock
+  language="bash"
+  title="Lancement d'un conteneur n8n isolé"
+  code={`docker run -it --rm \\
+  --name n8n \\
+  -p 5678:5678 \\
+  -v ~/.n8n:/home/node/.n8n \\
+  docker.n8n.io/n8nio/n8n`}
+/>
+
+<Callout type="tip" title="Accès à l'interface graphique">
+Une fois la commande exécutée, ouvrez votre navigateur à l'adresse **http://localhost:5678** pour configurer votre compte administrateur local.
+</Callout>
+
+---
+
+### 7. Simulation interactive : Visualiser le pipeline
+
+Explorez le simulateur ci-dessous pour appréhender la manière dont un webhook sécurisé traverse n8n, sollicite Gemini et route le résultat selon la criticité :
+
+<WorkflowSimulator />
+
+---
+
+### 8. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi est-il fortement déconseillé de connecter directement un formulaire frontend React à un webhook n8n sans passerelle Node.js intermédiaire ?"
+  options={[
+    "Car n8n ne prend pas en charge le format JSON sur ses webhooks",
+    "Pour masquer les URL internes de n8n, valider les schémas de données et sécuriser les requêtes avec des secrets d'en-tête",
+    "Parce que React refuse d'émettre des requêtes POST vers un port autre que 3000",
+    "Car n8n ne fonctionne qu'avec des requêtes provenant d'adresses IP publiques"
+  ]}
+  correctIndex={1}
+  explanation="Une passerelle Express permet d'appliquer la validation stricte des données (Zod), de vérifier l'authentification de l'utilisateur, de protéger les clés secrètes et de répondre instantanément en HTTP 202 sans bloquer le navigateur."
+/>
+

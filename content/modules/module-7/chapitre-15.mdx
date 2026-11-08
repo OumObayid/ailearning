@@ -1,0 +1,110 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 15 — Logs structurés, traçabilité et observabilité avec OpenTelemetry
+
+### 1. Logs vs Observabilité : Les 3 piliers
+
+On confond fréquemment la simple **journalisation (*Logs*)** avec l'**observabilité complète** d'un système informatique :
+- **Les Logs** : Événements textuels ponctuels horodatés décrivant ce qui s'est produit à un instant $T$.
+- **Les Métriques** : Valeurs numériques agrégées dans le temps (taux d'erreur 500, consommation de tokens par minute, temps de réponse P95).
+- **Les Traces distribuées** : Le parcours exhaustif d'une requête traversant le frontend React, l'API Express, la recherche Qdrant, la requête MySQL et l'appel externe Google Gemini.
+
+---
+
+### 2. Journalisation structurée avec Pino et règles d'exclusion
+
+Les commandes classiques `console.log("Erreur:", err)` sont proscrites en production : elles ne sont ni indexables par les collecteurs de logs (Datadog, ElasticSearch, CloudWatch), ni protégées contre les fuites de données.
+
+Utilisez une bibliothèque de journalisation structurée au format JSON comme **Pino** :
+
+<CodeBlock
+  language="bash"
+  title="Installation de Pino"
+  code={`npm install pino pino-pretty`}
+/>
+
+<CodeBlock
+  language="typescript"
+  title="src/utils/logger.ts — Configuration du logger avec masquage automatique des secrets"
+  code={`import pino from 'pino';
+
+export const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  // Masquage automatique des champs sensibles dans les logs
+  redact: {
+    paths: [
+      'req.headers.authorization',
+      'password',
+      'apiKey',
+      'geminiApiKey',
+      '*.creditCard',
+      'userEmail',
+    ],
+    censor: '[CONFIDENTIEL_MASQUÉ]',
+  },
+  timestamp: pino.stdTimeFunctions.isoTime,
+});`}
+/>
+
+---
+
+### 3. Traçabilité distribuée avec Correlation IDs (Trace IDs)
+
+Lorsqu'un utilisateur subit une erreur, comment retrouver en quelques secondes le log précis parmi des millions de lignes ?
+La solution réside dans l'attribution d'un **Correlation ID (ou Trace ID)** unique généré dès la passerelle Express et propagé à chaque sous-composant :
+
+<ArchitectureDiagram
+  title="Propagation du Correlation ID à travers toute la chaîne"
+  diagram={`NAVIGATEUR (X-Correlation-ID: req_89f1a04b)
+        |
+        v
+MIDDLEWARE EXPRESS (Injecte req.correlationId)
+        |
+        +---> LOG 1 : "Réception requête chat" [ID: req_89f1a04b]
+        |
+        +---> APPEL QDRANT (Embedding + Recherche) [ID: req_89f1a04b]
+        |
+        +---> REQUÊTE MYSQL (Historique) [ID: req_89f1a04b]
+        |
+        +---> APPEL GOOGLE GEMINI [ID: req_89f1a04b]
+        |
+        v
+RÉPONSE HTTP RETOURNÉE (X-Correlation-ID: req_89f1a04b)`}
+/>
+
+<CodeBlock
+  language="typescript"
+  title="src/middlewares/correlation.middleware.ts — Middleware de corrélation"
+  code={`import { Request, Response, NextFunction } from 'express';
+import { randomUUID } from 'crypto';
+
+export function correlationMiddleware(req: Request, res: Response, next: NextFunction) {
+  const correlationId = (req.headers['x-correlation-id'] as string) || \`req_\${randomUUID()}\`;
+  
+  // Attachement au contexte et propagation dans l'en-tête de réponse
+  res.locals.correlationId = correlationId;
+  res.setHeader('X-Correlation-ID', correlationId);
+
+  next();
+}`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="À quoi sert un 'Correlation ID' généré lors de la réception d'une requête HTTP dans une architecture IA complexe ?"
+  options={[
+    "À chiffrer le mot de passe de l'utilisateur en MD5",
+    "À relier entre eux l'ensemble des logs, métriques et traces distribuées générés par les différents microservices (Express, Qdrant, MySQL, Gemini) pour diagnostiquer instantanément un incident",
+    "À forcer le modèle Gemini à répondre plus vite",
+    "À créer automatiquement des tables SQL"
+  ]}
+  correctIndex={1}
+  explanation="Le Correlation ID agit comme un fil conducteur unique qui traverse tous les composants techniques d'une requête. En cas de panne ou de latence anormale, il suffit de filtrer sur cet identifiant pour voir le film complet de l'exécution."
+/>
+

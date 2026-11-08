@@ -1,0 +1,134 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 9 — Architecture multi-agents : Coordination et agents spécialisés
+
+### 1. Qu'est-ce qu'un système multi-agent et quand l'adopter ?
+
+Un **système multi-agent** est une architecture distribuée au sein de laquelle plusieurs agents IA distincts, dotés chacun d'un rôle étroitement spécialisé et d'un sous-ensemble d'outils dédiés, coopèrent sous la gouvernance d'un coordinateur pour accomplir une mission complexe.
+
+Quand faut-il franchir le pas vers le multi-agent ?
+- **Saturation cognitive de l'agent unique** : Lorsque le nombre d'outils dépasse 15 ou 20, le modèle commence à hésiter ou à choisir le mauvais outil.
+- **Séparation des domaines métier** : Le support technique, la facturation et la logistique disposent de règles, de vocabulaires et de politiques de sécurité distincts.
+- **Besoin d'auditabilité par compétence** : Permettre d'auditer et d'évaluer la précision de chaque agent isolément.
+
+---
+
+### 2. Avantages et limites de l'approche multi-agents
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50">
+    <h4 className="text-base font-bold text-emerald-900 mb-2">Avantages majeurs</h4>
+    <ul className="text-sm text-emerald-800 space-y-1.5 list-disc list-inside">
+      <li>Prompts système courts et hyper-spécialisés.</li>
+      <li>Moindre risque de confusion entre outils incompatibles.</li>
+      <li>Possibilité d&apos;utiliser des modèles différents par tâche (ex. Gemini Flash pour le tri, Gemini Pro pour le diagnostic complexe).</li>
+      <li>Facilité de test unitaire et de maintenance.</li>
+    </ul>
+  </div>
+
+  <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/50">
+    <h4 className="text-base font-bold text-amber-900 mb-2">Coûts & Compromis</h4>
+    <ul className="text-sm text-amber-800 space-y-1.5 list-disc list-inside">
+      <li>Latence cumulée accrue (plusieurs appels LLM successifs).</li>
+      <li>Consommation de tokens supérieure.</li>
+      <li>Complexité de synchronisation et de gestion des erreurs inter-agents.</li>
+    </ul>
+  </div>
+</div>
+
+<Callout type="tip" title="Règle de simplicité pragmatique">
+Commencez toujours par un agent unique bien outillé. Ne basculez vers une architecture multi-agent que si la complexité métier ou le nombre d&apos;outils rend l&apos;agent unique instable ou difficile à maintenir.
+</Callout>
+
+---
+
+### 3. Architecture Coordinateur / Superviseur et Agents spécialisés
+
+Le patron architectural le plus éprouvé en industrie est le modèle **Superviseur Hiérarchique** :
+
+<ArchitectureDiagram
+  title="Topologie d'un système multi-agent hiérarchique"
+  diagram={`                  UTILISATEUR (Demande globale)
+                                |
+                                v
+                    [ AGENT COORDINATEUR ]
+              (Décompose la tâche et délègue)
+                                |
+         +----------------------+----------------------+
+         |                      |                      |
+         v                      v                      v
+[ AGENT DOCUMENTAIRE ]   [ AGENT COMMANDES ]    [ AGENT PAIEMENT ]
+(Expert Qdrant RAG)      (Expert SQL MySQL)     (Expert API Stripe)
+         |                      |                      |
+         +----------------------+----------------------+
+                                |
+                                v
+                    [ AGENT COORDINATEUR ]
+              (Synthèse finale des 3 rapports)
+                                |
+                                v
+                    RÉPONSE CLAIRE AU CLIENT`}
+/>
+
+<MultiAgentSupervisorSimulator />
+
+---
+
+### 4. Protocole de communication par objets de résultat typés
+
+Pour que les agents puissent dialoguer sans ambiguïté, leurs échanges doivent emprunter des structures de données fortement typées en TypeScript :
+
+<CodeBlock
+  language="typescript"
+  title="src/agent/multiAgentProtocol.ts — Contrat d'interface inter-agents"
+  code={`export interface SpecialistReport {
+  agentName: 'doc_agent' | 'orders_agent' | 'billing_agent';
+  success: boolean;
+  confidenceScore: number; // 0 à 1
+  summary: string;
+  rawData?: unknown;
+  error?: string;
+}
+
+// Fonction coordinatrice interrogeant un spécialiste
+export async function delegateToDocSpecialist(question: string): Promise<SpecialistReport> {
+  try {
+    const findings = await runDocAgent(question);
+    return {
+      agentName: 'doc_agent',
+      success: true,
+      confidenceScore: 0.92,
+      summary: findings.summary,
+      rawData: findings.sources,
+    };
+  } catch (err: any) {
+    return {
+      agentName: 'doc_agent',
+      success: false,
+      confidenceScore: 0,
+      summary: "Impossible d'extraire les données documentaires.",
+      error: err.message,
+    };
+  }
+}`}
+/>
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Dans quel cas précis est-il pertinent d'adopter une architecture multi-agents plutôt qu'un agent unique ?"
+  options={[
+    "Dès qu'on écrit un projet TypeScript",
+    "Quand le nombre d'outils et de domaines métier hétérogènes devient trop vaste pour un seul prompt système stable",
+    "Pour accélérer la vitesse de compilation de Vite",
+    "Pour pouvoir se passer totalement de base de données relationnelle"
+  ]}
+  correctIndex={1}
+  explanation="Une architecture multi-agent isole chaque domaine d'expertise, évitant la surcharge cognitive d'un modèle confronté à un trop grand nombre d'outils concurrents."
+/>
+

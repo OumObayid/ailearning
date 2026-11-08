@@ -1,0 +1,136 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 10 — Introduction à LangGraph.js, StateGraph et Annotations
+
+### 1. Pourquoi utiliser un framework d'orchestration par graphes ?
+
+Dans la Partie A, nous avons développé un agent à l'aide d'une boucle `while` en TypeScript natif. Si cette approche permet d'assimiler les rouages élémentaires du Function Calling, elle montre rapidement ses limites dans les applications d'envergure :
+- **Difficulté à exprimer des branchements non-linéaires** (aiguillages conditionnels, retours arrière, parallélisme).
+- **Gestion laborieuse de la persistance** (sauvegarder l'état exact entre deux requêtes HTTP asynchrones).
+- **Complexité des interruptions** (mettre l'agent en pause en attendant une validation humaine et reprendre sans perte de données).
+
+**LangGraph.js** est un framework conçu pour représenter, coordonner et exécuter des flux agentiques sous la forme d'un **graphe d'état cyclique et contrôlé**.
+
+<Callout type="info" title="LangGraph ne remplace pas Google Gemini">
+LangGraph.js ne produit pas d&apos;intelligence par lui-même. Il agit comme le chef d&apos;orchestre qui organise les nœuds et les flux de données, tandis que Google Gemini demeure le moteur de raisonnement au sein des nœuds.
+</Callout>
+
+---
+
+### 2. Installation et configuration de l'environnement
+
+Pour ajouter LangGraph à votre projet Node.js / TypeScript :
+
+<CodeBlock
+  language="bash"
+  title="Installation des dépendances LangGraph et Google Gemini"
+  code={`npm install @langchain/langgraph @google/genai zod dotenv
+npm install -D typescript tsx @types/node vitest`}
+/>
+
+Assurez-vous que votre fichier `tsconfig.json` prend en charge les modules ES modernes (`NodeNext` ou `ES2022`).
+
+---
+
+### 3. Les concepts clés de LangGraph.js
+
+| Concept | Rôle fondamental |
+| :--- | :--- |
+| **State (État)** | Structure de données partagée accessible et modifiable par l'ensemble des nœuds du graphe. |
+| **Node (Nœud)** | Fonction TypeScript asynchrone qui prend l'état en entrée et renvoie des modifications d'état. |
+| **Edge (Arête / Transition)** | Liaison orientée définissant le nœud suivant à exécuter. |
+| **START & END** | Nœuds virtuels marquant respectivement le point d'entrée et la terminaison du graphe. |
+| **Conditional Edge** | Arête dont la destination est calculée dynamiquement par une fonction de routage. |
+
+---
+
+### 4. Définir des états partagés avec Annotation.Root et Reducers
+
+Dans LangGraph.js, la structure de l'état est déclarée via la fabrique `Annotation.Root`.
+Par défaut, lorsqu'un nœud retourne une propriété, celle-ci écrase la valeur précédente. Mais pour des collections (comme des messages ou des documents trouvés), nous devons **accumuler** les résultats grâce à un **reducer** :
+
+<CodeBlock
+  language="typescript"
+  title="src/graph/state.ts — Définition de l'état avec reducers"
+  code={`import { Annotation } from '@langchain/langgraph';
+
+export const AgentGraphState = Annotation.Root({
+  // Propriété simple : écrasée à chaque mise à jour
+  userPrompt: Annotation<string>(),
+  category: Annotation<string>(),
+  
+  // Propriété avec Reducer : accumule les nouveaux éléments dans le tableau existant
+  documents: Annotation<string[]>({
+    reducer: (current, update) => [...current, ...update],
+    default: () => [],
+  }),
+
+  // Suivi de l'itération
+  stepCount: Annotation<number>({
+    reducer: (current, update) => current + update,
+    default: () => 0,
+  }),
+
+  finalAnswer: Annotation<string>(),
+});
+
+export type AgentGraphStateType = typeof AgentGraphState.State;`}
+/>
+
+---
+
+### 5. Votre premier StateGraph exécutable
+
+Voici un exemple simple démontrant la création, la compilation et l'invocation d'un graphe :
+
+<CodeBlock
+  language="typescript"
+  title="src/graph/firstGraph.ts — Assemblage et exécution"
+  code={`import { StateGraph, START, END } from '@langchain/langgraph';
+import { AgentGraphState } from './state';
+
+// 1. Instancier le graphe avec le schéma d'état
+const workflow = new StateGraph(AgentGraphState)
+  // 2. Déclarer le nœud de traitement
+  .addNode('categorize', async (state) => {
+    console.log("Traitement de la requête :", state.userPrompt);
+    const category = state.userPrompt.toLowerCase().includes('facture') ? 'billing' : 'technical';
+    return { category, stepCount: 1 };
+  })
+  // 3. Définir les transitions
+  .addEdge(START, 'categorize')
+  .addEdge('categorize', END);
+
+// 4. Compiler le graphe en exécutable
+export const appGraph = workflow.compile();
+
+// 5. Invoquer le graphe
+async function run() {
+  const result = await appGraph.invoke({
+    userPrompt: "J'ai une question concernant ma dernière facture.",
+  });
+  console.log("Résultat final de l'état :", result);
+}
+
+run();`}
+/>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="À quoi sert la fonction 'reducer' associée à une propriété dans Annotation.Root de LangGraph.js ?"
+  options={[
+    "À réduire la taille des images PNG transmises à l'API",
+    "À définir la logique de fusion entre la valeur actuelle de l'état et la mise à jour émise par un nœud (ex. accumulation dans un tableau)",
+    "À chiffrer les mots de passe dans la mémoire vive",
+    "À convertir le graphe en code binaire C++"
+  ]}
+  correctIndex={1}
+  explanation="Sans reducer, toute valeur retournée par un nœud écrase la valeur précédente. Un reducer permet de personnaliser la fusion, par exemple pour ajouter de nouveaux fragments documentaires à une liste existante."
+/>
+

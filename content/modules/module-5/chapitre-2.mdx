@@ -1,0 +1,170 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 2 — Architecture d'un workflow, structure des données et expressions
+
+### 1. Anatomie d'un workflow n8n
+
+Dans n8n, un **workflow** est un graphe orienté composé de blocs fonctionnels appelés **nœuds** (*nodes*), interconnectés par des liaisons par lesquelles transitent des flux de données.
+
+Chaque workflow suit un cycle d'exécution strict :
+1. **L'amorce (Trigger)** : Un événement déclencheur unique amorce le flux (ex. réception d'un webhook, planification cron, ou clic manuel de test).
+2. **La propagation des données** : Les données produites par le déclencheur sont transmises séquentiellement aux nœuds connectés en aval.
+3. **La transformation & l'action** : Chaque nœud reçoit les données, effectue une opération (calcul, appel API, requête SQL), puis émet une nouvelle structure de données pour les nœuds suivants.
+
+---
+
+### 2. Les grandes familles de nœuds
+
+L'écosystème de n8n classe ses centaines de composants en quatre grandes catégories :
+
+| Famille | Rôle fondamental | Exemples concrets |
+| :--- | :--- | :--- |
+| **Trigger Nodes** | Écoutent les événements externes et initient le flux d'exécution | `Webhook`, `Schedule Trigger`, `Manual Trigger`, `Kafka Trigger` |
+| **Action Nodes** | Interagissent avec des services tiers ou des systèmes de fichiers | `HTTP Request`, `MySQL`, `Send Email`, `Slack`, `Qdrant` |
+| **Logic Nodes** | Contrôlent la trajectoire, filtrent ou synchronisent les flux | `IF`, `Switch`, `Merge`, `Loop Over Items`, `Filter` |
+| **Code Nodes** | Exécutent du code JavaScript ou Python pour des manipulations sur-mesure | `Code Node` (JavaScript ES2022 ou Python 3 natif) |
+
+---
+
+### 3. Structure des données circulantes ($input et items JSON)
+
+Pour maîtriser n8n, il est impératif de comprendre son modèle de données sous-jacent. **Dans n8n, toutes les données transitent sous la forme d'un tableau d'objets JSON (*Array of Items*)**.
+
+Chaque élément du tableau possède obligatoirement une clé principale `json` contenant les données métier, et facultativement une clé `binary` pour les fichiers :
+
+<CodeBlock
+  language="json"
+  title="Structure interne standard d'un item n8n"
+  code={`[
+  {
+    "json": {
+      "ticketId": "TCK-4819",
+      "author": "Alice Dupont",
+      "email": "alice@example.com",
+      "plan": "enterprise",
+      "amount": 250
+    }
+  },
+  {
+    "json": {
+      "ticketId": "TCK-4820",
+      "author": "Marc Martin",
+      "email": "marc@example.com",
+      "plan": "starter",
+      "amount": 49
+    }
+  }
+]`}
+/>
+
+<Callout type="info" title="Traitement par lot (Batch processing)">
+Lorsqu'un nœud d'action (comme l'envoi d'un email) reçoit un tableau de 10 items, n8n exécutera automatiquement l'action 10 fois (une fois pour chaque item), sauf si le nœud est explicitement configuré pour traiter l'ensemble des données d'un seul bloc.
+</Callout>
+
+---
+
+### 4. Maîtriser la syntaxe des expressions dynamiques n8n
+
+Pour injecter des valeurs dynamiques dans les champs de configuration d'un nœud, n8n propose une syntaxe d'interpolation double accolade `{{ ... }}`.
+
+#### Accéder aux propriétés de l'item courant
+
+<CodeBlock
+  language="javascript"
+  title="Accès aux données du nœud immédiatement précédent"
+  code={`// Récupérer le nom de l'auteur dans l'item en cours de traitement
+{{ $json.author }}
+
+// Calculer un total avec taxe directement dans l'expression
+{{ $json.amount * 1.20 }}
+
+// Utiliser les méthodes JavaScript natives (chaînes, tableaux)
+{{ $json.author.toUpperCase() }}
+{{ $json.email.toLowerCase().trim() }}`}
+/>
+
+#### Référencer un nœud en amont dans le graphe
+
+Lorsque votre flux comporte plusieurs étapes, vous pouvez accéder aux données d'un nœud situé plus haut dans l'arborescence sans avoir à propager manuellement chaque champ :
+
+<CodeBlock
+  language="javascript"
+  title="Syntaxe de référencement inter-nœuds"
+  code={`// Récupère la propriété "ticketId" produite par le nœud nommé "Webhook"
+{{ $('Webhook').item.json.ticketId }}
+
+// Opérateur ternaire conditionnel au sein de l'expression
+{{ $json.plan === 'enterprise' ? 'SLA 1 Heure' : 'SLA 24 Heures' }}`}
+/>
+
+---
+
+### 5. Travail pratique 1 : Workflow de bienvenue
+
+<PracticalWork
+  title="Construire votre premier flux avec interpolation d'expressions"
+  difficulty="Débutant"
+  duration="25 minutes"
+  objectives={[
+    "Configurer un déclencheur manuel (Manual Trigger)",
+    "Créer un nœud Edit Fields (Set) pour structurer des données utilisateur fictives",
+    "Utiliser un nœud Code pour calculer un identifiant unique et une date formatée",
+    "Vérifier le résultat final dans l'inspecteur d'exécution"
+  ]}
+>
+<p className="text-sm text-slate-700 leading-relaxed">
+Dans ce premier exercice, vous allez créer un workflow qui simule l'enregistrement d'un utilisateur et génère un message personnalisé enrichi.
+</p>
+
+#### Étape 1 : Créer le point d'entrée
+1. Dans l'interface n8n, créez un nouveau workflow intitulé `TP1 - Welcome Flow`.
+2. Ajoutez le nœud **Manual Trigger** (*When clicking 'Test workflow'*).
+
+#### Étape 2 : Définir les attributs avec Edit Fields
+Ajoutez un nœud **Edit Fields (Set)** relié au trigger avec les paramètres suivants :
+- `firstName` : `"Sophie"`
+- `lastName` : `"Lambert"`
+- `company` : `"TechSolutions SAS"`
+- `tier` : `"Premium"`
+
+#### Étape 3 : Nœud de transformation Code
+Connectez un nœud **Code** configuré en mode *Run Once for Each Item* :
+
+```javascript
+// Transformer et enrichir l'objet utilisateur
+const item = $input.item.json;
+
+return {
+  json: {
+    fullName: `${item.firstName} ${item.lastName}`,
+    userSlug: `${item.firstName.toLowerCase()}-${item.lastName.toLowerCase()}`,
+    corporateEmail: `${item.firstName.toLowerCase()}.${item.lastName.toLowerCase()}@techsolutions.fr`,
+    welcomeMessage: `Bienvenue ${item.firstName} ! Votre souscription ${item.tier} est active.`,
+    createdAt: new Date().toISOString()
+  }
+};
+```
+
+Cliquez sur **Test step** et observez l'onglet **Output Data** : n8n affiche la nouvelle structure JSON prête pour les étapes ultérieures.
+</PracticalWork>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Quelle est la structure de données obligatoire attendue et émise par chaque nœud dans un workflow n8n ?"
+  options={[
+    "Une simple chaîne de caractères JSON brute",
+    "Un tableau d'objets contenant chacun une clé obligatoire 'json' : Array<{ json: Object }>",
+    "Un dictionnaire binaire indexé par l'adresse IP du client",
+    "Un flux de données XML encapsulé dans un objet Blob"
+  ]}
+  correctIndex={1}
+  explanation="n8n standardise l'ensemble de ses échanges internes sous forme d'un tableau d'items (Array of Items), où chaque item est un objet possédant au minimum la clé 'json'."
+/>
+

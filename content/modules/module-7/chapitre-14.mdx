@@ -1,0 +1,109 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 14 — Stratégies de mise en cache, prompt pruning et streaming réactif
+
+### 1. Principe de la mise en cache des réponses publiques
+
+Dans un service d'assistance ou une FAQ d'entreprise, une large proportion des questions posées par les utilisateurs sont strictement identiques ou portent sur les mêmes thématiques publiques (*« Quels sont vos tarifs ? »*, *« Comment vous contacter ? »*).
+
+Faire appel à Google Gemini à chaque répétition constitue un gaspillage financier et ajoute une latence inutile de 1 à 2 secondes. L'intégration d'un **cache en mémoire vive (Redis ou Map locale)** permet de renvoyer la réponse en moins de 5 millisecondes avec un coût d'API nul :
+
+<ArchitectureDiagram
+  title="Stratégie de cache pour requêtes récurrentes"
+  diagram={`REQUÊTE UTILISATEUR
+       |
+       v
+[ CALCUL DU HASH DE LA QUESTION ]
+       |
+       v
+[ VÉRIFICATION DU CACHE REDIS ]
+       |
+    +--+--+
+    |     |
+ (HIT)   (MISS)
+    |     |
+    |     v
+    |   [ APPEL GOOGLE GEMINI ]
+    |     |
+    |     v
+    |   [ STOCKAGE EN CACHE (TTL: 24h) ]
+    |     |
+    +--+--+
+       |
+       v
+RÉPONSE INSTANTANÉE`}
+/>
+
+<SemanticCacheSimulator />
+
+---
+
+### 2. Isolation des contextes privés et composition des clés de cache
+
+<Callout type="danger" title="DANGER DE FUITE DE DONNÉES ENTRE UTILISATEURS">
+Ne mettez <strong>JAMAIS</strong> en cache des réponses contenant des données personnelles (commandes, adresses, factures) sous une clé globale commune. Un utilisateur pourrait recevoir les coordonnées privées d&apos;un autre !
+</Callout>
+
+Pour concevoir des clés de cache saines et étanches :
+
+<CodeBlock
+  language="typescript"
+  title="src/cache/cacheKeyBuilder.ts — Composition de clé de cache sécurisée"
+  code={`import { createHash } from 'crypto';
+
+export function buildSecureCacheKey(params: {
+  isPublicKnowledge: boolean;
+  userId?: number;
+  normalizedPrompt: string;
+  model: string;
+}): string {
+  const normalized = params.normalizedPrompt.toLowerCase().trim();
+  const hash = createHash('sha256').update(normalized).digest('hex').substring(0, 16);
+
+  if (params.isPublicKnowledge) {
+    // Clé partagée pour le savoir public
+    return \`cache:public:\${params.model}:\${hash}\`;
+  }
+
+  // Clé strictement isolée par compte utilisateur
+  if (!params.userId) {
+    throw new Error("Impossible de cacher une donnée privée sans identifiant utilisateur.");
+  }
+
+  return \`cache:user:\${params.userId}:\${params.model}:\${hash}\`;
+}`}
+/>
+
+---
+
+### 3. Optimisation des prompts (Pruning) et streaming réactif
+
+Pour réduire drastiquement vos coûts et accélérer vos temps de réponse :
+
+#### 1. Le Prompt Pruning (Élagage du contexte)
+- Ne transmettez pas l'intégralité d'un document PDF de 50 pages si seuls 2 paragraphes sont pertinents : laissez Qdrant extraire uniquement les fragments de forte similarité (score &gt; 0.75).
+- Supprimez les formules de politesse superflues dans l'historique conversationnel ancien.
+- Raccourcissez les instructions système en supprimant les adverbes et les répétitions verbeuses.
+
+#### 2. Le Streaming pour une perception de réactivité maximale
+Plutôt que d'obliger l'utilisateur à contempler un indicateur de chargement pendant 3 secondes, utilisez la méthode `ai.models.generateContentStream()` : le premier mot apparaît sur l'écran en moins de 350 ms.
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Quelle précaution capitale devez-vous prendre avant d'enregistrer une réponse générée par l'IA dans un cache Redis partagé ?"
+  options={[
+    "S'assurer que la clé de cache intègre l'identifiant de l'utilisateur dès que la question ou la réponse touche à des données privées pour éviter toute fuite d'informations",
+    "Traduire la réponse en binaire",
+    "Limiter la taille de Redis à 1 mégaoctet",
+    "Désactiver la connexion Internet du serveur"
+  ]}
+  correctIndex={0}
+  explanation="Mettre en cache des données privées sans les cloisonner par identifiant utilisateur (userId) créerait une faille critique de confidentialité où un internaute recevrait les données personnelles d'un autre."
+/>
+

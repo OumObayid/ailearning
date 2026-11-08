@@ -1,0 +1,138 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 6 — Authentification JWT, contrôle d'accès RBAC et sanitisation Zod
+
+### 1. Gestion des sessions avec jetons JWT signés
+
+Pour sécuriser les échanges entre le frontend React et l'API Express, nous utilisons des jetons **JSON Web Tokens (JWT)** signés avec l'algorithme `HMAC-SHA256` :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/auth/auth.service.ts — Génération de jeton sécurisé"
+  code={`import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { pool } from '../../config/database';
+
+export async function loginUser(email: string, passwordPlain: string) {
+  // 1. Recherche de l'utilisateur avec son rôle
+  const [rows]: any = await pool.execute(
+    \`SELECT u.id, u.email, u.password_hash, u.status, r.name as role_name
+     FROM users u
+     JOIN roles r ON u.role_id = r.id
+     WHERE u.email = ?\`,
+    [email]
+  );
+
+  if (rows.length === 0) {
+    throw new Error("Identifiants incorrects.");
+  }
+
+  const user = rows[0];
+
+  // 2. Vérification cryptographique du mot de passe
+  const isValid = await bcrypt.compare(passwordPlain, user.password_hash);
+  if (!isValid) {
+    throw new Error("Identifiants incorrects.");
+  }
+
+  // 3. Signature du jeton JWT avec expiration à 8 heures
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      email: user.email,
+      role: user.role_name,
+    },
+    process.env.JWT_SECRET!,
+    { expiresIn: '8h' }
+  );
+
+  return { token, user: { id: user.id, email: user.email, role: user.role_name } };
+}`}
+/>
+
+---
+
+### 2. Middlewares de contrôle de rôles et permissions granulaires
+
+Pour protéger les routes nécessitant une élévation de privilèges (ex. suppression de document ou exécution d'automatisations sensibles) :
+
+<CodeBlock
+  language="typescript"
+  title="src/middlewares/rbac.middleware.ts — Gardien de rôle"
+  code={`import { Request, Response, NextFunction } from 'express';
+
+export function requireRole(allowedRoles: string[]) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = res.locals.user;
+
+    if (!user || !allowedRoles.includes(user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN_INSUFFICIENT_ROLE',
+          message: \`Accès réservé aux rôles : \${allowedRoles.join(', ')}.\`,
+        },
+      });
+    }
+
+    next();
+  };
+}`}
+/>
+
+<RBACPermissionMatrixLab />
+
+---
+
+### 3. Sanitisation préventive de toutes les charges utiles via Zod
+
+Aucune donnée utilisateur n'atteint les couches de service sans être validée et nettoyée par un schéma **Zod** :
+
+<CodeBlock
+  language="typescript"
+  title="src/validators/messageInput.validator.ts — Schéma Zod"
+  code={`import { z } from 'zod';
+
+export const postMessageSchema = z.object({
+  prompt: z
+    .string()
+    .trim()
+    .min(2, "Le message doit comporter au moins 2 caractères.")
+    .max(5000, "Le message ne peut dépasser 5 000 caractères."),
+  conversationId: z.string().uuid("L'identifiant de conversation doit être un UUID valide."),
+  enableWebSearch: z.boolean().optional().default(false),
+});
+
+export type PostMessageDto = z.infer<typeof postMessageSchema>;`}
+/>
+
+---
+
+### 4. Cloisonnement strict multi-tenant : user_id souverain
+
+Le principe fondamental d'étanchéité de la plateforme s'énonce ainsi : **l'identifiant de l'utilisateur (`userId`) ne provient JAMAIS des paramètres de la requête client (`req.body` ou `req.query`), mais exclusivement de l'identité décodée du jeton JWT authentifié (`res.locals.user.userId`)**.
+
+Toutes les requêtes SQL appliquent ce verrou :
+```sql
+SELECT * FROM documents WHERE id = ? AND user_id = ?;
+```
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Que risquerait une application IA si elle utilisait le 'userId' envoyé dans le corps JSON de la requête au lieu de celui validé par le jeton JWT ?"
+  options={[
+    "Une faille IDOR critique permettant à n'importe quel utilisateur authentifié d'accéder aux documents confidentiels et conversations d'un autre utilisateur en modifiant simplement un chiffre",
+    "Une erreur de syntaxe HTML",
+    "Une surchauffe de la mémoire vive",
+    "Une désactivation automatique de Tailwind CSS"
+  ]}
+  correctIndex={0}
+  explanation="Faire confiance à un paramètre envoyé par le client pour identifier le propriétaire des données permettrait à un utilisateur d'usurper l'accès aux documents d'un tiers. Seule l'identité certifiée par la signature du JWT fait autorité."
+/>
+

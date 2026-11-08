@@ -1,0 +1,146 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 6 — Connecter n8n à MySQL et sécuriser les requêtes SQL
+
+### 1. Cas d'usage de MySQL dans un workflow d'automatisation
+
+Bien que n8n gère la circulation éphémère des données entre les nœuds, **il n'est pas conçu pour servir de base de données relationnelle d'entreprise**. La persistance durable de l'état applicatif relève du rôle de votre SGBD relationnel (**MySQL**).
+
+Dans une chaîne d'automatisation intelligente, MySQL intervient principalement pour :
+- **Consigner durablement chaque demande reçue** sous forme de ticket ou de transaction auditable.
+- **Enregistrer les résultats de classification de l'IA** (catégorie déduite, indice de confiance, sentiment).
+- **Mettre à jour le statut du cycle de vie** (ex. `pending_analysis` -> `assigned` -> `resolved`).
+- **Éviter les traitements en doublon** grâce à des contraintes d'unicité (`UNIQUE KEY`).
+
+---
+
+### 2. Structure de la table des demandes de support
+
+Voici le schéma relationnel type conçu pour stocker les demandes clients ingérées par nos workflows :
+
+<CodeBlock
+  language="sql"
+  title="Schéma DDL de la table support_tickets (MySQL)"
+  code={`CREATE TABLE IF NOT EXISTS support_tickets (
+  id VARCHAR(64) PRIMARY KEY,
+  client_email VARCHAR(255) NOT NULL,
+  subject VARCHAR(255) NOT NULL,
+  raw_message TEXT NOT NULL,
+  ai_category ENUM('technical_incident', 'billing', 'feature_request', 'spam', 'general') DEFAULT 'general',
+  ai_priority ENUM('LOW', 'NORMAL', 'HIGH', 'CRITICAL') DEFAULT 'NORMAL',
+  ai_sentiment VARCHAR(32) DEFAULT 'neutral',
+  ai_summary TEXT NULL,
+  status ENUM('received', 'processing', 'resolved', 'escalated') DEFAULT 'received',
+  assigned_team VARCHAR(64) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_tickets_category (ai_category),
+  INDEX idx_tickets_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`}
+/>
+
+---
+
+### 3. Sécurité SQL : paramètres liés contre l'injection SQL
+
+L'une des vulnérabilités les plus critiques observées dans les workflows n8n débutants est l'injection directe d'expressions textuelles à l'intérieur de la chaîne SQL.
+
+<Callout type="danger" title="ANTI-PATTERN VULNÉRABLE (Injection SQL immédiate)">
+Ne concaténez JAMAIS directement une variable utilisateur dans le texte de la requête :
+<br />
+<code>
+INSERT INTO support_tickets (id, raw_message) VALUES (&apos;123&apos;, &apos;&#123;&#123; $json.message &#125;&#125;&apos;);
+</code>
+<br />
+Si un pirate soumet le message <code>&apos;, &apos;admin&apos;); DROP TABLE support_tickets; --</code>, l&apos;intégrité de votre base sera instantanément détruite.
+</Callout>
+
+#### La bonne pratique industrielle : Utiliser les Query Parameters liés
+
+Dans le nœud MySQL de n8n, sélectionnez l'opération **Execute Query** et activez le tableau des **Query Parameters** :
+
+<CodeBlock
+  language="sql"
+  title="Requête préparée avec marqueurs de substitution (?)"
+  code={`-- Requête SQL saine et paramétrée
+INSERT INTO support_tickets 
+  (id, client_email, subject, raw_message, ai_category, ai_priority, ai_summary)
+VALUES 
+  (?, ?, ?, ?, ?, ?, ?);`}
+/>
+
+<CodeBlock
+  language="javascript"
+  title="Tableau des Query Parameters dans la configuration du nœud n8n"
+  code={`[
+  {{ $json.ticketId }},
+  {{ $json.clientEmail }},
+  {{ $json.subject }},
+  {{ $json.message }},
+  {{ $('Gemini Analysis').item.json.category }},
+  {{ $('Gemini Analysis').item.json.priority }},
+  {{ $('Gemini Analysis').item.json.summary }}
+]`}
+/>
+
+Grâce aux marqueurs `?`, le pilote MySQL traite les données comme de simples valeurs scalaires et neutralise tout caractère d'échappement malveillant.
+
+---
+
+### 4. Travail pratique 3 : Ingestion et insertion en base de données
+
+<PracticalWork
+  title="Insertion sécurisée d'un ticket avec le nœud MySQL n8n"
+  difficulty="Intermédiaire"
+  duration="30 minutes"
+  objectives={[
+    "Créer la table support_tickets dans MySQL local",
+    "Configurer les identifiants MySQL Credentials dans n8n (hôte, port, utilisateur, mot de passe)",
+    "Créer un workflow qui reçoit une charge utile et l'insère via des paramètres liés",
+    "Vérifier la création effective de la ligne dans la base MySQL"
+  ]}
+>
+<p className="text-sm text-slate-700 leading-relaxed">
+Dans ce TP, vous allez relier n8n à votre serveur MySQL et persister de façon sécurisée une demande client transmise au format JSON.
+</p>
+
+#### Étape 1 : Créer la table MySQL
+Connectez-vous à votre client MySQL (ex. DBeaver ou ligne de commande) et exécutez le script DDL présenté au paragraphe 6.2.
+
+#### Étape 2 : Configurer les identifiants MySQL dans n8n
+Dans n8n :
+1. Rendez-vous dans **Credentials** -> **Add Credential** -> **MySQL**.
+2. Renseignez :
+   - Host : `localhost` (ou `host.docker.internal` si n8n tourne dans un conteneur Docker).
+   - Database : `learning_db`.
+   - User : `n8n_user`.
+   - Port : `3306`.
+3. Cliquez sur **Save** pour valider le test de connexion réseau.
+
+#### Étape 3 : Configurer le nœud MySQL dans le workflow
+1. Ajoutez le nœud **MySQL** en aval de votre webhook de test.
+2. Définissez l'opération sur **Execute Query**.
+3. Renseignez la requête SQL paramétrée avec les marqueurs `?`.
+4. Renseignez les paramètres liés dans le champ *Query Parameters*.
+5. Exécutez le test : observez le message de succès renvoyant `affectedRows: 1`.
+</PracticalWork>
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi devez-vous impérativement utiliser des paramètres liés (?) au lieu d'injecter directement des expressions n8n dans le texte de la requête SQL ?"
+  options={[
+    "Pour accélérer la vitesse de téléchargement des images sur le serveur",
+    "Pour empêcher les attaques par injection SQL en garantissant que les données utilisateur ne peuvent altérer la syntaxe de la requête",
+    "Parce que MySQL ne supporte pas la syntaxe JSON dans ses versions récentes",
+    "Pour obliger n8n à créer automatiquement les tables manquantes"
+  ]}
+  correctIndex={1}
+  explanation="Les paramètres liés séparent la structure de la commande SQL de son contenu textuel. Le moteur de base de données traite les données utilisateur de manière hermétique, empêchant tout code injecté de s'exécuter."
+/>

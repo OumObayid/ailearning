@@ -1,0 +1,197 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { TokenSimulator } from '@/components/interactive/TokenSimulator';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 1 — Comprendre les modèles de langage et Google Gemini
+
+### 1. Qu'est-ce qu'un modèle de langage ?
+
+Un modèle de langage (LLM, Large Language Model) est un système d'intelligence artificielle entraîné sur de grandes quantités de données afin d'apprendre les structures du langage et de produire des réponses à partir d'une entrée.
+
+Il peut notamment :
+- Comprendre des instructions formulées en langage naturel.
+- Générer du texte.
+- Résumer des documents.
+- Extraire des informations.
+- Classifier des données.
+- Traduire des contenus.
+- Analyser des images.
+- Produire des réponses structurées.
+- Utiliser des outils externes lorsqu'il en a la possibilité.
+
+Contrairement à un programme classique, dont les instructions sont explicitement écrites par le développeur, un modèle de langage produit ses réponses à partir de mécanismes appris pendant son entraînement et de son contexte d'exécution.
+
+#### Exemple
+Une application classique peut rechercher une valeur précise dans une base de données.
+
+Un modèle de langage peut recevoir une demande comme :
+> « Analyse ces commentaires clients et indique les trois problèmes les plus fréquents. »
+
+Il va interpréter la demande, examiner le contenu fourni et générer une synthèse.
+
+<Callout type="warning" title="Attention">
+Le modèle ne connaît pas automatiquement les données privées de ton application. Il faut lui transmettre les informations nécessaires ou lui donner accès à des outils contrôlés.
+</Callout>
+
+---
+
+### 2. Qu'est-ce que Google Gemini ?
+
+Google Gemini est une famille de modèles d'intelligence artificielle développés par Google.
+
+Ces modèles peuvent être utilisés dans des applications pour :
+- Générer du contenu.
+- Analyser des informations.
+- Comprendre des images et d'autres médias.
+- Extraire des données.
+- Répondre à des questions.
+- Utiliser des fonctions et des outils.
+- Participer à des workflows intelligents.
+
+Dans cette formation, Gemini sera notre fournisseur IA principal.
+
+Nous utiliserons le SDK officiel Google pour JavaScript et TypeScript : `@google/genai`.
+
+---
+
+### 3. Comprendre les tokens
+
+Un token est une unité de texte traitée par un modèle.
+
+Un token peut représenter :
+- Un mot complet.
+- Une partie d'un mot.
+- Un signe de ponctuation.
+- Un espace ou une unité de texte.
+
+**Exemple :**  
+Une phrase comme :  
+*« Je développe une application avec React. »*  
+est transformée en unités internes avant son traitement.
+
+Le nombre de tokens ne correspond donc pas exactement au nombre de mots.
+
+**Pourquoi est-ce important ?**  
+Parce que les tokens interviennent dans :
+- La capacité de contexte du modèle.
+- Le volume de données envoyé.
+- La consommation des ressources.
+- Le calcul des coûts selon le modèle et la tarification applicable.
+
+{/* Atelier Interactif Tokenisation */}
+<TokenSimulator />
+
+---
+
+### 4. Comprendre la fenêtre de contexte
+
+La fenêtre de contexte correspond à la quantité d'informations qu'un modèle peut prendre en compte dans une interaction.
+
+Elle peut inclure :
+- Les instructions système.
+- La question de l'utilisateur.
+- Les messages précédents.
+- Les documents transmis.
+- Les résultats des outils.
+- Les informations supplémentaires nécessaires à la réponse.
+
+**Exemple :**  
+Un utilisateur demande :  
+*« Analyse ce document. »*  
+Puis :  
+*« Quels sont les trois risques principaux ? »*  
+Pour répondre correctement, le système doit conserver ou retrouver le document concerné.
+
+La gestion du contexte sera donc essentielle dans les applications conversationnelles.
+
+---
+
+### 5. Comprendre les hallucinations
+
+Une hallucination est une réponse produite par un modèle qui contient une information incorrecte, inventée ou insuffisamment fondée.
+
+**Exemple :**  
+Un utilisateur demande une fonction qui n'existe pas dans une bibliothèque.  
+Le modèle peut proposer une méthode fictive qui semble pourtant plausible.
+
+**Pour limiter ce risque :**
+- Fournir des informations pertinentes.
+- Formuler des instructions précises.
+- Utiliser des sources documentaires fiables.
+- Demander au modèle de signaler les incertitudes.
+- Valider les réponses structurées.
+- Effectuer des vérifications métier côté serveur.
+- Utiliser des tests.
+
+Une réponse bien formulée n'est pas nécessairement une réponse exacte.
+
+---
+
+### 6. Les principales catégories d'utilisation
+
+| Catégorie | Exemple |
+| :--- | :--- |
+| **Génération** | Rédiger une description de produit |
+| **Synthèse** | Résumer un rapport |
+| **Extraction** | Extraire le nom et l'adresse d'un texte |
+| **Classification** | Identifier le sentiment d'un commentaire |
+| **Analyse** | Examiner des données métier |
+| **Multimodal** | Décrire une image |
+| **Conversation** | Répondre à plusieurs questions liées |
+| **Tool calling** | Appeler une fonction externe |
+
+---
+
+{/* Quiz interactif d'auto-évaluation */}
+<QuickQuiz
+  title="Auto-évaluation : Fondations des LLM et Gemini"
+  questions={[
+    {
+      id: 1,
+      question: "Pourquoi le nombre de tokens ne correspond-il pas au nombre de mots ?",
+      options: [
+        "Car un token équivaut toujours à exactement 10 caractères.",
+        "Car un token peut représenter un mot, une partie de mot ou un signe de ponctuation.",
+        "Car seuls les verbes et les noms comptent comme des tokens."
+      ],
+      correctIndex: 1,
+      explanation: "Les modèles découpent le texte en sous-mots et signes typographiques. En moyenne en français, 100 mots représentent entre 130 et 150 tokens."
+    },
+    {
+      id: 2,
+      question: "Quelle est la principale cause d'une hallucination de modèle ?",
+      options: [
+        "Un bug dans le navigateur de l'utilisateur.",
+        "Le modèle prédit des mots plausibles sans vérifier la vérité factuelle dans ses sources.",
+        "Le serveur Google est saturé par trop de requêtes."
+      ],
+      correctIndex: 1,
+      explanation: "Un LLM fonctionne par génération probabiliste. Si l'information est absente ou ambiguë, il peut formuler avec grande assurance une réponse pourtant inventée."
+    },
+    {
+      id: 3,
+      question: "Pourquoi un LLM ne connaît-il pas automatiquement les données de votre entreprise ?",
+      options: [
+        "Parce qu'il n'a été entraîné que sur des données publiques et n'a pas accès à vos bases privées sans outils dédiés.",
+        "Parce que la clé API bloque l'accès aux données privées.",
+        "Parce que TypeScript masque les données du serveur."
+      ],
+      correctIndex: 0,
+      explanation: "Les données privées doivent être transmises dans le contexte du prompt ou rendues accessibles via des techniques comme le RAG ou le Function Calling."
+    }
+  ]}
+/>
+
+---
+
+<PracticalWork title="Travail pratique 1">
+À partir de Google AI Studio, réalise les expériences suivantes :
+- Demander une explication simple de Node.js.
+- Demander un résumé d'un texte.
+- Faire analyser plusieurs commentaires clients.
+- Demander une classification positive, neutre ou négative.
+- Comparer une instruction vague avec une instruction précise.
+
+Note les différences de qualité, de précision et de structure.
+</PracticalWork>

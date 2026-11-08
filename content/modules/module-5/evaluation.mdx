@@ -1,0 +1,89 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 13 — Bonnes pratiques, évaluation des acquis & Annexes
+
+### 1. Guide des bonnes pratiques professionnelles n8n
+
+Pour garantir la maintenabilité, la performance et la sécurité de vos flux en production, appliquez scrupuleusement ces règles éprouvées :
+
+1. **Nommez explicitement chaque nœud** : Ne laissez jamais les libellés par défaut comme `HTTP Request 1` ou `Code 2`. Préférez `Vérifier Token Secours` ou `Gemini - Classification Support`.
+2. **Versionnez vos workflows** : Exportez régulièrement vos configurations JSON sous contrôle de source Git pour suivre l'historique des modifications de l'équipe.
+3. **Isolez la logique métier dans des sous-workflows** : Découpez les processus de plus de 15 nœuds en sous-workflows réutilisables.
+4. **Activez l'épuration automatique des exécutions** : Activez `EXECUTIONS_DATA_PRUNE=true` pour empêcher la saturation du disque serveur par les données d'exécution anciennes.
+5. **Défense en profondeur pour les clés d'API** : Utilisez exclusivement le gestionnaire d'identifiants n8n et ne partagez jamais de fichiers JSON contenant des secrets en clair.
+
+---
+
+### 2. Glossaire technique de l'automatisation
+
+| Terme | Définition précise |
+| :--- | :--- |
+| **Workflow** | Graphe orienté décrivant une suite ordonnée d'étapes d'automatisation. |
+| **Node (Nœud)** | Bloc unitaire d'un workflow réalisant une action, un déclenchement ou un calcul. |
+| **Trigger** | Événement initial qui déclenche l'exécution du workflow (Webhook, Cron, Manuel). |
+| **Array of Items** | Structure interne standardisée de n8n où chaque donnée est un objet `{ json: ... }`. |
+| **Idempotence** | Propriété d'une opération pouvant être exécutée plusieurs fois sans modifier le résultat au-delà de la première exécution. |
+| **Human-in-the-Loop** | Patron d'architecture exigeant l'approbation explicite d'un opérateur humain avant de finaliser une action sensible. |
+| **Queue Mode** | Mode distribué où Redis sert de tampon de tâches exécutées par plusieurs conteneurs n8n workers. |
+
+---
+
+### 3. Annexe 1 — Commandes essentielles
+
+<CodeBlock
+  language="bash"
+  title="Aide-mémoire des commandes n8n et Docker"
+  code={`# Lancer une instance n8n de développement en local
+npx n8n
+
+# Exporter tous les workflows locaux dans un dossier de sauvegarde
+n8n export:workflow --all --output=./workflows_backup/
+
+# Importer des workflows depuis un dossier
+n8n import:workflow --input=./workflows_backup/
+
+# Exécuter l'audit de sécurité des flux installés
+n8n audit
+
+# Vérifier la santé du conteneur en production
+docker ps --filter "name=n8n"
+docker logs --tail 100 n8n`}
+/>
+
+---
+
+### 4. Annexe 2 — Documentation officielle de référence
+
+Pour approfondir votre expertise sur les outils abordés dans ce module :
+- **Documentation officielle de n8n** : [docs.n8n.io](https://docs.n8n.io)
+- **Référence des expressions n8n** : [docs.n8n.io/code/expressions](https://docs.n8n.io/code/expressions/)
+- **Documentation API Google Gemini** : [ai.google.dev/docs](https://ai.google.dev/docs)
+- **Validation avec Zod** : [zod.dev](https://zod.dev)
+
+---
+
+### 5. Conclusion du Module 5 et transition vers le Module 6
+
+Félicitations ! Vous maîtrisez désormais l'automatisation de processus de bout en bout, de l'orchestration événementielle avec n8n et Express jusqu'à la classification sémantique par **Google Gemini** et la persistance relationnelle **MySQL**.
+
+Dans le prochain module (**Module 6 : Agents Autonomes & Architectures Multi-Agents**), nous franchirons une étape décisive : nous abandonnerons les flux linéaires pour concevoir des **agents autonomes capables de planifier leurs propres étapes, d'appeler des outils dynamiquement et de collaborer à plusieurs agents spécialisés** pour résoudre des problèmes d'une complexité sans précédent.
+
+---
+
+### 6. Évaluation finale des acquis
+
+<QuickQuiz
+  question="Quelle est la combinaison optimale pour concevoir une chaîne de traitement automatisée moderne, sécurisée et scalable ?"
+  options={[
+    "Frontend React relié directement aux webhooks sans authentification",
+    "Frontend React -> Passerelle Express avec Zod et HTTP 202 -> Orchestrateur n8n sécurisé par header -> IA Gemini & MySQL",
+    "Un script PHP monolithique tournant sur un serveur mutualisé sans base de données",
+    "Un fichier Excel partagé synchronisé par email une fois par jour"
+  ]}
+  correctIndex={1}
+  explanation="L'architecture à 4 tiers sépare hermétiquement la présentation, le contrôle d'accès sécurisé, l'orchestration résiliente et la couche d'intelligence cognitive."
+/>
+

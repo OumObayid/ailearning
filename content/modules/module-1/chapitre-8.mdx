@@ -1,0 +1,410 @@
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ToolLoopSimulator } from '@/components/interactive/ToolLoopSimulator';
+
+# Chapitre 8 — Streaming des réponses et appels de fonctions
+
+### 1. Comprendre le streaming
+
+Lors d'un appel classique, l'application attend généralement la réponse complète du modèle avant de l'afficher.  
+Le streaming permet de recevoir progressivement les éléments de la réponse.
+
+Comparaison :
+
+<ArchitectureDiagram
+  title="Comparaison Sans streaming vs Avec streaming"
+  diagram={`Sans streaming :
+Envoi de la demande
+       |
+       v
+Attente
+       |
+       v
+Réponse complète
+       |
+       v
+Affichage
+
+Avec streaming :
+Envoi de la demande
+       |
+       v
+Réponse partielle
+       |
+       v
+Affichage immédiat
+       |
+       v
+Nouveau fragment
+       |
+       v
+Affichage progressif`}
+/>
+
+Le streaming améliore la réactivité de l'interface, particulièrement pour les réponses longues.
+
+---
+
+### 2. Activer le streaming avec l'Interactions API
+
+<CodeBlock language="typescript">
+{`const stream = await ai.interactions.create({
+  model: GEMINI_MODEL,
+  input: "Explique le fonctionnement de React en détail.",
+  stream: true
+});
+
+for await (const event of stream) {
+  if (event.event_type === "step.delta") {
+    if (event.delta.type === "text") {
+      process.stdout.write(event.delta.text);
+    }
+  }
+}`}
+</CodeBlock>
+
+#### Explication :
+- `stream: true` active la transmission progressive.
+- La boucle `for await...of` permet de parcourir les événements asynchrones.
+- `step.delta` correspond à une évolution d'une étape.
+- `delta.type === "text"` permet de récupérer les fragments textuels.
+
+---
+
+### 3. Streaming avec Express
+
+Pour transmettre progressivement la réponse au frontend, Express peut utiliser Server-Sent Events (SSE).
+
+Exemple de route pédagogique :
+
+<CodeBlock language="typescript" filename="src/controllers/stream.controller.ts">
+{`import type { Request, Response } from "express";
+import { ai, GEMINI_MODEL } from "../config/gemini.js";
+
+export async function streamController(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { prompt } = req.body;
+
+    if (typeof prompt !== "string" || !prompt.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Prompt invalide."
+      });
+    }
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    const stream = await ai.interactions.create({
+      model: GEMINI_MODEL,
+      input: prompt,
+      stream: true
+    });
+
+    for await (const event of stream) {
+      if (event.event_type === "step.delta") {
+        if (event.delta.type === "text") {
+          res.write(
+            \`data: \${JSON.stringify({
+              text: event.delta.text
+            })}\\n\\n\`
+          );
+        }
+      }
+    }
+
+    res.write("event: done\\ndata: {}\\n\\n");
+    res.end();
+  } catch (error) {
+    console.error(error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        message: "Erreur pendant le streaming."
+      });
+    } else {
+      res.end();
+    }
+  }
+}`}
+</CodeBlock>
+
+<Callout type="note" title="Production">
+Cette version est pédagogique. Une version de production devra aussi gérer la déconnexion du client, l'annulation du traitement lorsque possible, les erreurs après l'envoi des en-têtes et les limites de durée.
+</Callout>
+
+---
+
+### 4. Consommer le streaming depuis React
+
+Exemple simplifié avec `fetch` :
+
+<CodeBlock language="typescript">
+{`async function generateStream(prompt: string) {
+  const response = await fetch(
+    "http://localhost:3000/api/stream",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ prompt })
+    }
+  );
+
+  if (!response.ok || !response.body) {
+    throw new Error("Erreur de connexion.");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const events = buffer.split("\\n\\n");
+    buffer = events.pop() ?? "";
+
+    for (const event of events) {
+      if (event.startsWith("data: ")) {
+        const data = JSON.parse(event.slice(6));
+        console.log(data.text);
+      }
+    }
+  }
+}`}
+</CodeBlock>
+
+Dans React, chaque fragment reçu pourra être ajouté à l'état du composant pour afficher la réponse progressivement.
+
+---
+
+### 5. Comprendre le Function Calling
+
+Le Function Calling permet à Gemini de demander à l'application d'exécuter une fonction.
+
+- Le modèle ne réalise pas lui-même l'action métier.
+- Il identifie l'outil pertinent et fournit les arguments.
+- L'application décide ensuite si elle autorise et exécute la fonction.
+
+**Exemple :**  
+Un utilisateur demande :  
+> « Quel est le statut de ma commande 125 ? »  
+
+Gemini peut demander l'exécution de :
+```typescript
+get_order_status({
+  order_id: 125
+});
+```
+La fonction interroge ensuite le système métier.
+
+{/* Simulateur interactif de la boucle à 4 temps */}
+<ToolLoopSimulator />
+
+---
+
+### 6. Déclarer un outil
+
+<CodeBlock language="typescript">
+{`const getOrderTool = {
+  type: "function",
+  name: "get_order_status",
+  description: "Récupère le statut d'une commande.",
+  parameters: {
+    type: "object",
+    properties: {
+      order_id: {
+        type: "integer",
+        description: "Identifiant de la commande."
+      }
+    },
+    required: ["order_id"]
+  }
+};`}
+</CodeBlock>
+
+---
+
+### 7. Envoyer l'outil à Gemini
+
+<CodeBlock language="typescript">
+{`const interaction = await ai.interactions.create({
+  model: GEMINI_MODEL,
+  input: "Quel est le statut de la commande 125 ?",
+  tools: [getOrderTool]
+});`}
+</CodeBlock>
+
+Inspecter les étapes :
+
+<CodeBlock language="typescript">
+{`for (const step of interaction.steps) {
+  if (step.type === "function_call") {
+    console.log("Fonction :", step.name);
+    console.log("Arguments :", step.arguments);
+  }
+}`}
+</CodeBlock>
+
+Gemini peut retourner une demande d'appel de fonction.  
+Il appartient à l'application de l'exécuter.
+
+---
+
+### 8. Exécuter la fonction côté serveur
+
+<CodeBlock language="typescript">
+{`async function getOrderStatus(orderId: number) {
+  // Exemple pédagogique :
+  // En production, cette fonction interrogerait
+  // un service métier autorisé.
+  const orders: Record<number, string> = {
+    125: "En cours de préparation"
+  };
+
+  return orders[orderId] ?? "Commande introuvable";
+}`}
+</CodeBlock>
+
+Le serveur doit vérifier les droits d'accès avant de retourner une information.
+
+---
+
+### 9. Retourner le résultat à Gemini
+
+Après réception de l'appel de fonction, l'application exécute la fonction puis transmet son résultat dans une nouvelle interaction.
+
+<CodeBlock language="typescript">
+{`const functionCall = interaction.steps.find(
+  (step) => step.type === "function_call"
+);
+
+if (functionCall && functionCall.type === "function_call") {
+  if (functionCall.name !== "get_order_status") {
+    throw new Error("Fonction non autorisée.");
+  }
+
+  const args = functionCall.arguments as {
+    order_id: number;
+  };
+
+  const result = await getOrderStatus(args.order_id);
+
+  const finalInteraction = await ai.interactions.create({
+    model: GEMINI_MODEL,
+    previous_interaction_id: interaction.id,
+    input: [
+      {
+        type: "function_result",
+        name: functionCall.name,
+        call_id: functionCall.id,
+        result
+      }
+    ]
+  });
+
+  console.log(finalInteraction.output_text);
+}`}
+</CodeBlock>
+
+Cet exemple illustre le cycle principal : déclaration, demande d'appel, exécution côté application et retour du résultat au modèle.
+
+<Callout type="warning" title="Précision">
+Une implémentation complète doit gérer plusieurs appels de fonction, les erreurs, les arguments invalides et les cas où aucun outil n'est demandé.
+</Callout>
+
+---
+
+### 10. Différence entre outil natif et fonction personnalisée
+
+- **Outil natif :** Il est exécuté par le service Google lorsqu'il est pris en charge.
+- **Fonction personnalisée :** Elle est exécutée par ton application.
+
+**Exemples de fonctions personnalisées :**
+- Recherche d'un produit.
+- Consultation d'une commande.
+- Création d'une réservation.
+- Recherche dans une API interne.
+- Calcul métier.
+
+---
+
+### 11. Sécurité du Function Calling
+
+Un agent ne doit jamais avoir un accès illimité aux ressources métier.
+
+Il faut notamment :
+- Vérifier les arguments.
+- Vérifier les permissions.
+- Définir une liste d'outils autorisés.
+- Limiter les opérations sensibles.
+- Journaliser les actions.
+- Demander une confirmation humaine pour certaines opérations.
+- Ne jamais exécuter directement du code arbitraire généré par le modèle.
+
+---
+
+<PracticalWork title="TP 1 — Diffusion continue (Streaming SSE) vers le client">
+**Objectif :** Créer une route Express qui stream la génération de Gemini mot à mot vers le frontend pour supprimer l'effet de gel de l'écran.
+
+1. **Backend Express :**
+   - Configurer la route `GET /api/stream?prompt=...` ou `POST /api/stream`.
+   - Définir les en-têtes HTTP SSE :
+     ```typescript
+     res.setHeader("Content-Type", "text/event-stream");
+     res.setHeader("Cache-Control", "no-cache");
+     res.setHeader("Connection", "keep-alive");
+     ```
+   - Utiliser `ai.models.generateContentStream()` ou l'Interactions API en mode streaming et envoyer chaque fragment au format `data: ${JSON.stringify({ text: chunk.text })}\n\n`.
+   - Clôturer le flux proprement avec `res.end()` à la fin du stream.
+2. **Frontend React :**
+   - Consommer le flux avec l'API standard `fetch()` et un `ReadableStreamDefaultReader` ou un `EventSource`.
+   - Concaténer les morceaux reçus dans un état React `useState` et observer l'apparition fluide du texte à l'écran.
+</PracticalWork>
+
+<PracticalWork title="TP 2 — Déclaration et test de l'outil `search_product`">
+**Objectif :** Permettre à Gemini d'interroger le catalogue produits d'une base de démonstration lorsque l'utilisateur pose une question commerciale.
+
+1. **Jeu de données simulé :**
+   ```typescript
+   const PRODUCTS = [
+     { id: "P1", name: "Clavier mécanique RGB", price: 89, inStock: true },
+     { id: "P2", name: "Souris sans fil ergonomique", price: 49, inStock: false },
+     { id: "P3", name: "Écran 27 pouces 4K", price: 299, inStock: true }
+   ];
+   ```
+2. **Déclaration de la fonction outil :** Définir le schéma de l'outil `search_product` avec un paramètre obligatoire `query: string`.
+3. **Exécution :**
+   - Envoyer la question : *"Avez-vous des écrans disponibles et à quel prix ?"*.
+   - Vérifier que Gemini ne tente pas de deviner le prix, mais déclenche un appel d'outil `search_product` avec `query: "écran"`.
+</PracticalWork>
+
+<PracticalWork title="TP 3 — Outil métier sécurisé `get_order_status`">
+**Objectif :** Implémenter l'outil de consultation de statut de commande avec vérification des identifiants.
+
+1. **Déclaration d'outil :**
+   - Nom de l'outil : `get_order_status`.
+   - Paramètre requis : `order_id` (de type entier).
+2. **Fonction d'exécution côté serveur :**
+   - Simuler une table de commandes : commande 101 livrée, commande 102 en préparation, commande 103 annulée.
+   - Si la commande n'existe pas, renvoyer explicitement `{ found: false, message: "Numéro de commande inconnu" }`.
+3. **Boucle complète :** Transmettre le résultat de l'outil à Gemini dans la seconde interaction et valider que Gemini formule une réponse polie en français à l'utilisateur : *"Votre commande 101 a bien été livrée."*
+</PracticalWork>
+
+<PracticalWork title="TP 4 — Assistant intelligent avec aiguillage multi-outils">
+**Objectif :** Fournir à Gemini simultanément les deux outils (`search_product` et `get_order_status`) et tester son discernement.
+
+1. **Scénario A :** L'utilisateur demande : *"Où en est mon colis numéro 102 ?"* -> Gemini doit appeler exclusivement `get_order_status`.
+2. **Scénario B :** L'utilisateur demande : *"Je cherche une souris pour le bureau"* -> Gemini doit appeler exclusivement `search_product`.
+3. **Scénario C :** L'utilisateur demande : *"Qui est le président de la France ?"* -> Gemini ne doit appeler **aucun** outil et répondre directement avec ses connaissances générales.
+</PracticalWork>

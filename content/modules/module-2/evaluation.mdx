@@ -1,0 +1,155 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Évaluation des acquis & Annexes
+
+### 1. Évaluation théorique
+
+L'apprenant doit être capable de formuler une réponse claire et argumentée aux questions suivantes :
+
+1. **Qu'est-ce qu'un frontend augmenté par l'IA ?** Décrivez en quoi il diffère d'une interface CRUD classique.
+2. **Pourquoi la clé d'API Google Gemini ne doit-elle jamais figurer dans le code React client ?** Quelles sont les vulnérabilités engendrées ?
+3. **Quelle différence fondamentale existe-t-il entre un formulaire IA ponctuel et un chat conversationnel ?**
+4. **Comment React gère-t-il les états asynchrones d'une génération par un LLM ?**
+5. **Qu'est-ce que le streaming et pourquoi améliore-t-il considérablement le Time-To-First-Token (TTFT) ?**
+6. **Quel est le rôle de Vercel AI SDK et comment s'articule-t-il avec `@ai-sdk/google` ?**
+7. **Quelle est la différence conceptuelle entre le SDK officiel `@google/genai` et Vercel AI SDK ?**
+8. **Comment fonctionne le hook `useChat` et quelles fonctionnalités gère-t-il automatiquement ?**
+9. **Quelle est la différence d'usage entre `generateText` et `generateObject` ?**
+10. **Qu'est-ce que la UI générative contrôlée et pourquoi exclut-elle l'injection libre de JSX ?**
+11. **Pourquoi la validation avec Zod est-elle cruciale lors de la réception de données structurées issues d'un modèle ?**
+12. **Comment l'objet `AbortController` permet-il d'annuler une requête en cours de vol côté client ?**
+13. **Quelle est l'utilité d'un hook de debouncing dans une recherche assistée par IA ?**
+14. **Quels sont les risques d'une utilisation imprudente de `dangerouslySetInnerHTML` avec les réponses d'un LLM ?**
+15. **Pourquoi est-il indispensable de mocker les réponses de Gemini dans vos suites de tests automatisés ?**
+
+---
+
+### 2. Évaluation pratique
+
+L'apprenant doit réaliser de manière autonome les exercices suivants :
+
+- **Exercice 1** : Créer un composant de saisie de prompt avec compteur de caractères et blocage au-delà de 500 signes.
+- **Exercice 2** : Écrire un service API `fetch` capable d'intercepter les statuts HTTP 429 et 500 pour renvoyer des erreurs typées.
+- **Exercice 3** : Développer une interface de dialogue avec historique de messages et défilement automatique vers le bas.
+- **Exercice 4** : Implémenter le streaming temps réel avec `useChat` et un bouton d'arrêt d'urgence (`stop`).
+- **Exercice 5** : Définir un schéma Zod pour une analyse de sentiment et afficher les résultats dans des composants distincts.
+- **Exercice 6** : Construire un composant d'upload d'image avec prévisualisation immédiate et envoi par `FormData`.
+- **Exercice 7** : Implémenter un mécanisme d'annulation de requête avec `AbortController`.
+- **Exercice 8** : Rédiger une suite de tests unitaires avec Vitest simulant une réponse réussie et un échec serveur.
+
+---
+
+### 3. Grille de validation des compétences
+
+| Compétence | Objectif opérationnel | Niveau attendu |
+| :--- | :--- | :--- |
+| **Architecture React IA** | Séparation étanche Frontend / Backend / Provider | **Maîtrise** |
+| **TypeScript Frontend** | Typage strict des messages et des contrats d'API | **Maîtrise** |
+| **Communication HTTP** | Maîtrise de `fetch`, `FormData` et des en-têtes | **Maîtrise** |
+| **Gestion des états** | Machine à états complète (Idle, Loading, Streaming, Error) | **Maîtrise** |
+| **Interface de Chat** | Conception d'un chat conversationnel fluide et accessible | **Autonomie** |
+| **Streaming UI** | Restitution progressive de tokens et annulation | **Autonomie** |
+| **Vercel AI SDK** | Utilisation experte des fonctions et hooks du SDK | **Maîtrise** |
+| **UI Générative** | Restitution contrôlée de données Zod en composants graphiques | **Autonomie** |
+| **Multimodalité** | Téléversement et analyse d'images en toute sécurité | **Autonomie** |
+| **Sécurité Frontend** | Prévention du vol de clés et des injections XSS | **Bonnes pratiques** |
+| **Tests automatisés** | Tests de composants avec Vitest et simulation de mocks | **Autonomie** |
+
+---
+
+### ANNEXE A — Commandes essentielles
+
+```bash
+# 1. Initialiser le projet frontend
+npm create vite@latest frontend-ia -- --template react-ts
+cd frontend-ia
+npm install
+
+# 2. Installer Vercel AI SDK et le provider Google
+npm install ai @ai-sdk/react @ai-sdk/google zod
+
+# 3. Installer le support du Markdown sécurisé
+npm install react-markdown remark-gfm
+
+# 4. Installer les outils de tests unitaires
+npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
+
+# 5. Commandes de cycle de vie
+npm run dev     # Lancer l'environnement de développement local
+npm run build   # Compiler pour la production
+npm test        # Lancer la suite de tests automatisés
+```
+
+---
+
+### ANNEXE B — Documentation officielle de référence
+
+- **React Documentation** : [https://react.dev/](https://react.dev/)
+- **Next.js Documentation** : [https://nextjs.org/docs](https://nextjs.org/docs)
+- **Vercel AI SDK Core** : [https://ai-sdk.dev/docs/introduction](https://ai-sdk.dev/docs/introduction)
+- **Vercel AI SDK — Provider Google** : [https://ai-sdk.dev/providers/ai-sdk-providers/google-generative-ai](https://ai-sdk.dev/providers/ai-sdk-providers/google-generative-ai)
+- **Vercel AI SDK — useChat** : [https://ai-sdk.dev/docs/ai-sdk-ui/chatbot](https://ai-sdk.dev/docs/ai-sdk-ui/chatbot)
+- **Google Gemini API** : [https://ai.google.dev/docs](https://ai.google.dev/docs)
+- **Zod — TypeScript-first schema validation** : [https://zod.dev/](https://zod.dev/)
+- **Vitest — Fast Vite-native Testing Framework** : [https://vitest.dev/](https://vitest.dev/)
+
+---
+
+### Conclusion du Module 2
+
+Ce second module marque le passage de la simple manipulation technique des APIs d'intelligence artificielle à la conception d'**interfaces utilisateurs riches, modernes et ergonomiques**.
+
+Vous disposez à présent de toutes les compétences requises pour :
+- Concevoir des assistants conversationnels élégants et réactifs.
+- Restituer des flux de streaming progressifs sans bloquer le navigateur.
+- Transformer des données brutes en composants graphiques personnalisés (**UI générative**).
+- Téléverser et analyser des médias en temps réel de manière hautement sécurisée.
+- Tester et fiabiliser vos interfaces face aux aléas réseau et aux incertitudes des modèles.
+
+Ces acquis serviront de fondation solide pour aborder les architectures backend industrielles, le RAG vectoriel et les agents décisionnels autonomes dans les modules suivants.
+
+---
+
+<QuickQuiz
+  title="Auto-évaluation finale : Bilan du Module 2"
+  questions={[
+    {
+      id: 1,
+      question: "Quelle fonction de Vercel AI SDK permet de générer un objet fortement typé validé par Zod ?",
+      options: [
+        "generateObject()",
+        "createJsonObject()",
+        "parseZodAsync()",
+        "streamTextAsJson()"
+      ],
+      correctIndex: 0,
+      explanation: "generateObject() prend en paramètre un schéma Zod et force Google Gemini à produire un objet parfaitement conforme à cette structure."
+    },
+    {
+      id: 2,
+      question: "Pourquoi ne faut-il pas spécifier manuellement l'en-tête 'Content-Type' lors de l'envoi d'un FormData avec fetch ?",
+      options: [
+        "Parce que FormData ne fonctionne qu'en protocole HTTP 1.0",
+        "Parce que le navigateur doit automatiquement générer la valeur 'multipart/form-data' avec la clé 'boundary'",
+        "Parce que fetch refuse tous les en-têtes personnalisés",
+        "Parce que Gemini n'accepte que du texte JSON pur"
+      ],
+      correctIndex: 1,
+      explanation: "Le navigateur calcule automatiquement la chaîne 'boundary' indispensable au découpage des champs multipart par le serveur. L'écraser manuellement corrompt le corps de la requête."
+    },
+    {
+      id: 3,
+      question: "Quel hook permet d'obtenir un défilement mot à mot en direct dans une conversation avec Vercel AI SDK ?",
+      options: [
+        "useChat",
+        "useStreamToken",
+        "useWebSocket",
+        "usePoller"
+      ],
+      correctIndex: 0,
+      explanation: "useChat gère automatiquement la réception des flux SSE, le cycle des messages et les états de streaming en temps réel."
+    }
+  ]}
+/>
+

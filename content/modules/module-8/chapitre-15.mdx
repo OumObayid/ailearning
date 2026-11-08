@@ -1,0 +1,207 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+## 1. Gestion des environnements (Développement, Préproduction, Production)
+
+L'industrialisation d'une solution d'intelligence artificielle requiert une séparation stricte des cycles de vie applicatifs. Déployer directement un agent autonome ou un pipeline RAG sans environnement intermédiaire expose le système à des régressions critiques ou à des surcoûts d'API imprévus.
+
+```
+Environnements :
+┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+│  Développement  │ ───►  │  Préproduction   │ ───►  │   Production    │
+│  (Local/Docker) │       │ (Staging Cloud) │       │ (Haute Dispo)   │
+└─────────────────┘       └─────────────────┘       └─────────────────┘
+  • Mock LLM / Flash        • Gemini 2.5 Flash        • Gemini 2.5 Flash
+  • MySQL Local             • DB Staging Sanitisée    • MySQL Cluster HA
+  • Qdrant mémoire          • Qdrant Staging          • Qdrant Distribué
+```
+
+### Principes directeurs de la séparation :
+1. **Environnement de Développement (Local)** : Exécution via Docker Compose local, rechargement à chaud (HMR), mocks possibles des appels LLM coûteux ou utilisation de clés de développement avec quotas stricts.
+2. **Environnement de Préproduction (Staging)** : Miroir exact de la production, données sanitisées (anonymisées), exécution de la suite de tests de non-régression et validation humaine des comportements d'agents.
+3. **Environnement de Production** : Haute disponibilité, certificats TLS stricts, politique de rétention des logs, monitoring actif des quotas et alertes de dérive.
+
+---
+
+## 2. Fichier docker-compose.yml de production (Express, MySQL, Qdrant, Redis, n8n)
+
+Le déploiement multi-conteneurs de la plateforme orchestre l'ensemble des dépendances avec des réseaux isolés et des volumes persistants durcis.
+
+```yaml
+version: '3.8'
+
+services:
+  # 1. API Backend Node.js / Express
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      REDIS_URL: redis://redis:6379
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook/document-process
+      N8N_WEBHOOK_SECRET: ${N8N_WEBHOOK_SECRET}
+    ports:
+      - "4000:4000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - platform-net
+
+  # 2. Base de données relationnelle MySQL 8.0
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - platform-net
+
+  # 3. Base vectorielle Qdrant
+  qdrant:
+    image: qdrant/qdrant:v1.13.2
+    restart: always
+    environment:
+      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY}
+    volumes:
+      - qdrant_data:/qdrant/storage
+    ports:
+      - "6333:6333"
+    networks:
+      - platform-net
+
+  # 4. Cache & Observabilité Redis
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - platform-net
+
+  # 5. Moteur d'automatisation n8n
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: always
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_AUTH_PASSWORD}
+      - WEBHOOK_URL=https://n8n.plateforme.internal/
+    volumes:
+      - n8n_data:/home/node/.n8n
+    ports:
+      - "5678:5678"
+    networks:
+      - platform-net
+
+networks:
+  platform-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  qdrant_data:
+  redis_data:
+  n8n_data:
+```
+
+---
+
+## 3. Checklist de sécurité et durcissement des variables d'environnement
+
+Avant toute mise en ligne, l'ingénieur IA doit valider les points critiques suivants :
+
+### 1. Gestion stricte des secrets
+- Aucun secret, mot de passe ou clé d'API (`GEMINI_API_KEY`, `JWT_SECRET`, `N8N_WEBHOOK_SECRET`) ne doit figurer dans les dépôts Git.
+- Utilisation exclusive d'un gestionnaire de secrets (AWS Secrets Manager, HashiCorp Vault, ou variables d'environnement sécurisées CI/CD).
+- Fichier `.gitignore` verrouillé incluant `.env`, `.env.local`, `.env.*.local`.
+
+### 2. Durcissement des conteneurs
+- Exécution des conteneurs avec un utilisateur sans privilèges root (`USER node` dans le Dockerfile).
+- Compilation multi-étapes (*Multi-stage builds*) pour minimiser la surface d'attaque de l'image de production :
+
+```dockerfile
+# Dockerfile backend optimisé
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json tsconfig.json ./
+RUN npm ci
+COPY src ./src
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package*.json ./
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+USER node
+EXPOSE 4000
+CMD ["node", "dist/server.js"]
+```
+
+### 3. Limitation des flux et rate-limiting
+- Activation d'un reverse-proxy Nginx ou Cloudflare avec terminaison TLS 1.3 et en-têtes HTTP de sécurité (`Content-Security-Policy`, `X-Frame-Options: DENY`, `Strict-Transport-Security`).
+- Application d'un rate-limiting strict par IP et par compte utilisateur sur les routes de génération IA (max 30 requêtes / minute / utilisateur).
+
+<Callout type="danger">
+Une fuite de clé `GEMINI_API_KEY` peut entraîner des coûts financiers considérables en cas de compromission par des bots. Mettez en place des plafonds budgétaires d'alerte (*Budgets & Alerts*) directement dans la console Google Cloud.
+</Callout>
+
+<QuickQuiz
+  title="Validation des Connaissances — Déploiement & Docker"
+  questions={[
+    {
+      question: "Pourquoi privilégie-t-on le 'Multi-stage build' dans la création de l'image Docker du backend ?",
+      options: [
+        "(Recommended) Pour exclure TypeScript et les dépendances de développement de l'image finale, réduisant la taille et la surface de vulnérabilité",
+        "Pour permettre à l'image d'exécuter plusieurs systèmes d'exploitation simultanément",
+        "Pour doubler la vitesse des requêtes MySQL",
+        "Parce que Docker refuse d'exécuter du code compilé sans cette directive"
+      ],
+      correctIndex: 0,
+      explanation: "Le multi-stage build permet de construire le code dans une première étape puis de ne copier que les artefacts compilés (JavaScript natif) dans une image ultra-légère et sécurisée."
+    },
+    {
+      question: "Quelle bonne pratique évite qu'une fuite de clé API n'engendre des dépenses incontrôlées ?",
+      options: [
+        "(Recommended) Configurer des alertes de facturation et des plafonds stricts dans la console Google Cloud",
+        "Partager la même clé d'API avec tous les stagiaires de l'entreprise",
+        "Écrire la clé d'API en dur dans le code source JavaScript du frontend",
+        "Désactiver la journalisation des erreurs dans Express"
+      ],
+      correctIndex: 0,
+      explanation: "La configuration d'alertes budgétaires et de quotas maximaux protège l'organisation contre les surfacturations en cas d'attaque ou de boucle infinie d'appels."
+    }
+  ]}
+/>
+

@@ -1,0 +1,174 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 8 — Architecture complète : React, Express, n8n et Gemini
+
+### 1. Pourquoi le frontend ne doit pas appeler n8n directement
+
+Dans une architecture applicative moderne, exposer publiquement les points d'entrée de vos workflows d'automatisation directement aux navigateurs web représente un risque majeur pour la résilience et la sécurité de votre plateforme :
+
+- **Absence de contrôle d'accès unifié** : Un attaquant découvrant l'URL d'un webhook n8n peut submerger le serveur de requêtes arbitraires sans aucune restriction.
+- **Divulgation de la topologie réseau** : Le client frontend a connaissance directe des adresses internes de vos outils d'automatisation.
+- **Blocage de l'interface utilisateur** : Si le workflow exécute plusieurs appels d'API séquentiels durant 15 secondes, la requête HTTP du navigateur restera suspendue (*loading spinner* interminable).
+
+---
+
+### 2. L'architecture sécurisée à 4 tiers
+
+Pour concilier sécurité, haute disponibilité et expérience utilisateur fluide, nous adoptons une **architecture à 4 tiers** :
+
+<ArchitectureDiagram
+  title="Topologie 4 tiers d'une automatisation d'entreprise"
+  diagram={`[ TIER 1 : REACT CLIENT ]
+           |  (POST /api/tickets avec JWT utilisateur)
+           v
+[ TIER 2 : PASSERELLE EXPRESS / NODE.JS ]
+           |  1. Valide le schéma avec Zod
+           |  2. Génère un identifiant de ticket (UUID)
+           |  3. Enregistre l'état initial en MySQL (status: 'received')
+           |  4. Répond instantanément HTTP 202 Accepted au React
+           |  5. Émet une requête asynchrone vers n8n avec X-Webhook-Secret
+           v
+[ TIER 3 : ORCHESTRATEUR n8n ]
+           |  1. Vérifie le secret d'en-tête
+           |  2. Invoque l'IA Gemini pour classifier le message
+           |  3. Met à jour le statut en MySQL (status: 'resolved' / 'escalated')
+           |  4. Déclenche les alertes métiers appropriées
+           v
+[ TIER 4 : GOOGLE GEMINI & MYSQL DATABASE ]`}
+/>
+
+---
+
+### 3. Développer la passerelle Express avec validation Zod
+
+Voici le code complet de la route Express agissant comme passerelle sécurisée pour ingérer les demandes de support :
+
+<CodeBlock
+  language="typescript"
+  title="src/routes/ticketsGateway.ts — Passerelle Express sécurisée"
+  code={`import { Router, Request, Response } from 'express';
+import { z } from 'zod';
+import { randomUUID } from 'crypto';
+import { pool } from '../config/database';
+
+export const ticketsRouter = Router();
+
+// 1. Schéma de validation strict de la charge utile
+const ticketSubmissionSchema = z.object({
+  clientEmail: z.string().email("Format d'email invalide"),
+  subject: z.string().min(5, "Le sujet doit comporter au moins 5 caractères").max(200),
+  message: z.string().min(10, "Le message doit comporter au moins 10 caractères").max(5000),
+});
+
+ticketsRouter.post('/', async (req: Request, res: Response) => {
+  // 2. Validation Zod en entrée
+  const parseResult = ticketSubmissionSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({
+      error: 'Données invalides',
+      details: parseResult.error.flatten().fieldErrors,
+    });
+  }
+
+  const { clientEmail, subject, message } = parseResult.data;
+  const ticketId = \`TCK-\${randomUUID().substring(0, 8).toUpperCase()}\`;
+
+  try {
+    // 3. Persistance immédiate en base MySQL
+    await pool.execute(
+      'INSERT INTO support_tickets (id, client_email, subject, raw_message, status) VALUES (?, ?, ?, ?, ?)',
+      [ticketId, clientEmail, subject, message, 'received']
+    );
+
+    // 4. Appel asynchrone non-bloquant vers n8n (Fire-and-Forget sécurisé)
+    const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/incoming-support';
+    const n8nSecret = process.env.N8N_WEBHOOK_SECRET || 'whsec_prod_live_894f2a';
+
+    fetch(n8nWebhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Webhook-Secret': n8nSecret,
+      },
+      body: JSON.stringify({
+        ticketId,
+        clientEmail,
+        subject,
+        message,
+        timestamp: new Date().toISOString(),
+      }),
+    }).catch((err) => {
+      // Log d'alerte en cas d'échec réseau vers l'orchestrateur
+      console.error('[Gateway] Échec du dispatch vers n8n :', err.message);
+    });
+
+    // 5. Réponse instantanée au client (HTTP 202 Accepted)
+    return res.status(202).json({
+      success: true,
+      ticketId,
+      message: 'Demande enregistrée avec succès. Traitement en cours.',
+      statusUrl: \`/api/tickets/\${ticketId}/status\`,
+    });
+  } catch (error: any) {
+    console.error('[Gateway Error]', error);
+    return res.status(500).json({ error: 'Erreur interne du serveur lors de la soumission' });
+  }
+});`}
+/>
+
+---
+
+### 4. Sécuriser les webhooks avec le header X-Webhook-Secret
+
+Pour empêcher tout appel non autorisé vers n8n, nous configurons un secret partagé :
+1. Dans le fichier `.env` de votre serveur Node.js :
+   ```bash
+   N8N_WEBHOOK_SECRET="whsec_prod_live_894f2a"
+   ```
+2. Dans le workflow n8n, immédiatement après le déclencheur Webhook, insérez un nœud **Code** de vérification :
+
+<CodeBlock
+  language="javascript"
+  title="Nœud n8n Code : Vérification cryptographique du secret"
+  code={`// Vérifier l'en-tête d'authentification reçu
+const headers = $input.item.json.headers;
+const expectedSecret = $env.N8N_WEBHOOK_SECRET || 'whsec_prod_live_894f2a';
+const receivedSecret = headers['x-webhook-secret'];
+
+if (!receivedSecret || receivedSecret !== expectedSecret) {
+  throw new Error('403 Forbidden: Signature d en-tête non reconnue ou absente.');
+}
+
+// Secret valide : propager la charge utile au reste du workflow
+return $input.all();`}
+/>
+
+---
+
+### 5. Modèle de traitement asynchrone (HTTP 202 Accepted & suivi)
+
+Pourquoi adopter le code HTTP 202 (*Accepted*) au lieu du classique 200 OK ?
+- **Réduction de la latence** : Le client reçoit une réponse en moins de 40 millisecondes au lieu d'attendre l'analyse IA de Gemini (qui dure 1 à 3 secondes).
+- **Tolérance aux pannes** : Si le service Gemini subit une baisse de performance ou un ralentissement, l'expérience utilisateur sur l'application frontend n'est pas ralentie.
+- **Suivi par polling ou WebSocket** : Le frontend peut interroger périodiquement `/api/tickets/:id/status` pour actualiser l'interface dès que le statut passe à `resolved`.
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Quel est le bénéfice architectural principal de répondre avec un code HTTP 202 Accepted depuis la passerelle Express ?"
+  options={[
+    "Cela empêche les robots d'indexer la page",
+    "Cela libère immédiatement le client React sans le bloquer durant le traitement asynchrone par l'orchestrateur et l'IA",
+    "C'est une obligation légale liée au RGPD",
+    "Cela active automatiquement le mode sombre de Tailwind CSS"
+  ]}
+  correctIndex={1}
+  explanation="HTTP 202 signifie que la demande a été acceptée pour traitement mais que celui-ci n'est pas encore achevé. Cela garantit une réactivité maximale de l'interface utilisateur."
+/>
+

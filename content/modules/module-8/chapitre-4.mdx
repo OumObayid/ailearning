@@ -1,0 +1,132 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 4 — Indexation vectorielle dans Qdrant, chunking et synchronisation
+
+### 1. Modèle d'ingestion documentaire : Du PDF aux vecteurs 768-D
+
+Le traitement d'un document importé (contrat PDF ou rapport technique) suit une chaîne de transformation rigoureuse avant de pouvoir être interrogé sémantiquement :
+
+<ArchitectureDiagram
+  title="Pipeline d'ingestion et d'indexation vectorielle"
+  diagram={`FICHIER PDF (Uploadé par l'utilisateur)
+        |
+        v
+[ 1. VALIDATION FORMAT & TAILLE ] (Zod & Magic Bytes)
+        |
+        v
+[ 2. EXTRACTION DU TEXTE BRUT ] (pdf-parse / pdf2json)
+        |
+        v
+[ 3. CHUNKING INTELLIGENT ] (Fenêtres de 600 tokens avec overlap 100 tokens)
+        |
+        v
+[ 4. CALCUL EMBEDDINGS GEMINI ] (text-embedding-004 -> Vecteur 768 dimensions)
+        |
+        +--------------------------------+
+        |                                |
+        v                                v
+[ 5A. INSERTION MYSQL ]           [ 5B. UPSERT QDRANT ]
+Table document_chunks             Collection enterprise_knowledge
+(qdrant_point_id = UUID)          (Point ID = UUID + Payload filtrable)`}
+/>
+
+---
+
+### 2. Stratégies de découpage (Chunking) avec chevauchement (Overlap)
+
+Un découpage brutal par nombre arbitraire de caractères risque de couper une phrase essentielle en plein milieu (ex. séparer une condition de son montant financier).
+
+Pour préserver la continuité du sens :
+- **Taille de fragment (*Chunk Size*)** : 500 à 700 tokens (environ 300 à 450 mots).
+- **Chevauchement (*Chunk Overlap*)** : 80 à 120 tokens entre deux fragments consécutifs.
+- **Respect des frontières naturelles** : Découpage préférentiel sur les doubles sauts de ligne (`\n\n`), puis les points (`. `), pour ne jamais briser un paragraphe cohérent.
+
+---
+
+### 3. Stockage dans Qdrant et couplage avec MySQL
+
+Pour garantir une cohérence absolue entre le monde vectoriel (**Qdrant**) et le monde relationnel (**MySQL**), chaque fragment partage le **même identifiant unique (UUID v4)** :
+
+<CodeBlock
+  language="typescript"
+  title="src/services/qdrantIngestion.service.ts — Synchronisation duale"
+  code={`import { randomUUID } from 'crypto';
+import { qdrantClient } from '../config/qdrant';
+import { pool } from '../config/database';
+import { ai } from '../config/gemini';
+
+export async function indexDocumentChunk(
+  documentId: number,
+  chunkIndex: number,
+  text: string,
+  pageNumber: number,
+  userId: number
+) {
+  // 1. Génération de l'identifiant pivot unique
+  const pointId = randomUUID();
+
+  // 2. Calcul du vecteur d'embedding 768-D avec Gemini
+  const embeddingResult = await ai.models.embedContent({
+    model: 'text-embedding-004',
+    contents: [{ parts: [{ text }] }],
+  });
+
+  const vector = embeddingResult.embedding?.values;
+  if (!vector) throw new Error("Échec de la génération vectorielle.");
+
+  // 3. Insertion vectorielle dans Qdrant avec payload filtrable
+  await qdrantClient.upsert('enterprise_knowledge', {
+    points: [
+      {
+        id: pointId,
+        vector,
+        payload: {
+          documentId,
+          userId, // Permet le filtrage étanche par utilisateur
+          pageNumber,
+          chunkIndex,
+        },
+      },
+    ],
+  });
+
+  // 4. Insertion relationnelle dans MySQL avec le même pointId
+  await pool.execute(
+    \`INSERT INTO document_chunks 
+      (document_id, chunk_index, content, page_number, qdrant_point_id)
+     VALUES (?, ?, ?, ?, ?)\`,
+    [documentId, chunkIndex, text, pageNumber, pointId]
+  );
+}`}
+/>
+
+---
+
+### 4. Gestion du cycle de vie : Suppression en cascade cohérente
+
+Lorsqu'un utilisateur supprime un document depuis l'interface React :
+1. Le backend récupère l'ensemble des `qdrant_point_id` associés dans la table `document_chunks`.
+2. Il émet un appel de suppression par lot vers Qdrant (`qdrantClient.delete(collection, { points: [...] })`).
+3. Il supprime la ligne dans MySQL (`DELETE FROM documents WHERE id = ? AND user_id = ?`).
+
+Ce protocole élimine tout vecteur fantôme dans la base Qdrant.
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi associe-t-on un même identifiant unique (UUID) entre la ligne MySQL 'document_chunks' et le point vectoriel dans Qdrant ?"
+  options={[
+    "Pour accélérer la vitesse de l'écran du moniteur",
+    "Pour maintenir une traçabilité bidirectionnelle parfaite permettant de retrouver le texte exact et les métadonnées relationnelles dès que Qdrant retourne un résultat de recherche",
+    "Parce que Qdrant ne supporte que les entiers de 1 à 10",
+    "Pour éviter d'utiliser TypeScript"
+  ]}
+  correctIndex={1}
+  explanation="L'identifiant pivot UUID relie hermétiquement le vecteur d'embedding stocké dans Qdrant à son texte source complet et ses métadonnées relationnelles stockées dans MySQL."
+/>
+

@@ -1,0 +1,212 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 3 — Configuration centralisée Zod et serveur Express
+
+### 1. Gestion rigoureuse des variables d'environnement
+
+Les variables d'environnement permettent d'extraire la configuration hors du code source pour s'adapter à chaque environnement (développement, recette, production).
+
+Créez le fichier `.env` local :
+
+```bash
+# Configuration du serveur
+PORT=3000
+
+# Clé secrète Google Gemini (obtenue sur Google AI Studio)
+API_KEY_GEMINI=votre_cle_gemini_secrete
+
+# Identifiants de connexion MySQL
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=secret
+DB_NAME=backend_ia
+DB_PORT=3306
+```
+
+---
+
+### 2. Le gabarit d'équipe `.env.example` et la protection Git
+
+Pour permettre aux autres développeurs de cloner le projet sans exposer vos clés réelles, créez un gabarit `.env.example` :
+
+```bash
+PORT=3000
+API_KEY_GEMINI=
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=backend_ia
+DB_PORT=3306
+```
+
+Et assurez-vous que `.gitignore` exclut systématiquement le fichier `.env` :
+
+```text
+# .gitignore
+node_modules/
+dist/
+.env
+```
+
+<Callout type="warning" title="Avertissement de sécurité">
+Ne committez jamais un fichier `.env` contenant de vraies clés d'API sur GitHub. Si une clé est publiée par accident, révoquez-la immédiatement depuis Google AI Studio.
+</Callout>
+
+---
+
+### 3. Centraliser et valider la configuration avec Zod
+
+La plupart des bugs en production surviennent parce qu'une variable d'environnement obligatoire est absente ou mal typée.
+
+Grâce à **Zod**, nous validons la configuration **dès le démarrage** du serveur dans `src/config/env.ts` :
+
+```typescript
+// src/config/env.ts
+import 'dotenv/config';
+import { z } from 'zod';
+
+const envSchema = z.object({
+  PORT: z.coerce.number().default(3000),
+  API_KEY_GEMINI: z.string().min(1, "La clé API Gemini est obligatoire."),
+  DB_HOST: z.string().default('localhost'),
+  DB_USER: z.string().default('root'),
+  DB_PASSWORD: z.string().default(''),
+  DB_NAME: z.string().min(1, "Le nom de la base MySQL est obligatoire."),
+  DB_PORT: z.coerce.number().default(3306),
+});
+
+const result = envSchema.safeParse(process.env);
+
+if (!result.success) {
+  console.error("Configuration invalide ou incomplète :", result.error.flatten());
+  throw new Error("Arrêt immédiat : variables d'environnement manquantes.");
+}
+
+export const env = result.data;
+```
+
+Si la clé `API_KEY_GEMINI` est manquante, le serveur s'arrête instantanément avec un message clair plutôt que de planter plus tard lors d'un appel utilisateur.
+
+<EnvZodFailFastSimulator />
+
+---
+
+### 4. Créer l'application Express dans `app.ts`
+
+Nous isolons la déclaration des routes et des middlewares dans `src/app.ts` :
+
+```typescript
+// src/app.ts
+import express from 'express';
+
+const app = express();
+
+// Middleware pour parser les corps de requêtes JSON (max 100kb)
+app.use(express.json({ limit: '100kb' }));
+
+// Route de santé (Health Check)
+app.get('/api/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Backend IA opérationnel',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+export default app;
+```
+
+---
+
+### 5. Démarrer le serveur dans `server.ts`
+
+Dans `src/server.ts`, nous importons l'application configurée et démarrons l'écoute réseau sur le port validé :
+
+```typescript
+// src/server.ts
+import app from './app.js';
+import { env } from './config/env.js';
+
+app.listen(env.PORT, () => {
+  console.log(`[Backend IA] Serveur démarré avec succès sur http://localhost:${env.PORT}`);
+});
+```
+
+<Callout type="note" title="Pourquoi séparer app.ts et server.ts ?">
+Cette séparation est une bonne pratique majeure : elle permet aux outils de tests automatisés (comme Supertest) de tester l'application `app` en mémoire sans ouvrir de port réseau réel.
+</Callout>
+
+---
+
+### 6. Démarrage et test du point d'accès de santé
+
+Lancez le serveur en mode développement :
+
+```bash
+npm run dev
+```
+
+Puis testez la route dans votre terminal ou votre navigateur :
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+Réponse JSON attendue :
+
+```json
+{
+  "success": true,
+  "message": "Backend IA opérationnel",
+  "timestamp": "2026-11-04T17:35:00.000Z"
+}
+```
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Serveur Express et validation Zod au démarrage"
+  objective="Mettre en place la configuration typée et validée par Zod au démarrage du serveur et vérifier l'arrêt précoce en cas de configuration défectueuse."
+  duration="40 minutes"
+  steps={[
+    "Créer le fichier `.env` local : définir `PORT=3000`, `NODE_ENV=development` et votre clé `API_KEY_GEMINI`.",
+    "Créer `src/config/env.ts` avec le schéma Zod `envSchema` qui transforme automatiquement `PORT` en nombre et valide la présence de la clé API.",
+    "Tester l'arrêt précoce (*Fail-Fast*) : commenter temporairement `API_KEY_GEMINI` dans `.env` et lancer `npm run dev`. Observer le crash immédiat avec affichage formaté des variables manquantes.",
+    "Créer `src/app.ts` configurant Express avec le middleware `express.json()` et la route de contrôle `GET /api/health`.",
+    "Créer `src/server.ts` qui importe `app` et `env`, puis démarre l'écoute réseau sur le port validé.",
+    "Tester la route `GET /api/health` avec Postman ou cURL et vérifier que la réponse contient `{ success: true, timestamp }`."
+  ]}
+  validationCriteria={[
+    "Si une variable d'environnement obligatoire manque, le serveur refuse catégoriquement de démarrer et consigne une erreur explicite.",
+    "La route `/api/health` renvoie un statut HTTP 200 et un horodatage valide.",
+    "L'application `app` est exportée séparément du serveur pour les futurs tests d'intégration."
+  ]}
+>
+
+#### Schéma Zod complet pour `src/config/env.ts` :
+```typescript
+import { z } from 'zod';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const envSchema = z.object({
+  PORT: z.string().default('3000').transform((val) => parseInt(val, 10)),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  API_KEY_GEMINI: z.string().min(1, 'La clé API_KEY_GEMINI est obligatoire.'),
+});
+
+const parsed = envSchema.safeParse(process.env);
+
+if (!parsed.success) {
+  console.error('❌ Configuration environnementale invalide :');
+  console.error(parsed.error.format());
+  process.exit(1);
+}
+
+export const env = parsed.data;
+```
+</PracticalWork>
+

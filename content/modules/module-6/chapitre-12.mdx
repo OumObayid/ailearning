@@ -1,0 +1,115 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 12 — Persistance, checkpointers (MemorySaver) et gestion des threads
+
+### 1. Principe de la persistance par checkpoints dans LangGraph
+
+Dans une architecture sans persistance, dès qu'une exécution de graphe se termine, l'état en mémoire vive est détruit. Si l'utilisateur répond deux minutes plus tard, le serveur ne dispose d'aucun moyen natif de reprendre le cours exact de la réflexion de l'agent.
+
+LangGraph résout ce défi grâce à la notion de **Checkpointer** :
+- À chaque passage par un nœud (*superstep*), LangGraph prend une **photographie sérialisée (*checkpoint*)** de l'état complet du graphe.
+- Ce checkpoint est associé à un identifiant unique de fil de discussion (**`thread_id`**).
+- Lors de l'interaction suivante, il suffit de fournir le même `thread_id` pour que LangGraph recharge instantanément l'état là où il s'était arrêté.
+
+---
+
+### 2. Configuration du checkpointer MemorySaver
+
+Pour vos tests unitaires et le développement local, LangGraph propose le checkpointer en mémoire `MemorySaver` :
+
+<CodeBlock
+  language="typescript"
+  title="src/graph/persistedGraph.ts — Compilation avec MemorySaver"
+  code={`import { StateGraph, Annotation, START, END, MemorySaver } from '@langchain/langgraph';
+
+const ConversationState = Annotation.Root({
+  messages: Annotation<string[]>({
+    reducer: (curr, update) => [...curr, ...update],
+    default: () => [],
+  }),
+});
+
+// 1. Instancier le checkpointer
+const checkpointer = new MemorySaver();
+
+// 2. Compiler le graphe avec le checkpointer
+export const conversationGraph = new StateGraph(ConversationState)
+  .addNode('echoNode', async (state) => {
+    const latest = state.messages[state.messages.length - 1];
+    return {
+      messages: [\`Réponse agent : J'ai bien reçu "\${latest}". Total mémorisé : \${state.messages.length}\`],
+    };
+  })
+  .addEdge(START, 'echoNode')
+  .addEdge('echoNode', END)
+  .compile({ checkpointer });`}
+/>
+
+---
+
+### 3. Rôle crucial du thread_id et isolation des contextes
+
+Pour invoquer un graphe persisté, vous devez passer un objet de configuration contenant le `thread_id` :
+
+<CodeBlock
+  language="typescript"
+  title="src/graph/testPersistence.ts — Reprise de contexte par thread_id"
+  code={`import { conversationGraph } from './persistedGraph';
+
+async function testSession() {
+  const config = { configurable: { thread_id: 'session_user_alice_42' } };
+
+  // Premier tour
+  console.log("--- Premier tour ---");
+  const step1 = await conversationGraph.invoke(
+    { messages: ["Bonjour, je m'appelle Alice."] },
+    config
+  );
+  console.log(step1.messages);
+
+  // Deuxième tour sur le MÊME thread_id
+  console.log("--- Deuxième tour (Même session) ---");
+  const step2 = await conversationGraph.invoke(
+    { messages: ["Quel est mon prénom ?"] },
+    config
+  );
+  console.log(step2.messages);
+  // LangGraph a conservé le message d'Alice du premier tour !
+}
+
+testSession();`}
+/>
+
+<Callout type="warning" title="Sécurité de l'identifiant thread_id">
+Ne permettez jamais au frontend de choisir arbitrairement le <code>thread_id</code> sans contrôle serveur. Le backend doit associer le <code>thread_id</code> à l&apos;identifiant de compte authentifié de l&apos;utilisateur en base de données pour empêcher qu&apos;un utilisateur curieux n&apos;accède aux checkpoints d&apos;un tiers.
+</Callout>
+
+---
+
+### 4. Perspectives de persistance durable en production
+
+Bien que `MemorySaver` soit idéal pour les environnements de test, il perd l'intégralité de son état lors d'un redémarrage du processus Node.js.
+
+Pour un déploiement professionnel à haute disponibilité :
+- Utilisez des implémentations de checkpointer reliées à une base de données durable (**PostgreSQL**, **Redis** ou **MySQL**).
+- Mettez en place une politique d'expiration (*TTL*) ou d'archivage des vieux checkpoints pour éviter la saturation du disque.
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Quel paramètre obligatoire devez-vous transmettre dans les options configurable pour que LangGraph retrouve l'état précédent d'un utilisateur ?"
+  options={[
+    "Le numéro de carte bancaire",
+    "L'identifiant thread_id désignant le fil d'exécution",
+    "La version de TypeScript installée",
+    "L'adresse MAC de la carte réseau"
+  ]}
+  correctIndex={1}
+  explanation="Le thread_id est la clé primaire d'indexation des checkpoints dans le système de persistance de LangGraph : c'est lui qui permet de recharger le contexte exact d'une session."
+/>
+

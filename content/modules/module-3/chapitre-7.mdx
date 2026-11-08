@@ -1,0 +1,127 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 7 — Vercel AI SDK dans le backend
+
+### 1. Pourquoi utiliser Vercel AI SDK dans un backend Express ?
+
+En plus du SDK natif `@google/genai`, **Vercel AI SDK** offre une couche d'abstraction puissante orientée flux et typage pour le serveur.
+
+Il permet notamment de :
+- Standardiser la syntaxe d'appel aux modèles de langage.
+- Générer des objets JSON fortement typés validés par un schéma Zod (`generateObject`).
+- Exposer des flux de streaming directement compatibles avec les hooks React du client (`pipeUIMessageStreamToResponse`).
+
+---
+
+### 2. Installation et configuration du provider
+
+Installez les bibliothèques nécessaires :
+
+```bash
+npm install ai @ai-sdk/google
+```
+
+Créez le point de configuration dans `src/config/google-provider.ts` :
+
+```typescript
+// src/config/google-provider.ts
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { env } from './env.js';
+
+// Configuration du provider Google avec la clé sécurisée côté serveur
+export const google = createGoogleGenerativeAI({
+  apiKey: env.API_KEY_GEMINI,
+});
+```
+
+---
+
+### 3. Génération unitaire avec generateText
+
+Pour des opérations de traitement ponctuel en arrière-plan :
+
+```typescript
+// src/services/ai-sdk.service.ts
+import { generateText } from 'ai';
+import { google } from '../config/google-provider.js';
+
+export async function summarizeTextWithAISDK(content: string): Promise<string> {
+  const { text } = await generateText({
+    model: google('gemini-2.5-flash'),
+    prompt: `Résume le document suivant en 3 points essentiels :\n${content}`,
+    temperature: 0.2, // Mode déterministe
+  });
+
+  return text;
+}
+```
+
+---
+
+### 4. Streaming serveur avec streamText
+
+Pour les réponses longues destinées à être envoyées en direct au client :
+
+```typescript
+// src/services/ai-sdk.service.ts (suite)
+import { streamText } from 'ai';
+import { google } from '../config/google-provider.js';
+
+export function createAIStreamResponse(prompt: string) {
+  return streamText({
+    model: google('gemini-2.5-flash'),
+    prompt,
+  });
+}
+```
+
+---
+
+### 5. Matrice de décision : SDK Officiel versus Vercel AI SDK
+
+| Besoin de votre application backend | Technologie recommandée | Pourquoi ? |
+| :--- | :--- | :--- |
+| **Interactions API avancées de Google** | `@google/genai` | Accès direct aux fonctionnalités natives, continuités d'interactions et outils Google |
+| **Intégration directe avec les hooks React (`useChat`)** | `Vercel AI SDK` | Protocole standardisé de streaming UI sans décodage manuel |
+| **Génération d'objets validés par Zod** | `Vercel AI SDK` (`generateObject`) | Validation automatique et inférence complète des types de retour |
+| **Architectures multi-fournisseurs futures** | `Vercel AI SDK` | Permet d'interchanger le modèle sous-jacent par simple configuration |
+
+<Callout type="note" title="Coexistence dans un même projet">
+Ces deux outils peuvent parfaitement cohabiter au sein de votre backend : vous pouvez utiliser `@google/genai` pour les tâches nécessitant des fonctionnalités exclusives à Gemini, et Vercel AI SDK pour les routes de streaming connectées à votre frontend React.
+</Callout>
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Double implémentation de service IA dans Express"
+  objective="Faire cohabiter harmonieusement le SDK officiel @google/genai et Vercel AI SDK dans la même application Express pour comparer leurs cas d'usage."
+  duration="40 minutes"
+  steps={[
+    "Installer les dépendances requises : `npm install ai @ai-sdk/google`.",
+    "Créer `src/config/google-provider.ts` configurant l'instance Vercel AI SDK avec `createGoogleGenerativeAI({ apiKey: env.API_KEY_GEMINI })`.",
+    "Créer le service `src/services/summarize.service.ts` utilisant `generateText` de Vercel AI SDK pour résumer un texte en 3 points clés.",
+    "Exposer la nouvelle route `POST /api/ai/summarize` liée à ce service, tout en conservant la route `POST /api/ai/generate` fonctionnant avec `@google/genai`.",
+    "Comparer dans Postman les deux routes : observer la structure des retours, la simplicité d'accès aux statistiques de tokens et le typage strict des réponses."
+  ]}
+  validationCriteria={[
+    "Les deux bibliothèques s'exécutent sans aucun conflit de dépendance au sein du même serveur Node.js.",
+    "La route `/api/ai/summarize` retourne un résumé synthétique avec les métadonnées de consommation (`promptTokens`, `completionTokens`).",
+    "L'architecture en couches reste préservée : contrôleurs découplés des services respectifs."
+  ]}
+>
+
+#### Configuration du provider Vercel AI SDK dans `src/config/google-provider.ts` :
+```typescript
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { env } from './env.js';
+
+export const googleProvider = createGoogleGenerativeAI({
+  apiKey: env.API_KEY_GEMINI,
+});
+
+export const geminiFlashModel = googleProvider('gemini-2.5-flash');
+```
+</PracticalWork>
+

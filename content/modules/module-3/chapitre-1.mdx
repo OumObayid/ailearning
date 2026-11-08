@@ -1,0 +1,117 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 1 — Le rôle du backend dans une application IA
+
+### 1. Qu'est-ce qu'un backend ?
+
+Le backend est la partie d'une application logicielle qui fonctionne côté serveur, dans un environnement protégé et inaccessible aux utilisateurs finaux.
+
+Il prend en charge les opérations sensibles qui ne doivent **jamais** être déléguées au navigateur :
+- L'accès sécurisé aux bases de données relationnelles et vectorielles.
+- L'authentification des utilisateurs et le contrôle strict des droits d'accès (*RBAC*).
+- L'exécution de la logique métier et la modération des requêtes.
+- La communication directe avec les modèles d'intelligence artificielle via leurs SDKs officiels.
+
+Dans une application d'IA, le backend fait office de **passerelle intelligente et de tour de contrôle** entre les interfaces utilisateur (React/Next.js) et le fournisseur de modèle (Google Gemini).
+
+---
+
+### 2. Différence entre frontend, backend et API
+
+Bien qu'étroitement interconnectées, ces trois notions désignent des composantes bien distinctes de l'ingénierie logicielle :
+
+| Composant | Nature | Responsabilité première | Exemple concret |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | Client | Interface graphique interactive exécutée sur le terminal de l'utilisateur | Une application React avec une boîte de dialogue et des boutons |
+| **Backend** | Serveur | Traitements d'arrière-plan, gestion des secrets, règles métier et persistance | Un serveur Node.js exécutant Express et contrôlant les accès |
+| **API** | Contrat | Interface de communication standardisée exposant des points d'accès (*endpoints*) | La route `POST /api/ai/generate` recevant un JSON et renvoyant la réponse |
+
+---
+
+### 3. Architecture générale d'une application IA
+
+Voici le flux complet d'interaction d'une architecture de production :
+
+<ArchitectureDiagram
+  title="Flux d'interaction bout-en-bout : Frontend ↔ Backend Express ↔ Gemini & MySQL"
+  diagram={`UTILISATEUR
+    |
+    v
+FRONTEND (REACT / NEXT.JS)
+    |
+    | Requête HTTP POST (Payload JSON)
+    v
+BACKEND NODE.JS / EXPRESS
+    |
+    +---> 1. Validation immédiate des entrées (Zod)
+    |
+    +---> 2. Vérification d'authentification & Quotas (Rate limit)
+    |
+    +---> 3. Application des règles métier & Prompt système
+    |
+    +---> 4. Appel sécurisé du SDK Gemini (@google/genai)
+    |          |
+    |          v
+    |     GOOGLE GEMINI (Interactions API)
+    |          |
+    |          +--- Retourne le texte / objet structuré
+    |
+    +---> 5. Persistance de la conversation (MySQL Pool)
+    |
+    v
+RÉPONSE HTTP JSON PROPRE AU CLIENT
+    |
+    v
+AFFICHAGE DU RÉSULTAT DANS LE FRONTEND`}
+/>
+
+<Callout type="note" title="Règle d'or de l'ingénierie IA">
+La clé d'API Google Gemini doit demeurer strictement confinée dans les variables d'environnement du serveur (`process.env`). Elle ne transite jamais par le navigateur.
+</Callout>
+
+---
+
+### 4. Pourquoi ne pas appeler directement Gemini depuis React ?
+
+Un appel direct depuis le client React constitue une vulnérabilité critique :
+1. **Fuite instantanée de la clé d'API** : La clé est lisible en clair dans les outils de développement ou dans le bundle JavaScript minifié.
+2. **Perte de contrôle des coûts** : N'importe quel internaute peut réutiliser votre clé d'API pour exécuter des millions de requêtes à vos dépens.
+3. **Absence de persistance** : Le frontend ne peut pas écrire directement et sûrement dans votre base de données MySQL.
+4. **Impossibilité de modération** : Sans backend, vous ne pouvez ni bloquer les injections de prompt, ni appliquer de politique de sécurité centralisée.
+
+Le backend garantit ainsi la maîtrise totale de la sécurité, des quotas et des données de vos utilisateurs.
+
+---
+
+<QuickQuiz
+  title="Auto-évaluation : Rôle et Architecture du Backend IA"
+  questions={[
+    {
+      id: 1,
+      question: "Pourquoi est-il indispensable d'interposer un backend Node.js entre React et Google Gemini ?",
+      options: [
+        "Parce que React est incapable de faire des requêtes HTTP",
+        "Pour protéger la clé d'API, valider les entrées avec Zod et persister les échanges en BDD",
+        "Parce que Google Gemini n'accepte que les connexions locales",
+        "Pour convertir le JavaScript en code machine assembleur"
+      ],
+      correctIndex: 1,
+      explanation: "Le backend garantit la sécurité des secrets d'API, le rate limiting, la persistance MySQL et la validation des données d'entrée."
+    },
+    {
+      id: 2,
+      question: "Quelle est la définition d'un endpoint d'API ?",
+      options: [
+        "Une variable CSS dans Tailwind",
+        "Une adresse URL associée à une méthode HTTP exposant une fonctionnalité du serveur",
+        "Le port physique Ethernet du serveur",
+        "Un composant React sans état"
+      ],
+      correctIndex: 1,
+      explanation: "Un endpoint (ex: POST /api/ai/generate) est un point de terminaison spécifique permettant aux clients d'interagir avec le serveur."
+    }
+  ]}
+/>
+

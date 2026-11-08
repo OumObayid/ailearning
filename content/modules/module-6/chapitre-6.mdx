@@ -1,0 +1,121 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 6 — Gestion de l'état, mémoires court/long terme et persistance relationnelle
+
+### 1. Définition et typage de l'AgentState
+
+Dans toute application agentique professionnelle, **l'état (*State*)** désigne la structure de données centrale qui consigne l'ensemble des informations nécessaires à la réalisation de la tâche au fur et à mesure de son avancement.
+
+Voici un type TypeScript représentatif d'un état complet :
+
+<CodeBlock
+  language="typescript"
+  title="src/schemas/agentState.ts — Structure type de l'AgentState"
+  code={`export interface AgentStepTrace {
+  stepIndex: number;
+  toolName: string;
+  arguments: Record<string, unknown>;
+  output: unknown;
+  timestamp: string;
+}
+
+export interface AgentState {
+  conversationId: string;
+  userId: number;
+  initialPrompt: string;
+  currentStep: number;
+  executedSteps: AgentStepTrace[];
+  intermediateResults: Record<string, unknown>;
+  isCompleted: boolean;
+  finalAnswer?: string;
+  error?: string;
+}`}
+/>
+
+---
+
+### 2. Différence fondamentale entre état éphémère et mémoire durable
+
+Il ne faut jamais confondre l'**état de travail** et la **mémoire** :
+
+| Notion | Portée temporelle | Rôle technique | Support de stockage |
+| :--- | :--- | :--- | :--- |
+| **État courant (*State*)** | Durée d'une seule exécution | Mémoriser les calculs intermédiaires, le nombre de pas et les sorties d'outils | Mémoire vive (RAM) du processus ou checkpoint |
+| **Mémoire à court terme** | Session utilisateur (quelques minutes/heures) | Suivre le fil d'une conversation (`"Rembourse-la"`, où `"la"` réfère à la commande précédente) | Cache Redis ou table de session |
+| **Mémoire à long terme** | Semaines, mois ou années | Préférences client, historique des incidents résolus, documentation d'entreprise | **MySQL** (relationnel) & **Qdrant** (vectoriel) |
+
+---
+
+### 3. Typologie des mémoires d'un système agentique
+
+<ArchitectureDiagram
+  title="Architecture des trois niveaux de mémoire d'un agent"
+  diagram={`                     [ AGENT IA EN COURS D'EXÉCUTION ]
+                                    |
+          +-------------------------+-------------------------+
+          |                         |                         |
+          v                         v                         v
+[ 1. ÉTAT D'EXÉCUTION ]    [ 2. MÉMOIRE RELATIONNELLE ]    [ 3. MÉMOIRE VECTORIELLE ]
+  Variables locales RAM        Table MySQL agent_messages      Base vectorielle Qdrant
+  Checkpoint LangGraph         Historique des commandes        Fragments documentaires
+  (Éphémère - 1 requête)       (Structuré et auditable)        (Recherche sémantique)`}
+/>
+
+---
+
+### 4. Schéma MySQL pour l'historique conversationnel de l'agent
+
+Pour permettre à votre agent de se souvenir des requêtes passées tout en préservant l'intégrité relationnelle, déployez les deux tables suivantes dans MySQL :
+
+<CodeBlock
+  language="sql"
+  title="Schéma DDL des tables de mémoire agentique (MySQL)"
+  code={`-- 1. Table des fils de conversation
+CREATE TABLE IF NOT EXISTS agent_conversations (
+  id VARCHAR(64) PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL DEFAULT 'Nouvelle session',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_conversations (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 2. Table des messages et traces d'outils
+CREATE TABLE IF NOT EXISTS agent_messages (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  conversation_id VARCHAR(64) NOT NULL,
+  role ENUM('user', 'assistant', 'system', 'tool_call', 'tool_result') NOT NULL,
+  content TEXT NOT NULL,
+  tool_name VARCHAR(64) NULL,
+  metadata JSON NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (conversation_id) 
+    REFERENCES agent_conversations(id) 
+    ON DELETE CASCADE,
+  INDEX idx_conversation_lookup (conversation_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`}
+/>
+
+<Callout type="danger" title="Cloisonnement strict par utilisateur">
+Lors de la récupération de l&apos;historique conversationnel, vérifiez systématiquement que la conversation appartient bien au <code>user_id</code> issu du jeton d&apos;authentification JWT de l&apos;utilisateur connecté, afin d&apos;empêcher toute attaque de type IDOR (*Insecure Direct Object Reference*).
+</Callout>
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Quelle est la différence essentielle entre l'état courant (State) d'un agent et sa mémoire à long terme ?"
+  options={[
+    "L'état courant est rédigé en Markdown alors que la mémoire est en HTML",
+    "L'état courant représente les variables de travail de la tâche active, tandis que la mémoire à long terme conserve durablement l'historique et les connaissances",
+    "L'état ne fonctionne que sous Linux",
+    "La mémoire à long terme est supprimée dès que le modèle répond"
+  ]}
+  correctIndex={1}
+  explanation="L'état (State) est éphémère et suit les pas intermédiaires d'une exécution particulière, alors que la mémoire à long terme est persistée en base (MySQL / Qdrant) pour traverser différentes sessions temporelles."
+/>
+

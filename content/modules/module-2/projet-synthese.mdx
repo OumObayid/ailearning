@@ -1,0 +1,136 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Projet Final — Assistant IA Frontend Professionnel
+
+### 1. Présentation du projet de synthèse
+
+Le projet de synthèse du **Module 2** consiste à concevoir et développer une application web complète en **React.js, Next.js et TypeScript**, offrant une suite intégrée d'outils intelligents propulsés par **Google Gemini** et orchestrés via **Vercel AI SDK**.
+
+Ce projet réunit l'ensemble des compétences acquises tout au long du module : ergonomie, réactivité, streaming, robustesse, sécurité des types avec Zod et composants graphiques dynamiques.
+
+---
+
+### 2. Spécifications des 6 fonctionnalités majeures
+
+#### Fonctionnalité 1 — Chat IA conversationnel multi-tours
+- Dialogue interactif avec mémoire de contexte via `useChat`.
+- Rendu Markdown soigné avec coloration syntaxique des extraits de code.
+- Possibilité d'interrompre une réponse en cours grâce au bouton d'arrêt (`stop`).
+- Sauvegarde de l'historique et reprise d'anciennes conversations.
+
+#### Fonctionnalité 2 — Générateur de contenu éditorial
+- Formulaire dédié à la rédaction de fiches produits, courriels formels ou synthèses d'articles.
+- Sélection d'objectifs, du ton éditorial et de la longueur souhaitée.
+- Bouton de copie instantanée et réévaluation en un clic.
+
+#### Fonctionnalité 3 — Analyseur de données d'activité
+- Transmission d'un compte-rendu ou d'un rapport textuel brut.
+- Traitement par Google Gemini via `generateObject` avec validation **Zod**.
+- Restitution d'un score chiffré, d'une synthèse, des points forts et des axes de vigilance.
+
+#### Fonctionnalité 4 — Interface multimodale d'analyse d'images
+- Sélecteur de fichiers drag-and-drop avec prévisualisation immédiate et validation de format.
+- Transmission sécurisée par `FormData` sans exposition de clé d'API.
+- Extraction des détails visuels (objets, textes, couleurs) et synthèse pédagogique.
+
+#### Fonctionnalité 5 — Streaming fluide en temps réel
+- Affichage mot à mot des réponses via Server-Sent Events (SSE).
+- Défilement automatique fluide et indicateur de présence de nouveaux tokens.
+
+#### Fonctionnalité 6 — UI générative contrôlée
+- Montage automatique de widgets graphiques adaptés selon le type de résultat retourné par le modèle (cartes d'évaluation, alertes, listes d'actions).
+
+---
+
+### 3. Architecture générale de l'application
+
+<ArchitectureDiagram
+  title="Architecture logicielle complète du projet final"
+  diagram={`+-------------------------------------------------------------------------+
+|                  APPLICATION FRONTEND (REACT / NEXT.JS)                 |
+|                                                                         |
+|  [ ChatPage ]       [ GeneratorPage ]      [ AnalysisPage ]  [ Upload ] |
+|       |                     |                      |              |     |
+|       +---------------------+----------------------+--------------+     |
+|                                  |                                      |
+|                       [ useChat / useAI Hooks ]                         |
++-------------------------------------------------------------------------+
+                                   |
+                                   v  (Fetch POST / SSE Streaming)
++-------------------------------------------------------------------------+
+|                    SERVEUR BACKEND (NODE.JS / EXPRESS)                  |
+|                                                                         |
+|   - Contrôle d'accès & Limitation de débit (Rate limiting)              |
+|   - Validation des requêtes avec Zod                                    |
+|   - Vercel AI SDK Core (streamText / generateObject)                    |
+|   - Provider @ai-sdk/google configuré avec GEMINI_API_KEY               |
++-------------------------------------------------------------------------+
+                                   |
+                                   v  (Interactions API sécurisées)
++-------------------------------------------------------------------------+
+|                         GOOGLE GEMINI 2.5 FLASH                         |
++-------------------------------------------------------------------------+`}
+/>
+
+---
+
+### 4. Arborescence type du projet finalisé
+
+```text
+frontend-ia/
+├── src/
+│   ├── components/
+│   │   ├── Chat/
+│   │   │   ├── ChatWindow.tsx
+│   │   │   ├── Message.tsx
+│   │   │   └── ChatInput.tsx
+│   │   ├── Generator/
+│   │   │   └── ContentGenerator.tsx
+│   │   ├── Analysis/
+│   │   │   ├── AnalysisDashboard.tsx
+│   │   │   └── ScoreCard.tsx
+│   │   ├── Upload/
+│   │   │   └── ImageAnalyzer.tsx
+│   │   ├── UI/
+│   │   │   ├── WidgetRenderer.tsx
+│   │   │   └── LoadingSpinner.tsx
+│   │   └── Layout/
+│   │       ├── Sidebar.tsx
+│   │       └── Header.tsx
+│   ├── hooks/
+│   │   ├── useDebounce.ts
+│   │   └── useConversationHistory.ts
+│   ├── services/
+│   │   ├── chat.service.ts
+│   │   └── analysis.service.ts
+│   ├── types/
+│   │   ├── chat.types.ts
+│   │   └── analysis.types.ts
+│   ├── pages/
+│   │   ├── ChatPage.tsx
+│   │   ├── GeneratorPage.tsx
+│   │   └── AnalysisPage.tsx
+│   ├── App.tsx
+│   └── main.tsx
+├── tests/
+│   ├── Chat.test.tsx
+│   └── Analysis.test.tsx
+├── .env.example
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+### 5. Grille des critères d'évaluation
+
+Pour obtenir la validation de ce projet de synthèse, l'application doit satisfaire aux exigences suivantes :
+
+1. **Architecture logicielle** : Découpage clair et rigoureux entre composants de présentation, hooks métiers et services API.
+2. **Typage strict** : Zéro présence de type `any` dans le code TypeScript.
+3. **Sécurité totale** : Aucune clé secrète dans le code client ; rendu Markdown protégé contre les attaques XSS.
+4. **Ergonomie & UX** : Tous les états d'attente, de streaming, de succès et d'échec sont gérés avec élégance et clarté.
+5. **Couverture de tests** : Présence de tests unitaires avec Vitest validant le comportement du chat et des composants clés.
+

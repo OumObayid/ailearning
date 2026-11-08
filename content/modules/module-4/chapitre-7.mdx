@@ -1,0 +1,178 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Chapitre 7 — Automatisation du pipeline d'ingestion et résilience
+
+### 1. Le workflow d'ingestion distribué
+
+Le pipeline d'ingestion coordonne l'extraction, la segmentation, la génération d'embeddings et le double enregistrement en base :
+
+<ArchitectureDiagram
+  title="Machine à états du document pendant le pipeline d'ingestion"
+  diagram={`[ TÉLÉVERSEMENT DU FICHIER ]
+            |
+            v
+[ STATUS = 'pending' ] ---------> Création de la ligne dans MySQL
+            |
+            v
+[ STATUS = 'processing' ] ------> Extraction du texte & Découpage en fragments
+            |
+            +---> Boucle pour chaque chunk :
+            |        1. Insertion du chunk dans MySQL (récupération de l'ID)
+            |        2. Calcul de l'embedding (Gemini 768 dim)
+            |        3. Insertion du vecteur dans Qdrant (UUID)
+            |        4. Mise à jour de qdrant_point_id dans MySQL
+            |
+            +--- Si succès total : [ STATUS = 'indexed' ]
+            |
+            +--- Si incident :     [ STATUS = 'failed' ] + Enregistrement error_message`}
+/>
+
+---
+
+### 2. Implémenter l'orchestrateur d'indexation
+
+Dans `src/services/indexing.service.ts` :
+
+```typescript
+// src/services/indexing.service.ts
+import { pool } from '../config/database.js';
+import { extractTextFromPdf } from './extraction.service.js';
+import { splitIntoChunks } from './chunk.service.js';
+import { generateEmbedding } from './embedding.service.js';
+import { insertChunkVector } from './qdrant.service.js';
+
+export async function processAndIndexDocument(
+  documentId: number,
+  userId: number,
+  filePath: string,
+  docTitle: string
+): Promise<void> {
+  // 1. Passage du document à l'état 'processing'
+  await pool.execute(
+    'UPDATE documents SET status = "processing", error_message = NULL WHERE id = ?',
+    [documentId]
+  );
+
+  try {
+    // 2. Extraction du texte brut et nettoyage
+    const fullText = await extractTextFromPdf(filePath);
+
+    // 3. Découpage en fragments équilibrés
+    const chunks = splitIntoChunks(fullText, 500, 80);
+
+    // 4. Indexation séquentielle de chaque fragment
+    for (let index = 0; index < chunks.length; index++) {
+      const chunkContent = chunks[index];
+
+      // A. Enregistrement préalable dans MySQL
+      const [insertRes] = await pool.execute(
+        `INSERT INTO document_chunks (document_id, chunk_index, content, qdrant_point_id)
+         VALUES (?, ?, ?, 'PENDING')`,
+        [documentId, index, chunkContent]
+      );
+      const chunkId = (insertRes as mysql.ResultSetHeader).insertId;
+
+      // B. Calcul de l'embedding via Google Gemini
+      const vector = await generateEmbedding(chunkContent);
+
+      // C. Stockage du vecteur dans Qdrant avec les métadonnées de filtrage
+      const pointId = await insertChunkVector(vector, {
+        userId,
+        documentId,
+        chunkId,
+        title: docTitle,
+      });
+
+      // D. Liaison définitive de l'identifiant Qdrant dans MySQL
+      await pool.execute(
+        'UPDATE document_chunks SET qdrant_point_id = ? WHERE id = ?',
+        [pointId, chunkId]
+      );
+    }
+
+    // 5. Marquage final du document comme 'indexed'
+    await pool.execute(
+      'UPDATE documents SET status = "indexed" WHERE id = ?',
+      [documentId]
+    );
+
+    console.log(`[RAG Indexing] Document #${documentId} (${chunks.length} chunks) indexé avec succès.`);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Erreur inconnue';
+    console.error(`[RAG Indexing] Échec sur le document #${documentId} :`, errorMsg);
+
+    // Enregistrement de l'état d'échec pour permettre à l'utilisateur de réindexer
+    await pool.execute(
+      'UPDATE documents SET status = "failed", error_message = ? WHERE id = ?',
+      [errorMsg, documentId]
+    );
+    throw err;
+  }
+}
+```
+
+---
+
+### 3. Gestion de la cohérence distribuée
+
+MySQL et Qdrant étant deux systèmes indépendants sans protocole de commit en deux phases (*Two-Phase Commit*), une défaillance réseau en cours de boucle peut laisser des orphelins.
+
+#### Stratégie de résilience :
+1. **Statut transactionnel** : Tant que le document n'a pas atteint le statut `indexed`, il est exclu des recherches utilisateurs.
+2. **Nettoyage automatique** : En cas d'échec (`failed`), une tâche de reprise supprime les points Qdrant déjà envoyés avant de réinitialiser la table `document_chunks`.
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Pipeline d'indexation complet et gestion des statuts d'intégrité"
+  objective="Développer la fonction d'orchestration de bout en bout (extraction, chunking, embedding, double persistance) et fiabiliser la machine à états du document."
+  duration="45 minutes"
+  steps={[
+    "Créer `src/services/indexing.service.ts` exportant `processAndIndexDocument(documentId: number, filePath: string, userId: number)`.",
+    "Implémenter la transition d'états dans MySQL : basculer le statut à `'PROCESSING'` dès le début, puis à `'INDEXED'` une fois tous les chunks insérés dans Qdrant.",
+    "Créer un endpoint Express d'upload `POST /api/documents/upload` avec Multer qui enregistre la ligne dans la table `documents` et déclenche le pipeline d'indexation.",
+    "Surveiller les logs d'exécution : vérifier que pour un document de 12 pages découpé en 24 fragments, exactement 24 lignes sont insérées dans MySQL et 24 vecteurs dans Qdrant.",
+    "Simuler un crash (ex. couper la connexion réseau en cours de boucle) : vérifier que le bloc `catch` bascule immédiatement le statut du document à `'FAILED'` avec journalisation de l'erreur sans laisser l'application pendante."
+  ]}
+  validationCriteria={[
+    "La totalité des fragments issus du PDF est fidèlement indexée dans les deux magasins de données.",
+    "Le statut du document reflète en temps réel la progression (`PENDING` -> `PROCESSING` -> `INDEXED`).",
+    "En cas d'erreur de vectorisation, le statut passe à `FAILED` et une alerte explicite est consignée."
+  ]}
+>
+
+#### Orchestration du pipeline d'indexation avec gestion des statuts :
+```typescript
+import { pool } from '../config/database.js';
+import { extractTextFromPdf, splitIntoChunks } from '../utils/pdfExtractor.js';
+import { indexSingleChunk } from './chunk.service.js';
+
+export async function processAndIndexDocument(documentId: number, filePath: string, userId: number) {
+  try {
+    // 1. Passage à l'état en cours de traitement
+    await pool.execute('UPDATE documents SET status = "PROCESSING" WHERE id = ?', [documentId]);
+
+    // 2. Extraction et découpage
+    const rawText = await extractTextFromPdf(filePath);
+    const chunks = splitIntoChunks(rawText, 300, 50);
+
+    // 3. Vectorisation et double persistance
+    for (let i = 0; i < chunks.length; i++) {
+      await indexSingleChunk(documentId, userId, i + 1, chunks[i]);
+    }
+
+    // 4. Succès total
+    await pool.execute('UPDATE documents SET status = "INDEXED" WHERE id = ?', [documentId]);
+    console.log(`[RAG] Document ${documentId} indexé avec succès (${chunks.length} chunks).`);
+  } catch (error: any) {
+    console.error(`[RAG ERROR] Échec d'indexation du document ${documentId} :`, error);
+    await pool.execute('UPDATE documents SET status = "FAILED" WHERE id = ?', [documentId]);
+    throw error;
+  }
+}
+```
+</PracticalWork>
+

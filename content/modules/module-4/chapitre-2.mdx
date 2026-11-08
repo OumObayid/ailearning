@@ -1,0 +1,110 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Chapitre 2 — Double stockage : MySQL relationnel et Qdrant vectoriel
+
+### 1. Deux bases pour deux missions radicalement différentes
+
+Une architecture RAG industrielle performante et pérenne ne tente pas de confier toutes les opérations à une seule base de données universelle.
+
+Elle tire parti de la complémentarité entre deux moteurs spécialisés :
+- **MySQL** pour la gestion des données métier structurées, la sécurité des accès et l'intégrité relationnelle.
+- **Qdrant** pour l'indexation géométrique des vecteurs et la recherche ultra-rapide par similarité cosinus.
+
+---
+
+### 2. Comparaison détaillée des deux technologies
+
+| Critère d'ingénierie | MySQL 8.x (Relationnel) | Qdrant (Vectoriel) |
+| :--- | :--- | :--- |
+| **Paradigme** | Tables relationnelles, colonnes typées et clés étrangères | Collections d'espaces vectoriels et points géométriques |
+| **Type de requête** | SQL standard (`SELECT`, `JOIN`, `WHERE`, `GROUP BY`) | Requête par vecteur cible (`query`, distance Cosine / Euclid) |
+| **Critère de recherche** | Égalité exacte, filtres booléens, intervalles de dates | Proximité sémantique dans un espace à N dimensions |
+| **Données hébergées** | Utilisateurs, documents, textes intégraux des chunks, droits | Vecteurs numériques (`number[]`), identifiants et métadonnées |
+| **Garanties** | Transactions strictes ACID, intégrité référentielle (`ON DELETE CASCADE`) | Performance de recherche HNSW (Hierarchical Navigable Small World) |
+
+---
+
+### 3. Répartition des responsabilités dans notre architecture
+
+<ArchitectureDiagram
+  title="Séparation étanche des responsabilités entre MySQL et Qdrant"
+  diagram={`                                  BACKEND NODE.JS
+                                         |
+                 +-----------------------+-----------------------+
+                 |                                               |
+                 v                                               v
+       BASE RELATIONNELLE MYSQL                       BASE VECTORIELLE QDRANT
++------------------------------------+         +------------------------------------+
+|  Table 'documents' :               |         |  Collection 'documents' :          |
+|  - id, user_id, title, status      |         |  - point_id (UUID v4)              |
+|                                    |         |  - vector ([0.12, -0.45, ...])     |
+|  Table 'document_chunks' :         |         |  - payload :                       |
+|  - id, document_id, content texte  |         |      * user_id                     |
+|  - qdrant_point_id                 |         |      * chunk_id                    |
+|                                    |         |      * document_id                 |
+|  -> Rôle : SOURCE DE VÉRITÉ        |         |  -> Rôle : INDEX D'ORIENTATION     |
++------------------------------------+         +------------------------------------+`}
+/>
+
+---
+
+### 4. Pourquoi ne pas tout stocker dans Qdrant ?
+
+Bien que Qdrant permette de joindre un payload JSON arbitraire à chaque point vectoriel, s'en servir comme base de données unique pose des difficultés majeures :
+1. **Absence d'intégrité relationnelle** : Qdrant ne gère pas de clés étrangères. Si vous supprimez un utilisateur, vous devez programmer vous-même le nettoyage manuel de ses vecteurs sans garantie d'intégrité.
+2. **Gestion documentaire lourde** : Modifier le nom d'un document ou son statut sans impacter les vecteurs est simple dans MySQL (`UPDATE documents SET status = 'indexed'`), mais fastidieux dans une base vectorielle.
+3. **Contrôle d'accès et audit** : La conformité RGPD, l'historique des modifications et les autorisations par rôle (*RBAC*) s'implémentent naturellement dans MySQL avec des jointures SQL éprouvées.
+
+<Callout type="note" title="L'analogie de l'index de bibliothèque">
+Pensez à Qdrant comme au **catalogue par fiches thématiques** d'une grande bibliothèque : il vous indique instantanément à quel rayon et sur quelle étagère se trouve le livre pertinent. **MySQL** est l'armoire physique contenant le livre imprimé avec toutes ses pages.
+</Callout>
+
+<DoubleStorageSyncLab />
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Modélisation du double stockage relationnel & vectoriel"
+  objective="Concevoir le schéma relationnel MySQL (documents, document_chunks) et planifier la cartographie des clés avec Qdrant pour garantir l'intégrité référentielle."
+  duration="35 minutes"
+  steps={[
+    "Identifier la répartition des données : stocker dans MySQL les données métier (titres, horodatages, `user_id`, statut d'indexation et texte intégral des chunks) et confier à Qdrant les vecteurs mathématiques (768d) et filtres légers de recherche.",
+    "Définir la colonne clé `qdrant_point_id VARCHAR(36) NULL` dans la table `document_chunks` avec contrainte de clé étrangère `ON DELETE CASCADE` pointant vers la table `documents`.",
+    "Rédiger le script DDL créant la table `documents` et la table `document_chunks` avec index sur `document_id` et `user_id`.",
+    "Écrire la requête SQL de jointure permettant de récupérer le texte et le titre d'un document à partir d'un ensemble de `chunk_id` renvoyés par Qdrant.",
+    "Formaliser la procédure de suppression en cascade : suppression d'abord des points vectoriels dans Qdrant via `qdrant.delete()`, puis suppression de la ligne parente dans MySQL pour éviter tout vecteur orphelin."
+  ]}
+  validationCriteria={[
+    "La frontière de responsabilité entre données textuelles/métier (MySQL) et calcul vectoriel (Qdrant) est parfaitement respectée.",
+    "La contrainte de clé étrangère SQL interdit l'existence de fragments orphelins.",
+    "La procédure de suppression synchronisée bilatérale est documentée et testable."
+  ]}
+>
+
+#### Schéma SQL DDL à reproduire dans votre base de données :
+```sql
+CREATE TABLE IF NOT EXISTS documents (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  status ENUM('PENDING', 'INDEXED', 'FAILED') DEFAULT 'PENDING',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_user_docs (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS document_chunks (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  document_id INT NOT NULL,
+  chunk_index INT NOT NULL,
+  content TEXT NOT NULL,
+  qdrant_point_id VARCHAR(36) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+  INDEX idx_doc_chunks (document_id)
+);
+```
+</PracticalWork>
+

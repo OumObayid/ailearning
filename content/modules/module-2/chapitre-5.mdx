@@ -1,0 +1,165 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 5 — Vercel AI SDK avec Google Gemini
+
+### 1. Qu'est-ce que Vercel AI SDK ?
+
+**Vercel AI SDK** est une bibliothèque open source TypeScript majeure conçue pour standardiser le développement d'applications d'intelligence artificielle.
+
+Elle apporte un ensemble unifié d'abstractions pour :
+- La génération de texte simple (`generateText`).
+- Le streaming de fragments en temps réel (`streamText`).
+- La génération d'objets fortement typés validés par Zod (`generateObject`).
+- Les hooks React orientés interface utilisateur (`useChat`, `useCompletion`).
+- L'orchestration d'outils et le Function Calling unifié.
+
+Dans notre cursus, nous utilisons Vercel AI SDK couplé au fournisseur officiel **Google Gemini** via `@ai-sdk/google`.
+
+---
+
+### 2. Comparatif : SDK Officiel Google versus Vercel AI SDK
+
+| Critère | SDK Officiel (`@google/genai`) | Vercel AI SDK (`ai` + `@ai-sdk/google`) |
+| :--- | :--- | :--- |
+| **Philosophie** | Contrôle total des APIs spécifiques de Google | Abstraction unifiée agnostique du fournisseur |
+| **Gestion d'état** | `Interactions API` avec gestion serveur native | Protocoles standardisés de streaming UI |
+| **Intégration Frontend** | Code personnalisé côté React | Hooks React prêts à l'emploi (`useChat`) |
+| **Streaming UI** | Décodage manuel des flux SSE | Adaptateur direct `pipeUIMessageStreamToResponse` |
+| **Portabilité** | Écosystème Google exclusif | Remplacement facile du modèle par simple configuration |
+
+---
+
+### 3. Installation des dépendances
+
+Installez les packages nécessaires dans votre projet backend Node.js :
+
+```bash
+npm install ai @ai-sdk/google zod
+```
+
+- `ai` : Cœur du SDK contenant les fonctions universelles (`generateText`, `streamText`, `generateObject`).
+- `@ai-sdk/google` : Adaptateur officiel reliant Vercel AI SDK aux modèles Google Gemini.
+- `zod` : Bibliothèque de déclaration de schémas et de validation de types.
+
+---
+
+### 4. Configurer le fournisseur Google Gemini
+
+Dans votre serveur backend Node.js (ex. `src/services/gemini-provider.ts`) :
+
+```typescript
+// src/services/gemini-provider.ts
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+
+export const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+// Sélection du modèle de travail Google Gemini
+export const geminiModel = google('gemini-2.5-flash');
+```
+
+<Callout type="note" title="AI SDK direct vs AI Gateway">
+Cette configuration se connecte **directement** à l'infrastructure Google Gemini sans intermédiaire. Ne confondez pas Vercel AI SDK avec des services de passerelle tiers payants (AI Gateway).
+</Callout>
+
+---
+
+### 5. Génération synchrone avec generateText
+
+Pour des opérations courtes d'analyse ou de transformation :
+
+```typescript
+import { generateText } from 'ai';
+import { geminiModel } from './gemini-provider.js';
+
+export async function explainConcept(concept: string) {
+  const { text, usage } = await generateText({
+    model: geminiModel,
+    prompt: `Explique le concept suivant à un développeur junior : ${concept}`,
+    system: "Tu es un tuteur technique expert, concis et pédagogue.",
+  });
+
+  console.log(`Tokens consommés : ${usage.totalTokens}`);
+  return text;
+}
+```
+
+---
+
+### 6. Streaming de texte avec streamText
+
+Pour les réponses longues, `streamText` délivre les fragments textuels au fur et à mesure de leur création par Gemini :
+
+```typescript
+import { streamText } from 'ai';
+import { geminiModel } from './gemini-provider.js';
+
+export async function streamExplanation(prompt: string) {
+  const result = streamText({
+    model: geminiModel,
+    prompt,
+  });
+
+  // Consommation en direct des morceaux (chunks)
+  for await (const chunk of result.textStream) {
+    process.stdout.write(chunk);
+  }
+}
+```
+
+---
+
+<PracticalWork
+  title="Travail Pratique 5 — Prise en main de Vercel AI SDK avec Google Gemini"
+  objective="Installer Vercel AI SDK, configurer le provider Google et exécuter des scripts de génération synchrone et de streaming en ligne de commande."
+  duration="40 minutes"
+  steps={[
+    "Installer les dépendances requises dans votre projet Node.js : `npm install ai @ai-sdk/google dotenv` ainsi que `tsx` pour l'exécution directe de scripts TypeScript.",
+    "Créer le fichier `src/ai/provider.ts` initialisant l'instance Google avec `createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY })`.",
+    "Écrire un premier script `src/scripts/test-generate.ts` utilisant `generateText({ model: google('gemini-2.5-flash'), prompt: 'Donne 3 règles d'or en ergonomie web.' })` et afficher `result.text` ainsi que le décompte de jetons `result.usage`.",
+    "Écrire un second script `src/scripts/test-stream.ts` utilisant `streamText({ model: google('gemini-2.5-flash'), prompt: 'Raconte une fable en 150 mots.' })` et consommer le flux avec `for await (const chunk of result.textStream) { process.stdout.write(chunk); }`.",
+    "Comparer le nombre de lignes de code et la clarté de la syntaxe par rapport aux appels bas-niveau du SDK `@google/genai` vus au Module 1."
+  ]}
+  validationCriteria={[
+    "La clé API est extraite de manière sécurisée depuis le fichier `.env` sans être hardcodée dans le code source.",
+    "Le script de streaming affiche les mots au fil de l'eau dans le terminal sans délai de mise en mémoire tampon.",
+    "Le décompte précis des tokens d'entrée et de sortie (`usage.promptTokens`, `usage.completionTokens`) est récupéré et journalisé."
+  ]}
+>
+
+#### Script d'exemple complet pour le streaming console :
+```typescript
+// src/scripts/test-stream.ts
+import 'dotenv/config';
+import { streamText } from 'ai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+async function main() {
+  console.log('--- Début du streaming Vercel AI SDK ---');
+
+  const result = streamText({
+    model: google('gemini-2.5-flash'),
+    prompt: 'Explique la différence entre SSR et SPA en trois paragraphes percutants.',
+  });
+
+  for await (const chunk of result.textStream) {
+    process.stdout.write(chunk);
+  }
+
+  const usage = await result.usage;
+  console.log('\n\n--- Statistiques de consommation ---');
+  console.log(`Tokens prompt : ${usage.promptTokens}`);
+  console.log(`Tokens complétion : ${usage.completionTokens}`);
+}
+
+main().catch(console.error);
+```
+</PracticalWork>
+

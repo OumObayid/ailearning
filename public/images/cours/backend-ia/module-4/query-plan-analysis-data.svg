@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 480" width="100%" height="100%" style="background:#ffffff; font-family: Inter, system-ui, sans-serif;">
+  <defs>
+    <linearGradient id="barDanger" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+    <linearGradient id="barSuccess" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="425" y="34" text-anchor="middle" font-size="18" font-weight="900" fill="#0f172a">Analyse Comparative des Données d'Exécution (EXPLAIN ANALYZE)</text>
+  <text x="425" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Mesures réelles sur une table MySQL de 100 000 conversations IA</text>
+
+  <!-- Card 1: SANS INDEX (Full Table Scan) -->
+  <g filter="url(#cardShadow)">
+    <rect x="30" y="85" width="380" height="300" rx="14" fill="#fff1f2" stroke="#f43f5e" stroke-width="2" />
+    <rect x="45" y="100" width="140" height="26" rx="6" fill="#be123c" />
+    <text x="115" y="118" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">SANS INDEX (type: ALL)</text>
+
+    <text x="45" y="150" font-size="13" font-weight="800" fill="#881337">Temps d'exécution moyen :</text>
+    <text x="45" y="185" font-size="32" font-weight="900" fill="#e11d48">248.5 ms</text>
+
+    <!-- Progress bar for latency -->
+    <rect x="45" y="200" width="350" height="18" rx="9" fill="#fecdd3" />
+    <rect x="45" y="200" width="350" height="18" rx="9" fill="url(#barDanger)" />
+    <text x="220" y="214" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff">SOUFFRANCE CPU : 100% DES BLOCS LUS</text>
+
+    <g transform="translate(45, 235)">
+      <text x="0" y="20" font-size="12" font-weight="700" fill="#334155">Lignes examinées (rows) :</text>
+      <text x="350" y="20" text-anchor="end" font-size="13" font-weight="900" fill="#e11d48">100 000 lignes</text>
+
+      <text x="0" y="45" font-size="12" font-weight="700" fill="#334155">Index utilisé (key) :</text>
+      <text x="350" y="45" text-anchor="end" font-size="13" font-weight="900" fill="#9f1239">NULL (Scan complet)</text>
+
+      <text x="0" y="70" font-size="12" font-weight="700" fill="#334155">Débit max requêtes/sec :</text>
+      <text x="350" y="70" text-anchor="end" font-size="13" font-weight="900" fill="#e11d48">~4 req / sec</text>
+    </g>
+  </g>
+
+  <!-- Card 2: AVEC INDEX (Index Lookup) -->
+  <g filter="url(#cardShadow)">
+    <rect x="440" y="85" width="380" height="300" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2" />
+    <rect x="455" y="100" width="160" height="26" rx="6" fill="#047857" />
+    <text x="535" y="118" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">AVEC INDEX (type: ref)</text>
+
+    <text x="455" y="150" font-size="13" font-weight="800" fill="#064e3b">Temps d'exécution moyen :</text>
+    <text x="455" y="185" font-size="32" font-weight="900" fill="#059669">0.82 ms</text>
+
+    <!-- Progress bar for latency -->
+    <rect x="455" y="200" width="350" height="18" rx="9" fill="#d1fae5" />
+    <rect x="455" y="200" width="22" height="18" rx="9" fill="url(#barSuccess)" />
+    <text x="485" y="214" font-size="10" font-weight="900" fill="#065f46">300x PLUS RAPIDE</text>
+
+    <g transform="translate(455, 235)">
+      <text x="0" y="20" font-size="12" font-weight="700" fill="#334155">Lignes examinées (rows) :</text>
+      <text x="350" y="20" text-anchor="end" font-size="13" font-weight="900" fill="#059669">100 lignes ciblées</text>
+
+      <text x="0" y="45" font-size="12" font-weight="700" fill="#334155">Index utilisé (key) :</text>
+      <text x="350" y="45" text-anchor="end" font-size="13" font-weight="900" fill="#065f46">idx_user_date</text>
+
+      <text x="0" y="70" font-size="12" font-weight="700" fill="#334155">Débit max requêtes/sec :</text>
+      <text x="350" y="70" text-anchor="end" font-size="13" font-weight="900" fill="#059669">&gt; 1 200 req / sec</text>
+    </g>
+  </g>
+
+  <!-- Bottom Synthesis Bar -->
+  <rect x="30" y="405" width="790" height="55" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="425" y="428" text-anchor="middle" font-size="13" font-weight="900" fill="#0f172a">
+    Résultat de l'analyse : Réduction de 99.7% de la charge disque (I/O) et suppression du goulot d'étranglement
+  </text>
+  <text x="425" y="446" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">
+    En backend Node.js, ce gain empêche le pool de connexions MySQL d'épuiser ses sockets disponibles.
+  </text>
+</svg>

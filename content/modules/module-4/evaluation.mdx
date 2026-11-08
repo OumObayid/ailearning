@@ -1,0 +1,115 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Évaluation, bilan du RAG & Annexes
+
+### 1. Bilan des compétences acquises
+
+Au terme de ce quatrième module, vous possédez une compréhension approfondie et opérationnelle du **RAG (Retrieval-Augmented Generation)** en environnement de production :
+- Vous savez architecturer un **double stockage** combinant la rigueur relationnelle de **MySQL** et la puissance vectorielle de **Qdrant**.
+- Vous maîtrisez la chaîne complète d'**ingestion documentaire** : extraction de fichiers PDF, nettoyage, découpage en fragments (*chunking*) avec chevauchement (*overlap*).
+- Vous savez générer des **embeddings sémantiques** à 768 dimensions avec Google Gemini et calculer la similarité cosinus.
+- Vous savez formuler un **prompt RAG hermétique** forçant le modèle à citer ses sources et à refuser poliment de répondre lorsqu'une information est absente.
+- Vous appliquez les principes de **défense en profondeur** pour cloisonner les données par utilisateur et neutraliser les injections de prompt indirectes.
+
+---
+
+### ANNEXE 1 — Commandes essentielles du RAG
+
+```bash
+# 1. Démarrer le moteur vectoriel Qdrant localement avec persistance
+docker run -d --name qdrant-rag -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+
+# 2. Vérifier l'état du conteneur Qdrant
+docker ps | grep qdrant
+docker logs qdrant-rag --tail 50
+
+# 3. Installer les dépendances du système RAG
+npm install @google/genai @qdrant/js-client-rest mysql2 pdf-parse uuid zod
+npm install -D typescript tsx @types/node @types/pdf-parse @types/uuid
+
+# 4. Accéder au dashboard web de visualisation Qdrant
+# Ouvrir dans votre navigateur : http://localhost:6333/dashboard
+```
+
+---
+
+### ANNEXE 2 — Documentation officielle de référence
+
+- **Google Gemini Embeddings** : [https://ai.google.dev/gemini-api/docs/embeddings](https://ai.google.dev/gemini-api/docs/embeddings)
+- **Qdrant Documentation** : [https://qdrant.tech/documentation/](https://qdrant.tech/documentation/)
+- **Qdrant JavaScript / TypeScript Client** : [https://github.com/qdrant/qdrant-js](https://github.com/qdrant/qdrant-js)
+- **Qdrant Vector Search & Filtering** : [https://qdrant.tech/documentation/concepts/filtering/](https://qdrant.tech/documentation/concepts/filtering/)
+- **pdf-parse Library** : [https://www.npmjs.com/package/pdf-parse](https://www.npmjs.com/package/pdf-parse)
+- **MySQL2 Documentation** : [https://sidorares.github.io/node-mysql2/](https://sidorares.github.io/node-mysql2/)
+
+---
+
+### ANNEXE 3 — Vocabulaire technique de référence
+
+| Terme | Définition technique dans l'écosystème RAG |
+| :--- | :--- |
+| **RAG** | Architecture associant la recherche documentaire ciblée et la génération par un LLM |
+| **Embedding** | Vecteur numérique dense projetant le sens sémantique d'un texte dans un espace multidimensionnel |
+| **Base vectorielle** | Système de base de données optimisé pour indexer et comparer des vecteurs par distance cosinus |
+| **Qdrant** | Moteur vectoriel open source écrit en Rust avec indexation HNSW et filtrage de payload |
+| **Collection** | Espace de stockage Qdrant partageant une même dimension et une métrique de similarité |
+| **Point** | Entité élémentaire de Qdrant regroupant un identifiant UUID, un vecteur et un payload JSON |
+| **Chunk** | Fragment textuel cohérent extrait d'un document source volumineux |
+| **Overlap** | Zone de chevauchement entre deux fragments consécutifs pour préserver le contexte aux frontières |
+| **Similarité Cosinus** | Mesure normalisée de l'angle entre deux vecteurs, comprise entre -1 et 1 |
+| **Top K** | Nombre prédéterminé de fragments les plus similaires retournés par la recherche vectorielle |
+| **Ancrage (Grounding)** | Obligation faite au modèle de s'appuyer strictement sur les faits vérifiables du contexte |
+
+---
+
+### Conclusion du Module 4 et transition vers le Module 5
+
+Grâce au RAG, vos applications d'intelligence artificielle ne se limitent plus à répéter des connaissances générales figées : elles deviennent de véritables **experts métiers** capables de consulter vos manuels, vos politiques et vos bases de connaissances en direct.
+
+Dans le **Module 5**, nous franchirons une nouvelle étape majeure : **le développement d'agents d'IA autonomes**. Nous étudierons comment doter les modèles d'une capacité de planification, d'utilisation séquentielle d'outils complexes et de mémoire d'étapes avec **TypeScript, Google Gemini et LangGraph.js**.
+
+---
+
+<QuickQuiz
+  title="Auto-évaluation finale : Bilan du Module 4"
+  questions={[
+    {
+      id: 1,
+      question: "Pourquoi stocke-t-on les textes intégraux des chunks dans MySQL plutôt qu'uniquement dans Qdrant ?",
+      options: [
+        "Parce que Qdrant refuse les caractères alphabétiques",
+        "Pour préserver l'intégrité relationnelle, la gestion des utilisateurs, les jointures SQL et la source de vérité",
+        "Parce que MySQL est plus rapide en recherche vectorielle",
+        "Pour convertir les textes en format binaire"
+      ],
+      correctIndex: 1,
+      explanation: "MySQL sert de source de vérité relationnelle pour les utilisateurs et l'intégrité en cascade, tandis que Qdrant sert d'index géométrique de recherche."
+    },
+    {
+      id: 2,
+      question: "Quelle est l'utilité du paramètre 'overlap' (chevauchement) lors du découpage documentaire ?",
+      options: [
+        "Augmenter artificiellement le nombre de documents pour payer plus cher",
+        "Éviter de scinder une phrase ou une idée clé entre deux fragments consécutifs",
+        "Traduire le document en deux langues",
+        "Chiffrer le document contre le piratage"
+      ],
+      correctIndex: 1,
+      explanation: "Le chevauchement conserve la fin du fragment précédent au début du suivant, évitant de casser une notion cruciale située à la frontière du découpage."
+    },
+    {
+      id: 3,
+      question: "Que doit faire un prompt RAG rigoureux si la réponse à la question de l'utilisateur ne figure pas dans le contexte ?",
+      options: [
+        "Inventer une réponse plausible en faisant des suppositions",
+        "Affirmer clairement que l'information n'est pas disponible dans les sources fournies",
+        "Fermer le navigateur du client",
+        "Supprimer la base de données"
+      ],
+      correctIndex: 1,
+      explanation: "L'instruction anti-hallucination impose au modèle de déclarer l'absence d'information plutôt que de fabriquer une réponse fausse."
+    }
+  ]}
+/>
+

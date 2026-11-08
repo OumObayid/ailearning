@@ -1,0 +1,103 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 17 — Checklist de mise en production, bonnes pratiques & évaluation finale
+
+### 1. Checklist exhaustive de pré-déploiement en production
+
+Avant de promouvoir une application d'intelligence artificielle vers votre infrastructure de production, validez systématiquement chaque point de ce protocole d'assurance qualité :
+
+#### Sécurité & Secrets
+- [ ] La variable `GEMINI_API_KEY` réside exclusivement côté serveur et n'apparaît dans aucun bundle frontend.
+- [ ] Le fichier `.env` est exclu du contrôle de source via `.gitignore`.
+- [ ] L'authentification JWT est imposée sur toutes les routes d'inférence privées.
+- [ ] Le filtrage SQL en base MySQL utilise systématiquement le `userId` cryptographiquement validé.
+- [ ] Les prompts utilisateurs sont encapsulés dans des délimiteurs stricts (`<user_query>`).
+- [ ] Tout document issu de la base vectorielle Qdrant est marqué explicitement comme donnée non fiable.
+- [ ] Les outils agentiques respectent le principe du moindre privilège (pas d'outils destructifs non surveillés).
+- [ ] Le patron Human-in-the-Loop est activé pour tout virement financier, suppression ou modification critique.
+
+#### Tests & Qualité
+- [ ] Les tests unitaires Vitest s'exécutent avec succès en CI/CD sans dépendance réseau externe.
+- [ ] Les tests d'intégration HTTP Supertest valident l'ensemble des codes d'état d'erreur (`400`, `401`, `403`).
+- [ ] Un jeu de données d'évaluation (*Gold Dataset*) permet de mesurer le taux de fidélité RAG.
+- [ ] Les consignes d'aveu d'incertitude sont actives pour proscrire les hallucinations.
+
+#### Performance & Exploitation
+- [ ] La latence de chaque appel Gemini est mesurée et journalisée.
+- [ ] Un cache partagé (Redis) est déployé pour absorber les requêtes publiques récurrentes.
+- [ ] Les logs sont structurés au format JSON avec Pino et masquent automatiquement les données sensibles.
+- [ ] Un `X-Correlation-ID` unique est généré et propagé sur l'ensemble de la chaîne de traitement.
+
+---
+
+### 2. Les 15 règles d'or de l'ingénieur IA en production
+
+1. **Le modèle ne décide jamais de la sécurité** : C'est le code TypeScript du serveur qui vérifie les permissions.
+2. **Ne jamais faire confiance aux sorties du modèle** : Validez systématiquement les objets JSON avec Zod avant écriture en base.
+3. **Moindre privilège absolu** : N'accordez à un outil que les droits nécessaires pour son rôle précis.
+4. **Isoler les données privées dans le cache** : La clé de cache doit comporter l'identifiant du client pour les données confidentielles.
+5. **Human-in-the-Loop sur les mutations** : Aucune action destructrice ou financière ne doit s'exécuter sans validation humaine.
+6. **Encapsuler avec des balises délimitées** : Séparez les instructions système des données utilisateur non fiables.
+7. **Plafonner les itérations d'agents** : Imposez toujours une borne `MAX_STEPS` stricte pour éviter l'emballement.
+8. **Séparer app.ts et server.ts** : Permettre des tests d'intégration HTTP rapides et sans conflits de ports.
+9. **Mocker les LLMs en CI/CD** : Les tests unitaires doivent pouvoir s'exécuter sans clé d'API et sans frais.
+10. **Mesurer la fidélité RAG (Faithfulness)** : Mesurez l'ancrage documentaire à l'aide d'un jeu de données d'évaluation.
+11. **Imposer l'aveu d'incertitude** : Autorisez formellement le modèle à dire *« Je ne sais pas »*.
+12. **Surveiller le ratio Tokens In / Out** : Optimisez les prompts par élagage (*prompt pruning*) pour réduire les coûts.
+13. **Masquer les secrets dans les logs** : Configurez votre logger pour caviarder automatiquement les tokens et mots de passe.
+14. **Propager un Correlation ID** : Reliez chaque trace, requête SQL et appel d'API à un identifiant unique.
+15. **Versionner les prompts système** : Traitez vos prompts comme du code source audité et versionné dans Git.
+
+---
+
+### 3. Annexe — Commandes essentielles
+
+<CodeBlock
+  language="bash"
+  title="Aide-mémoire des commandes de test et vérification"
+  code={`# Lancer les tests unitaires et d'intégration en mode interactif
+npm run test
+
+# Exécuter les tests une seule fois (idéal pour pipeline CI/CD)
+npm run test:run
+
+# Audit des dépendances et vulnérabilités de sécurité
+npm audit
+
+# Vérification du typage statique TypeScript
+npx tsc --noEmit
+
+# Vérification du style de code et règles ESLint
+npm run lint
+
+# Compilation de production Next.js
+npm run build`}
+/>
+
+---
+
+### 4. Conclusion du Module 7 et transition vers le Module 8
+
+Félicitations ! Vous possédez maintenant l'ensemble des réflexes, compétences et méthodologies industrielles pour concevoir des applications d'intelligence artificielle **sécurisées, testées, mesurables, observables et résilientes face aux attaques**.
+
+Dans le prochain et ultime module (**Module 8 : Projet professionnel de synthèse**), vous consoliderez l'intégralité du cursus dans une réalisation d'envergure réunissant React, Express, MySQL, Qdrant, n8n, LangGraph.js, la sécurité avancée et les tests automatisés de bout en bout.
+
+---
+
+### 5. Évaluation finale des acquis
+
+<QuickQuiz
+  question="Quelle est la différence fondamentale entre tester une application logicielle classique et tester une application d'intelligence artificielle ?"
+  options={[
+    "Il n'existe aucune différence, les deux s'exécutent exactement de la même manière",
+    "Une application d'IA comporte une partie non déterministe (le modèle LLM) qui exige de tester le code d'infrastructure via des mocks, tout en évaluant séparément la fidélité et la qualité des réponses à l'aide d'un Gold Dataset et de métriques dédiées",
+    "On ne peut pas tester une application d'IA",
+    "Les tests d'IA nécessitent obligatoirement un abonnement payant à ChatGPT"
+  ]}
+  correctIndex={1}
+  explanation="La nature probabiliste des LLM impose de découper les tests : isoler le code déterministe (middlewares, validation Zod, routes) par des mocks, tout en mesurant la qualité qualitative des réponses générées à l'aide de bancs d'évaluation (Gold Dataset) et de scores de fidélité."
+/>
+

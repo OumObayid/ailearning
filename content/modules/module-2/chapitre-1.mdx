@@ -1,0 +1,237 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 1 — Fondamentaux des applications frontend IA
+
+### 1. Qu'est-ce qu'un frontend augmenté par l'IA ?
+
+Un frontend augmenté par l'intelligence artificielle est une interface utilisateur qui intègre des fonctionnalités intelligentes capables d'interpréter des demandes en langage naturel, de générer du contenu contextualisé, d'analyser des données complexes et d'assister activement l'utilisateur dans ses flux de travail.
+
+Dans une application web classique, l'utilisateur est limité à des interactions préprogrammées :
+- Saisir manuellement des données dans des formulaires rigides.
+- Naviguer entre des pages statiques ou semi-dynamiques.
+- Consulter des données tabulaires brutes.
+- Déclencher des actions strictement déterministes.
+
+Dans un **frontend augmenté par l'IA**, l'interface acquiert de nouvelles capacités cognitives :
+- **Comprendre** une intention utilisateur formulée librement en langage naturel.
+- **Générer** une réponse personnalisée et adaptée au contexte applicatif.
+- **Analyser** en temps réel un contenu saisi ou un document téléversé.
+- **Transformer** des données disparates en informations actionnables.
+- **Afficher** progressivement une réponse via le streaming temps réel.
+- **Présenter** des résultats sous forme de composants visuels riches (UI générative).
+
+#### Exemple concret
+Imaginons une application de gestion de catalogue e-commerce :
+- Dans une application classique, le gestionnaire rédige manuellement chaque ligne de la description du produit.
+- Dans une application augmentée par l'IA, il saisit simplement :
+> « Génère une description commerciale pour une robe noire élégante destinée à une boutique de mode féminine haut de gamme. »
+
+Gemini produit instantanément une proposition persuasive que l'utilisateur peut relire, peaufiner, copier ou enregistrer en un clic dans la base de données. L'intelligence artificielle devient ainsi une brique intégrée à l'expérience métier.
+
+---
+
+### 2. Les principales catégories d'interfaces IA
+
+| Interface | Fonction principale |
+| :--- | :--- |
+| **Chat IA** | Dialogue conversationnel multi-tours avec mémoire de contexte |
+| **Générateur de contenu** | Production assistée de textes, résumés et reformulations |
+| **Analyseur de données** | Extraction d'enseignements clés à partir de données textuelles ou chiffrées |
+| **Assistant de formulaire** | Pré-remplissage intelligent, complétion et validation contextuelle |
+| **Interface multimodale** | Analyse conjointe d'images, de photographies et de documents PDF |
+| **Assistant contextuel** | Aide proactive basée sur la page ou la ressource actuellement consultée |
+| **Interface avec outils** | Déclenchement contrôlé de fonctions métier via Function Calling |
+| **Interface de streaming** | Restitution fluide et progressive des tokens générés par le LLM |
+
+---
+
+### 3. Architecture générale d'un système frontend IA
+
+Une architecture logicielle IA robuste et professionnelle repose sur une séparation stricte des responsabilités en **trois couches** étanches :
+
+<ArchitectureDiagram
+  title="Flux d'interaction sécurisé Frontend ↔ Backend ↔ Fournisseur IA"
+  diagram={`+-------------------------------------------------------------+
+|                     NAVIGATEUR CLIENT                       |
+|   React.js / Next.js  -- (Requêtes HTTP Fetch / SSE)        |
++-------------------------------------------------------------+
+                             |
+                             v  [Appel d'API authentifié sans clé secrète]
++-------------------------------------------------------------+
+|                      SERVEUR BACKEND                        |
+|   Node.js / Express / Route Handlers Next.js                |
+|   - Contrôle d'accès & validation Zod                       |
+|   - Clé d'API GEMINI_API_KEY sécurisée dans process.env     |
++-------------------------------------------------------------+
+                             |
+                             v  [Appel SDK officiel / Vercel AI SDK]
++-------------------------------------------------------------+
+|                   FOURNISSEUR CLOUD IA                      |
+|   Google Gemini (Interactions API / generateText)           |
++-------------------------------------------------------------+`}
+/>
+
+<Callout type="note" title="Séparation des couches">
+La clé d'API Google Gemini ne transite **jamais** par le navigateur de l'utilisateur. Elle reste exclusivement confinée dans les variables d'environnement du serveur backend.
+</Callout>
+
+---
+
+### 4. Pourquoi ne pas appeler directement Gemini depuis React ?
+
+Le code d'une application React est entièrement téléchargé et exécuté dans le moteur JavaScript du navigateur de l'utilisateur.
+
+Si une clé d'API Gemini était intégrée directement dans le frontend :
+1. **Exposition critique** : Elle serait immédiatement visible en clair dans le code source minifié ou dans l'onglet *Réseau* des outils de développement.
+2. **Vol de crédits et quotas** : N'importe quel utilisateur ou robot pourrait extraire la clé et consommer vos quotas d'API à vos frais.
+3. **Absence de contrôle métier** : Vous ne pourriez ni limiter le débit (rate limiting), ni modérer les prompts, ni enregistrer les interactions en base de données.
+
+La seule architecture viable consiste à ce que React communique avec votre propre API backend, qui joue le rôle de passerelle sécurisée.
+
+---
+
+### 5. Les responsabilités du frontend IA
+
+Le rôle du frontend ne se résume pas à afficher un simple bloc de texte brut. Il assure l'expérience utilisateur complète :
+- La collecte propre des intentions utilisateur et la validation immédiate des formulaires.
+- La gestion fine des états d'attente (indicateurs de progression, squelettes de chargement).
+- La réception et l'affichage fluide des flux de streaming temps réel.
+- La gestion transparente des erreurs réseau et des reprises sur incident.
+- La possibilité d'interrompre une réponse longue grâce à l'annulation de requête (`AbortController`).
+- Le rendu sécurisé du Markdown et la mise en forme de composants structurés (**UI générative**).
+
+---
+
+### Atelier interactif : Machine à états finis d'un composant React IA
+
+Expérimentez ci-dessous le cycle de vie complet d'une interaction utilisateur, du contrôle préventif local jusqu'au verrouillage anti-rebond et à l'interception d'une erreur 500 :
+
+<FrontendStateMachineSimulator />
+
+---
+
+<PracticalWork
+  title="Travail Pratique 1 — Maquette d'interface IA avec React"
+  objective="Concevoir une interface utilisateur complète reproduisant tous les états visuels d'une interaction IA (repos, chargement, succès, erreur) sans appel API externe."
+  duration="35 minutes"
+  steps={[
+    "Créer un composant React `src/components/PromptCard.tsx` avec un champ de saisie (`textarea`) multi-lignes et un bouton 'Envoyer'.",
+    "Déclarer une machine à états locale avec TypeScript : `type Status = 'idle' | 'loading' | 'success' | 'error' ; const [status, setStatus] = useState<Status>('idle');`.",
+    "À la soumission, simuler un délai de calcul serveur de 2 secondes à l'aide de `setTimeout`, en affichant un spinner d'attente animé et le texte 'Génération en cours...'.",
+    "Ajouter une validation préventive : si la saisie est vide ou dépasse 500 caractères, basculer immédiatement en état 'error' avec une bannière d'avertissement rouge explicite.",
+    "En cas de succès simulé, afficher une fausse réponse de l'IA dans un encart dédié et ajouter un bouton 'Nouvelle requête' qui réinitialise le formulaire."
+  ]}
+  validationCriteria={[
+    "Le bouton d'envoi est désactivé (`disabled`) pendant l'état 'loading' pour empêcher les doubles clics.",
+    "Le compteur de caractères dynamique (ex. '142 / 500') change de couleur à l'approche de la limite.",
+    "L'interface est entièrement réactive et gère élégamment la réinitialisation sans recharger la page."
+  ]}
+>
+
+#### Gabarit TypeScript suggéré pour démarrer :
+```tsx
+import React, { useState } from 'react';
+
+type InteractionStatus = 'idle' | 'loading' | 'success' | 'error';
+
+export const PromptSimulator: React.FC = () => {
+  const [prompt, setPrompt] = useState('');
+  const [status, setStatus] = useState<InteractionStatus>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [response, setResponse] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!prompt.trim()) {
+      setStatus('error');
+      setErrorMessage('Veuillez saisir une question avant de lancer la génération.');
+      return;
+    }
+    if (prompt.length > 500) {
+      setStatus('error');
+      setErrorMessage('La taille maximale autorisée est de 500 caractères.');
+      return;
+    }
+
+    setStatus('loading');
+    setErrorMessage('');
+
+    // Simulation d'une latence d'inférence de 2 secondes
+    setTimeout(() => {
+      setStatus('success');
+      setResponse("Voici une simulation de réponse rédigée par l'intelligence artificielle.");
+    }, 2000);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-6 border rounded-2xl bg-white space-y-4 shadow-sm">
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        disabled={status === 'loading'}
+        placeholder="Posez votre question à l'IA..."
+        className="w-full p-3 border rounded-xl"
+        rows={4}
+      />
+      <div className="flex justify-between items-center text-sm text-slate-500">
+        <span>{prompt.length} / 500 caractères</span>
+        <button
+          type="submit"
+          disabled={status === 'loading' || !prompt.trim()}
+          className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold disabled:opacity-50"
+        >
+          {status === 'loading' ? 'Génération...' : 'Envoyer'}
+        </button>
+      </div>
+      {status === 'error' && (
+        <div className="p-3 bg-red-50 text-red-700 rounded-xl border border-red-200">
+          ⚠️ {errorMessage}
+        </div>
+      )}
+      {status === 'success' && (
+        <div className="p-4 bg-emerald-50 text-emerald-900 rounded-xl border border-emerald-200">
+          <strong>Réponse IA :</strong>
+          <p className="mt-1">{response}</p>
+        </div>
+      )}
+    </form>
+  );
+};
+```
+</PracticalWork>
+
+---
+
+<QuickQuiz
+  title="Auto-évaluation : Architecture Frontend IA"
+  questions={[
+    {
+      id: 1,
+      question: "Pourquoi est-il formellement interdit d'appeler directement l'API Gemini depuis un composant React client ?",
+      options: [
+        "Parce que React ne supporte pas la méthode fetch()",
+        "Parce que la clé d'API serait exposée publiquement dans le navigateur",
+        "Parce que Gemini ne sait communiquer qu'en langage C++",
+        "Parce que le navigateur refuse les requêtes HTTPS sortantes"
+      ],
+      correctIndex: 1,
+      explanation: "Tout code et toute variable préfixée client sont accessibles par l'utilisateur dans le navigateur. La clé d'API doit impérativement rester sur le serveur backend."
+    },
+    {
+      id: 2,
+      question: "Quelle couche applicative détient la responsabilité d'interroger Google Gemini ?",
+      options: [
+        "Le navigateur client via un hook personnalisé",
+        "Le serveur backend (Node.js/Express) qui détient la clé d'API sécurisée",
+        "Le fichier package.json",
+        "Le cache local du navigateur (LocalStorage)"
+      ],
+      correctIndex: 1,
+      explanation: "Le backend reçoit la requête du client, valide les permissions et interroge Gemini de façon totalement isolée et sécurisée."
+    }
+  ]}
+/>
+

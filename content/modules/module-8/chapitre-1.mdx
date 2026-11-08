@@ -1,0 +1,76 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { PlatformArchitectureSimulator } from '@/components/interactive/PlatformArchitectureSimulator';
+
+# Chapitre 1 — Présentation du projet, cahier des charges et analyse des besoins
+
+### 1. Contexte d'entreprise et problématique de fragmentation
+
+Dans la plupart des organisations contemporaines, le patrimoine documentaire est dispersé entre des dizaines d'emplacements hétérogènes : serveurs de fichiers partagés, boîtes de réception email, plateformes cloud (Google Drive, OneDrive), wikis internes et bases relationnelles.
+
+Cette dispersion entraîne des dysfonctionnements opérationnels majeurs :
+- **Perte de productivité massive** : Les collaborateurs consacrent en moyenne 25 % de leur temps de travail à rechercher des clauses contractuelles, des procédures RH ou des spécifications techniques.
+- **Désalignement et obsolescence** : Plusieurs versions concurrentes d'un même document circulent simultanément, conduisant à des erreurs d'application des politiques d'entreprise.
+- **Rupture d'action** : Trouver une information ne suffit pas ; il faut ensuite déclencher manuellement la suite du processus métier (notifier une équipe, modifier un statut de facture, ouvrir un ticket).
+
+La mission de ce projet professionnel de synthèse est de concevoir et déployer une **plateforme unifiée d'assistance cognitive et d'automatisation documentaire** (*Enterprise Knowledge & Automation Hub*).
+
+---
+
+### 2. Objectifs fonctionnels de la plateforme
+
+L'application doit remplir trois fonctions majeures :
+1. **Espace de gestion documentaire sécurisé** : Téléversement, extraction de texte (PDF/DOCX), assainissement et indexation vectorielle automatisée.
+2. **Assistant conversationnel RAG ancré** : Dialogue en langage naturel avec citation exacte des documents sources (titre du fichier, numéro de page, fragment exact) et refus formel d'halluciner en cas d'absence de données.
+3. **Moteur d'automatisation et agents intelligents** : Déclenchement d'actions concrètes (création de rapports, notifications d'astreinte, audits de conformité) pilotées par des agents autonomes et des workflows événementiels **n8n**.
+
+---
+
+### 3. Les 4 Personas cibles de l'application
+
+| Persona | Rôle & Besoins principaux | Privilèges sur la plateforme |
+| :--- | :--- | :--- |
+| **Collaborateur (Employé)** | Poser des questions sur les procédures internes et retrouver des informations sans fouiller des centaines de pages. | Rôle `collaborator` : accès en lecture seule aux documents de son service. |
+| **Gestionnaire Documentaire** | Importer de nouveaux contrats, suivre le statut d'indexation vectorielle et corriger les métadonnées. | Rôle `manager` : téléversement, réindexation et suppression des documents. |
+| **Auditeur Qualité / Risques** | Inspecter les sources citées par l'IA et valider manuellement les actions sensibles (**Human-in-the-Loop**). | Rôle `auditor` : approbation des actions critiques et consultation des logs. |
+| **Administrateur Système** | Superviser les quotas d'API, monitorer la latence, gérer les comptes et administrer les instances. | Rôle `admin` : accès complet, audit de sécurité et métriques globales. |
+
+---
+
+### 4. Matrice globale des livrables
+
+À l'issue de ce module, l'ingénieur IA livre un ensemble logiciel complet prêt à la production :
+- Une application frontend **React / Next.js** réactive avec streaming temps réel.
+- Une API backend **Node.js / Express** en couches typée en TypeScript.
+- Une base de données relationnelle **MySQL** hautement modélisée et indexée.
+- Une collection vectorielle **Qdrant** synchronisée pour la recherche sémantique.
+- Un graphe d'orchestration **LangGraph.js** gérant les agents et les interruptions.
+- Des pipelines d'automatisation par webhooks **n8n**.
+- Une suite complète de tests automatisés **Vitest & Supertest** en CI/CD.
+
+---
+
+### 5. Simulation interactive : Découvrir l'architecture 5-tiers
+
+Explorez le simulateur ci-dessous pour appréhender la manière dont l'ensemble des composants technologiques interagissent en synergie complète :
+
+<PlatformArchitectureSimulator />
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Quel est le triple objectif fondamental de la plateforme d'assistance et d'automatisation documentaire développée dans ce projet ?"
+  options={[
+    "Remplacer les développeurs par des scripts Python",
+    "Centraliser les documents, permettre leur interrogation en langage naturel avec citation stricte des sources, et déclencher des automatisations métier sécurisées",
+    "Créer un réseau social interne avec messagerie éphémère",
+    "Générer des images artistiques avec des modèles de diffusion"
+  ]}
+  correctIndex={1}
+  explanation="La plateforme réunit la gestion documentaire sécurisée, la recherche sémantique RAG vérifiable sans hallucination et l'exécution d'automatisations concrètes d'entreprise."
+/>
+

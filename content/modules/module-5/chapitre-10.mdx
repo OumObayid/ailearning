@@ -1,0 +1,124 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 10 — Sécurité des flux, moindre privilège et Human-in-the-Loop
+
+### 1. Chiffrement et protection des credentials
+
+La sécurité d'un serveur d'automatisation repose avant tout sur l'étanchéité de ses secrets. Dans n8n, chaque mot de passe, clé d'API et jeton OAuth2 est chiffré au repos dans la base de données interne.
+
+#### La clé maîtresse : `N8N_ENCRYPTION_KEY`
+Lors de la première installation, n8n génère une clé de chiffrement aléatoire. Dans un environnement professionnel, vous devez impérativement :
+1. Définir explicitement cette variable dans votre fichier d'environnement ou orchestrateur de conteneurs :
+   ```bash
+   N8N_ENCRYPTION_KEY="f8a7e4b2c1d9e3f5a0b7c4d2e1f9a8b6"
+   ```
+2. Sauvegarder cette clé dans un gestionnaire sécurisé (Vault, AWS Secrets Manager, 1Password).
+3. **Ne jamais perdre cette clé** : sans elle, aucune sauvegarde de base de données ne pourra déchiffrer vos comptes et intégrations.
+
+---
+
+### 2. Application stricte du moindre privilège sur MySQL
+
+Ne connectez **JAMAIS** n8n à votre base MySQL avec le compte `root` ou un utilisateur disposant des privilèges d'administration totale (`ALL PRIVILEGES`).
+
+Créez systématiquement un utilisateur de base de données dédié doté des droits strictement nécessaires aux tables du service :
+
+<CodeBlock
+  language="sql"
+  title="Création d'un utilisateur MySQL au privilège restreint pour n8n"
+  code={`-- Créer un utilisateur réseau dédié
+CREATE USER 'n8n_worker'@'%' IDENTIFIED BY 'StrongP@ssw0rd_n8n_2026!';
+
+-- Accorder uniquement les droits de lecture, insertion et mise à jour sur les tickets
+GRANT SELECT, INSERT, UPDATE ON learning_db.support_tickets TO 'n8n_worker'@'%';
+
+-- Interdire formellement les opérations structurelles et destructrices
+-- (Pas de DROP, ALTER, TRUNCATE, ni DELETE)
+FLUSH PRIVILEGES;`}
+/>
+
+---
+
+### 3. Confidentialité des données transmises à Gemini (Anonymisation PII)
+
+Avant d'envoyer le message d'un utilisateur à un grand modèle de langage externe tel que Google Gemini, la conformité RGPD exige de purger les **Données Personnelles Identifiables (PII)** :
+- Numéros de cartes bancaires
+- Numéros de sécurité sociale
+- Mots de passe accidentellement collés par l'utilisateur
+
+Insérez un nœud **Code** de filtrage en amont de Gemini pour assainir le texte :
+
+<CodeBlock
+  language="javascript"
+  title="Nœud Code : Masquage des données sensibles avant appel IA"
+  code={`const raw = $input.item.json.rawMessage || '';
+
+// Masquer les numéros de cartes de crédit (16 chiffres)
+const sanitized = raw
+  .replace(/\\b(?:\\d[ -]*?){13,16}\\b/g, '[CARTE_BANCAIRE_MASQUÉE]')
+  // Masquer les numéros de sécurité sociale français
+  .replace(/\\b[12][0-9]{2}(0[1-9]|1[0-2])[0-9]{2}[0-9]{3}[0-9]{3}[0-9]{2}\\b/g, '[SECU_MASQUÉE]')
+  // Masquer les adresses email contenues dans le corps du texte
+  .replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9._-]+)/gi, '[EMAIL_MASQUÉ]');
+
+return {
+  json: {
+    ...$input.item.json,
+    sanitizedMessage: sanitized
+  }
+};`}
+/>
+
+---
+
+### 4. Validation humaine obligatoire (Human-in-the-Loop)
+
+L'automatisation ne doit jamais exécuter d'actions irréversibles ou à fort impact financier sans supervision humaine préalable. On parle de patron de conception **Human-in-the-Loop (HITL)**.
+
+Exemples d'actions exigeant une validation humaine :
+- Remboursement d'un montant supérieur à 100 €.
+- Suppression définitive d'un compte utilisateur.
+- Envoi d'une communication officielle à l'ensemble des clients.
+
+<ArchitectureDiagram
+  title="Patron Human-in-the-Loop avec le nœud Wait n8n"
+  diagram={`[ REQUÊTE DE REMBOURSEMENT ]
+              |
+     [ ANALYSE GEMINI : Valide ]
+              |
+     (Montant > 100 € ?)
+          /         \\
+      (NON)         (OUI)
+        |             |
+ [ Virement auto ]  [ NŒUD WAIT (En attente d'approbation) ]
+                      |
+                      +---> Envoi d'un message Slack avec boutons [Approuver] / [Refuser]
+                      |
+           (L'administrateur clique)
+                      |
+            [ Reprise de l'exécution ]`}
+/>
+
+Le nœud **Wait** de n8n suspend l'exécution du workflow et génère un lien d'activation unique (*Webhook Resume*). Le workflow est mis en pause sans consommer de mémoire, et reprend instantanément dès que l'opérateur clique sur le bouton de confirmation.
+
+<HumanInTheLoopLab />
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Quel principe de sécurité fondamental est violé si vous connectez n8n à MySQL avec l'utilisateur 'root' ?"
+  options={[
+    "Le principe de localité temporelle",
+    "Le principe du moindre privilège (Least Privilege)",
+    "Le principe d'inversion des dépendances",
+    "Le protocole de transport TCP"
+  ]}
+  correctIndex={1}
+  explanation="Le principe du moindre privilège stipule qu'une application ne doit posséder que les autorisations strictement requises pour accomplir sa fonction (ex. SELECT/INSERT/UPDATE sur une seule table), empêchant tout dégât catastrophique en cas de compromission."
+/>
+

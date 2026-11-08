@@ -1,0 +1,183 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 5 — Boucle d'exécution d'un agent et sélection dynamique des outils
+
+### 1. Pourquoi une boucle itérative (Agent Loop) ?
+
+Un agent confronté à une tâche complexe ne peut pas toujours la résoudre en un seul appel de fonction.
+
+Prenons l'exemple suivant :
+> *« Consulte ma dernière facture impayée et envoie son récapitulatif par email à mon comptable. »*
+
+Pour mener à bien cette mission, l'agent doit :
+1. **Étape 1** : Appeler `get_unpaid_invoices()` pour retrouver le montant et la référence de la facture.
+2. **Étape 2** : Analyser les données renvoyées par le backend pour formuler le récapitulatif.
+3. **Étape 3** : Appeler `send_email({ to: "compta@...", subject: "...", body: "..." })` avec les données récupérées à l'étape 1.
+4. **Étape 4** : Recevoir la confirmation d'envoi et répondre enfin à l'utilisateur.
+
+C'est le rôle fondamental de l'**Agent Loop (Boucle de décision)** : alterner les phases de raisonnement du modèle et les phases d'exécution d'outils jusqu'à ce que l'objectif soit pleinement accompli.
+
+---
+
+### 2. Schéma décisionnel complet de la boucle
+
+<ArchitectureDiagram
+  title="Cycle itératif de l'Agent Loop"
+  diagram={`                OBJECTIF UTILISATEUR
+                         |
+                         v
+           [ ENVOI DU PROMPT À GEMINI ]
+                         |
+                         v
+           [ ANALYSE DES OUTPUTS DU MODÈLE ]
+                         |
+         +---------------+---------------+
+         |                               |
+(function_call détecté)          (texte final émis)
+         |                               |
+         v                               v
+[ VALIDATION ZOD DU TOOL ]          [ FIN DU FLUX ]
+         |                               |
+         v                               v
+[ EXÉCUTION SERVEUR DU CODE ]     [ RETOUR AU CLIENT ]
+         |
+         v
+[ FORMATION DE FUNCTION_RESULT ]
+         |
+         v
+[ RÉINJECTION DANS GEMINI VIA previous_interaction_id ]
+         |
+         +--------> Nouvelle itération`}
+/>
+
+---
+
+### 3. Implémentation complète avec l'Interactions API
+
+Voici l'implémentation industrielle d'une boucle d'agent avec limitation stricte du nombre de tours de boucle (`MAX_STEPS`) et suivi conversationnel via `previous_interaction_id` :
+
+<CodeBlock
+  language="typescript"
+  title="src/agent/agentLoop.ts — Boucle d'agent autonome avec Google Gemini"
+  code={`import { ai, GEMINI_MODEL } from '../config/gemini';
+import { agentTools } from '../tools/definitions';
+import { executeToolCall } from './executor';
+
+export interface AgentContext {
+  userId: number;
+  permissions: string[];
+}
+
+const MAX_STEPS = 6; // Garde-fou strict anti-boucle infinie
+
+export async function runAgentTask(
+  userGoal: string,
+  context: AgentContext
+): Promise<string> {
+  let stepCount = 0;
+
+  // 1. Première interaction avec Gemini
+  let interaction = await ai.interactions.create({
+    model: GEMINI_MODEL,
+    input: userGoal,
+    tools: agentTools,
+  });
+
+  while (stepCount < MAX_STEPS) {
+    stepCount++;
+    const outputs = interaction.outputs ?? [];
+
+    // Détection des demandes d'appels d'outils
+    const toolCalls = outputs.filter((out) => out.type === 'function_call');
+
+    // Condition d'arrêt : Si aucun outil n'est demandé, Gemini a produit la réponse finale
+    if (toolCalls.length === 0) {
+      const textOutput = outputs.find((out) => out.type === 'text');
+      return textOutput?.text || "Mission accomplie sans réponse textuelle explicite.";
+    }
+
+    // 2. Traitement et exécution de l'ensemble des outils demandés
+    const toolResults = [];
+
+    for (const call of toolCalls) {
+      console.log(\`[Agent Loop - Tour \${stepCount}] Exécution de l'outil '\${call.name}'\`);
+
+      const execution = await executeToolCall(call.name, call.arguments, context);
+
+      toolResults.push({
+        type: 'function_result' as const,
+        name: call.name,
+        call_id: call.id,
+        result: JSON.stringify(execution),
+      });
+    }
+
+    // 3. Réinjection des résultats dans Gemini en reliant l'interaction précédente
+    interaction = await ai.interactions.create({
+      model: GEMINI_MODEL,
+      previous_interaction_id: interaction.id,
+      input: toolResults,
+    });
+  }
+
+  throw new Error(\`Limite d'exécution atteinte (\${MAX_STEPS} étapes). Arrêt préventif de l'agent.\`);
+}`}
+/>
+
+<Callout type="info" title="Le rôle clé de previous_interaction_id">
+Le paramètre <code>previous_interaction_id</code> permet à Google Gemini de rattacher le résultat de la fonction à la conversation précédente sans avoir à retransmettre tout l&apos;historique des échanges. Le modèle sait exactement quel outil il avait sollicité et contextualise instantanément le résultat.
+</Callout>
+
+---
+
+### 4. Sélection dynamique selon l'intention vs Contrôle d'autorisation strict
+
+Il est impératif de bien distinguer **sélection** et **autorisation** :
+- **La sélection dynamique** est le choix opéré par l'IA parmi les descriptions des outils mis à sa disposition.
+- **L'autorisation** est la validation informatique effectuée par votre serveur Node.js.
+
+Si un prompt malveillant (*jailbreak*) amène Gemini à demander l'exécution de `delete_all_users()`, le serveur doit rejeter immédiatement l'appel même si l'IA l'a expressément sollicité.
+
+---
+
+### 5. Filtrage des outils selon les rôles utilisateur (RBAC)
+
+Pour optimiser les performances et la sécurité, ne transmettez au modèle que les outils compatibles avec le rôle du demandeur :
+
+<CodeBlock
+  language="typescript"
+  title="src/tools/filterTools.ts — Filtrage des outils par rôle"
+  code={`export function getToolsForUser(role: 'customer' | 'support_agent' | 'admin') {
+  const baseTools = ['get_product', 'search_documentation', 'get_own_profile'];
+
+  if (role === 'support_agent') {
+    return [...baseTools, 'search_customer_orders', 'add_ticket_note'];
+  }
+
+  if (role === 'admin') {
+    return [...baseTools, 'search_customer_orders', 'update_order_status', 'refund_transaction'];
+  }
+
+  return baseTools;
+}`}
+/>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Que se passe-t-il si un agent IA entre dans une boucle où le modèle sollicite indéfiniment le même outil sans parvenir à formuler sa réponse finale ?"
+  options={[
+    "Le serveur explose physiquement à cause de la surchauffe",
+    "La variable MAX_STEPS interrompt le cycle avec une exception pour éviter une surconsommation incontrôlée de tokens et de temps CPU",
+    "Le modèle de langage redémarre l'ordinateur de l'utilisateur",
+    "L'outil Zod convertit automatiquement le résultat en chaîne vide"
+  ]}
+  correctIndex={1}
+  explanation="L'instauration d'un compteur MAX_STEPS (généralement 5 à 10 tours) constitue une sécurité essentielle de tout agent pour empêcher les boucles infinies et les coûts d'API imprévus."
+/>
+

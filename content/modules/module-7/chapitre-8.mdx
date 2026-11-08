@@ -1,0 +1,138 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 8 — Tests unitaires avec Vitest et isolation des appels IA
+
+### 1. Pourquoi et comment tester une application d'IA non déterministe ?
+
+Tester une application intégrant un modèle de langage présente une dualité fondamentale :
+1. **La partie déterministe** : Vos middlewares d'authentification, vos validateurs Zod, vos calculs de prix et vos requêtes SQL s'exécutent de façon binaire et prévisible.
+2. **La partie non déterministe** : La génération textuelle de Gemini varie selon les paramètres de température, l'échantillonnage et les mises à jour du modèle.
+
+**Principe fondamental** : Vos tests unitaires doivent tester **votre code d'infrastructure**, et non la créativité du modèle. Vous devez être capable d'exécuter l'intégralité de votre suite de tests dans votre pipeline CI/CD en quelques secondes, **sans clé d'API et sans dépenser un seul centime**.
+
+---
+
+### 2. Configuration de Vitest dans un projet TypeScript moderne
+
+**Vitest** est le framework de test de référence pour l'écosystème Node.js / Vite / TypeScript moderne :
+
+<CodeBlock
+  language="bash"
+  title="Installation de Vitest"
+  code={`npm install -D vitest`}
+/>
+
+Ajoutez les scripts dans votre fichier `package.json` :
+
+<CodeBlock
+  language="json"
+  title="package.json — Scripts de test"
+  code={`{
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run"
+  }
+}`}
+/>
+
+---
+
+### 3. Écriture de tests unitaires sur la validation et les utilitaires
+
+Voici un exemple de suite de tests vérifiant la fonction d'assainissement de prompt :
+
+<CodeBlock
+  language="typescript"
+  title="tests/promptValidator.test.ts — Suite de tests unitaires purs"
+  code={`import { describe, it, expect } from 'vitest';
+import { userPromptSchema } from '../src/schemas/promptInput.schema';
+
+describe('Validation des entrées utilisateur (userPromptSchema)', () => {
+  it('valide un prompt sain et applique la température par défaut', () => {
+    const result = userPromptSchema.safeParse({ prompt: "Explique l'algorithme RAG" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.temperature).toBe(0.2);
+    }
+  });
+
+  it('rejette formellement une chaîne vide ou composée uniquement d espaces', () => {
+    const result = userPromptSchema.safeParse({ prompt: '   ' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejette les prompts dépassant le plafond maximal de 4 000 caractères', () => {
+    const giantPrompt = 'a'.repeat(4001);
+    const result = userPromptSchema.safeParse({ prompt: giantPrompt });
+    expect(result.success).toBe(false);
+  });
+});`}
+/>
+
+---
+
+### 4. Isolation hermétique : Mocking des fournisseurs IA
+
+Pour tester vos services sans appeler les serveurs de Google, utilisez l'injection de dépendances via une interface abstraite :
+
+<CodeBlock
+  language="typescript"
+  title="src/services/aiService.ts — Abstraction du fournisseur d'IA"
+  code={`export interface AIProvider {
+  generateText(prompt: string): Promise<string>;
+}
+
+export class AssistantService {
+  constructor(private provider: AIProvider) {}
+
+  async askQuestion(question: string): Promise<{ answer: string; length: number }> {
+    if (!question.trim()) {
+      throw new Error("Question obligatoire.");
+    }
+    const answer = await this.provider.generateText(question);
+    return { answer, length: answer.length };
+  }
+}`}
+/>
+
+<CodeBlock
+  language="typescript"
+  title="tests/assistantService.test.ts — Test avec un Fake Provider mocké"
+  code={`import { describe, it, expect } from 'vitest';
+import { AssistantService, AIProvider } from '../src/services/aiService';
+
+describe('AssistantService avec Mocking', () => {
+  it('traite correctement la réponse générée sans appel réseau', async () => {
+    // Fournisseur factice prédictible
+    const fakeGemini: AIProvider = {
+      generateText: async (prompt: string) => "Ceci est une réponse simulée ultra-rapide.",
+    };
+
+    const service = new AssistantService(fakeGemini);
+    const result = await service.askQuestion("Qu'est-ce qu'une API ?");
+
+    expect(result.answer).toContain("réponse simulée");
+    expect(result.length).toBeGreaterThan(10);
+  });
+});`}
+/>
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi isole-t-on le SDK Google Gemini avec un faux fournisseur (Mock) lors de l'exécution des tests unitaires en CI/CD ?"
+  options={[
+    "Pour accélérer les tests, supprimer les coûts d'API et garantir des résultats 100 % reproductibles sans dépendance au réseau",
+    "Parce que Vitest ne sait pas interpréter le code TypeScript",
+    "Car les serveurs Google bloquent les adresses IP françaises le week-end",
+    "Pour augmenter le score SEO du site web"
+  ]}
+  correctIndex={0}
+  explanation="Les tests unitaires doivent être ultra-rapides, déterministes et autonomes. Utiliser un mock permet de valider toute la logique métier sans dépendre de la disponibilité du réseau ni consommer de quotas payants."
+/>
+

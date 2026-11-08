@@ -1,0 +1,106 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 1 — Pourquoi avons-nous besoin du RAG ?
+
+### 1. Les limites d'un modèle d'IA classique
+
+Un modèle de langage comme **Google Gemini** possède d'immenses connaissances issues de son entraînement sur des millions de textes publics.
+
+Cependant, il ignore par définition :
+- Les documents confidentiels de votre entreprise (contrats, politiques RH, tarifs).
+- Les données personnelles et privées de vos utilisateurs.
+- Les procédures et guides techniques internes récemment rédigés.
+- Les données transactionnelles stockées dans vos bases de données opérationnelles.
+
+Imaginons une entreprise dont un collaborateur demande :
+> « Quel est le délai exact pour demander un remboursement selon nos conditions générales ? »
+
+Gemini ne peut pas inventer cette règle métier propre à votre société. Sans accès à vos documents, il risque de produire une réponse générique approximative, voire d'halluciner un faux délai.
+
+---
+
+### 2. Définition du RAG (Retrieval-Augmented Generation)
+
+Le **RAG** (Génération Augmentée par Récupération d'Informations) est une architecture logicielle associant deux phases complémentaires :
+
+1. **La Récupération (*Retrieval*)** : Le système recherche dynamiquement dans votre base de connaissances les extraits de documents les plus pertinents par rapport à la question posée.
+2. **La Génération Augmentée (*Generation*)** : Le système injecte ces extraits comme contexte factuel dans le prompt transmis à Google Gemini, en lui ordonnant de formuler sa réponse **exclusivement à partir de ces sources fiables**.
+
+<ArchitectureDiagram
+  title="Fonctionnement cyclique du RAG : De la question utilisateur à la réponse sourcée"
+  diagram={`QUESTION DE L'UTILISATEUR
+          |
+          v
+[ 1. VECTORISATION & RECHERCHE ] ------> Interroge la base vectorielle Qdrant
+          |
+          v
+[ 2. EXTRACTION DES PASSAGES ] --------> Récupère les fragments exacts depuis MySQL
+          |
+          v
+[ 3. ASSEMBLAGE DU PROMPT RAG ] -------> Contexte documentaire + Question + Règles strictes
+          |
+          v
+[ 4. APPEL GOOGLE GEMINI ] ------------> Synthèse factuelle ancrée sur les sources
+          |
+          v
+RÉPONSE PRÉCISE ACCOMPAGNÉE DES RÉFÉRENCES DOCUMENTAIRES`}
+/>
+
+---
+
+### 3. Différence entre génération classique et RAG
+
+| Critère | Génération classique (Zero-shot) | Génération avec RAG |
+| :--- | :--- | :--- |
+| **Source de savoir** | Paramètres figés du modèle LLM | Documents vivants de votre base de connaissances |
+| **Actualisation** | Nécessite un réentraînement lourd et coûteux | Immédiate : il suffit d'ajouter le document en base |
+| **Vérifiabilité** | Impossible de citer les sources exactes | Chaque affirmation cite le document et la page source |
+| **Risque d'hallucination** | Élevé sur des informations spécialisées | Drastiquement réduit grâce à l'ancrage strict |
+| **Confidentialité** | Les données sensibles doivent être masquées | Les documents restent confinés dans votre infrastructure |
+
+<Callout type="note" title="Le RAG ne modifie pas les poids du modèle">
+Le RAG ne réentraîne pas le modèle d'IA. Il lui fournit les bonnes informations au bon moment, sous la forme d'un contexte ciblé dans sa fenêtre de prompt.
+</Callout>
+
+---
+
+### 4. Les trois piliers fondamentaux d'un système RAG
+
+1. **Les Embeddings (Vecteurs sémantiques)** : Modèles spécialisés de Gemini transformant des blocs de texte en listes ordonnées de nombres reflétant leur signification conceptuelle.
+2. **La Base de données vectorielle (Qdrant)** : Moteur d'indexation ultra-rapide capable de comparer des millions de vecteurs pour identifier les plus proches en quelques millisecondes.
+3. **Le Modèle Génératif (Gemini 2.5 Flash)** : Modèle de raisonnement chargé d'articuler une réponse claire, polie et contextualisée à partir des extraits fournis.
+
+---
+
+<QuickQuiz
+  title="Auto-évaluation : Principes fondamentaux du RAG"
+  questions={[
+    {
+      id: 1,
+      question: "Pourquoi privilégie-t-on le RAG plutôt que le réentraînement (fine-tuning) pour intégrer des documents d'entreprise ?",
+      options: [
+        "Parce que le RAG est instantané, économique et permet de citer les sources exactes sans modifier le modèle",
+        "Parce que le fine-tuning est interdit par les lois européennes",
+        "Parce que le RAG fonctionne sans connexion Internet",
+        "Parce que le fine-tuning supprime la langue française du modèle"
+      ],
+      correctIndex: 0,
+      explanation: "Le RAG permet de mettre à jour instantanément la base de connaissances sans le coût financier et temporel astronomique d'un réentraînement."
+    },
+    {
+      id: 2,
+      question: "Quelle est la mission première de la phase de 'Retrieval' ?",
+      options: [
+        "Traduire le document en code binaire",
+        "Identifier et extraire les passages documentaires les plus proches sémantiquement de la question posée",
+        "Générer une image descriptive",
+        "Supprimer les doublons dans MySQL"
+      ],
+      correctIndex: 1,
+      explanation: "La phase de récupération recherche les fragments pertinents pour constituer le contexte de vérité transmis au modèle génératif."
+    }
+  ]}
+/>
+

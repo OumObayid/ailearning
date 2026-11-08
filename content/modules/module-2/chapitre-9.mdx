@@ -1,0 +1,205 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 9 — Performance frontend et optimisation
+
+### 1. Les enjeux de performance dans une application IA
+
+Les applications enrichies par l'IA manipulent des données plus volumineuses et plus imprévisibles que les applications CRUD classiques :
+- Les flux de streaming déclenchent des dizaines de rafraîchissements de composants par seconde.
+- Les historiques de messages peuvent s'accumuler et alourdir le DOM.
+- Les clics frénétiques des utilisateurs peuvent engendrer des surcoûts d'API et des états de concurrence indésirables (*race conditions*).
+
+Optimiser le frontend permet de préserver la fluidité de l'interface et de maîtriser les coûts de consommation de Google Gemini.
+
+---
+
+### 2. Annuler une requête avec AbortController
+
+Lorsqu'un utilisateur quitte une page, ferme une modale ou clique sur un bouton d'arrêt, la requête HTTP en cours doit être annulée immédiatement pour libérer les ressources réseau :
+
+```typescript
+// src/services/ai-cancellable.service.ts
+let currentController: AbortController | null = null;
+
+export async function generateWithCancel(prompt: string): Promise<string> {
+  // 1. Annulation de la requête précédente si elle était encore en cours
+  if (currentController) {
+    currentController.abort();
+  }
+
+  // 2. Instanciation d'un nouveau contrôleur
+  currentController = new AbortController();
+
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+      signal: currentController.signal, // Liaison du signal d'interruption
+    });
+
+    if (!response.ok) throw new Error('Échec de la génération');
+    const data = await response.json();
+    return data.result;
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.log('Requête annulée par l’utilisateur.');
+      return '';
+    }
+    throw error;
+  } finally {
+    currentController = null;
+  }
+}
+```
+
+---
+
+### 3. Empêcher les doubles soumissions
+
+La méthode la plus directe et efficace consiste à verrouiller l'état du formulaire dès le déclenchement de la requête :
+
+```tsx
+<button
+  type="submit"
+  disabled={isLoading || !input.trim()}
+  className="disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {isLoading ? 'Calcul en cours...' : 'Générer'}
+</button>
+```
+
+---
+
+### 4. Le mécanisme du Debounce pour la recherche assistée
+
+Le **debouncing** retarde l'envoi d'une requête jusqu'à ce que l'utilisateur ait cessé de taper pendant une durée déterminée (ex. 400 ms).
+
+```typescript
+// src/hooks/useDebounce.ts
+import { useState, useEffect } from 'react';
+
+export function useDebounce<T>(value: T, delayMs: number = 400): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delayMs);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delayMs]);
+
+  return debouncedValue;
+}
+```
+
+#### Cas d'application recommandés :
+- Recherche sémantique en direct.
+- Suggestions automatiques de prompts.
+- Correction grammaticale ou résumé dynamique à la volée.
+
+---
+
+### Atelier interactif : Debounce, économie d'appels API et AbortController
+
+Expérimentez ci-dessous la réduction drastique du nombre d'appels réseau par rapport aux frappes clavier, et testez l'interruption immédiate d'une requête en vol :
+
+<DebounceAbortLab />
+
+---
+
+### 5. Gérer les conversations à fort volume
+
+Pour des fils de discussion comportant des centaines d'échanges :
+1. **Virtualisation du DOM** : Utiliser `@tanstack/react-virtual` pour n'afficher que les bulles visibles à l'écran.
+2. **Fenêtre de contexte glissante** : Côté client et serveur, ne transmettre que les **10 à 20 derniers messages** pour préserver la fenêtre de contexte de Gemini et réduire la facture en tokens.
+3. **Mémorisation avec React.memo** : Envelopper le composant `<Message />` dans `React.memo` pour éviter qu'une ancienne bulle ne soit recalculée à chaque nouveau caractère streamé.
+
+---
+
+<PracticalWork
+  title="Travail Pratique 9 — Optimisation de performance, Debounce et Annulation"
+  objective="Mettre en œuvre AbortController pour couper les requêtes orphelines et concevoir un hook useDebounce pour diviser par 5 le nombre d'appels API."
+  duration="45 minutes"
+  steps={[
+    "Développer le hook personnalisé `src/hooks/useDebounce.ts` prenant une valeur générique `T` et un délai en millisecondes (ex. 500 ms).",
+    "Appliquer ce hook sur un champ de recherche intelligente assistée par IA : l'utilisateur tape un mot-clé et la requête vers Gemini ne se déclenche que lorsqu'il cesse de taper pendant au moins 500 ms.",
+    "Intégrer `AbortController` dans le gestionnaire d'envoi : instancier `const controller = new AbortController()`, passer `signal: controller.signal` dans l'appel `fetch()`, et stocker la référence dans un `useRef`.",
+    "Ajouter un bouton 'Annuler la recherche' appelant `abortControllerRef.current?.abort()`.",
+    "Intercepter spécifiquement l'exception `err.name === 'AbortError'` dans le bloc `catch` pour réinitialiser discrètement l'état sans afficher de message d'erreur rouge alarmiste.",
+    "Envelopper le composant de bulle de message dans `React.memo` et vérifier dans le profiler React que les anciens messages ne sont pas ré-exécutés lors du streaming."
+  ]}
+  validationCriteria={[
+    "L'appui sur 'Annuler' coupe immédiatement la connexion HTTP dans l'onglet Network des DevTools (statut 'canceled').",
+    "Aucun appel réseau superflu n'est envoyé lors d'une frappe rapide au clavier.",
+    "Le profiler React confirme la suppression des rendus parasites sur les composants mémorisés."
+  ]}
+>
+
+#### Implémentation du hook useDebounce et de la requête annulable :
+```tsx
+import { useState, useEffect, useRef } from 'react';
+
+export function useDebounce<T>(value: T, delay: number = 500): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Exemple de requête annulable dans un composant :
+export const SearchWithAbort = () => {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 500);
+  const [loading, setLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (!debouncedQuery.trim()) return;
+
+    // Annule la requête précédente si elle est encore en cours
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
+    setLoading(true);
+    fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}`, {
+      signal: abortRef.current.signal,
+    })
+      .then((res) => res.json())
+      .then((data) => console.log('Résultats :', data))
+      .catch((err) => {
+        if (err.name === 'AbortError') {
+          console.log('Requête annulée volontairement.');
+        } else {
+          console.error('Erreur réseau :', err);
+        }
+      })
+      .finally(() => setLoading(false));
+
+    return () => abortRef.current?.abort();
+  }, [debouncedQuery]);
+
+  return (
+    <div className="p-4 border rounded-xl">
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Recherche intelligente..."
+        className="p-2 border rounded"
+      />
+      {loading && <span className="ml-2 text-sm text-indigo-600">Recherche...</span>}
+    </div>
+  );
+};
+```
+</PracticalWork>
+

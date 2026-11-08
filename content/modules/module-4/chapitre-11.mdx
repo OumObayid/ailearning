@@ -1,0 +1,217 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 11 — Construire l'API REST RAG avec Express
+
+### 1. Spécification des points d'accès RAG
+
+Pour proposer un service documentaire complet à nos applications clientes, l'API Express expose les routes suivantes :
+
+```text
+POST   /api/documents/upload   --> Téléversement et indexation automatique d'un PDF
+GET    /api/documents          --> Liste des documents et statuts d'indexation
+DELETE /api/documents/:id      --> Suppression synchronisée MySQL et Qdrant
+POST   /api/rag/ask            --> Question-réponse sémantique avec citations
+```
+
+---
+
+### 2. Schéma de validation Zod de la question
+
+Dans `src/schemas/rag.schema.ts` :
+
+```typescript
+// src/schemas/rag.schema.ts
+import { z } from 'zod';
+
+export const ragQuestionSchema = z.object({
+  question: z
+    .string({ required_error: 'La question est obligatoire.' })
+    .trim()
+    .min(3, 'La question doit contenir au minimum 3 caractères.')
+    .max(2000, 'La question ne peut excéder 2000 caractères.'),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(5),
+});
+
+export type RagQuestionInput = z.infer<typeof ragQuestionSchema>;
+```
+
+---
+
+### 3. Service d'orchestration RAG complet
+
+Dans `src/services/rag-orchestrator.service.ts`, nous assemblons les briques logicielles :
+
+```typescript
+// src/services/rag-orchestrator.service.ts
+import { generateEmbedding } from './embedding.service.js';
+import { searchSimilarChunks } from './qdrant.service.js';
+import { getChunksByIds, type RetrievedChunk } from './document.service.js';
+import { buildRAGContext } from './context.service.js';
+import { generateRAGAnswer } from './rag-generation.service.js';
+
+export interface RAGResponse {
+  answer: string;
+  sources: { id: number; title: string; score?: number }[];
+}
+
+export async function askRAG(
+  question: string,
+  userId: number,
+  limit: number = 5
+): Promise<RAGResponse> {
+  // 1. Vectorisation de la question de l'utilisateur
+  const queryVector = await generateEmbedding(question);
+
+  // 2. Recherche des plus proches voisins dans Qdrant filtrée par utilisateur
+  const searchResults = await searchSimilarChunks(queryVector, userId, limit);
+
+  // Cas où aucun document pertinent n'atteint le seuil minimal
+  if (searchResults.length === 0) {
+    return {
+      answer: "Désolé, je ne trouve aucune information correspondante dans vos documents.",
+      sources: [],
+    };
+  }
+
+  // 3. Extraction des identifiants de chunks
+  const chunkIds = searchResults.map((r) => r.payload.chunkId);
+
+  // 4. Récupération sécurisée du texte intégral dans MySQL
+  const chunks: RetrievedChunk[] = await getChunksByIds(chunkIds, userId);
+
+  // 5. Construction du contexte structuré
+  const contextText = buildRAGContext(chunks);
+
+  // 6. Génération de la réponse finale par Gemini
+  const answer = await generateRAGAnswer(question, contextText);
+
+  return {
+    answer,
+    sources: chunks.map((c) => ({ id: c.id, title: c.title })),
+  };
+}
+```
+
+---
+
+### 4. Contrôleur et route Express
+
+Dans `src/controllers/rag.controller.ts` :
+
+```typescript
+// src/controllers/rag.controller.ts
+import type { RequestHandler } from 'express';
+import { askRAG } from '../services/rag-orchestrator.service.js';
+
+export const askRAGController: RequestHandler = async (req, res, next) => {
+  try {
+    const { question, limit } = req.body;
+
+    // En environnement de production, l'ID utilisateur provient du jeton JWT
+    const userId = (req as any).user?.id || 1;
+
+    const result = await askRAG(question, userId, limit);
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+```
+
+Puis dans `src/routes/rag.routes.ts` :
+
+```typescript
+// src/routes/rag.routes.ts
+import { Router } from 'express';
+import { askRAGController } from '../controllers/rag.controller.js';
+import { validateBody } from '../middlewares/validate.middleware.js';
+import { ragQuestionSchema } from '../schemas/rag.schema.js';
+
+const router = Router();
+
+router.post('/ask', validateBody(ragQuestionSchema), askRAGController);
+
+export default router;
+```
+
+---
+
+### 5. Test d'exécution dans Postman
+
+```bash
+POST http://localhost:3000/api/rag/ask
+Content-Type: application/json
+
+{
+  "question": "Quel est le délai de livraison prévu pour un article standard ?",
+  "limit": 3
+}
+```
+
+Réponse JSON :
+
+```json
+{
+  "success": true,
+  "data": {
+    "answer": "Selon le guide de livraison (Source 1), la livraison standard prend entre 48 et 72 heures ouvrées.",
+    "sources": [
+      {
+        "id": 14,
+        "title": "guide-livraison.pdf"
+      }
+    ]
+  }
+}
+```
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Endpoint complet de questions-réponses RAG ancrées"
+  objective="Développer l'API REST de questions-réponses RAG (POST /api/rag/ask), orchestrer la vectorisation, l'interrogation Qdrant, la jointure MySQL et la génération ancrée."
+  duration="45 minutes"
+  steps={[
+    "Créer `src/schemas/rag.schema.ts` validant `question` (entre 3 et 1 000 caractères) et `limit` (optionnel, entre 1 et 10, valeur par défaut 4).",
+    "Développer le service orchestrateur `src/services/rag-orchestrator.service.ts` réalisant les 4 étapes : 1) vectorisation de la question, 2) recherche Qdrant des IDs de chunks, 3) extraction SQL du texte et titre depuis MySQL, 4) prompt d'ancrage et complétion Gemini.",
+    "Créer le contrôleur `src/controllers/rag.controller.ts` et la route `POST /api/rag/ask` avec le middleware `validateBody(ragQuestionSchema)`.",
+    "Enregistrer la route dans `src/app.ts` sous le préfixe `/api/rag`.",
+    "Tester le scénario avec une question documentée : vérifier que la réponse contient la réponse textuelle et le tableau `sources: [{ id, title }]`.",
+    "Tester le scénario avec une question absente de la base documentaire : vérifier que Gemini répond par l'aveu d'incertitude sans inventer d'information et avec `sources: []`."
+  ]}
+  validationCriteria={[
+    "La réponse JSON est parfaitement structurée `{ success: true, data: { answer, sources } }`.",
+    "Chaque affirmation de la réponse peut être rattachée à l'un des documents cités en source.",
+    "Les questions hors-contexte déclenchent la clause de repli 'Je ne dispose pas de cette information'."
+  ]}
+>
+
+#### Schéma Zod et contrat d'API pour le RAG :
+```typescript
+// src/schemas/rag.schema.ts
+import { z } from 'zod';
+
+export const ragQuestionSchema = z.object({
+  question: z
+    .string()
+    .min(3, 'La question doit comporter au moins 3 caractères.')
+    .max(1000, 'La question ne peut excéder 1 000 caractères.')
+    .trim(),
+  limit: z.number().int().min(1).max(10).default(4),
+});
+
+export type RAGQuestionInput = z.infer<typeof ragQuestionSchema>;
+```
+</PracticalWork>
+

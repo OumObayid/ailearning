@@ -1,0 +1,145 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 9 — Catalogue d'outils typés et boucle d'agent avec Tool Calling
+
+### 1. Définition du catalogue d'outils de la plateforme
+
+Notre plateforme dote son assistant d'un trousseau d'outils métier déclarés auprès de Google Gemini :
+
+| Outil (*Tool Name*) | Description fonctionnelle | Paramètres attendus (Zod) |
+| :--- | :--- | :--- |
+| `search_documents` | Recherche sémantique dans les documents autorisés via Qdrant | `{ query: string, maxResults?: number }` |
+| `get_document_metadata` | Consultation du statut, date d'indexation et auteur d'un fichier | `{ documentId: number }` |
+| `generate_summary_report` | Préparation d'une synthèse au format Markdown structuré | `{ topic: string, documentIds: number[] }` |
+| `trigger_n8n_workflow` | Déclenchement d'un workflow d'automatisation externe | `{ workflowName: string, payload: object }` |
+
+---
+
+### 2. Implémentation du Function Calling avec l'Interactions API
+
+La déclaration des outils auprès de Gemini utilise la syntaxe standard de l'Interactions API :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/agents/tools/platformTools.ts — Manifeste des outils"
+  code={`export const platformToolDefinitions = [
+  {
+    type: 'function' as const,
+    name: 'search_documents',
+    description: "Recherche des extraits pertinents dans la base documentaire de l'entreprise.",
+    parameters: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: "La requête textuelle décrivant le besoin d'information précis.",
+        },
+        maxResults: {
+          type: 'integer',
+          description: "Nombre maximum de fragments à retourner (1 à 6).",
+        },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    type: 'function' as const,
+    name: 'generate_summary_report',
+    description: "Compile un rapport de synthèse à partir d'une liste d'identifiants de documents.",
+    parameters: {
+      type: 'object',
+      properties: {
+        topic: { type: 'string', description: "Le sujet du rapport." },
+        documentIds: {
+          type: 'array',
+          items: { type: 'integer' },
+          description: "Liste des identifiants des documents à synthétiser.",
+        },
+      },
+      required: ['topic', 'documentIds'],
+    },
+  },
+];`}
+/>
+
+---
+
+### 3. Boucle décisionnelle itérative (Agent Loop) et limitation MAX_STEPS
+
+Voici le moteur de boucle autonome qui gère la sélection dynamique, la validation des types avec Zod et l'exécution sécurisée :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/agents/platformAgentLoop.ts — Boucle décisionnelle"
+  code={`import { ai, DEFAULT_GEMINI_MODEL } from '../../config/gemini';
+import { platformToolDefinitions } from './tools/platformTools';
+import { executePlatformTool } from './tools/dispatcher';
+
+const MAX_STEPS = 6;
+
+export async function runPlatformAgent(userGoal: string, userId: number): Promise<string> {
+  let steps = 0;
+
+  // 1. Amorce de la discussion avec les outils
+  let interaction = await ai.interactions.create({
+    model: DEFAULT_GEMINI_MODEL,
+    input: userGoal,
+    tools: platformToolDefinitions,
+  });
+
+  while (steps < MAX_STEPS) {
+    steps++;
+    const outputs = interaction.outputs ?? [];
+    const toolCalls = outputs.filter((o) => o.type === 'function_call');
+
+    // Si aucun outil n'est demandé, Gemini formule sa réponse finale
+    if (toolCalls.length === 0) {
+      const textOutput = outputs.find((o) => o.type === 'text');
+      return textOutput?.text || "Tâche accomplie.";
+    }
+
+    // 2. Exécution des outils demandés
+    const toolResults = [];
+    for (const call of toolCalls) {
+      console.log(\`[Agent Step \${steps}] Exécution outil : \${call.name}\`);
+      const result = await executePlatformTool(call.name, call.arguments, userId);
+
+      toolResults.push({
+        type: 'function_result' as const,
+        name: call.name,
+        call_id: call.id,
+        result: JSON.stringify(result),
+      });
+    }
+
+    // 3. Réinjection des résultats en conservant le fil conversationnel
+    interaction = await ai.interactions.create({
+      model: DEFAULT_GEMINI_MODEL,
+      previous_interaction_id: interaction.id,
+      input: toolResults,
+    });
+  }
+
+  throw new Error("L'agent a atteint le nombre maximal d'itérations autorisées sans converger.");
+}`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Que fait le dispatcher d'outils côté serveur lorsqu'il reçoit un appel 'function_call' émis par Google Gemini ?"
+  options={[
+    "Il exécute immédiatement le code sans vérifier les arguments",
+    "Il valide les arguments avec un schéma Zod, vérifie les autorisations de l'utilisateur connecté, et exécute la fonction TypeScript correspondante de manière sécurisée",
+    "Il renvoie une erreur 500 au navigateur",
+    "Il convertit le résultat en fichier MP3"
+  ]}
+  correctIndex={1}
+  explanation="Le dispatcher constitue la barrière d'étanchéité : il vérifie la validité des paramètres avec Zod, s'assure que l'utilisateur détient la permission requise et capture les exceptions potentielles pour ne jamais corrompre le serveur."
+/>
+

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 480" width="100%" height="100%" style="background:#ffffff; font-family: Inter, system-ui, sans-serif;">
+  <defs>
+    <filter id="cardShadow2" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="425" y="34" text-anchor="middle" font-size="18" font-weight="900" fill="#0f172a">Analyse Comparative des Stratégies de Rate Limiting pour l'IA</text>
+  <text x="425" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Comportement face aux rafales de requêtes, précision temporelle et complexité mémoire</text>
+
+  <!-- 4 Strategy Cards -->
+  <g transform="translate(30, 85)">
+    <!-- 1. Fixed Window -->
+    <g filter="url(#cardShadow2)">
+      <rect x="0" y="0" width="380" height="155" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="15" y="15" width="130" height="24" rx="6" fill="#f1f5f9" />
+      <text x="80" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#475569">1. FENÊTRE FIXE</text>
+      <text x="365" y="32" text-anchor="end" font-size="11" font-weight="800" fill="#64748b">O(1) Mémoire</text>
+
+      <text x="15" y="62" font-size="12" font-weight="700" fill="#1e293b">Principe : Compteur réinitialisé à chaque minute pile.</text>
+      <text x="15" y="82" font-size="11" font-weight="600" fill="#475569">Ex: 10 requêtes de 10:00:00 à 10:01:00.</text>
+
+      <rect x="15" y="100" width="350" height="40" rx="6" fill="#fff1f2" stroke="#fecdd3" />
+      <text x="25" y="117" font-size="11" font-weight="800" fill="#9f1239">⚠️ Faille de frontière (Boundary Burst) :</text>
+      <text x="25" y="132" font-size="10" font-weight="600" fill="#881337">Un client peut envoyer 10 req à 10:00:59 + 10 req à 10:01:01 (20 req en 2s).</text>
+    </g>
+
+    <!-- 2. Sliding Window Log / Counter -->
+    <g transform="translate(410, 0)" filter="url(#cardShadow2)">
+      <rect x="0" y="0" width="380" height="155" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="15" y="15" width="150" height="24" rx="6" fill="#e0e7ff" />
+      <text x="90" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#3730a3">2. FENÊTRE GLISSANTE</text>
+      <text x="365" y="32" text-anchor="end" font-size="11" font-weight="800" fill="#4f46e5">Précision Max</text>
+
+      <text x="15" y="62" font-size="12" font-weight="700" fill="#1e293b">Principe : Analyse les 60 secondes écoulées en continu.</text>
+      <text x="15" y="82" font-size="11" font-weight="600" fill="#475569">Lisse parfaitement le trafic et supprime l&apos;effet de frontière.</text>
+
+      <rect x="15" y="100" width="350" height="40" rx="6" fill="#ecfdf5" stroke="#a7f3d0" />
+      <text x="25" y="117" font-size="11" font-weight="800" fill="#065f46">✔ Idéal pour les quotas stricts :</text>
+      <text x="25" y="132" font-size="10" font-weight="600" fill="#047857">Empêche strictement tout dépassement de quota sur n&apos;importe quelle plage de 60s.</text>
+    </g>
+
+    <!-- 3. Token Bucket -->
+    <g transform="translate(0, 175)" filter="url(#cardShadow2)">
+      <rect x="0" y="0" width="380" height="155" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="15" y="15" width="150" height="24" rx="6" fill="#fef3c7" />
+      <text x="90" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#92400e">3. TOKEN BUCKET (Jetons)</text>
+      <text x="365" y="32" text-anchor="end" font-size="11" font-weight="800" fill="#d97706">Tolère les rafales</text>
+
+      <text x="15" y="62" font-size="12" font-weight="700" fill="#1e293b">Principe : Un seau de jetons rempli à débit régulier.</text>
+      <text x="15" y="82" font-size="11" font-weight="600" fill="#475569">Chaque appel consomme un jeton. Autorise de courtes rafales.</text>
+
+      <rect x="15" y="100" width="350" height="40" rx="6" fill="#fffbeb" stroke="#fde68a" />
+      <text x="25" y="117" font-size="11" font-weight="800" fill="#92400e">🌟 Standard des API Cloud d&apos;IA :</text>
+      <text x="25" y="132" font-size="10" font-weight="600" fill="#78350f">Permet à un utilisateur de soumettre 3 requêtes d&apos;affilée sans être bloqué.</text>
+    </g>
+
+    <!-- 4. Leaky Bucket -->
+    <g transform="translate(410, 175)" filter="url(#cardShadow2)">
+      <rect x="0" y="0" width="380" height="155" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="15" y="15" width="160" height="24" rx="6" fill="#f1f5f9" />
+      <text x="95" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#0f172a">4. LEAKY BUCKET (Seau percé)</text>
+      <text x="365" y="32" text-anchor="end" font-size="11" font-weight="800" fill="#475569">Débit constant</text>
+
+      <text x="15" y="62" font-size="12" font-weight="700" fill="#1e293b">Principe : File d&apos;attente FIFO évacuée à cadence fixe.</text>
+      <text x="15" y="82" font-size="11" font-weight="600" fill="#475569">Traite exactement 1 requête toutes les 2 secondes.</text>
+
+      <rect x="15" y="100" width="350" height="40" rx="6" fill="#f8fafc" stroke="#e2e8f0" />
+      <text x="25" y="117" font-size="11" font-weight="800" fill="#334155">🛡 Protection des modèles GPU :</text>
+      <text x="25" y="132" font-size="10" font-weight="600" fill="#475569">Garantit qu&apos;aucun pic soudain ne viendra écrouler le serveur d&apos;inférence local.</text>
+    </g>
+  </g>
+
+  <!-- Bottom Insight -->
+  <rect x="30" y="430" width="790" height="38" rx="8" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="425" y="454" text-anchor="middle" font-size="11" font-weight="800" fill="#1e293b">
+    Recommandation pour le Backend IA : Combinez Token Bucket (souplesse utilisateur) avec un Rate Limiter Redis distribué en Lua atomique.
+  </text>
+</svg>

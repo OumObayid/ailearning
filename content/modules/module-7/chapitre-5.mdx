@@ -1,0 +1,92 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 5 — Sécurisation des outils agentiques et application stricte du moindre privilège
+
+### 1. Principe du moindre privilège appliqué aux outils IA
+
+Dans une architecture agentique, un **outil (*Tool*)** confère au système la capacité d'interagir concrètement avec des bases de données, des disques durs ou des APIs tierces.
+
+Le **principe du moindre privilège (*Least Privilege*)** stipule qu'un composant logiciel ne doit disposer que des autorisations strictement indispensables à l'exercice de sa fonction :
+- Un agent conversationnel d'accueil ne doit avoir accès à aucun outil de suppression ou de modification.
+- Un outil de consultation des stocks ne doit pas détenir la permission de modifier le solde bancaire des clients.
+- Ne donnez jamais un accès "Super-Admin" ou un jeton racine à un agent IA.
+
+---
+
+### 2. Séparation hermétique entre outils de lecture et outils d'écriture
+
+Séparez physiquement vos fonctions en deux classes étanches :
+
+<ArchitectureDiagram
+  title="Séparation hermétique Lecture / Écriture des outils"
+  diagram={`                  CATALOGUE DES OUTILS DE L'AGENT
+                                 |
+         +-----------------------+-----------------------+
+         |                                               |
+         v                                               v
+[ 1. OUTILS DE LECTURE PASSIVE ]                [ 2. OUTILS DE MUTATION ACTIVE ]
+- searchDocumentation()                         - refundOrder()
+- getProductStock()                             - updateDeliveryAddress()
+- getInvoiceStatus()                            - cancelSubscription()
+         |                                               |
+(Accès libre selon rôle authentifié)             (Contrôle strict + Audit + Approbation)`}
+/>
+
+---
+
+### 3. Vérification d'autorisation côté serveur Node.js
+
+Le modèle de fondation peut proposer n'importe quel nom de fonction s'il a été trompé par une injection de prompt. **C'est toujours votre serveur Node.js qui contrôle si l'action est autorisée avant de l'exécuter** :
+
+<CodeBlock
+  language="typescript"
+  title="src/agent/secureToolDispatcher.ts — Contrôle d'accès souverain"
+  code={`export interface ExecutionContext {
+  userId: number;
+  role: 'user' | 'support' | 'admin';
+  permissions: string[];
+}
+
+export async function handleToolExecution(
+  toolName: string,
+  args: any,
+  context: ExecutionContext
+) {
+  // 1. Liste blanche stricte par rôle
+  const allowedToolsByRole: Record<string, string[]> = {
+    user: ['searchProducts', 'getOwnOrders'],
+    support: ['searchProducts', 'getOwnOrders', 'searchDocumentation', 'openSupportTicket'],
+    admin: ['searchProducts', 'getOwnOrders', 'searchDocumentation', 'openSupportTicket', 'refundOrder'],
+  };
+
+  const authorizedList = allowedToolsByRole[context.role] || [];
+
+  if (!authorizedList.includes(toolName)) {
+    console.warn(\`Tentative d'accès non autorisée à l'outil '\${toolName}' par l'utilisateur #\${context.userId}\`);
+    throw new Error(\`403 Forbidden : L'outil '\${toolName}' n'est pas autorisé pour votre profil.\`);
+  }
+
+  // 2. Exécution sécurisée de l'outil validé
+  return executeAuthorizedFunction(toolName, args, context);
+}`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Si un agent IA reçoit une instruction malveillante lui demandant d'appeler l'outil 'deleteDatabase', qui doit empêcher l'exécution de cet outil ?"
+  options={[
+    "Le modèle de fondation Gemini qui refusera automatiquement de formuler la demande",
+    "Le serveur backend Node.js qui vérifie l'absence de l'outil dans la liste blanche autorisée pour le rôle de l'utilisateur",
+    "L'antivirus installé sur le poste du client",
+    "Le fournisseur de câble sous-marin"
+  ]}
+  correctIndex={1}
+  explanation="Le modèle probabiliste peut être dupé par une injection. C'est obligatoirement le moteur applicatif souverain côté serveur qui applique le contrôle d'accès et rejette toute exécution non autorisée."
+/>
+

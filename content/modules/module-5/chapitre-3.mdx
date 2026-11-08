@@ -1,0 +1,141 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 3 — Nœuds de contrôle logique et transformations JavaScript
+
+### 1. Le nœud conditionnel IF
+
+Le nœud **IF** constitue la brique décisionnelle binaire élémentaire dans n8n. Il évalue une ou plusieurs conditions logiques sur les items reçus et sépare le flux en deux sorties distinctes :
+- **Sortie True** : Les items qui satisfont l'ensemble des critères (ou au moins un critère si l'opérateur est `OR`).
+- **Sortie False** : Les items qui ne remplissent pas les conditions spécifiées.
+
+<ArchitectureDiagram
+  title="Fonctionnement de l'aiguillage binaire avec le nœud IF"
+  diagram={`                    [ NŒUD PRÉCÉDENT ]
+                             |
+                      [ NŒUD IF (Test) ]
+                        /          \\
+         (Condition vérifiée)      (Condition non vérifiée)
+                      /              \\
+             [ Sortie TRUE ]    [ Sortie FALSE ]
+              (Alerte Slack)     (Archivage standard)`}
+/>
+
+<Callout type="tip" title="Typage strict dans les conditions">
+Veillez à bien configurer le type de comparateur dans l'inspecteur n8n (ex. `String is equal to`, `Number is greater than`, ou `Boolean is true`). Comparer la chaîne `"100"` avec le nombre `100` sans conversion de type peut entraîner des faux négatifs.
+</Callout>
+
+---
+
+### 2. Le nœud d'aiguillage Switch
+
+Lorsque le flux nécessite d'orienter les données vers plus de deux destinations en fonction d'une valeur (par exemple la catégorie attribuée par Google Gemini), l'utilisation du nœud **Switch** est infiniment plus lisible et performante qu'une cascade de nœuds IF imbriqués.
+
+Dans n8n, le nœud Switch permet de définir plusieurs règles de routage :
+
+| Règle / Branche | Condition d'activation | Action aval typique |
+| :--- | :--- | :--- |
+| **Branche 0** | `$json.category === 'billing'` | Envoi d'un duplicata de facture ou notification compta |
+| **Branche 1** | `$json.category === 'technical_incident'` | Escalade critique P1 sur Slack Astreinte |
+| **Branche 2** | `$json.category === 'feature_request'` | Création automatique d'une carte Jira / Linear |
+| **Branche Fallback** | Aucune condition remplie | File de modération manuelle |
+
+---
+
+### 3. Le nœud de synchronisation Merge
+
+Lorsque différentes branches d'un workflow s'exécutent en parallèle, le nœud **Merge** permet de les réunir ou de combiner leurs données avant de poursuivre l'exécution.
+
+n8n propose plusieurs modes d'opération pour le nœud Merge :
+1. **Append** : Concatène simplement les éléments de la branche 1 et de la branche 2 dans une liste unifiée.
+2. **Combine by Key (Join SQL)** : Fusionne les attributs de deux items partageant une clé commune (ex. `customerId` présent dans la source Webhook et dans la source MySQL).
+3. **Wait Both** : Bloque l'exécution jusqu'à ce que les deux branches asynchrones aient achevé leur tâche respective avant d'émettre le signal de continuation.
+
+---
+
+### 4. Le traitement itératif avec Loop Over Items
+
+Par défaut, n8n gère la répétition des actions pour chaque item du tableau en flux continu. Cependant, certains cas d'usage exigent un contrôle pas-à-pas :
+- Respecter une limite de taux d'appels API (*Rate Limiting* strict, ex. 5 requêtes par seconde max).
+- Traiter les enregistrements par sous-lots (*batching*) pour éviter d'épuiser la mémoire vive de l'instance.
+- Effectuer une pagination dynamique (*Fetch next page* tant qu'un curseur existe).
+
+Le nœud **Loop Over Items** découpe votre tableau en sous-ensembles (par exemple 10 par 10) et boucle sur la séquence jusqu'à épuisement complet de la liste.
+
+---
+
+### 5. Exécuter du code JavaScript sur-mesure avec le Code Node
+
+Lorsque les nœuds graphiques standard ne suffisent pas pour effectuer des calculs arithmétiques avancés, des expressions régulières complexes ou des restructurations de données, le nœud **Code** offre la pleine puissance du moteur JavaScript V8 de Node.js.
+
+Il propose deux modes d'exécution distincts :
+
+#### Mode 1 : Run Once for Each Item
+Le script s'exécute isolément pour chaque item. L'objet `$input.item` est directement accessible :
+
+<CodeBlock
+  language="javascript"
+  title="Code Node : Traitement élément par élément"
+  code={`// Nettoyer et formater un numéro de téléphone international
+const item = $input.item.json;
+const cleanPhone = (item.rawPhone || '').replace(/[^0-9+]/g, '');
+
+return {
+  json: {
+    ...item,
+    formattedPhone: cleanPhone,
+    isFrenchMobile: cleanPhone.startsWith('+336') || cleanPhone.startsWith('+337'),
+    processedAt: new Date().toISOString()
+  }
+};`}
+/>
+
+#### Mode 2 : Run Once for All Items
+Le script reçoit l'intégralité du tableau via `$input.all()`. C'est le mode privilégié pour dédupliquer, trier ou agréger des données :
+
+<CodeBlock
+  language="javascript"
+  title="Code Node : Agrégation et déduplication sur l'ensemble du lot"
+  code={`// Récupérer tous les items entrants
+const allItems = $input.all();
+
+// Calculer le montant total cumulé et regrouper par client
+let totalRevenue = 0;
+const uniqueCustomers = new Set();
+
+for (const entry of allItems) {
+  totalRevenue += Number(entry.json.amount || 0);
+  uniqueCustomers.add(entry.json.customerEmail);
+}
+
+// Renvoyer un unique item de synthèse consolidé
+return [
+  {
+    json: {
+      totalRevenue: Math.round(totalRevenue * 100) / 100,
+      totalOrders: allItems.length,
+      uniqueCustomerCount: uniqueCustomers.size,
+      generatedAt: new Date().toISOString()
+    }
+  }
+];`}
+/>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Dans quel cas précis devez-vous configurer le nœud Code en mode 'Run Once for All Items' au lieu de 'Run Once for Each Item' ?"
+  options={[
+    "Uniquement lorsqu'on souhaite envoyer un email au client",
+    "Quand vous devez effectuer une opération d'ensemble comme un tri global, une déduplication ou une agrégation statistique sur tout le lot",
+    "Pour pouvoir utiliser des variables d'environnement dans le code",
+    "Lorsque le workflow est déclenché par un Webhook HTTP"
+  ]}
+  correctIndex={1}
+  explanation="Le mode 'Run Once for All Items' injecte la totalité du tableau dans le script via $input.all(), permettant de calculer des moyennes, filtrer des doublons ou effectuer des opérations transversales sur l'ensemble du jeu de données."
+/>
+

@@ -1,0 +1,98 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 13 — Suivi des coûts, tokens et latence des appels Gemini
+
+### 1. Facteurs déterminants des coûts d'API
+
+Dans un environnement de production déployé auprès de milliers d'utilisateurs, la facture d'API de votre modèle de langage peut rapidement dériver si vous ne surveillez pas chaque token généré.
+
+La tarification de Google Gemini repose sur trois variables fondamentales :
+1. **Tokens d'entrée (*Prompt Tokens*)** : Chaque mot, espace, instruction système et fragment documentaire injecté dans le contexte.
+2. **Tokens de sortie (*Completion Tokens*)** : Chaque mot produit par le modèle (généralement facturé 3 à 4 fois plus cher par token que les tokens d'entrée).
+3. **Modalités multimédias** : L'ingestion d'images, de fichiers audio ou de vidéos consomme des forfaits de tokens calculés au prorata des pixels ou de la durée.
+
+<Callout type="warning" title="Abonnement Gemini Advanced vs Crédits API">
+Posséder un abonnement personnel Google One ou Gemini Advanced ne couvre en aucun cas les appels de l&apos;API développeur. Les requêtes applicatives émises avec <code>@google/genai</code> sont facturées à l&apos;usage sur votre compte Google Cloud Console.
+</Callout>
+
+---
+
+### 2. Mesure précise de la latence de traitement
+
+Pour repérer les ralentissements anormaux ou les dégradations réseau, chronométrez systématiquement l'exécution de vos appels d'inférence avec la fonction haute précision `performance.now()` :
+
+<CodeBlock
+  language="typescript"
+  title="src/metrics/latencyTracker.ts — Mesure de la durée d'inférence"
+  code={`import { performance } from 'perf_hooks';
+import { ai, GEMINI_MODEL } from '../config/gemini';
+
+export async function executeAndMeasureGeminiCall(prompt: string) {
+  const startTime = performance.now();
+
+  try {
+    const response = await ai.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: prompt,
+    });
+
+    const durationMs = Math.round(performance.now() - startTime);
+
+    // Extraction des métadonnées de consommation
+    const usage = response.usageMetadata;
+
+    console.info({
+      event: 'gemini_call_success',
+      latencyMs: durationMs,
+      promptTokens: usage?.promptTokenCount || 0,
+      candidatesTokens: usage?.candidatesTokenCount || 0,
+      totalTokens: usage?.totalTokenCount || 0,
+    });
+
+    return {
+      text: response.text,
+      latencyMs: durationMs,
+      tokens: usage?.totalTokenCount || 0,
+    };
+  } catch (err: any) {
+    const durationMs = Math.round(performance.now() - startTime);
+    console.error({ event: 'gemini_call_failure', latencyMs: durationMs, error: err.message });
+    throw err;
+  }
+}`}
+/>
+
+---
+
+### 3. Tableau de bord des métriques essentielles en production
+
+Pour maintenir une observabilité irréprochable de vos services d'IA, consolidez ces six indicateurs clés :
+
+| Métrique | Description technique | Cible de performance |
+| :--- | :--- | :--- |
+| **Volume de requêtes (RPM)** | Nombre de requêtes reçues par minute | Étalonnage des quotas Google Cloud |
+| **P50 / P95 Latence** | Temps de réponse médian et pour 95 % des requêtes | P50 &lt; 1 200 ms, P95 &lt; 3 500 ms |
+| **Ratio Tokens In / Out** | Équilibre entre contexte fourni et réponse produite | Surveiller les prompts excessivement longs |
+| **Taux d'erreur HTTP 429** | Fréquence de dépassement du quota de requêtes (*Rate Limit*) | &lt; 0.1 % (ajuster la file d'attente) |
+| **Coût moyen par session** | Dépense moyenne engagée par utilisateur connecté | &lt; 0,005 € par interaction |
+| **Taux de cache HIT** | Pourcentage de requêtes résolues sans appel API | &gt; 35 % sur les FAQs publiques |
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Quelle partie de la génération de texte avec un modèle de langage coûte généralement le plus cher par token consommé ?"
+  options={[
+    "Les tokens d'entrée (le texte du prompt que vous transmettez)",
+    "Les tokens de sortie (le texte généré par le modèle)",
+    "Les espaces et les sauts de ligne",
+    "Le commentaire de code"
+  ]}
+  correctIndex={1}
+  explanation="La génération de tokens de sortie mobilise des calculs de décodage autoregressif pas-à-pas sur les processeurs graphiques (GPU/TPU), ce qui explique que les tokens générés coûtent généralement 3 à 4 fois plus cher que les tokens d'entrée analysés en parallèle."
+/>
+

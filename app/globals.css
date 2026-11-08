@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-mono), monospace;
+  --text-xs: 0.9375rem; /* 15px minimum absolu */
+  --text-xs--line-height: 1.375rem;
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #020617;
+  --primary: #4338ca;
+  --primary-light: #4f46e5;
+  --accent-cyan: #0891b2;
+  --accent-teal: #0d9488;
+  --accent-violet: #7c3aed;
+  --accent-amber: #d97706;
+  --accent-emerald: #059669;
+}
+
+html {
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Curseur main (pointer) au survol de tous les boutons et liens */
+button,
+[role="button"],
+a,
+summary,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled {
+  cursor: not-allowed;
+}
+
+::selection {
+  background-color: #cffafe;
+  color: #0e7490;
+}
+
+pre {
+  white-space: pre;
+}
+
+/* Course Typography & Article styling */
+.course-content {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+.course-content > *:first-child,
+.course-content > h1:first-of-type,
+.course-content > h2:first-of-type,
+.course-content > h3:first-of-type,
+.course-content > h4:first-of-type {
+  margin-top: 0 !important;
+}
+
+.course-content p {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.8;
+  color: #0f172a;
+}
+
+.course-content strong {
+  font-weight: 800;
+  color: #020617;
+}

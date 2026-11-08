@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 480" width="100%" height="100%" style="background:#ffffff; font-family: Inter, system-ui, sans-serif;">
+  <defs>
+    <filter id="shadowBox" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="1" dy="3" stdDeviation="3" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="425" y="34" text-anchor="middle" font-size="18" font-weight="900" fill="#0f172a">Règle d'Or de l'Index Composite : Le Préfixe Gauche (Leftmost Prefix)</text>
+  <text x="425" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Analyse de la validité de l'index composite : CREATE INDEX idx_user_date_id ON conversations(user_id, created_at, id)</text>
+
+  <!-- Index structure representation -->
+  <g transform="translate(100, 85)">
+    <rect x="0" y="0" width="650" height="60" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="2" />
+
+    <!-- Col 1 -->
+    <rect x="10" y="8" width="200" height="44" rx="6" fill="#4f46e5" />
+    <text x="110" y="27" text-anchor="middle" font-size="12" font-weight="900" fill="#ffffff">COLONNE 1 (Pivôt)</text>
+    <text x="110" y="44" text-anchor="middle" font-size="13" font-weight="900" fill="#fde047">user_id</text>
+
+    <!-- Col 2 -->
+    <rect x="225" y="8" width="200" height="44" rx="6" fill="#0284c7" />
+    <text x="325" y="27" text-anchor="middle" font-size="12" font-weight="900" fill="#ffffff">COLONNE 2 (Secondaire)</text>
+    <text x="325" y="44" text-anchor="middle" font-size="13" font-weight="900" fill="#f0fdf4">created_at</text>
+
+    <!-- Col 3 -->
+    <rect x="440" y="8" width="200" height="44" rx="6" fill="#0d9488" />
+    <text x="540" y="27" text-anchor="middle" font-size="12" font-weight="900" fill="#ffffff">COLONNE 3 (Départage)</text>
+    <text x="540" y="44" text-anchor="middle" font-size="13" font-weight="900" fill="#ffffff">id</text>
+  </g>
+
+  <!-- Query test cases matrix -->
+  <g transform="translate(40, 175)" filter="url(#shadowBox)">
+    <!-- Case 1 -->
+    <rect x="0" y="0" width="770" height="46" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+    <text x="20" y="28" font-size="13" font-weight="900" fill="#065f46">✔ WHERE user_id = 12</text>
+    <rect x="520" y="10" width="100" height="26" rx="6" fill="#059669" />
+    <text x="570" y="27" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">UTILISÉ (100%)</text>
+    <text x="640" y="28" font-size="11" font-weight="700" fill="#064e3b">Préfixe exact (Col 1)</text>
+
+    <!-- Case 2 -->
+    <rect x="0" y="56" width="770" height="46" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+    <text x="20" y="84" font-size="13" font-weight="900" fill="#065f46">✔ WHERE user_id = 12 AND created_at &gt; '2026-10-01'</text>
+    <rect x="520" y="66" width="100" height="26" rx="6" fill="#059669" />
+    <text x="570" y="83" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">UTILISÉ (100%)</text>
+    <text x="640" y="84" font-size="11" font-weight="700" fill="#064e3b">Filtre + Range (Col 1 + 2)</text>
+
+    <!-- Case 3 -->
+    <rect x="0" y="112" width="770" height="46" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+    <text x="20" y="140" font-size="13" font-weight="900" fill="#065f46">✔ WHERE user_id = 12 ORDER BY created_at DESC, id DESC</text>
+    <rect x="520" y="122" width="100" height="26" rx="6" fill="#047857" />
+    <text x="570" y="139" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">OPTIMAL</text>
+    <text x="640" y="140" font-size="11" font-weight="700" fill="#064e3b">Évite Using filesort</text>
+
+    <!-- Case 4 -->
+    <rect x="0" y="168" width="770" height="46" rx="8" fill="#fff1f2" stroke="#f43f5e" stroke-width="1.5" />
+    <text x="20" y="196" font-size="13" font-weight="900" fill="#9f1239">✘ WHERE created_at &gt; '2026-10-01' (sans user_id)</text>
+    <rect x="520" y="178" width="100" height="26" rx="6" fill="#be123c" />
+    <text x="570" y="195" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">IGNORÉ (0%)</text>
+    <text x="640" y="196" font-size="11" font-weight="700" fill="#881337">Col 1 manquante</text>
+
+    <!-- Case 5 -->
+    <rect x="0" y="224" width="770" height="46" rx="8" fill="#fff1f2" stroke="#f43f5e" stroke-width="1.5" />
+    <text x="20" y="252" font-size="13" font-weight="900" fill="#9f1239">✘ WHERE id = 150 (sans user_id)</text>
+    <rect x="520" y="234" width="100" height="26" rx="6" fill="#be123c" />
+    <text x="570" y="251" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">IGNORÉ (0%)</text>
+    <text x="640" y="252" font-size="11" font-weight="700" fill="#881337">Utilise la PK, pas cet index</text>
+  </g>
+</svg>

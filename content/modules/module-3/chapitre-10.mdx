@@ -1,0 +1,202 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 10 — Tests automatisés avec Vitest et Supertest
+
+### 1. Pourquoi tester rigoureusement une API IA ?
+
+Les applications d'intelligence artificielle intègrent des composants non déterministes et des dépendances externes payantes.
+
+Une suite de tests automatisés permet de garantir que :
+- Les schémas de validation Zod bloquent immédiatement les requêtes malformées.
+- Les middlewares de sécurité et de limitation de débit s'activent comme prévu.
+- Les contrôleurs gèrent correctement les exceptions sans planter le serveur.
+- Votre logique métier fonctionne sans dépendre de la disponibilité du réseau.
+
+---
+
+### 2. Installation des outils de test
+
+Nous utilisons **Vitest** (rapide, natif TypeScript) et **Supertest** (permettant d'émettre des requêtes HTTP virtuelles sur l'objet `app` d'Express sans ouvrir de port réseau) :
+
+```bash
+npm install -D vitest supertest @types/supertest
+```
+
+Ajoutez les scripts de test dans `package.json` :
+
+```json
+{
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  }
+}
+```
+
+---
+
+### 3. Test de la route de santé
+
+Créez `tests/health.test.ts` :
+
+```typescript
+// tests/health.test.ts
+import { describe, it, expect } from 'vitest';
+import request from 'supertest';
+import app from '../src/app.js';
+
+describe('GET /api/health', () => {
+  it('doit répondre avec un code HTTP 200 et un message de succès', async () => {
+    const response = await request(app).get('/api/health');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('success', true);
+    expect(response.body).toHaveProperty('message', 'Backend IA opérationnel');
+  });
+});
+```
+
+---
+
+### 4. Tester la validation Zod sans appeler Gemini
+
+L'un des avantages majeurs de notre architecture est que la validation s'exécute **avant** le service Gemini. Ce test est donc instantané et totalement gratuit :
+
+```typescript
+// tests/validation.test.ts
+import { describe, it, expect } from 'vitest';
+import request from 'supertest';
+import app from '../src/app.js';
+
+describe('POST /api/ai/generate — Validation Zod', () => {
+  it('doit refuser un prompt vide avec un code HTTP 400', async () => {
+    const response = await request(app)
+      .post('/api/ai/generate')
+      .send({ prompt: '' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.errors).toHaveProperty('prompt');
+  });
+
+  it('doit refuser une charge utile sans propriété prompt', async () => {
+    const response = await request(app)
+      .post('/api/ai/generate')
+      .send({});
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+  });
+});
+```
+
+---
+
+### 5. Mocker le service Gemini pour les tests de contrôleurs
+
+Dans vos tests unitaires, vous ne devez **jamais** appeler les serveurs réels de Google Gemini :
+1. Cela consommerait inutilement vos quotas de tokens.
+2. Vos tests échoueraient si votre connexion Internet était coupée.
+3. Les réponses du modèle étant variables, vos assertions d'égalité exacte échoueraient.
+
+Nous utilisons `vi.spyOn` pour simuler le retour du service :
+
+```typescript
+// tests/generate.test.ts
+import { describe, it, expect, vi } from 'vitest';
+import request from 'supertest';
+import app from '../src/app.js';
+import * as geminiService from '../src/services/gemini.service.js';
+
+describe('POST /api/ai/generate — Contrôleur avec Mock', () => {
+  it('doit retourner le texte généré simulé avec un code HTTP 200', async () => {
+    // Remplacement temporaire de la fonction réelle par un mock
+    vi.spyOn(geminiService, 'generateWithGemini').mockResolvedValueOnce(
+      "Ceci est une réponse simulée ultra rapide de Gemini."
+    );
+
+    const response = await request(app)
+      .post('/api/ai/generate')
+      .send({ prompt: 'Explique TypeScript en deux phrases.' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.result).toBe("Ceci est une réponse simulée ultra rapide de Gemini.");
+  });
+});
+```
+
+---
+
+### 6. Typologie des tests backend
+
+| Catégorie de test | Cible | Nécessite Gemini réel ? | Vitesse d'exécution |
+| :--- | :--- | :--- | :--- |
+| **Test de validation** | Schémas Zod & middlewares | **Non** | < 10 ms |
+| **Test unitaire contrôleur** | Logique de route avec mocks | **Non** | < 50 ms |
+| **Test de base de données** | Requêtes préparées MySQL | **Non** (ou BDD de test locale) | ~ 100 ms |
+| **Test d'intégration end-to-end** | Appel réel de vérification périodique | **Oui** (en CI/CD contrôlé) | 2 à 5 secondes |
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Rédaction d'une suite de tests Vitest & Supertest"
+  objective="Concevoir une suite de tests d'intégration HTTP automatisée avec Vitest et Supertest sans consommer aucun quota d'API réel."
+  duration="45 minutes"
+  steps={[
+    "Installer les bibliothèques de test : `npm install -D vitest supertest @types/supertest`.",
+    "Créer `vitest.config.ts` à la racine pour configurer l'environnement Node.",
+    "Rédiger le premier test `tests/health.test.ts` vérifiant que `GET /api/health` répond en HTTP 200 avec `{ success: true }`.",
+    "Rédiger la suite `tests/validation.test.ts` testant les cas d'échec de Zod : envoyer `{}` (prompt manquant), `{ prompt: '' }` (vide) et `{ prompt: 'a'.repeat(15000) }` (trop long). Vérifier que tous retournent HTTP 400.",
+    "Rédiger le test `tests/generation.test.ts` en utilisant `vi.spyOn(geminiService, 'generateWithGemini').mockResolvedValueOnce('Réponse mockée')` pour valider le contrôleur en isolation totale.",
+    "Lancer la commande `npm test` et valider l'exécution réussie de tous les tests en moins d'une seconde."
+  ]}
+  validationCriteria={[
+    "L'intégralité de la suite s'exécute en moins de 1 seconde avec 100 % de succès.",
+    "Aucun octet n'est envoyé vers les serveurs de Google (isolation réseau complète).",
+    "La suite peut être exécutée dans un pipeline GitHub Actions ou GitLab CI sans nécessiter de clé API valide."
+  ]}
+>
+
+#### Fichier de test d'intégration complet `tests/api.test.ts` :
+```typescript
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import request from 'supertest';
+import app from '../src/app.js';
+import * as geminiService from '../src/services/gemini.service.js';
+
+describe('Suite de tests API Backend IA', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('GET /api/health — doit retourner le statut opérationnel', async () => {
+    const res = await request(app).get('/api/health');
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+  });
+
+  it('POST /api/ai/generate — doit rejeter un prompt vide avec 400', async () => {
+    const res = await request(app)
+      .post('/api/ai/generate')
+      .send({ prompt: '   ' });
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+  });
+
+  it('POST /api/ai/generate — doit exécuter le mock sans appel réel', async () => {
+    vi.spyOn(geminiService, 'generateWithGemini').mockResolvedValueOnce('Génération simulée réussie');
+
+    const res = await request(app)
+      .post('/api/ai/generate')
+      .send({ prompt: 'Quelle est la capitale de l\'Italie ?' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.result).toBe('Génération simulée réussie');
+  });
+});
+```
+</PracticalWork>
+

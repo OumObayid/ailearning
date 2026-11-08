@@ -1,0 +1,138 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 11 — Déploiement Docker, scalabilité et mode queue
+
+### 1. Préparer une instance n8n pour la production
+
+Faire tourner n8n en production ne se limite pas à lancer une commande locale. L'instance doit être configurée avec des paramètres stricts pour garantir sa stabilité :
+
+| Variable d'environnement | Valeur recommandée | Rôle technique indispensable |
+| :--- | :--- | :--- |
+| `WEBHOOK_URL` | `https://n8n.mondomaine.com/` | URL publique résolue pour la réception correcte des webhooks et des redirections OAuth2 |
+| `N8N_ENCRYPTION_KEY` | Chaîne aléatoire de 32+ caractères | Clé de chiffrement persistante pour le trousseau de clés |
+| `EXECUTIONS_DATA_PRUNE` | `true` | Active la purge automatique des anciennes données d'exécution |
+| `EXECUTIONS_DATA_MAX_AGE` | `168` (7 jours en heures) | Supprime l'historique volumineux pour préserver l'espace disque |
+| `DB_TYPE` | `postgresdb` | Remplace la base embarquée SQLite par PostgreSQL haute performance |
+
+---
+
+### 2. Déploiement robuste avec Docker Compose et PostgreSQL
+
+Voici la configuration **Docker Compose** prête pour la production, intégrant n8n et une base de données PostgreSQL dédiée :
+
+<CodeBlock
+  language="yaml"
+  title="docker-compose.yml — Stack n8n + PostgreSQL de production"
+  code={`version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n_db_user
+      POSTGRES_PASSWORD: SecretPostgresPassword2026!
+      POSTGRES_DB: n8n_production
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    networks:
+      - internal_net
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n_production
+      - DB_POSTGRESDB_USER=n8n_db_user
+      - DB_POSTGRESDB_PASSWORD=SecretPostgresPassword2026!
+      - N8N_ENCRYPTION_KEY=f8a7e4b2c1d9e3f5a0b7c4d2e1f9a8b6
+      - WEBHOOK_URL=https://n8n.mondomaine.com/
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+      - GENERIC_TIMEZONE=Europe/Paris
+    volumes:
+      - n8n_storage:/home/node/.n8n
+    networks:
+      - internal_net
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_storage:
+  n8n_storage:
+
+networks:
+  internal_net:
+    driver: bridge`}
+/>
+
+---
+
+### 3. Scalabilité horizontale : Le mode Queue avec Redis et Workers
+
+En mode standard (*Single Instance*), un pic soudain de 1 000 requêtes webhook simultanées peut saturer la boucle d'événements Node.js de l'instance principale.
+
+Pour absorber des charges massives, n8n propose le **Mode Queue** :
+
+<ArchitectureDiagram
+  title="Architecture distribuée n8n en mode Queue avec Redis"
+  diagram={`[ REQUÊTES WEBHOOKS ENTRANTES ]
+                 |
+                 v
+      [ N8N MAIN / WEBHOOK INSTANCE ] (Ne fait qu'ingérer les requêtes)
+                 |
+                 v (Enfile les jobs)
+          [ REDIS BROKER ]
+           /           \\
+          v             v
+  [ N8N WORKER 1 ]  [ N8N WORKER 2 ]  [ N8N WORKER N ]
+         \\             /
+          v           v
+    [ BASE DE DONNÉES POSTGRESQL & MYSQL ]`}
+/>
+
+- L'instance **Main** se contente d'accueillir les requêtes HTTP, de répondre en quelques millisecondes et de placer les tâches dans une file d'attente **Redis**.
+- Des conteneurs **n8n Workers** indépendants dépilent les tâches de la file et exécutent les calculs lourds, les appels Gemini et les requêtes SQL.
+- Si le volume de requêtes explose, il suffit d'augmenter le nombre de workers (`docker compose scale n8n-worker=5`).
+
+---
+
+### 4. Sauvegardes et politiques de rétention des exécutions
+
+Pour éviter que la base de données interne n'atteigne plusieurs dizaines de gigaoctets en quelques mois, configurez la purge programmée :
+
+<CodeBlock
+  language="bash"
+  title="Politique de sauvegarde automatique de la base n8n"
+  code={`# Sauvegarde quotidienne de la base de données PostgreSQL
+docker exec -t \$(docker ps -qf "name=postgres") \\
+  pg_dump -U n8n_db_user n8n_production | gzip > backup_n8n_\$(date +%F).sql.gz
+
+# Export régulier des workflows sous format JSON versionné
+n8n export:workflow --all --output=/backups/workflows.json`}
+/>
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="En mode haute charge (Queue Mode), quel composant d'infrastructure sert d'intermédiaire pour distribuer les exécutions de workflows vers les différents workers ?"
+  options={[
+    "Un serveur FTP anonyme",
+    "Une instance Redis (Message Broker / File d'attente en mémoire)",
+    "Un fichier CSV partagé sur le disque dur",
+    "Un webhook déclenché toutes les minutes"
+  ]}
+  correctIndex={1}
+  explanation="En mode Queue, Redis agit comme courtier de messages à ultra-faible latence, stockant les jobs d'exécution pour que les différents conteneurs n8n workers puissent les dépiler et les traiter en parallèle."
+/>
+

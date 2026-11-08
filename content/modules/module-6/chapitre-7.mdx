@@ -1,0 +1,162 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 7 — Connecter un agent aux APIs externes, MySQL et Qdrant (RAG agentique)
+
+### 1. Création d'outils appelant des APIs REST externes avec fetch
+
+Un agent gagne toute son utilité lorsqu'il peut dialoguer avec vos services web existants (passerelle de paiement Stripe, suivi de colis La Poste, CRM interne).
+
+Voici l'implémentation d'un outil sécurisé appelant un microservice interne :
+
+<CodeBlock
+  language="typescript"
+  title="src/tools/orderApi.tool.ts — Outil HTTP contrôlé"
+  code={`import { z } from 'zod';
+
+export const getOrderApiSchema = z.object({
+  orderId: z.number().int().positive(),
+});
+
+export async function fetchOrderDetailsFromApi(orderId: number, authenticatedUserId: number) {
+  // L'URL cible est codée en dur côté backend : l'IA ne peut pas la modifier
+  const endpoint = \`\${process.env.INTERNAL_API_URL}/v1/orders/\${orderId}\`;
+
+  const response = await fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Internal-Secret': process.env.INTERNAL_SERVICE_KEY!,
+      'X-Request-User-Id': String(authenticatedUserId),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(\`Le service de commande a retourné le code HTTP \${response.status}\`);
+  }
+
+  return await response.json();
+}`}
+/>
+
+---
+
+### 2. Pourquoi le modèle ne doit jamais appeler une API directement
+
+Permettre à un modèle de langage d'émettre des requêtes HTTP directes vers n'importe quelle URL expose votre serveur à une vulnérabilité critique de type **SSRF (Server-Side Request Forgery)** :
+- Un utilisateur malintentionné pourrait ordonner au modèle d'interroger `http://169.254.169.254/latest/meta-data/` pour voler les clés d'infrastructure AWS.
+- Le modèle pourrait sonder votre réseau privé local (`http://localhost:6379` pour Redis).
+
+**Règle d'or** : C'est le serveur qui maîtrise les URLs autorisées, les méthodes HTTP, les en-têtes d'authentification et les timeouts réseau. L'agent ne fournit que des paramètres d'entrée assainis.
+
+---
+
+### 3. Outil de consultation relationnelle MySQL avec requêtes paramétrées
+
+L'agent peut accéder aux données structurées et transactionnelles via MySQL :
+
+<CodeBlock
+  language="typescript"
+  title="src/tools/mysqlOrders.tool.ts — Consultation SQL sécurisée"
+  code={`import { pool } from '../config/database';
+
+export async function queryCustomerRecentOrders(userId: number, maxCount: number = 5) {
+  const [rows] = await pool.execute(
+    \`SELECT id, status, total_amount, tracking_number, created_at
+     FROM orders
+     WHERE user_id = ?
+     ORDER BY created_at DESC
+     LIMIT ?\`,
+    [userId, maxCount]
+  );
+
+  return rows;
+}`}
+/>
+
+---
+
+### 4. Outil de recherche sémantique vectorielle avec Qdrant
+
+Pour les données documentaires non structurées (politiques de retour, manuels techniques, CGV), l'agent exploite la recherche vectorielle :
+
+<CodeBlock
+  language="typescript"
+  title="src/tools/qdrantSearch.tool.ts — Recherche sémantique vectorielle"
+  code={`import { qdrantClient } from '../config/qdrant';
+import { ai } from '../config/gemini';
+
+export async function searchDocumentationVector(query: string, limit: number = 3) {
+  // 1. Calcul de l'embedding de la requête via Gemini
+  const embedResponse = await ai.models.embedContent({
+    model: 'text-embedding-004',
+    contents: [{ parts: [{ text: query }] }],
+  });
+
+  const queryVector = embedResponse.embedding?.values;
+  if (!queryVector) {
+    throw new Error("Impossible de générer le vecteur de recherche.");
+  }
+
+  // 2. Recherche par similarité cosinus dans Qdrant
+  const searchResults = await qdrantClient.search('company_knowledge_base', {
+    vector: queryVector,
+    limit,
+    score_threshold: 0.72,
+  });
+
+  return searchResults.map((match) => ({
+    title: match.payload?.title,
+    snippet: match.payload?.content,
+    score: match.score,
+  }));
+}`}
+/>
+
+---
+
+### 5. Synergie RAG agentique : Combiner statut SQL et documentation vectorielle
+
+Le véritable saut qualitatif d'un agent réside dans sa capacité à **croiser les sources**.
+Imaginons un client demandant :
+> *« Pourquoi mon paiement sur la commande #492 a-t-il été refusé et que dois-je faire ? »*
+
+<ArchitectureDiagram
+  title="RAG Agentique : Synergie MySQL (faits) + Qdrant (procédures)"
+  diagram={`                           [ AGENT IA GEMINI ]
+                                   |
+         +-------------------------+-------------------------+
+         |                                                   |
+         v                                                   v
+[ OUTIL 1 : MYSQL ORDERS ]                        [ OUTIL 2 : QDRANT RAG ]
+Récupère :                                        Récupère :
+- Statut : payment_failed                         - Procédure de résolution
+- Code erreur : ERR_3D_SECURE_TIMEOUT             - Délai de déblocage bancaire
+         |                                                   |
+         +-------------------------+-------------------------+
+                                   |
+                                   v
+             [ SYNTHÈSE UNIQUE, PRÉCISE ET IMMÉDIATE ]
+  "Votre paiement sur la commande #492 a échoué car la validation
+   3D Secure n'a pas été confirmée dans les 10 minutes imparties.
+   Conformément à nos procédures, vous pouvez réitérer l'opération..."`}
+/>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi associer un outil MySQL et un outil Qdrant au sein du même agent est-il plus performant qu'un système RAG classique ?"
+  options={[
+    "Parce que MySQL est programmé en Python et Qdrant en C++",
+    "Car l'agent peut extraire dynamiquement des données transactionnelles précises en SQL (faits exacts) et les combiner avec des connaissances documentaires vectorielles (guides de résolution)",
+    "Parce que cela divise par deux le coût de l'abonnement internet",
+    "Pour remplacer complètement les serveurs Node.js"
+  ]}
+  correctIndex={1}
+  explanation="Cette approche hybride (RAG agentique) permet à l'agent d'obtenir à la fois la réalité transactionnelle immédiate de l'utilisateur (MySQL) et le savoir encyclopédique de l'entreprise (Qdrant) pour apporter une solution sur-mesure."
+/>
+

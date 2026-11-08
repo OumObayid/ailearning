@@ -1,0 +1,142 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 11 — Évaluation objective de la qualité des réponses et LLM-as-a-judge
+
+### 1. Les critères d'évaluation de la qualité
+
+Une application d'IA peut compiler sans erreur TypeScript et renvoyer un code HTTP 200 tout en produisant une réponse trompeuse, incomplète ou hors sujet.
+
+Pour mesurer scientifiquement la qualité de vos générations, l'industrie s'appuie sur six dimensions d'évaluation :
+
+| Critère | Question clé | Risque associé en cas d'échec |
+| :--- | :--- | :--- |
+| **Pertinence (*Relevance*)** | La réponse répond-elle directement à l'intention posée ? | Réponse verbeuse qui élude la question |
+| **Exactitude (*Accuracy*)** | Les affirmations factuelles sont-elles exactes ? | Informations obsolètes ou erronées |
+| **Complétude (*Completeness*)** | Tous les volets de la question sont-ils traités ? | Omission d'une consigne importante |
+| **Cohérence (*Coherence*)** | Le raisonnement logique est-il sans contradiction ? | Contradiction entre deux paragraphes |
+| **Fidélité aux sources (*Faithfulness*)** | Chaque affirmation découle-t-elle des documents RAG ? | **Hallucination** non ancrée sur la réalité |
+| **Conformité & Sécurité** | Les règles d'éthique et de sécurité sont-elles respectées ? | Fuite de données ou vulgarité |
+
+---
+
+### 2. Constitution d'un jeu de données d'évaluation (Gold Dataset)
+
+Ne jugez jamais une amélioration de prompt sur trois questions testées manuellement dans votre terminal. Constituez un **jeu d'évaluation représentatif (*Gold Standard Dataset*)** contenant entre 30 et 100 questions calibrées :
+
+<CodeBlock
+  language="typescript"
+  title="src/evals/evaluationDataset.ts — Échantillons d'évaluation de référence"
+  code={`export interface BenchmarkSample {
+  id: string;
+  question: string;
+  groundTruthContext: string;
+  expectedKeyFacts: string[];
+}
+
+export const goldDataset: BenchmarkSample[] = [
+  {
+    id: "eval-01",
+    question: "Quels sont les délais légaux de rétractation pour les particuliers ?",
+    groundTruthContext: "Selon l'article L.221-18 du Code de la consommation, le client particulier dispose d'un délai de 14 jours calendaires à compter de la réception.",
+    expectedKeyFacts: ["14 jours", "calendaires", "particuliers", "réception du colis"],
+  },
+  {
+    id: "eval-02",
+    question: "Comment réinitialiser mon mot de passe en cas de compte bloqué ?",
+    groundTruthContext: "L'utilisateur doit cliquer sur 'Mot de passe oublié' puis valider le lien reçu par email sous 15 minutes.",
+    expectedKeyFacts: ["Mot de passe oublié", "lien par email", "15 minutes"],
+  },
+];`}
+/>
+
+---
+
+### 3. L'approche LLM-as-a-judge
+
+L'évaluation manuelle par des experts humains est fastidieuse et non scalable.
+L'approche **LLM-as-a-judge (Le modèle arbitre)** consiste à utiliser une instance supérieure (comme **Gemini 1.5 Pro**) pour noter automatiquement la réponse produite par le modèle applicatif (Gemini 2.5 Flash) selon une grille stricte :
+
+<ArchitectureDiagram
+  title="Fonctionnement de l'arbitrage automatisé LLM-as-a-judge"
+  diagram={`QUESTION DE TEST + CONTEXTE RAG
+           |
+           v
+[ AGENT SOUS TEST (Gemini 2.5 Flash) ]
+           |
+           v
+RÉPONSE CANDIDATE GÉNÉRÉE
+           |
+           v
+[ MODÈLE ARBITRE (Gemini 1.5 Pro) ]
+Prompt d'arbitrage :
+"Compare la réponse candidate au contexte de vérité terrain.
+Attribue une note de 1 à 5 sur la fidélité et justifie."
+           |
+           v
+RAPPORT STRUCTURÉ JSON : { score: 5, faithfulness: 1.0, reasoning: "..." }`}
+/>
+
+<CodeBlock
+  language="typescript"
+  title="src/evals/judgeService.ts — Évaluation automatisée par prompt arbitre"
+  code={`import { ai } from '../config/gemini';
+
+export async function evaluateFaithfulnessWithJudge(
+  question: string,
+  context: string,
+  candidateAnswer: string
+): Promise<{ score: number; reasoning: string }> {
+  const prompt = \`Tu es un évaluateur impartial de systèmes RAG.
+Évalue la fidélité de la RÉPONSE CANDIDATE par rapport au CONTEXTE SOURCE fourni.
+
+CONTEXTE SOURCE :
+\${context}
+
+QUESTION :
+\${question}
+
+RÉPONSE CANDIDATE :
+\${candidateAnswer}
+
+Consignes de notation :
+- Attribue 5/5 si toutes les affirmations découlent strictement du contexte source.
+- Pénalise lourdement si la réponse invente un fait absent de la source.
+- Réponds UNIQUEMENT sous forme JSON : { "score": number, "reasoning": string }\`;
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-1.5-pro',
+    contents: prompt,
+    config: { responseMimeType: 'application/json' },
+  });
+
+  return JSON.parse(response.text || '{}');
+}`}
+/>
+
+---
+
+### Atelier interactif : Simulateur LLM-as-a-Judge en direct
+
+Testez ci-dessous comment un modèle évaluateur note la fidélité documentaire et détecte les hallucinations :
+
+<LLMJudgeEvaluatorSimulator />
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="En quoi consiste la méthode d'évaluation 'LLM-as-a-judge' dans un pipeline d'ingénierie d'IA ?"
+  options={[
+    "À demander à un avocat de juger le code source en direct",
+    "À utiliser un modèle de langage avancé comme arbitre automatisé pour noter la fidélité et la pertinence des réponses générées selon une grille de critères stricts",
+    "À supprimer les prompts qui reçoivent des notes inférieures à la moyenne",
+    "À réécrire l'application en langage Rust"
+  ]}
+  correctIndex={1}
+  explanation="La méthode LLM-as-a-judge permet d'automatiser à grande échelle l'évaluation qualitative des générations en utilisant la capacité d'analyse d'un modèle pour confronter la réponse générée aux sources de vérité terrain."
+/>
+

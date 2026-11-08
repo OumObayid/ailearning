@@ -1,0 +1,249 @@
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { TemperatureSimulator } from '@/components/interactive/TemperatureSimulator';
+
+# Chapitre 3 — Concevoir des instructions efficaces pour Gemini
+
+### 1. Qu'est-ce que le prompt engineering ?
+
+Le prompt engineering consiste à concevoir et organiser les instructions transmises à un modèle afin d'obtenir des réponses adaptées à un objectif précis.
+
+Un prompt ne se limite pas à poser une question.
+
+Il peut contenir :
+- Un rôle.
+- Un objectif.
+- Un contexte.
+- Des données.
+- Des contraintes.
+- Une méthode de traitement.
+- Un format de réponse.
+- Des règles de comportement.
+
+---
+
+### 2. Prompt simple et prompt structuré
+
+**Exemple d'instruction simple :**
+> Analyse ces commentaires clients.
+
+Cette instruction est peu précise.  
+Le modèle doit décider lui-même de ce qu'il faut analyser et de la forme de la réponse.
+
+**Une instruction structurée :**
+> **Rôle :**  
+> Tu es un analyste spécialisé dans l'expérience client.  
+>  
+> **Objectif :**  
+> Analyser les commentaires fournis.  
+>  
+> **Contexte :**  
+> Ces commentaires proviennent d'une boutique en ligne.  
+>  
+> **Tâches :**  
+> 1. Identifier les problèmes fréquents.  
+> 2. Identifier les points positifs.  
+> 3. Détecter les demandes récurrentes.  
+> 4. Proposer des améliorations.  
+>  
+> **Contraintes :**  
+> Ne pas inventer d'informations.  
+> Utiliser uniquement les commentaires fournis.  
+>  
+> **Format :**  
+> Présenter une synthèse avec des titres.  
+
+La deuxième instruction réduit les ambiguïtés.
+
+---
+
+### 3. Les composants d'un prompt professionnel
+
+#### A. Le rôle
+Il définit la fonction que le modèle doit adopter.  
+*Exemple :* `Tu es un expert en analyse de données.`
+
+#### B. L'objectif
+Il précise le résultat attendu.  
+*Exemple :* `Ton objectif est d'identifier les tendances présentes dans les données.`
+
+#### C. Le contexte
+Il décrit la situation.  
+*Exemple :* `Les données proviennent d'un formulaire de satisfaction client.`
+
+#### D. Les données
+Elles représentent le contenu à analyser.  
+```text
+Voici les données à analyser :
+${data}
+```
+
+#### E. Les contraintes
+Elles limitent les comportements indésirables.  
+- Ne pas inventer de chiffres.
+- Ne pas ajouter de données absentes.
+- Signaler les informations insuffisantes.
+
+#### F. Le format de sortie
+Il définit la présentation.  
+```text
+Présente les résultats sous forme de :
+- Résumé.
+- Points positifs.
+- Problèmes identifiés.
+- Recommandations.
+```
+
+---
+
+### 4. Les instructions système
+
+Une instruction système définit le comportement général du modèle pour une interaction.
+
+<CodeBlock language="typescript">
+{`const interaction = await ai.interactions.create({
+  model: GEMINI_MODEL,
+  system_instruction: \`
+    Tu es un assistant technique spécialisé en développement web.
+    Tu dois fournir des réponses précises,
+    pédagogiques et compréhensibles.
+    Lorsque tu présentes du code,
+    explique les parties importantes.
+    Si une information est incertaine,
+    indique clairement cette incertitude.
+  \`,
+  input: "Explique la différence entre Node.js et Express."
+});
+
+console.log(interaction.output_text);`}
+</CodeBlock>
+
+<Callout type="note" title="Remarque">
+L'instruction système n'est pas une garantie absolue : les réponses doivent toujours être vérifiées.
+</Callout>
+
+---
+
+### 5. Paramètres de génération
+
+Les paramètres de génération permettent d'influencer le comportement du modèle.
+
+Parmi les paramètres à connaître :
+
+| Paramètre | Rôle |
+| :--- | :--- |
+| `temperature` | Influence la variabilité de génération |
+| `top_p` | Contrôle l'échantillonnage probabiliste |
+| `top_k` | Limite les candidats considérés |
+| `max_output_tokens` | Limite la longueur de sortie |
+| `seed` | Peut contribuer à la reproductibilité lorsque le modèle et l'API le permettent |
+
+<Callout type="info" title="Compatibilité des paramètres">
+Ces paramètres ne sont pas universellement disponibles ou identiques pour tous les modèles et toutes les surfaces API. Il faut vérifier leur compatibilité dans la documentation du modèle utilisé avant de les ajouter à une requête Interactions API.
+</Callout>
+
+#### Comprendre temperature
+Une température basse favorise généralement des réponses plus prévisibles.  
+Une température plus élevée peut favoriser des formulations plus variées.
+
+**Exemples d'utilisation :**
+- Extraction de données : privilégier la cohérence.
+- Classification : privilégier la stabilité.
+- Rédaction créative : autoriser davantage de variété.
+
+Une température basse ne garantit toutefois pas une réponse exacte.
+
+{/* Laboratoire interactif sur la temperature */}
+<TemperatureSimulator />
+
+#### Comprendre seed
+Le paramètre `seed` peut être utilisé dans certains contextes pour favoriser la reproductibilité.  
+Il ne garantit pas une réponse strictement identique à chaque exécution.  
+Sa disponibilité et les valeurs autorisées dépendent du modèle et de l'API.  
+Ne pas considérer arbitrairement `seed: 100` comme une valeur universelle.
+
+---
+
+### 6. Gestion des prompts dans le code
+
+Éviter de mélanger les longues instructions et la logique métier.
+
+<CodeBlock language="typescript">
+{`export function createAnalysisPrompt(data: string) {
+  return \`
+    Analyse les informations suivantes.
+
+    Objectif :
+    Identifier les tendances et les problèmes.
+
+    Données :
+    \${data}
+
+    Contraintes :
+    - Ne pas inventer d'informations.
+    - Signaler les données manquantes.
+    - Fournir des recommandations concrètes.
+  \`;
+}`}
+</CodeBlock>
+
+Cette méthode rend les prompts plus faciles à maintenir.
+
+---
+
+### 7. Travaux pratiques
+
+<PracticalWork title="TP 1 — Analyse et synthèse de commentaires clients">
+**Contexte métier :** Vous développez une fonctionnalité pour une équipe Support qui reçoit quotidiennement des dizaines d'avis clients non structurés.
+
+**Consigne :** Construire un prompt structuré complet (Rôle, Objectif, Contexte, Données, Contraintes, Format) qui prend en entrée un ensemble d'avis textuels et produit une synthèse analytique.
+
+**Structure attendue dans la réponse du modèle :**
+1. **Avis positifs :** Liste à puces des points forts cités par les clients.
+2. **Avis négatifs :** Liste à puces des griefs et déceptions exprimés.
+3. **Problèmes fréquents récurrents :** Synthèse des 3 dysfonctionnements majeurs identifiés.
+4. **Recommandations concrètes :** Actions opérationnelles prioritaires à mener par l'équipe produit.
+
+**Jeu d'essai suggéré :**
+> *"Le produit est arrivé rapidement et l'emballage est soigné. Par contre impossible de configurer le Wi-Fi, l'application mobile plante dès l'étape 2. Le support a mis 4 jours à me répondre mais l'agent a été poli. Très déçu par la batterie qui ne tient que 3 heures au lieu des 10 promises."*
+</PracticalWork>
+
+<PracticalWork title="TP 2 — Analyseur de données métier brutes">
+**Contexte métier :** Une plateforme RH souhaite transformer des notes de réunions ou des descriptions de postes informelles en fiches synthétiques exploitables.
+
+**Consigne :**
+1. Concevoir une fonction JavaScript/TypeScript `analyzeBusinessData(rawText: string)` qui injecte le texte issu d'un champ de saisie (`textarea`) dans un template de prompt dédié.
+2. Le prompt doit imposer au modèle d'extraire :
+   - Le secteur d'activité et la finalité principale du texte.
+   - Les indicateurs clés (chiffres, budgets, délais mentionnés).
+   - Les risques potentiels ou points de blocage.
+3. Tester le comportement du modèle avec un texte contenant des informations contradictoires et vérifier comment le prompt gère ces incertitudes.
+</PracticalWork>
+
+<PracticalWork title="TP 3 — Création d'un assistant technique pédagogique">
+**Contexte métier :** Vous créez un tuteur d'apprentissage informatique pour étudiants débutants en programmation.
+
+**Consigne :**
+1. Configurer une **instruction système** (`systemInstruction`) imposant les règles suivantes :
+   - Adopter un ton bienveillant, clair et pédagogique.
+   - Ne jamais donner la solution complète directement : guider l'étudiant avec la méthode socratique (questions réflexives, indices progressifs).
+   - Expliquer les concepts complexes à l'aide d'analogies de la vie courante.
+   - Interdire l'utilisation de jargon avancé sans en donner immédiatement une définition simple.
+2. Soumettre au modèle une question type : *"Mon code TypeScript me dit 'Object is possibly undefined', qu'est-ce que je dois faire ?"*.
+3. Valider que le modèle guide l'utilisateur sans écraser sa réflexion par un bloc de code brut prêt à copier-coller.
+</PracticalWork>
+
+<PracticalWork title="TP 4 — Évaluation comparative : Simple vs Structuré vs Instruction Système">
+**Consigne :** Pour une même demande métier complexe (*"Génère un plan de lancement pour un logiciel SaaS B2B de facturation électronique"*), tester successivement trois stratégies d'instruction et consigner les observations :
+
+1. **Version A (Prompt simple) :** *"Fais-moi un plan de lancement pour un SaaS B2B de facturation."*
+2. **Version B (Prompt structuré) :** Prompt intégrant Rôle (Directeur Marketing Produit), Objectif, Contraintes budgétaires, Cibles et Plan en 4 phases chronologiques.
+3. **Version C (Prompt structuré + Instruction système) :** Version B exécutée avec une instruction système fixant la rigueur analytique, l'absence de superlatifs publicitaires et des métriques chiffrées obligatoires.
+
+**Livrable attendu :** Un tableau comparatif évaluant :
+- Le respect du format attendu.
+- La précision des actions proposées.
+- Le degré de personnalisation au secteur de la facturation.
+- Le nombre approximatif de tokens consommés pour chaque test.
+</PracticalWork>

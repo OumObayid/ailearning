@@ -1,0 +1,139 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+
+# Projet de synthèse — Plateforme intelligente de support client
+
+### 1. Présentation du projet
+
+Dans ce projet de synthèse, vous allez assembler l'ensemble des compétences acquises au cours des chapitres précédents pour concevoir et déployer une **plateforme complète de traitement intelligent des demandes d'assistance**.
+
+Le système doit automatiser l'analyse, la classification sémantique, la détection de criticité, la persistance relationnelle et l'aiguillage multicanal des messages clients sans blocage pour l'utilisateur.
+
+---
+
+### 2. Spécification des modules
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+    <h4 className="text-base font-bold text-slate-900 mb-2">1. Frontend React & Vite</h4>
+    <p className="text-sm text-slate-600 leading-relaxed">
+      Formulaire ergonomique avec validation des champs en temps réel, retour visuel immédiat (toast de confirmation HTTP 202) et consultation du statut du ticket avec rafraîchissement automatique.
+    </p>
+  </div>
+
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+    <h4 className="text-base font-bold text-slate-900 mb-2">2. Passerelle Express (Node.js)</h4>
+    <p className="text-sm text-slate-600 leading-relaxed">
+      Filtrage Zod, génération de l'identifiant unique, insertion initiale dans MySQL (`status: 'received'`), et transmission asynchrone sécurisée vers n8n via un en-tête <code>X-Webhook-Secret</code>.
+    </p>
+  </div>
+
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+    <h4 className="text-base font-bold text-slate-900 mb-2">3. Orchestrateur n8n</h4>
+    <p className="text-sm text-slate-600 leading-relaxed">
+      Vérification de sécurité, anonymisation des données personnelles (PII), interrogation du modèle <strong>Gemini 2.5 Flash</strong>, aiguillage logique <strong>Switch</strong>, et synchronisation MySQL.
+    </p>
+  </div>
+
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+    <h4 className="text-base font-bold text-slate-900 mb-2">4. Persistance MySQL & Notifications</h4>
+    <p className="text-sm text-slate-600 leading-relaxed">
+      Table <code>support_tickets</code> mise à jour avec les attributs d'analyse (catégorie, priorité, résumé). Escalade conditionnelle vers un canal Slack ou email d'astreinte si urgence critique.
+    </p>
+  </div>
+</div>
+
+---
+
+### 3. Architecture logicielle complète de bout en bout
+
+<ArchitectureDiagram
+  title="Diagramme de flux complet du projet de synthèse"
+  diagram={`[ FORMULAIRE REACT ]
+         |
+         | (POST /api/tickets)
+         v
+[ BACKEND EXPRESS / ZOD ]
+         |
+         +--------------------------------+
+         | (1. Insert SQL initial)        | (2. HTTP 202 Accepted)
+         v                                v
+[ BASE DE DONNÉES MYSQL ]         [ RETOUR IMMÉDIAT CLIENT ]
+         ^
+         | (3. Requête Webhook sécurisée avec header X-Webhook-Secret)
+         v
+[ ORCHESTRATEUR n8n ]
+         |
+         +---> [ NŒUD CODE : Nettoyage PII & Contrôle d'accès ]
+         |
+         +---> [ GOOGLE GEMINI : Classification structurée JSON ]
+         |
+         +---> [ NŒUD SWITCH : Routage par intention ]
+                 |
+                 +--- (technical_incident / CRITICAL) ---> [ Slack Alert ] + [ UPDATE SQL ]
+                 +--- (billing)                      ---> [ Email Devis ] + [ UPDATE SQL ]
+                 +--- (feature_request)              ---> [ Linear API ]  + [ UPDATE SQL ]`}
+/>
+
+---
+
+### 4. Guide d'implémentation pas-à-pas
+
+<PracticalWork
+  title="Mise en œuvre intégrale du projet de synthèse"
+  difficulty="Avancé"
+  duration="90 minutes"
+  objectives={[
+    "Configurer la base MySQL et la table support_tickets",
+    "Développer la passerelle Express avec validation Zod et header secret",
+    "Construire le workflow n8n intégrant Webhook, Gemini et Switch",
+    "Raccorder l'interface frontend React et valider le cycle de vie de bout en bout"
+  ]}
+>
+<p className="text-sm text-slate-700 leading-relaxed">
+Suivez rigoureusement ces 4 phases pour réaliser votre plateforme d'automatisation de niveau professionnel :
+</p>
+
+#### Phase 1 : Initialisation de la persistance MySQL
+Créez la base de données `support_platform` et appliquez le schéma relationnel décrit au Chapitre 6 avec les colonnes `id`, `client_email`, `subject`, `raw_message`, `ai_category`, `ai_priority`, `ai_summary` et `status`.
+
+#### Phase 2 : Passerelle Backend Express
+Implémentez la route `POST /api/tickets` en TypeScript :
+- Validation Zod sur les champs `clientEmail`, `subject` et `message`.
+- Insertion SQL avec statut `received`.
+- Émission de la requête POST asynchrone vers l'URL n8n avec l'en-tête `X-Webhook-Secret`.
+- Réponse immédiate avec le code HTTP 202 et l'ID du ticket.
+
+#### Phase 3 : Construction du workflow n8n
+Dans l'interface n8n :
+1. Créez un nœud **Webhook Trigger** en méthode POST avec le chemin `/incoming-ticket`.
+2. Connectez un nœud **Code** qui compare `headers['x-webhook-secret']` avec votre variable secrète.
+3. Ajoutez un nœud **Google Gemini** sollicitant le modèle `gemini-2.5-flash` avec un prompt imposant le format JSON strict.
+4. Reliez un nœud **Switch** routant vers 3 branches distinctes.
+5. Sur chaque branche, connectez un nœud **MySQL** mettant à jour la ligne du ticket (`UPDATE support_tickets SET ai_category = ?, ai_priority = ?, status = 'processed' WHERE id = ?`).
+6. Activez le workflow en production (*Active toggle*).
+
+#### Phase 4 : Raccordement et test d'intégration
+Depuis l'application React, soumettez un formulaire avec le texte :
+> *« Panne totale : notre serveur de paiement rejette toutes les transactions des clients ! »*
+
+Observez :
+1. La réception instantanée de l'ID du ticket sur le navigateur.
+2. L'activation du workflow dans n8n.
+3. La classification en catégorie `technical_incident` avec une priorité `CRITICAL`.
+4. La mise à jour de la ligne correspondante dans MySQL.
+</PracticalWork>
+
+---
+
+### 5. Critères de réussite et validation finale
+
+Pour valider ce projet de synthèse avec les standards industriels, vérifiez les points de contrôle suivants :
+
+- [ ] **Sécurité d'accès** : Une requête adressée au webhook n8n sans en-tête `X-Webhook-Secret` ou avec un jeton incorrect est immédiatement rejetée avec une erreur 403.
+- [ ] **Déterminisme du modèle** : Les réponses JSON de Gemini sont systématiquement valides sans blocs markdown parasites (`json`).
+- [ ] **Absence de régression SQL** : Toutes les écritures MySQL s'effectuent via des paramètres liés (`?`), sans concaténation de variables.
+- [ ] **Expérience asynchrone** : Le frontend ne subit aucun temps d'attente supérieur à 100 ms lors de la soumission du formulaire.
+

@@ -1,0 +1,205 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Chapitre 6 — Intégration de MySQL et gestion des conversations
+
+### 1. Pourquoi associer une base de données relationnelle à un LLM ?
+
+Un modèle de langage comme Google Gemini ne possède aucune mémoire native à long terme de vos utilisateurs.
+
+L'intégration d'une base relationnelle **MySQL** permet au backend de conserver durablement :
+- Les comptes utilisateurs et leurs abonnements.
+- L'historique complet des sessions de chat et des messages échangés.
+- Les métadonnées d'exécution (durée, tokens consommés, modèle utilisé).
+- Les données métier de votre entreprise destinées à enrichir les requêtes IA.
+
+---
+
+### 2. Schéma de base de données relationnelle
+
+Exécutez les requêtes SQL suivantes pour initialiser la base de données et ses tables relationnelles :
+
+```sql
+-- Création de la base de données avec encodage complet UTF-8 (support des emojis)
+CREATE DATABASE IF NOT EXISTS backend_ia
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE backend_ia;
+
+-- Table des conversations
+CREATE TABLE IF NOT EXISTS conversations (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_user_conversations (user_id)
+) ENGINE=InnoDB;
+
+-- Table des messages avec contrainte d'intégrité référentielle
+CREATE TABLE IF NOT EXISTS messages (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  conversation_id BIGINT UNSIGNED NOT NULL,
+  role ENUM('user', 'assistant') NOT NULL,
+  content LONGTEXT NOT NULL,
+  tokens_count INT UNSIGNED NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_messages_conversation
+    FOREIGN KEY (conversation_id)
+    REFERENCES conversations(id)
+    ON DELETE CASCADE,
+  INDEX idx_conversation_messages (conversation_id, created_at)
+) ENGINE=InnoDB;
+```
+
+---
+
+### 3. Créer le pool de connexions avec `mysql2/promise`
+
+Dans `src/config/database.ts`, nous configurons un **pool de connexions réutilisables** :
+
+```typescript
+// src/config/database.ts
+import mysql from 'mysql2/promise';
+import { env } from './env.js';
+
+export const pool = mysql.createPool({
+  host: env.DB_HOST,
+  user: env.DB_USER,
+  password: env.DB_PASSWORD,
+  database: env.DB_NAME,
+  port: env.DB_PORT,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+export async function testDatabaseConnection(): Promise<void> {
+  const connection = await pool.getConnection();
+  try {
+    await connection.ping();
+    console.log('[MySQL] Connexion à la base de données établie avec succès.');
+  } finally {
+    connection.release();
+  }
+}
+```
+
+---
+
+### 4. Requêtes SQL préparées : règle absolue contre les injections SQL
+
+Pour insérer un nouveau message, utilisez **exclusivement** des requêtes préparées avec paramètres positionnels `?` :
+
+```typescript
+// src/services/conversation.service.ts
+import { pool } from '../config/database.js';
+
+export async function saveMessage(
+  conversationId: number,
+  role: 'user' | 'assistant',
+  content: string
+): Promise<number> {
+  const [result] = await pool.execute(
+    `INSERT INTO messages (conversation_id, role, content)
+     VALUES (?, ?, ?)`,
+    [conversationId, role, content]
+  );
+
+  return (result as mysql.ResultSetHeader).insertId;
+}
+```
+
+<Callout type="warning" title="Sécurité SQL fondamentale">
+Ne concaténez jamais des chaînes pour fabriquer vos requêtes SQL. L'utilisation des paramètres liés `?` avec `pool.execute()` neutralise définitivement toute tentative d'injection SQL.
+</Callout>
+
+---
+
+### 5. Récupération sécurisée avec contrôle d'accès strict
+
+Lorsqu'un utilisateur demande à consulter l'historique d'une conversation, le serveur doit vérifier qu'il est bien le propriétaire de cette conversation :
+
+```typescript
+// src/services/conversation.service.ts (suite)
+export async function getConversationMessages(
+  conversationId: number,
+  userId: number
+) {
+  // Jointure vérifiant conjointement l'identifiant de conversation ET de l'utilisateur
+  const [rows] = await pool.execute(
+    `SELECT m.id, m.role, m.content, m.created_at
+     FROM messages AS m
+     INNER JOIN conversations AS c ON c.id = m.conversation_id
+     WHERE c.id = ? AND c.user_id = ?
+     ORDER BY m.created_at ASC`,
+    [conversationId, userId]
+  );
+
+  return rows;
+}
+```
+
+<MySQLPoolIsolationSimulator />
+
+---
+
+### 6. Gestion de la fenêtre de contexte conversationnel
+
+Lorsqu'une conversation s'étend sur des dizaines de tours, transmettre l'intégralité des messages à Gemini engendre deux problèmes majeurs :
+1. **Dépassement de la fenêtre de contexte** et surconsommation inutile de tokens.
+2. **Ralentissement de la réponse** (latence proportionnelle à la taille du prompt d'entrée).
+
+#### Stratégie recommandée :
+Ne chargez depuis MySQL que les **6 à 10 derniers messages** pour reconstituer le contexte immédiat, ou implémentez un résumé automatique des messages anciens.
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Connexion MySQL et persistance de messages"
+  objective="Créer le schéma relationnel, connecter un pool de connexions résilient et persister chaque échange utilisateur/IA dans MySQL."
+  duration="45 minutes"
+  steps={[
+    "Créer la base de données `backend_ia` et exécuter le script DDL créant la table `conversations` (avec `user_id`) et la table `messages` (avec clé étrangère `conversation_id`, `role: 'user' | 'assistant'`, `content: TEXT` et index).",
+    "Créer `src/config/database.ts` : instancier un pool `mysql2/promise` avec 10 connexions max, `waitForConnections: true` et `queueLimit: 0`.",
+    "Ajouter une vérification de connectivité `testDatabaseConnection()` dans `src/server.ts` exécutée avant `app.listen()` : si la base est inaccessible, arrêter le serveur proprement avec un code d'erreur.",
+    "Développer le service `src/services/conversation.service.ts` avec les méthodes : `createConversation(userId, title)`, `saveMessage(conversationId, role, content)` et `getRecentMessages(conversationId, userId, limit = 10)`.",
+    "Modifier le contrôleur de chat pour enregistrer le message utilisateur, appeler Gemini, puis enregistrer immédiatement la réponse de l'IA en base.",
+    "Tester l'isolation multi-utilisateurs : vérifier qu'un appel avec `userId = 2` sur une conversation appartenant à `userId = 1` retourne un tableau vide ou une erreur d'accès."
+  ]}
+  validationCriteria={[
+    "Le message de succès '✅ Connexion au pool MySQL établie' s'affiche au démarrage du serveur.",
+    "Les messages utilisateur et assistant sont persistés de manière asynchrone avec leurs horodatages corrects.",
+    "Le filtrage SQL garantit qu'aucun utilisateur ne peut lire les messages d'un tiers."
+  ]}
+>
+
+#### Configuration du pool MySQL dans `src/config/database.ts` :
+```typescript
+import mysql from 'mysql2/promise';
+import { env } from './env.js';
+
+export const pool = mysql.createPool({
+  host: process.env.MYSQL_HOST || 'localhost',
+  user: process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQL_PASSWORD || '',
+  database: process.env.MYSQL_DATABASE || 'backend_ia',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+export async function testDatabaseConnection(): Promise<void> {
+  const connection = await pool.getConnection();
+  try {
+    await connection.ping();
+    console.log('✅ Connexion au pool MySQL établie avec succès');
+  } finally {
+    connection.release();
+  }
+}
+```
+</PracticalWork>
+

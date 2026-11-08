@@ -1,0 +1,197 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+## 1. Cache Redis pour questions récurrentes avec clés sécurisées
+
+Dans une organisation de plusieurs centaines de collaborateurs, de nombreuses questions posées à l'IA sont redondantes (ex. : *"Comment poser des congés payés ?"*, *"Quel est le barème kilométrique 2026 ?"*). Appeler le modèle de fondation et recalculer des embeddings à chaque requête identique engendre des coûts superflus et dégrade la latence.
+
+```
+Requête Utilisateur
+        │
+        ▼
+┌───────────────────────────────┐
+│ Clé SHA-256 (Prompt + Rôle)   │
+└──────────────┬────────────────┘
+               │
+        ┌──────┴──────┐
+   Hit  │             │  Miss
+        ▼             ▼
+┌──────────────┐ ┌────────────────────────────────┐
+│ Réponse      │ │ Pipeline RAG + Gemini          │
+│ Redis (<5ms) │ │ Génération & Invalidation TTL  │
+└──────────────┘ └────────────────┬───────────────┘
+                                  │
+                                  ▼
+                         Sauvegarde en cache
+```
+
+### Génération sécurisée de la clé de cache
+
+Pour éviter qu'un collaborateur standard n'obtienne via le cache une réponse générée pour un gestionnaire RH (fuite de données cross-tenant), la clé de cache doit impérativement intégrer le niveau de privilège de l'utilisateur :
+
+```typescript
+// src/services/cache.service.ts
+import crypto from 'crypto';
+import { redisClient } from '@/config/redis';
+
+export class CacheService {
+  private static generateKey(prompt: string, userRole: string, departmentId: string): string {
+    const normalizedPrompt = prompt.trim().toLowerCase();
+    const hash = crypto
+      .createHash('sha256')
+      .update(`${userRole}:${departmentId}:${normalizedPrompt}`)
+      .digest('hex');
+    return `rag:cache:${hash}`;
+  }
+
+  static async getCachedAnswer(prompt: string, userRole: string, departmentId: string) {
+    const key = this.generateKey(prompt, userRole, departmentId);
+    const cached = await redisClient.get(key);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+    return null;
+  }
+
+  static async setCachedAnswer(
+    prompt: string,
+    userRole: string,
+    departmentId: string,
+    data: any,
+    ttlSeconds: number = 3600 // 1 heure par défaut
+  ) {
+    const key = this.generateKey(prompt, userRole, departmentId);
+    await redisClient.set(key, JSON.stringify(data), 'EX', ttlSeconds);
+  }
+}
+```
+
+---
+
+## 2. Élagage de contexte (Prompt Pruning) pour réduction des coûts
+
+Injecter l'intégralité d'un document ou des chunks inutiles dans le prompt augmente inutilement la consommation de tokens d'entrée. L'élagage de contexte repose sur trois leviers :
+
+1. **Seuil de similarité cosinus strict** : Seuls les chunks avec un score $\ge 0.72$ sont conservés.
+2. **Déduplication sémantique** : Élimination des passages quasi-identiques provenant de versions différentes.
+3. **Plafond dynamique de tokens** : Troncature contrôlée ne dépassant jamais 3 500 tokens d'entrée pour la synthèse RAG.
+
+```typescript
+// src/utils/contextPruner.ts
+export interface ScoredChunk {
+  text: string;
+  score: number;
+  metadata: { documentTitle: string; pageNumber: number };
+}
+
+export function pruneContext(chunks: ScoredChunk[], maxTokensBudget: number = 3000): ScoredChunk[] {
+  // 1. Filtrer les chunks en dessous du seuil de pertinence
+  const relevantChunks = chunks.filter((c) => c.score >= 0.72);
+
+  // 2. Trier par pertinence décroissante
+  relevantChunks.sort((a, b) => b.score - a.score);
+
+  const selectedChunks: ScoredChunk[] = [];
+  let currentTokenEstimate = 0;
+
+  for (const chunk of relevantChunks) {
+    // Règle empirique : 1 token ≈ 4 caractères en français / anglais
+    const estimatedTokens = Math.ceil(chunk.text.length / 3.8);
+    if (currentTokenEstimate + estimatedTokens <= maxTokensBudget) {
+      selectedChunks.push(chunk);
+      currentTokenEstimate += estimatedTokens;
+    } else {
+      break;
+    }
+  }
+
+  return selectedChunks;
+}
+```
+
+---
+
+## 3. Journalisation structurée avec Pino et traçabilité par Correlation ID
+
+Pour débugger un incident sur une architecture distribuée (Frontend -> Express -> Gemini -> Qdrant -> n8n), chaque requête se voit attribuer un identifiant unique `x-correlation-id` propagé dans tous les services.
+
+```typescript
+// src/middlewares/correlation.middleware.ts
+import { Request, Response, NextFunction } from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import pino from 'pino';
+
+export const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  formatters: {
+    level: (label) => ({ level: label.toUpperCase() }),
+  },
+  timestamp: pino.stdTimeFunctions.isoTime,
+});
+
+export const correlationMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const correlationId = (req.headers['x-correlation-id'] as string) || uuidv4();
+  req.headers['x-correlation-id'] = correlationId;
+  res.setHeader('x-correlation-id', correlationId);
+
+  // Logger enfant contextuel
+  req.logger = logger.child({
+    correlationId,
+    method: req.method,
+    url: req.originalUrl,
+    userId: req.user?.id,
+  });
+
+  req.logger.info('Requête HTTP entrante reçue');
+  next();
+};
+```
+
+### Journalisation structurée des consommations de jetons
+
+Chaque appel Gemini consigne un événement télémétrique pour monitorer les dépenses en temps réel :
+
+```typescript
+req.logger.info({
+  event: 'LLM_COMPLETION_COMPLETED',
+  model: 'gemini-2.5-flash',
+  promptTokens: usage.promptTokenCount,
+  completionTokens: usage.candidatesTokenCount,
+  totalTokens: usage.totalTokenCount,
+  latencyMs: durationMs,
+  costEstimatedUSD: (usage.promptTokenCount * 0.075 + usage.candidatesTokenCount * 0.30) / 1_000_000,
+});
+```
+
+<Callout type="info">
+La centralisation des logs au format JSON permet une ingestion fluide dans des plateformes d'observabilité telles que Datadog, Grafana Loki ou AWS CloudWatch sans nécessiter de parseurs regex complexes.
+</Callout>
+
+<QuickQuiz
+  title="Validation des Connaissances — Caching & Observabilité"
+  questions={[
+    {
+      question: "Pourquoi est-il crucial d'intégrer le rôle de l'utilisateur dans la clé de cache Redis ?",
+      options: [
+        "(Recommended) Pour éviter qu'un utilisateur non autorisé n'accède à des réponses issues de documents confidentiels cachées pour un rôle supérieur",
+        "Pour augmenter la taille mémoire allouée à Redis sur le serveur",
+        "Pour ralentir artificiellement les requêtes des collaborateurs",
+        "Parce que Redis refuse les clés de cache ne comportant pas de rôle utilisateur"
+      ],
+      correctIndex: 0,
+      explanation: "L'isolation des réponses en cache par rôle empêche tout risque d'élévation de privilège ou de fuite d'informations confidentielles entre différents profils d'utilisateurs."
+    },
+    {
+      question: "À quoi sert l'en-tête x-correlation-id dans une architecture distribuée ?",
+      options: [
+        "(Recommended) À suivre une même requête utilisateur à travers tous les microservices et logs de la plateforme",
+        "À crypter les mots de passe des utilisateurs dans la base MySQL",
+        "À remplacer le jeton JWT d'authentification",
+        "À forcer le rechargement de la page web côté navigateur"
+      ],
+      correctIndex: 0,
+      explanation: "Le Correlation ID relie les logs applicatifs, les traces réseau et les appels LLM déclenchés par une action utilisateur unique, simplifiant l'audit et la résolution des pannes."
+    }
+  ]}
+/>
+

@@ -1,0 +1,138 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Mise en production, évaluation & Annexes
+
+### 1. Préparer un backend IA pour la production
+
+Le passage d'un prototype local à une API de production exige une discipline d'ingénierie rigoureuse :
+- **Séparation des configurations** : Utiliser un gestionnaire de secrets dédié (ex: Google Cloud Secret Manager) pour injecter `API_KEY_GEMINI` et les accès BDD sans aucun fichier physique sur le serveur.
+- **Reproductibilité des dépendances** : Utiliser impérativement `npm ci` plutôt que `npm install` sur vos serveurs d'intégration continue (CI/CD) pour respecter strictement les versions figées dans `package-lock.json`.
+- **Audit de sécurité régulier** : Exécuter régulièrement `npm audit` pour identifier et corriger les failles connues des dépendances tierces.
+- **Compilation TypeScript obligatoire** : En production, l'application doit tourner avec `node dist/server.js` sur le code JavaScript compilé, jamais avec `tsx`.
+
+---
+
+### 2. Checklist complète de mise en production
+
+Avant de déployer votre API IA, vérifiez point par point les critères suivants :
+
+- [x] **Clés d'API sécurisées** : Aucune clé Gemini ou mot de passe n'est présent dans le dépôt Git.
+- [x] **Validation Zod systématique** : Tous les corps de requêtes entrants (`req.body`) sont validés.
+- [x] **Requêtes SQL préparées** : Zéro concaténation de chaînes dans les requêtes `mysql2`.
+- [x] **Limitation de débit activée** : `express-rate-limit` est en place pour juguler les abus.
+- [x] **En-têtes Helmet configurés** : Protection contre le détournement de clics et le MIME-sniffing.
+- [x] **CORS restreint** : Seules les origines des clients officiels sont autorisées.
+- [x] **Middleware d'erreur centralisé** : Aucune stack trace interne n'est exposée au public.
+- [x] **Timeouts configurés** : Les appels à Google Gemini sont bornés à un délai maximal (ex: 15 secondes).
+- [x] **Tests au vert** : La commande `npm test` s'exécute avec 100% de succès.
+- [x] **Build TypeScript réussi** : La commande `npm run build` génère le dossier `dist/` sans erreur.
+
+---
+
+### ANNEXE 1 — Commandes essentielles du backend IA
+
+```bash
+# 1. Initialiser le projet et installer les dépendances
+npm init -y
+npm install express dotenv @google/genai zod mysql2 helmet cors express-rate-limit
+npm install -D typescript tsx @types/node @types/express @types/cors vitest supertest @types/supertest
+
+# 2. Cycle de développement
+npm run dev     # Démarrage avec rechargement à chaud (tsx watch)
+npm test        # Exécution des tests automatisés avec Vitest
+npm run build   # Compilation TypeScript vers le dossier dist/
+npm start       # Démarrage du binaire compilé en production
+npm audit       # Audit de sécurité des vulnérabilités de packages
+```
+
+---
+
+### ANNEXE 2 — Documentation officielle de référence
+
+- **Node.js Documentation** : [https://nodejs.org/docs/latest/api/](https://nodejs.org/docs/latest/api/)
+- **TypeScript Handbook** : [https://www.typescriptlang.org/docs/](https://www.typescriptlang.org/docs/)
+- **Express.js API Reference** : [https://expressjs.com/](https://expressjs.com/)
+- **Google Gen AI SDK (@google/genai)** : [https://googleapis.github.io/js-genai/](https://googleapis.github.io/js-genai/)
+- **Gemini Interactions API** : [https://ai.google.dev/gemini-api/docs/interactions](https://ai.google.dev/gemini-api/docs/interactions)
+- **Zod — TypeScript Schema Validation** : [https://zod.dev/](https://zod.dev/)
+- **MySQL2 Documentation** : [https://sidorares.github.io/node-mysql2/](https://sidorares.github.io/node-mysql2/)
+- **Vercel AI SDK Core** : [https://ai-sdk.dev/docs](https://ai-sdk.dev/docs)
+- **Vitest Testing Framework** : [https://vitest.dev/](https://vitest.dev/)
+- **Supertest HTTP Assertions** : [https://github.com/ladjs/supertest](https://github.com/ladjs/supertest)
+
+---
+
+### ANNEXE 3 — Vocabulaire technique de référence
+
+| Terme | Définition technique |
+| :--- | :--- |
+| **Backend** | Couche applicative serveur gérant la logique métier, la persistance et les secrets |
+| **Endpoint** | URL associée à une méthode HTTP (ex. `POST /api/ai/generate`) exposant une fonction |
+| **Controller** | Composant HTTP recevant les requêtes, orchestrant les services et formant la réponse |
+| **Service** | Classe ou fonction encapsulant une règle métier ou un appel d'API sans dépendance à Express |
+| **Middleware** | Fonction s'exécutant dans le pipeline de traitement entre la requête et le contrôleur |
+| **Rate Limiting** | Mécanisme de plafonnement du nombre de requêtes par unité de temps par adresse IP |
+| **Pool de connexions** | Ensemble de connexions BDD pré-établies et réutilisées pour maximiser les performances |
+| **Requête préparée** | Méthode d'exécution SQL séparant la commande des données pour bloquer les injections |
+
+---
+
+### Conclusion du Module 3
+
+Vous maîtrisez désormais l'architecture complète d'un **backend IA professionnel, robuste, hautement sécurisé et prêt pour la production**.
+
+Vous savez :
+- Développer une API RESTful avec Node.js, Express et TypeScript en mode strict.
+- Séparer nettement les routes, les contrôleurs, les services et les middlewares.
+- Valider systématiquement les données avec Zod avant d'interroger Google Gemini.
+- Persister les conversations dans MySQL à l'aide de requêtes préparées non injectables.
+- Protéger votre API contre les abus, les dépassements de coûts et les attaques par déni de service.
+- Tester rigoureusement chaque composant avec Vitest et Supertest sans dépendre du réseau.
+
+Ces compétences forment le socle indispensable pour aborder le **Module 4**, dédié à l'architecture **RAG (Retrieval-Augmented Generation)** et à la recherche sémantique vectorielle avec **MySQL et Qdrant**.
+
+---
+
+<QuickQuiz
+  title="Auto-évaluation finale : Bilan du Module 3"
+  questions={[
+    {
+      id: 1,
+      question: "Quelle méthode permet d'empêcher les injections SQL dans mysql2/promise ?",
+      options: [
+        "Concaténer les variables avec des guillemets doubles",
+        "Utiliser pool.execute() avec des requêtes préparées et des paramètres positionnels ?",
+        "Désactiver le pare-feu du serveur",
+        "Encoder les chaînes en Base64"
+      ],
+      correctIndex: 1,
+      explanation: "Les requêtes préparées avec les paramètres liés ? assurent que les entrées utilisateurs sont traitées comme de simples données, jamais comme des commandes SQL exécutables."
+    },
+    {
+      id: 2,
+      question: "Pourquoi est-il crucial de séparer app.ts et server.ts ?",
+      options: [
+        "Pour que Supertest puisse exécuter des tests d'intégration en mémoire sans écouter sur un vrai port réseau",
+        "Parce que Node.js interdit d'avoir plus de 50 lignes par fichier",
+        "Pour permettre à React de lire directement app.ts",
+        "Pour doubler la vitesse des processeurs"
+      ],
+      correctIndex: 0,
+      explanation: "Séparer la définition de l'application (app.ts) de son démarrage réseau (server.ts) permet de tester les routes HTTP ultra-rapidement avec Supertest sans conflit de ports."
+    },
+    {
+      id: 3,
+      question: "Pourquoi simule-t-on (mock) le service Gemini lors des tests unitaires ?",
+      options: [
+        "Parce que Gemini est interdit en environnement de test",
+        "Pour accélérer les tests, éviter de consommer des quotas payants et garantir des assertions stables",
+        "Parce que les tests ne supportent pas le protocole HTTPS",
+        "Pour forcer le serveur à utiliser MySQL à la place"
+      ],
+      correctIndex: 1,
+      explanation: "Mocker le SDK évite tout coût de token, supprime la dépendance au réseau Internet et permet de tester tous les cas d'erreurs en quelques millisecondes."
+    }
+  ]}
+/>
+

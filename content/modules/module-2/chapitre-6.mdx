@@ -1,0 +1,270 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { StreamingSimulator } from '@/components/interactive/StreamingSimulator';
+
+# Chapitre 6 — Hooks et interfaces IA avancées
+
+### 1. Le rôle des hooks spécialisés dans le frontend IA
+
+Gérer manuellement le streaming en temps réel avec des WebSockets ou des Server-Sent Events (SSE) requiert des dizaines de lignes de code : instancier un lecteur de flux `ReadableStream`, concaténer les encodages UTF-8, synchroniser l'affichage avec le cycle de rendu de React et gérer les désabonnements.
+
+Le package `@ai-sdk/react` simplifie drastiquement ce travail en encapsulant toute cette complexité au sein de **hooks React dédiés** tels que `useChat` et `useCompletion`.
+
+---
+
+### 2. Architecture de communication avec useChat
+
+<ArchitectureDiagram
+  title="Flux de streaming UI via Vercel AI SDK"
+  diagram={`REACT FRONTEND                          SERVEUR BACKEND NODE.JS                 GOOGLE CLOUD
+[ useChat() ]                             [ Route POST /api/chat ]             [ Gemini 2.5 Flash ]
+      |                                              |                                  |
+      |--- 1. Envoi du message (POST JSON) --------->|                                  |
+      |                                              |--- 2. Appel streamText() ------->|
+      |                                              |<-- 3. Flux de tokens (SSE) ------|
+      |<-- 4. pipeUIMessageStreamToResponse() -------|                                  |
+      |    (Mise à jour en temps réel du composant)  |                                  |`}
+/>
+
+---
+
+### 3. Implémenter la route API de streaming côté backend
+
+Dans votre serveur Express (ou route handler Next.js) :
+
+```typescript
+// server/routes/chat.route.ts
+import express from 'express';
+import { streamText } from 'ai';
+import { google } from '../services/gemini-provider.js';
+
+const router = express.Router();
+
+router.post('/chat', async (req, res) => {
+  try {
+    const { messages } = req.body;
+
+    const result = streamText({
+      model: google('gemini-2.5-flash'),
+      messages,
+      system: "Tu es un assistant technique expert en développement frontend.",
+    });
+
+    // Envoi direct du flux standardisé UI vers la réponse HTTP
+    result.pipeUIMessageStreamToResponse(res);
+  } catch (error) {
+    console.error('Erreur streaming :', error);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Erreur lors du streaming avec Gemini' });
+    }
+  }
+});
+
+export default router;
+```
+
+---
+
+### 4. Intégrer useChat dans le composant React
+
+Dans votre application cliente React :
+
+```tsx
+// src/components/Chat/AIChatStream.tsx
+'use client';
+
+import React, { useState } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+
+const transport = new DefaultChatTransport({
+  api: 'http://localhost:3000/api/chat',
+});
+
+export default function AIChatStream() {
+  const [inputMessage, setInputMessage] = useState('');
+  const { messages, sendMessage, status, stop } = useChat({
+    transport,
+  });
+
+  const isStreaming = status === 'streaming';
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputMessage.trim() || isStreaming) return;
+    sendMessage({ text: inputMessage.trim() });
+    setInputMessage('');
+  };
+
+  return (
+    <div className="flex flex-col h-[500px] rounded-2xl border border-slate-200 bg-white p-4">
+      {/* Zone des messages reçus en direct */}
+      <div className="flex-1 overflow-y-auto space-y-3 p-2">
+        {messages.map((message) => (
+          <div key={message.id} className={`p-3 rounded-xl text-sm ${message.role === 'user' ? 'bg-indigo-50 text-indigo-900 ml-8' : 'bg-slate-50 text-slate-900 mr-8'}`}>
+            <span className="font-bold block text-sm mb-1 uppercase tracking-wider text-slate-500">
+              {message.role === 'user' ? 'Vous' : 'Gemini'}
+            </span>
+            {message.parts.map((part, index) => (
+              part.type === 'text' ? <p key={index} className="whitespace-pre-wrap">{part.text}</p> : null
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Barre d'actions et formulaire */}
+      <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+        <div className="flex items-center justify-between text-sm text-slate-500">
+          <span>Statut : <strong className="font-mono">{status}</strong></span>
+          {isStreaming && (
+            <button
+              type="button"
+              onClick={stop}
+              className="text-rose-600 font-bold hover:underline"
+            >
+              Arrêter la génération (stop)
+            </button>
+          )}
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <input
+            type="text"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Posez votre question..."
+            className="flex-1 rounded-xl border border-slate-200 px-4 py-2 text-sm focus:outline-none focus:border-indigo-500"
+          />
+          <button
+            type="submit"
+            disabled={!inputMessage.trim() || isStreaming}
+            className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            Envoyer
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### 5. Atelier interactif : Simulation de streaming en direct
+
+Testez ci-dessous le cycle de vie complet d'un flux de streaming : la réception incrémentale de fragments, la mise à jour dynamique du statut et l'interruption précoce avec le bouton d'arrêt :
+
+<StreamingSimulator />
+
+---
+
+### Atelier comparatif : Mesure de latence Streaming SSE versus Requête Monobloc
+
+Constatez l'impact direct sur la perception utilisateur en comparant le temps d'apparition du premier mot (Time To First Token) :
+
+<StreamVsBatchSimulator />
+
+---
+
+### 6. Comparatif : useChat versus useCompletion
+
+| Hook | Cas d'usage principal | Modèle de données |
+| :--- | :--- | :--- |
+| **`useChat`** | Assistant conversationnel multi-tours | Gère un tableau de messages ordonnés (`ChatMessage[]`) avec rôles alternés |
+| **`useCompletion`** | Outils ponctuels (générateur d'e-mails, résumeur, traducteur) | Gère un prompt textuel unique et produit une complétion textuelle isolée |
+
+---
+
+<PracticalWork
+  title="Travail Pratique 6 — Intégration de useChat et Streaming temps réel"
+  objective="Mettre en œuvre une liaison temps réel fluide entre un endpoint de streaming Express et un composant React avec le hook useChat."
+  duration="45 minutes"
+  steps={[
+    "Installer `@ai-sdk/react` dans l'application frontend React.",
+    "Développer la route Express `POST /api/chat` : extraire le tableau `messages` du corps de requête, lancer `streamText({ model: google('gemini-2.5-flash'), messages })`, puis envoyer le flux avec `pipeUIMessageStreamToResponse(result.toUIMessageStream(), res)`.",
+    "Dans le composant React `ChatContainer.tsx`, initialiser `useChat({ transport: new DefaultChatTransport({ url: 'http://localhost:3000/api/chat' }) })`.",
+    "Lier les variables retournées : `messages` (affichage de la discussion), `input` et `handleInputChange` (champ de texte), `handleSubmit` (formulaire).",
+    "Ajouter un bouton 'Arrêter la réponse' lié à la méthode `stop()` active uniquement lorsque `status === 'streaming'`.",
+    "Vérifier le bon fonctionnement du flux : demander un texte très long (ex. 'Écris une dissertation de 1000 mots sur l'espace') et cliquer sur 'Arrêter' au bout de 3 secondes pour constater l'interruption immédiate sans erreur."
+  ]}
+  validationCriteria={[
+    "Les mots s'affichent progressivement à l'écran dès les premières millisecondes (latence perçue minimale).",
+    "Le bouton d'arrêt (`stop()`) interrompt instantanément le flux réseau dans l'onglet Network des DevTools.",
+    "L'état de saisie se réactive immédiatement dès la fin ou l'interruption de la génération."
+  ]}
+>
+
+#### Implémentation du composant client React avec useChat :
+```tsx
+import React from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+
+export const StreamingChat: React.FC = () => {
+  const { messages, input, handleInputChange, handleSubmit, status, stop } = useChat({
+    transport: new DefaultChatTransport({
+      url: 'http://localhost:3000/api/chat',
+    }),
+  });
+
+  return (
+    <div className="flex flex-col h-[600px] border rounded-2xl bg-white shadow-sm overflow-hidden">
+      {/* Liste des messages avec auto-scroll */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((m) => (
+          <div
+            key={m.id}
+            className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[80%] rounded-2xl p-4 ${
+                m.role === 'user'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-slate-100 text-slate-900 border border-slate-200'
+              }`}
+            >
+              <p className="whitespace-pre-wrap">{m.content}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Barre d'état et formulaire */}
+      <div className="p-4 border-t bg-slate-50">
+        {status === 'streaming' && (
+          <div className="flex justify-between items-center mb-3 text-sm text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200">
+            <span>⚡ Réception des données en direct...</span>
+            <button
+              onClick={stop}
+              className="px-2.5 py-1 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700"
+            >
+              Arrêter (stop)
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <input
+            value={input}
+            onChange={handleInputChange}
+            placeholder="Posez votre question..."
+            disabled={status === 'streaming'}
+            className="flex-1 px-4 py-2.5 border rounded-xl"
+          />
+          <button
+            type="submit"
+            disabled={status === 'streaming' || !input.trim()}
+            className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold disabled:opacity-50"
+          >
+            Envoyer
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+```
+</PracticalWork>

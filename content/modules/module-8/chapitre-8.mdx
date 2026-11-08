@@ -1,0 +1,116 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 8 — Pipeline RAG haute fidélité avec traçabilité et citation des sources
+
+### 1. Déroulement du cycle RAG complet
+
+Le pipeline de **Génération Augmentée par Récupération (RAG)** de la plateforme orchestre 6 étapes coordonnées :
+
+<ArchitectureDiagram
+  title="Cycle RAG haute fidélité de la plateforme"
+  diagram={`QUESTION DU COLLABORATEUR ("Quelles sont les modalités de télétravail ?")
+                       |
+                       v
+[ 1. EMBEDDING DE LA QUESTION ] (Gemini text-embedding-004)
+                       |
+                       v
+[ 2. RECHERCHE VECTORIELLE FILTRÉE DANS QDRANT ]
+(Filtre strict : userId = demandeur OR access = 'public')
+                       |
+                       v
+[ 3. VÉRIFICATION DU SEUIL DE SIMILARITÉ COSINUS ]
+   /                                         \\
+(Score maximal < 0.70)                 (Score >= 0.70)
+   |                                         |
+   v                                         v
+Aveu d'incertitude immédiat       [ 4. EXTRACTION MYSQL DES MÉTADONNÉES ]
+                                  (Nom du fichier, Page, Titre de section)
+                                             |
+                                             v
+                                  [ 5. ASSEMBLAGE DU PROMPT ANCRÉ ]
+                                             |
+                                             v
+                                  [ 6. GÉNÉRATION & CITATION PAR GEMINI ]`}
+/>
+
+---
+
+### 2. Filtrage vectoriel par permissions d'accès dans Qdrant
+
+Pour empêcher qu'un employé ne voie les fragments de fiches de paie ou de contrats confidentiels d'autres départements, Qdrant applique un filtre de payload au moment de la recherche :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/rag/ragSearch.service.ts — Recherche avec filtrage d'accès"
+  code={`import { qdrantClient } from '../../config/qdrant';
+import { ai, EMBEDDING_MODEL } from '../../config/gemini';
+
+export async function searchAuthorizedChunks(query: string, userId: number, limit: number = 4) {
+  // 1. Calcul de l'embedding de la question
+  const embedRes = await ai.models.embedContent({
+    model: EMBEDDING_MODEL,
+    contents: [{ parts: [{ text: query }] }],
+  });
+
+  const queryVector = embedRes.embedding?.values;
+  if (!queryVector) throw new Error("Échec d'embedding de la requête.");
+
+  // 2. Recherche vectorielle avec filtre de sécurité étanche
+  const matches = await qdrantClient.search('enterprise_knowledge', {
+    vector: queryVector,
+    limit,
+    score_threshold: 0.72, // Seuil de pertinence minimal anti-bruit
+    filter: {
+      should: [
+        { key: 'userId', match: { value: userId } },       // Ses propres documents
+        { key: 'isPublic', match: { value: true } },       // Documentation générale d'entreprise
+      ],
+    },
+  });
+
+  return matches;
+}`}
+/>
+
+---
+
+### 3. Extraction et association vérifiable des sources
+
+Lorsque Gemini produit sa réponse, le service extrait les identifiants des fragments utilisés pour peupler la table `message_sources`.
+Le frontend React reçoit un objet enrichi permettant d'afficher des **puces cliquables** sous le message :
+
+<CodeBlock
+  language="json"
+  title="Format de réponse enrichie avec sources vérifiées"
+  code={`{
+  "content": "Le télétravail est autorisé jusqu'à 2 jours par semaine après validation du responsable direct.",
+  "sources": [
+    {
+      "documentTitle": "Accord_Entreprise_Teletravail_2026.pdf",
+      "pageNumber": 4,
+      "relevanceScore": 0.91,
+      "exactSnippet": "Le salarié bénéficie d'une enveloppe maximale de deux journées de travail à distance par semaine calendaire..."
+    }
+  ]
+}`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi configure-t-on un seuil de similarité cosinus minimal (ex. score >= 0.72) lors de la recherche vectorielle dans Qdrant ?"
+  options={[
+    "Pour éteindre automatiquement le serveur la nuit",
+    "Pour filtrer le bruit documentaire et éviter d'injecter des fragments non pertinents qui inciteraient Gemini à halluciner sur des sujets non traités",
+    "Pour réduire la taille des polices de caractères",
+    "Car Qdrant refuse de retourner plus de 2 résultats sans ce paramètre"
+  ]}
+  correctIndex={1}
+  explanation="Si aucun fragment n'atteint un score de similarité suffisant, il est préférable de ne rien transmettre au modèle : cela déclenche la consigne d'aveu d'incertitude plutôt que de risquer une réponse hasardeuse basée sur des documents hors sujet."
+/>
+

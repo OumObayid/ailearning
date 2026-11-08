@@ -1,0 +1,132 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 9 — Résilience, sous-workflows et gestion des erreurs
+
+### 1. Modulariser les flux avec les sous-workflows
+
+À mesure que les logiques d'automatisation grandissent, regrouper l'intégralité des étapes au sein d'un seul graphe monolithique entraîne :
+- Une perte de lisibilité majeure (*graphe en toile d'araignée*).
+- Une duplication de code (ex. la même logique d'envoi d'alerte Slack dupliquée dans 10 flux distincts).
+- Une difficulté accrue pour tester unitairement chaque fonction.
+
+Pour résoudre ce problème, n8n propose le nœud **Execute Sub-workflow** :
+- Le workflow parent appelle un sous-workflow dédié en lui transmettant des données ciblées.
+- Le sous-workflow exécute sa tâche spécialisée (ex. formater un message et poster sur Slack).
+- Le sous-workflow renvoie son résultat au flux parent qui reprend son exécution normale.
+
+---
+
+### 2. Typologie des erreurs en production
+
+Face aux aléas réseau et aux services tiers, toutes les défaillances ne doivent pas être traitées de la même manière :
+
+| Catégorie d'erreur | Origine courante | Stratégie recommandée |
+| :--- | :--- | :--- |
+| **Erreurs transitoires (Transient)** | Coupure réseau temporaire, Timeout, HTTP 429 (*Rate Limit* Gemini ou API) | **Reprise automatique (Retry)** avec temporisation exponentielle |
+| **Erreurs permanentes (Deterministic)** | HTTP 400 (*Bad Request*), schéma JSON corrompu, clé d'API révoquée | **Arrêt immédiat**, consigne dans les logs d'erreurs et alerte humaine |
+| **Erreurs métier (Business logic)** | Compte client clôturé, solde insuffisant, email inexistant | **Aiguillage vers une branche dédiée** sans faire échouer le workflow |
+
+---
+
+### 3. Mécanismes de reprise automatique (Retry) et idempotence
+
+Dans chaque nœud n8n, sous l'onglet **Settings**, vous pouvez activer le mécanisme de rejeu automatique :
+- **Retry on Fail** : Coché.
+- **Max Tries** : `3` à `5` tentatives.
+- **Wait Between Tries (ms)** : `2000` à `5000` millisecondes.
+
+<Callout type="warning" title="La règle d'or de l'idempotence">
+Avant d'activer le réessai automatique sur un nœud d'action (comme un débit bancaire ou l'envoi d'un email de confirmation), assurez-vous que l'opération est <strong>idempotente</strong>. Réexécuter une action trois fois ne doit pas débiter le client trois fois ni lui envoyer des emails en triple.
+</Callout>
+
+---
+
+### 4. Workflow d'erreur global avec le nœud Error Trigger
+
+Lorsqu'un nœud échoue de manière critique malgré les tentatives de reprise, n8n peut déléguer automatiquement le traitement de l'incident à un workflow dédié grâce au nœud **Error Trigger**.
+
+<ArchitectureDiagram
+  title="Délégation d'incident vers le workflow d'erreur centralisé"
+  diagram={`[ WORKFLOW MÉTIER PRINCIPAL ]
+             |
+       (Erreur non rattrapée)
+             |
+             v
+   [ NŒUD ERROR TRIGGER ] (Workflow centralisé d'urgence)
+             |
+             +---> 1. Extraction du nom du workflow, du nœud fautif et de la stacktrace
+             +---> 2. Mise à jour de la table MySQL (status = 'failed')
+             +---> 3. Envoi d'un message urgent avec mention @oncall sur Slack`}
+/>
+
+#### Configuration du rattachement
+Dans le workflow principal, ouvrez les paramètres globaux (**Workflow Settings**) et sélectionnez votre workflow de gestion des erreurs dans le champ **Error Workflow**.
+
+---
+
+### 5. Travail pratique 5 : Gestion des pannes et alertes administrateur
+
+<PracticalWork
+  title="Création d'un sous-workflow d'alerte et gestionnaire d'incidents"
+  difficulty="Intermédiaire"
+  duration="35 minutes"
+  objectives={[
+    "Créer un workflow indépendant avec le nœud Error Trigger",
+    "Extraire les métadonnées de l'erreur ($execution.error, $workflow.name)",
+    "Formater une alerte Slack / Email détaillée avec le lien direct vers l'exécution",
+    "Provoquer une erreur volontaire dans un workflow de test pour vérifier le déclenchement"
+  ]}
+>
+<p className="text-sm text-slate-700 leading-relaxed">
+Dans cet exercice, vous allez bâtir le filet de sécurité opérationnel qui avertira instantanément votre équipe technique en cas d'interruption anormale d'un workflow.
+</p>
+
+#### Étape 1 : Créer le workflow d'incident
+1. Créez un nouveau workflow intitulé `System - Global Error Handler`.
+2. Ajoutez le déclencheur **Error Trigger**.
+3. Ajoutez un nœud **Code** pour préparer le rapport d'incident :
+
+```javascript
+const err = $execution.error;
+const wf = $workflow;
+
+return [
+  {
+    json: {
+      alertTitle: `🚨 Incident d'automatisation sur [${wf.name}]`,
+      nodeFailed: err.node?.name || 'Nœud inconnu',
+      errorMessage: err.message || 'Erreur non documentée',
+      executionId: $execution.id,
+      timestamp: new Date().toISOString(),
+      dashboardUrl: `http://localhost:5678/workflow/${wf.id}/executions/${$execution.id}`
+    }
+  }
+];
+```
+
+#### Étape 2 : Lier et tester
+1. Dans votre workflow de test, configurez le champ *Error Workflow* avec l'identifiant du gestionnaire.
+2. Forcez une division par zéro ou une URL inexistante dans un nœud HTTP Request.
+3. Exécutez le flux : observez l'amorce immédiate du workflow d'erreur et la génération du rapport détaillé.
+</PracticalWork>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Quel déclencheur n8n s'exécute automatiquement lorsqu'un autre workflow subit une interruption fatale en production ?"
+  options={[
+    "Schedule Trigger",
+    "Error Trigger",
+    "Webhook Trigger en mode streaming",
+    "Loop Over Items Trigger"
+  ]}
+  correctIndex={1}
+  explanation="Le nœud Error Trigger est spécialement conçu pour écouter les défaillances globales des workflows qui lui sont associés via les Workflow Settings, permettant une consignation centralisée et un alerting immédiat."
+/>
+

@@ -1,0 +1,175 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { RAGPipelineSimulator } from '@/components/interactive/RAGPipelineSimulator';
+
+# Chapitre 10 — Construction du contexte et génération augmentée Gemini
+
+### 1. L'anatomie d'un prompt RAG professionnel
+
+Le prompt transmis à Google Gemini ne se contente pas de répéter la question de l'utilisateur. Il orchestre un ensemble structuré comprenant le rôle, les règles de rigueur, le contexte extrait et la demande :
+
+```text
+======================= INSTRUCTIONS SYSTÈME =======================
+Tu es un assistant documentaire professionnel et rigoureux.
+Ton rôle est de répondre à la question de l'utilisateur EN UTILISANT
+EXCLUSIVEMENT les faits énoncés dans la section [CONTEXTE DOCUMENTAIRE].
+
+RÈGLES IMPÉRATIVES DE SÉCURITÉ :
+1. Si l'information ne se trouve pas explicitement dans le contexte,
+   indique clairement : "Désolé, cette information ne figure pas dans
+   les documents fournis."
+2. Ne fais aucune supposition ni déduction non vérifiable.
+3. Cite systématiquement le numéro de la source utilisée [Source X].
+====================================================================
+
+====================== CONTEXTE DOCUMENTAIRE =======================
+[Source 1]
+Document : conditions-remboursement.pdf (Fragment #12)
+Contenu : Le client dispose d'un délai légal de 14 jours pour demander
+un remboursement complet après réception.
+
+[Source 2]
+Document : guide-livraison.pdf (Fragment #04)
+Contenu : Les livraisons s'effectuent sous 48h ouvrées.
+====================================================================
+
+QUESTION DE L'UTILISATEUR :
+Combien de jours ai-je pour demander un remboursement ?
+```
+
+---
+
+### 2. Implémenter le constructeur de contexte `buildContext`
+
+Dans `src/services/context.service.ts` :
+
+```typescript
+// src/services/context.service.ts
+import type { RetrievedChunk } from './document.service.js';
+
+export function buildRAGContext(chunks: RetrievedChunk[]): string {
+  if (chunks.length === 0) {
+    return "AUCUN DOCUMENT PERTINENT RETROUVÉ DANS LA BASE DE CONNAISSANCES.";
+  }
+
+  return chunks
+    .map((chunk, index) => {
+      return `[Source ${index + 1}]
+Document : ${chunk.title} (ID Fragment: #${chunk.id})
+Contenu : ${chunk.content.trim()}`;
+    })
+    .join('\n\n---\n\n');
+}
+```
+
+---
+
+### 3. Implémenter le service de génération avec Gemini
+
+Dans `src/services/rag-generation.service.ts` :
+
+```typescript
+// src/services/rag-generation.service.ts
+import { GoogleGenAI } from '@google/genai';
+import { env } from '../config/env.js';
+
+const ai = new GoogleGenAI({
+  apiKey: env.API_KEY_GEMINI,
+});
+
+export async function generateRAGAnswer(
+  question: string,
+  contextText: string
+): Promise<string> {
+  const fullPrompt = `Tu es un assistant documentaire d'entreprise.
+Réponds à la question en t'appuyant rigoureusement sur le contexte ci-dessous.
+Si le contexte ne contient pas l'information requise pour répondre avec certitude,
+affirme clairement que l'information n'est pas disponible. Ne présente jamais d'hypothèse comme un fait.
+
+CONTEXTE DOCUMENTAIRE :
+${contextText}
+
+QUESTION DE L'UTILISATEUR :
+${question}`;
+
+  const interaction = await ai.interactions.create({
+    model: 'gemini-2.5-flash',
+    input: fullPrompt,
+    system_instruction: "Tu es un expert en recherche documentaire. Tu cites toujours tes sources.",
+  });
+
+  const responseText = interaction.outputs
+    ?.filter((item) => item.type === 'text')
+    .map((item) => item.text)
+    .join('\n');
+
+  if (!responseText) {
+    throw new Error("Gemini n'a renvoyé aucune réponse exploitable.");
+  }
+
+  return responseText;
+}
+```
+
+---
+
+### 4. Atelier interactif : Simulation du pipeline RAG
+
+Testez ci-dessous la vectorisation, la recherche Qdrant et l'ancrage de la réponse Gemini :
+
+<RAGPipelineSimulator />
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Assemblage du contexte documentaire et génération ancrée"
+  objective="Formater les fragments textuels issus de MySQL sous forme de sources numérotées et configurer le prompt système anti-hallucination dans Gemini."
+  duration="40 minutes"
+  steps={[
+    "Développer la fonction `buildRAGContext(chunks: Array<{ id: number, title: string, content: string }>): string` : formater chaque fragment sous la forme `[Source N — Titre] Extrait : ...`.",
+    "Créer la fonction `generateRAGAnswer(question: string, context: string)` dans `src/services/gemini.service.ts` avec une température fixée à 0.1 pour maximiser la rigueur factuelle.",
+    "Rédiger le prompt système d'ancrage strict : interdire d'utiliser des connaissances externes et forcer la mention explicite des sources citées (ex. *(Source 1)*).",
+    "Tester le scénario nominal : poser une question présente textuellement dans les sources et valider la citation exacte de l'extrait.",
+    "Tester le scénario piège : poser une question totalement absente du contexte documentaire (ex. *'Quelle est la capitale du Pérou ?'*) et vérifier que Gemini répond fidèlement par la clause convenue (*'Je ne dispose pas de cette information dans les documents fournis'*)."
+  ]}
+  validationCriteria={[
+    "La réponse s'appuie à 100 % sur les fragments textuels fournis sans extrapolation.",
+    "Gemini mentionne explicitement la source de chaque information restituée.",
+    "Le modèle refuse catégoriquement d'inventer des éléments factuels non présents dans le contexte."
+  ]}
+>
+
+#### Gabarit d'instruction système et d'assemblage du prompt :
+```typescript
+export async function generateRAGAnswer(question: string, context: string): Promise<string> {
+  const systemInstruction = `
+Tu es un assistant documentaire d'entreprise impartial et rigoureux.
+RÈGLES IMPÉRATIVES :
+1. Réponds UNIQUEMENT en t'appuyant sur les extraits documentaires fournis dans la section CONTEXTE.
+2. Si la réponse ne figure pas textuellement dans le contexte, réponds exactement : "Je ne dispose pas de cette information dans les documents fournis." Ne tente jamais de deviner ou de compléter avec tes connaissances générales.
+3. Chaque affirmation doit citer sa source entre parenthèses, par exemple : (Source 1).
+`;
+
+  const inputPrompt = `
+CONTEXTE DOCUMENTAIRE FOURNI :
+${context}
+
+QUESTION DU COLLABORATEUR :
+${question}
+`;
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: inputPrompt,
+    config: {
+      systemInstruction,
+      temperature: 0.1,
+    },
+  });
+
+  return response.text || 'Aucune réponse générée.';
+}
+```
+</PracticalWork>
+

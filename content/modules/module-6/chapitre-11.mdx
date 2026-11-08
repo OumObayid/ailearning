@@ -1,0 +1,136 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 11 — Transitions conditionnelles, cycles itératifs et contrôle d'exécution
+
+### 1. Routage dynamique avec addConditionalEdges
+
+Dans un flux intelligent, le chemin emprunté ne peut pas être figé à l'avance. Selon la classification déduite par Gemini ou les données extraites d'une base, l'exécution doit bifurquer.
+
+Dans LangGraph.js, cette logique d'aiguillage s'exprime grâce à `addConditionalEdges` :
+- Le premier paramètre est le nœud source.
+- Le second est une **fonction de routage** qui examine l'état courant et renvoie une clé textuelle.
+- Le troisième est une table de correspondance associant cette clé au nœud de destination.
+
+<CodeBlock
+  language="typescript"
+  title="Routage conditionnel dans LangGraph.js"
+  code={`workflow.addConditionalEdges(
+  'classifierNode',
+  // Fonction de décision (Router)
+  (state) => {
+    if (state.category === 'billing') return 'routeBilling';
+    if (state.category === 'technical') return 'routeTechnical';
+    return 'routeGeneral';
+  },
+  // Table de correspondance vers les nœuds réels
+  {
+    routeBilling: 'billingHandler',
+    routeTechnical: 'techHandler',
+    routeGeneral: 'generalHandler',
+  }
+);`}
+/>
+
+---
+
+### 2. Construction de cycles d'exécution avec boucle de rétroaction
+
+L'une des grandes forces de LangGraph face aux pipelines linéaires (DAGs classiques) est sa capacité native à **gérer les cycles** (boucler sur une séquence d'étapes jusqu'à satisfaction d'un critère d'évaluation).
+
+<ArchitectureDiagram
+  title="Topologie d'un cycle itératif d'évaluation dans LangGraph"
+  diagram={`                  START
+                    |
+                    v
+            [ ANALYSE GEMINI ]
+                    |
+                    v
+            [ EXÉCUTION OUTIL ]
+                    |
+                    v
+          [ ÉVALUATION DE L'ÉTAT ]
+                    |
+          +---------+---------+
+          |                   |
+  (Données incomplètes)   (Données suffisantes)
+          |                   |
+          v                   v
+   [ RETOUR CYCLE ]         [ END ]
+(Nouvelle question IA)  (Réponse finale)`}
+/>
+
+Voici l'implémentation minimale d'un cycle contrôlé par un compteur d'itérations :
+
+<CodeBlock
+  language="typescript"
+  title="src/graph/cycleGraph.ts — Définition d'un cycle itératif"
+  code={`import { StateGraph, Annotation, START, END } from '@langchain/langgraph';
+
+const LoopState = Annotation.Root({
+  iteration: Annotation<number>({
+    reducer: (curr, update) => curr + update,
+    default: () => 0,
+  }),
+  isSatisfied: Annotation<boolean>(),
+});
+
+export const cyclicGraph = new StateGraph(LoopState)
+  .addNode('refineSolution', async (state) => {
+    console.log(\`Exécution de l'itération #\${state.iteration + 1}\`);
+    // Simulation : satisfaction atteinte au 3e tour
+    const satisfied = state.iteration >= 2;
+    return { iteration: 1, isSatisfied: satisfied };
+  })
+  .addEdge(START, 'refineSolution')
+  // Boucle conditionnelle sur soi-même ou sortie
+  .addConditionalEdges(
+    'refineSolution',
+    (state) => (state.isSatisfied ? 'done' : 'retry'),
+    {
+      retry: 'refineSolution', // Cycle : revient sur le même nœud
+      done: END,               // Sortie du graphe
+    }
+  )
+  .compile();`}
+/>
+
+<CyclicEvaluatorLab />
+
+---
+
+### 3. Maîtriser les conditions d'arrêt et éviter les boucles infinies
+
+Dans un cycle piloté par un modèle de langage, que se passe-t-il si l'IA s'obstine à demander le même outil sans progresser ?
+
+Pour prémunir votre application contre un blocage définitif :
+1. **Contrôle dans le routeur** : Vérifiez toujours si `state.stepCount >= MAX_ALLOWED_STEPS` dans la fonction de routage conditionnel, et forcez la transition vers `END` le cas échéant.
+2. **Récursivité maximale de LangGraph** : LangGraph intègre par défaut un paramètre de configuration `recursionLimit` lors de l'appel à `invoke()` :
+
+<CodeBlock
+  language="typescript"
+  title="Configuration du garde-fou de récursivité lors de l'appel"
+  code={`const result = await cyclicGraph.invoke(
+  { iteration: 0, isSatisfied: false },
+  { recursionLimit: 10 } // Déclenche une erreur si le graphe dépasse 10 étapes
+);`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Comment LangGraph.js permet-il de créer une boucle décisionnelle où un agent teste une solution et recommence si elle n'est pas concluante ?"
+  options={[
+    "En reliant l'arête conditionnelle de sortie d'un nœud d'évaluation vers un nœud situé en amont dans le graphe",
+    "En exécutant un script bash externe en arrière-plan",
+    "En modifiant le fichier tsconfig.json à la volée",
+    "Les boucles sont strictement interdites dans LangGraph"
+  ]}
+  correctIndex={0}
+  explanation="LangGraph est conçu pour supporter les graphes cycliques orientés : une arête conditionnelle (addConditionalEdges) peut pointer vers un nœud antérieur, permettant la réitération jusqu'à validation de la condition de fin."
+/>
+

@@ -1,0 +1,259 @@
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ZodInspector } from '@/components/interactive/ZodInspector';
+
+# Chapitre 6 — Obtenir des réponses structurées
+
+### 1. Pourquoi les réponses structurées sont-elles importantes ?
+
+Une application ne peut pas toujours exploiter directement un paragraphe de texte.
+
+**Exemple :**  
+> « Le commentaire est positif, le client apprécie le produit, mais souhaite une livraison plus rapide. »
+
+Un frontend peut avoir besoin de données précises pour afficher :
+- Le sentiment.
+- Le résumé.
+- Les problèmes.
+- Les recommandations.
+
+Une réponse structurée permet de recevoir ces informations sous forme de JSON.
+
+---
+
+### 2. Comprendre le JSON
+
+JSON est un format de représentation et d'échange de données.
+
+<CodeBlock language="json">
+{`{
+  "sentiment": "positive",
+  "summary": "Le client apprécie le produit.",
+  "issues": [
+    "Livraison trop lente"
+  ],
+  "recommendations": [
+    "Améliorer les délais de livraison"
+  ]
+}`}
+</CodeBlock>
+
+Cette structure peut être facilement exploitée par React, Node.js ou une autre application.
+
+---
+
+### 3. Définir un schéma JSON
+
+Gemini peut être guidé par un schéma pour produire une réponse structurée.
+
+<CodeBlock language="typescript">
+{`const analysisJsonSchema = {
+  type: "object",
+  properties: {
+    sentiment: {
+      type: "string",
+      enum: ["positive", "neutral", "negative"]
+    },
+    summary: {
+      type: "string"
+    },
+    issues: {
+      type: "array",
+      items: {
+        type: "string"
+      }
+    },
+    recommendations: {
+      type: "array",
+      items: {
+        type: "string"
+      }
+    }
+  },
+  required: [
+    "sentiment",
+    "summary",
+    "issues",
+    "recommendations"
+  ]
+};`}
+</CodeBlock>
+
+---
+
+### 4. Envoyer le schéma à Gemini
+
+<CodeBlock language="typescript">
+{`const interaction = await ai.interactions.create({
+  model: GEMINI_MODEL,
+  input: \`
+    Analyse ce commentaire client :
+    "Le produit est excellent mais la livraison est trop lente."
+  \`,
+  response_format: {
+    type: "text",
+    mime_type: "application/json",
+    schema: analysisJsonSchema
+  }
+});
+
+console.log(interaction.output_text);`}
+</CodeBlock>
+
+Le paramètre `response_format` demande une sortie respectant le schéma fourni.  
+Cela améliore la régularité de la réponse, mais ne dispense pas de validation côté serveur.
+
+---
+
+### 5. Découvrir Zod
+
+Zod est une bibliothèque TypeScript permettant de définir et de valider des structures de données.
+
+Installer :
+```bash
+npm install zod
+```
+
+Créer un schéma :
+
+<CodeBlock language="typescript">
+{`import { z } from "zod";
+
+export const AnalysisSchema = z.object({
+  sentiment: z.enum([
+    "positive",
+    "neutral",
+    "negative"
+  ]),
+  summary: z.string(),
+  issues: z.array(z.string()),
+  recommendations: z.array(z.string())
+});`}
+</CodeBlock>
+
+---
+
+### 6. Valider la réponse de Gemini
+
+<CodeBlock language="typescript">
+{`const interaction = await ai.interactions.create({
+  model: GEMINI_MODEL,
+  input: \`
+    Analyse ce commentaire :
+    "Très bon produit, mais le service client est lent."
+  \`,
+  response_format: {
+    type: "text",
+    mime_type: "application/json",
+    schema: analysisJsonSchema
+  }
+});
+
+const rawResult = JSON.parse(interaction.output_text);
+const validatedResult = AnalysisSchema.parse(rawResult);
+
+console.log(validatedResult);`}
+</CodeBlock>
+
+#### Explication :
+- `JSON.parse()` transforme le texte JSON en objet JavaScript.
+- `AnalysisSchema.parse()` vérifie que l'objet respecte les règles définies dans Zod.
+- Si une donnée est invalide, Zod déclenche une erreur.
+
+---
+
+### 7. Utiliser safeParse
+
+Dans une API, il est parfois préférable de contrôler les erreurs sans interrompre directement le traitement.
+
+<CodeBlock language="typescript">
+{`const result = AnalysisSchema.safeParse(rawResult);
+
+if (!result.success) {
+  console.error(result.error);
+  throw new Error("Réponse Gemini invalide.");
+}
+
+console.log(result.data);`}
+</CodeBlock>
+
+`safeParse()` retourne un résultat contenant soit les données validées, soit les erreurs de validation.
+
+{/* Banc d'essai interactif Zod */}
+<ZodInspector />
+
+---
+
+### 8. Différence entre Structured Output et Function Calling
+
+Ces deux mécanismes ne servent pas au même objectif.
+
+- **Structured Output :** Permet de demander une réponse finale respectant une structure définie.  
+  *Exemple :* produire un objet JSON décrivant un commentaire.
+- **Function Calling :** Permet au modèle de demander l'exécution d'une fonction externe.  
+  *Exemple :* demander à l'application de rechercher une commande dans une base de données.
+
+Une sortie structurée n'exécute pas une action métier.  
+Un appel de fonction ne doit pas être considéré comme une simple réponse JSON.
+
+---
+
+### 9. Travaux pratiques
+
+<PracticalWork title="TP 1 — Analyseur d'avis clients avec typage Zod strict">
+**Objectif :** Transformer des commentaires textuels bruts en objets JavaScript strictement vérifiés à l'exécution.
+
+1. **Définition du schéma Zod :**
+   ```typescript
+   export const ReviewAnalysisSchema = z.object({
+     sentiment: z.enum(["POSITIF", "NEGATIF", "MITIGE"]),
+     score: z.number().min(1).max(10),
+     summary: z.string().max(200),
+     keyIssues: z.array(z.string()).default([]),
+     recommendations: z.array(z.string()).min(1)
+   });
+   export type ReviewAnalysis = z.infer<typeof ReviewAnalysisSchema>;
+   ```
+2. **Implémentation :**
+   - Transmettre le schéma JSON dérivé à Gemini via `responseJsonSchema`.
+   - Parser la réponse JSON avec `JSON.parse(interaction.output_text)`.
+   - Valider les données via `ReviewAnalysisSchema.safeParse()`.
+   - En cas d'échec de validation, consigner les erreurs Zod détaillées.
+</PracticalWork>
+
+<PracticalWork title="TP 2 — Extraction d'entités de contact (NER)">
+**Objectif :** Extraire des coordonnées professionnelles à partir de signatures d'e-mails désordonnées.
+
+1. **Schéma cible attendu :**
+   ```typescript
+   export const ContactExtractionSchema = z.object({
+     fullName: z.string().min(2),
+     email: z.string().email(),
+     phone: z.string().optional(),
+     city: z.string().nullable(),
+     company: z.string().default("Non renseignée")
+   });
+   ```
+2. **Jeu d'essai :**
+   > *"Bien cordialement, Jean-Marc Dupont. N'hésitez pas à me joindre sur mon portable 06 12 34 56 78 ou par mail jm.dupont@techcorp.fr. Nos bureaux sont situés au coeur de Lyon, chez TechCorp Solutions."*
+3. **Consigne :** Assurez-vous que le champ `email` est bien validé par la règle `.email()` de Zod et que le téléphone est normalisé.
+</PracticalWork>
+
+<PracticalWork title="TP 3 — Routeur et classificateur automatique de tickets support">
+**Objectif :** Classifier automatiquement les demandes entrantes pour les router vers le bon service de l'entreprise.
+
+1. **Schéma de classification :**
+   ```typescript
+   export const SupportTicketSchema = z.object({
+     category: z.enum(["TECHNIQUE", "COMMERCIALE", "ADMINISTRATIVE", "AUTRE"]),
+     priority: z.enum(["BASSE", "MOYENNE", "HAUTE", "CRITIQUE"]),
+     reasoning: z.string().describe("Justification courte du choix de la catégorie"),
+     requiresHumanAgent: z.boolean()
+   });
+   ```
+2. **Consigne opérationnelle :**
+   - Créer une route `POST /api/support/classify`.
+   - Tester avec des demandes ambiguës (ex. : *"Je n'arrive pas à payer ma facture car le bouton de carte bancaire ne s'affiche pas"* - Technique ou Commerciale ?).
+   - Valider que le modèle fournit un raisonnement cohérent dans `reasoning`.
+</PracticalWork>

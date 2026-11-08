@@ -1,0 +1,133 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 5 — Architecture backend Express en couches et contrats d'API REST
+
+### 1. Organisation en couches industrielles
+
+Pour maintenir une base de code de grande envergure, le code backend est découpé selon le patron de conception en couches (**Layered Architecture**) :
+
+<ArchitectureDiagram
+  title="Flux de traitement à travers les couches backend"
+  diagram={`REQUÊTE HTTP DU NAVIGATEUR
+            |
+            v
+[ 1. COUCHE ROUTEUR (Routes) ]
+- Déclare les URLs et les verbes HTTP
+- Déclenche les middlewares de sécurité (JWT, RBAC)
+            |
+            v
+[ 2. COUCHE CONTRÔLEUR (Controllers) ]
+- Valide les corps de requêtes avec Zod
+- Extrait les paramètres et délègue au Service
+            |
+            v
+[ 3. COUCHE MÉTIER (Services) ]
+- Contient la logique d'orchestration (RAG, Gemini, LangGraph)
+- Applique les règles de gestion d'entreprise
+            |
+            v
+[ 4. COUCHE D'ACCÈS AUX DONNÉES (Repositories / Clients) ]
+- Exécute les requêtes préparées MySQL
+- Effectue les recherches vectorielles Qdrant`}
+/>
+
+---
+
+### 2. Spécification détaillée des endpoints de l'API REST
+
+Le contrat d'API de la plateforme s'articule autour des points de terminaison normalisés suivants :
+
+| Méthode | Route HTTP | Description & Rôle | Autorisation minimale |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Authentification utilisateur & génération du token JWT | Public |
+| `GET` | `/api/auth/me` | Récupération du profil de l'utilisateur connecté | Authentifié |
+| `POST` | `/api/documents/upload` | Téléversement d'un document PDF pour ingestion RAG | Rôle `manager` ou `collaborator` |
+| `GET` | `/api/documents` | Liste paginée des documents autorisés pour l'utilisateur | Authentifié |
+| `DELETE` | `/api/documents/:id` | Suppression d'un document et de ses vecteurs Qdrant | Propriétaire ou `admin` |
+| `POST` | `/api/conversations` | Création d'une nouvelle session de dialogue RAG | Authentifié |
+| `POST` | `/api/conversations/:id/messages` | Envoi d'une question avec réponse streamée et sources | Authentifié |
+| `POST` | `/api/agents/run` | Déclenchement d'une tâche d'agent autonome multi-outils | Rôle `manager` |
+| `POST` | `/api/automations/:workflow` | Déclenchement d'un workflow d'automatisation n8n | Authentifié |
+
+---
+
+### 3. Standardisation des formats de réponses JSON et gestion d'erreurs
+
+Toutes les réponses de l'API respectent un contrat d'enveloppe uniforme, facilitant la consommation par le client React :
+
+<CodeBlock
+  language="typescript"
+  title="src/types/apiResponse.ts — Enveloppe standardisée"
+  code={`export interface ApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+  meta?: {
+    timestamp: string;
+    correlationId: string;
+  };
+}`}
+/>
+
+Un middleware d'erreur centralisé intercepte toute exception inattendue pour éviter de faire planter le processus Node.js :
+
+<CodeBlock
+  language="typescript"
+  title="src/middlewares/errorHandler.ts — Gestionnaire centralisé d'exceptions"
+  code={`import { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
+
+export function centralErrorHandler(
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const correlationId = res.locals.correlationId || 'unknown_req';
+  const statusCode = err.statusCode || 500;
+
+  logger.error({
+    event: 'api_error_intercepted',
+    correlationId,
+    statusCode,
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+  });
+
+  return res.status(statusCode).json({
+    success: false,
+    error: {
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      message: err.message || "Une erreur interne est survenue.",
+    },
+    meta: {
+      timestamp: new Date().toISOString(),
+      correlationId,
+    },
+  });
+}`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Quel est l'avantage architectural déterminant de découper une application backend en couches (Routes -> Controllers -> Services -> Repositories) ?"
+  options={[
+    "Rendre le code plus volumineux pour impressionner les clients",
+    "Séparer hermétiquement la réception HTTP, la logique métier et l'accès aux bases de données pour faciliter les tests unitaires et la maintenance à long terme",
+    "Permettre d'exécuter Express sans Node.js",
+    "Augmenter la résolution des images sur mobile"
+  ]}
+  correctIndex={1}
+  explanation="L'architecture en couches isole chaque responsabilité technique, permettant par exemple de tester la logique métier d'un service avec un faux repository sans avoir besoin d'instancier Express ou d'ouvrir un port réseau."
+/>
+

@@ -1,0 +1,147 @@
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { Callout } from '@/components/courses/Callout';
+
+# Projet final — API intelligente d'analyse et de génération de données
+
+### 1. Présentation
+
+Le projet consiste à développer une API Node.js et TypeScript intégrant Google Gemini.
+
+Elle devra proposer plusieurs fonctionnalités IA utilisables par une future interface React.
+
+L'objectif est de réunir les notions étudiées dans ce module avant de passer au développement d'interfaces frontend IA.
+
+---
+
+### 2. Fonctionnalités attendues
+
+#### Fonctionnalité 1 — Génération de texte
+- **Endpoint :** `POST /api/generate`
+- L'utilisateur transmet un prompt et Gemini génère une réponse.
+
+#### Fonctionnalité 2 — Analyse de données
+- **Endpoint :** `POST /api/analyze`
+- L'utilisateur transmet du texte libre.
+- Gemini analyse les informations et produit une synthèse.
+
+#### Fonctionnalité 3 — Extraction structurée
+- **Endpoint :** `POST /api/extract`
+- Gemini extrait des informations dans un format JSON validé par Zod.
+
+#### Fonctionnalité 4 — Conversation
+- **Endpoint :** `POST /api/conversations/:id/messages`
+- Le backend maintient la continuité des échanges.
+
+#### Fonctionnalité 5 — Streaming
+- **Endpoint :** `POST /api/stream`
+- Les réponses sont transmises progressivement au client.
+
+#### Fonctionnalité 6 — Utilisation d'outils
+- L'assistant doit pouvoir sélectionner un outil parmi plusieurs fonctions prédéfinies et autorisées.
+
+---
+
+### 3. Architecture finale
+
+<ArchitectureDiagram
+  title="Architecture globale du projet final"
+  diagram={`                FRONTEND FUTUR REACT
+                         |
+                         v
+                  API EXPRESS
+                         |
+          +--------------+--------------+
+          |              |              |
+          v              v              v
+       Generate       Analyze        Extract
+          |              |              |
+          +--------------+--------------+
+                         |
+                         v
+                  SERVICE GEMINI
+                         |
+                         v
+                   @google/genai
+                         |
+                         v
+                GEMINI INTERACTIONS API
+                         |
+          +--------------+--------------+
+          |              |              |
+          v              v              v
+      Generation     Structured       Tools
+                       Output
+                         |
+                         v
+                  Réponses contrôlées`}
+/>
+
+---
+
+### 4. Structure de projet cible
+
+<ArchitectureDiagram
+  title="Arborescence cible du projet de synthèse"
+  diagram={`module1-gemini/
+│
+├── src/
+│   ├── config/
+│   │   ├── gemini.ts
+│   │   └── env.ts
+│   │
+│   ├── controllers/
+│   │   ├── generate.controller.ts
+│   │   ├── analyze.controller.ts
+│   │   ├── extract.controller.ts
+│   │   ├── conversation.controller.ts
+│   │   └── stream.controller.ts
+│   │
+│   ├── services/
+│   │   ├── gemini.service.ts
+│   │   ├── analysis.service.ts
+│   │   ├── extraction.service.ts
+│   │   └── conversation.service.ts
+│   │
+│   ├── schemas/
+│   │   ├── generate.schema.ts
+│   │   └── analysis.schema.ts
+│   │
+│   ├── routes/
+│   │   └── gemini.routes.ts
+│   │
+│   ├── middlewares/
+│   │   └── error.middleware.ts
+│   │
+│   └── server.ts
+│
+├── tests/
+│   ├── generate.test.ts
+│   └── analysis.test.ts
+│
+├── .env
+├── .gitignore
+├── package.json
+└── tsconfig.json`}
+/>
+
+---
+
+### 5. Critères de réussite
+
+<Callout type="success" title="Checklist de validation du projet">
+Le projet sera considéré comme validé lorsque :
+- L'environnement Node.js et TypeScript fonctionne.
+- Le SDK Google est correctement configuré.
+- Les clés API sont protégées.
+- Les appels Gemini fonctionnent.
+- Les prompts sont organisés et réutilisables.
+- Les réponses structurées sont validées avec Zod.
+- Les conversations conservent leur continuité.
+- Le streaming fonctionne.
+- Les fonctions externes sont contrôlées.
+- Les erreurs sont correctement gérées.
+- Les endpoints sont testés avec Postman.
+- Les fonctionnalités essentielles disposent de tests automatisés.
+- Le code est organisé et documenté.
+</Callout>
+

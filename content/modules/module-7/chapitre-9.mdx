@@ -1,0 +1,126 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 9 — Tests d'intégration d'API avec Supertest et Express
+
+### 1. Objectifs des tests HTTP d'intégration
+
+Tandis que les tests unitaires valident des fonctions isolées, les **tests d'intégration d'API** simulent de véritables requêtes HTTP clientes adressées à votre serveur Express.
+
+Ils permettent de vérifier :
+- La bonne transmission et le décodage des en-têtes HTTP (`Content-Type`, `Authorization: Bearer ...`).
+- Le renvoi des codes d'état conformes (`200 OK`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`).
+- La conformité des charges utiles JSON retournées au client React.
+- L'activation effective de l'ensemble de la chaîne de middlewares.
+
+---
+
+### 2. Architecture découplée : Séparation de app.ts et server.ts
+
+Pour tester une application Express avec **Supertest sans occuper un port réseau réel**, il est primordial de scinder le code en deux fichiers distincts :
+
+#### 1. `src/app.ts` (Déclaration de l'application sans `listen`)
+
+<CodeBlock
+  language="typescript"
+  title="src/app.ts — Configuration Express pure"
+  code={`import express from 'express';
+import { userPromptSchema } from './schemas/promptInput.schema';
+
+export const app = express();
+app.use(express.json());
+
+// Route testée
+app.post('/api/ai/query', (req, res) => {
+  const validation = userPromptSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    return res.status(400).json({
+      success: false,
+      errors: validation.error.flatten().fieldErrors,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: { response: \`Echo analysé : \${validation.data.prompt}\` },
+  });
+});`}
+/>
+
+#### 2. `src/server.ts` (Point d'entrée démarrant l'écoute sur le port)
+
+<CodeBlock
+  language="typescript"
+  title="src/server.ts — Écoute sur le port réseau"
+  code={`import { app } from './app';
+
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(\`Serveur applicatif en écoute sur le port \${PORT}\`);
+});`}
+/>
+
+---
+
+### 3. Écriture des suites de tests avec Supertest
+
+Installez la bibliothèque Supertest et ses définitions de types :
+
+<CodeBlock
+  language="bash"
+  title="Installation de Supertest"
+  code={`npm install -D supertest @types/supertest`}
+/>
+
+Écrivez votre scénario de test HTTP complet :
+
+<CodeBlock
+  language="typescript"
+  title="tests/api.test.ts — Tests d'intégration Express"
+  code={`import { describe, it, expect } from 'vitest';
+import request from 'supertest';
+import { app } from '../src/app';
+
+describe('POST /api/ai/query', () => {
+  it('renvoie un code HTTP 200 et la structure JSON attendue en cas de prompt valide', async () => {
+    const res = await request(app)
+      .post('/api/ai/query')
+      .send({ prompt: "Qu'est-ce qu'une promesse en JavaScript ?" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.response).toContain("Echo analysé");
+  });
+
+  it('renvoie une erreur HTTP 400 si le prompt est absent ou trop court', async () => {
+    const res = await request(app)
+      .post('/api/ai/query')
+      .send({ prompt: "" }); // Invalide
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.errors).toBeDefined();
+  });
+});`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi sépare-t-on la déclaration de l'application Express (app.ts) de son démarrage sur un port réseau (server.ts) ?"
+  options={[
+    "Pour permettre à Supertest d'instancier l'application directement en mémoire sans monopoliser un port réseau réel lors des tests",
+    "Parce qu'Express interdit d'utiliser app.listen en production",
+    "Pour réduire la consommation de mémoire vive de moitié",
+    "Car les tests ne fonctionnent qu'avec Nginx"
+  ]}
+  correctIndex={0}
+  explanation="En exportant l'objet 'app' sans appeler .listen(), Supertest peut tester l'application directement au niveau HTTP logiciel, garantissant une exécution ultra-rapide et évitant les conflits de ports lors des tests parallèles."
+/>
+

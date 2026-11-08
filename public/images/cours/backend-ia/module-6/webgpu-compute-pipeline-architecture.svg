@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gpuBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="hostGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="deviceGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="wgslGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="580" rx="20" fill="url(#gpuBgGrad)"/>
+  <rect x="2" y="2" width="996" height="576" rx="18" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Title Badge -->
+  <g transform="translate(40, 30)">
+    <rect width="490" height="34" rx="8" fill="#1e293b" stroke="#059669" stroke-width="1.5"/>
+    <text x="16" y="22" fill="#34d399" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="800" letter-spacing="1">
+      ARCHITECTURE WEBGPU : DU CODE JAVASCRIPT AU COMPUTE SHADER
+    </text>
+  </g>
+  <text x="40" y="90" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="900">
+    Flux de calcul GPGPU : Buffers, Pipelines et Groupes de Travail (Workgroups)
+  </text>
+  <text x="40" y="114" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+    Comprendre le transfert bidirectionnel RAM CPU ↔ VRAM GPU et la distribution massive en 64 invocations parallèles
+  </text>
+
+  <!-- Section 1: Host CPU (Left) -->
+  <g transform="translate(40, 140)">
+    <rect width="250" height="380" rx="14" fill="url(#hostGrad)" stroke="#64748b" stroke-width="1.5"/>
+    <rect x="16" y="16" width="130" height="26" rx="6" fill="#0f172a"/>
+    <text x="24" y="34" fill="#38bdf8" font-family="sans-serif" font-size="12" font-weight="800">HÔTE (CPU / JS)</text>
+
+    <!-- RAM Buffers -->
+    <g transform="translate(16, 60)">
+      <rect width="218" height="60" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="12" y="24" fill="#f8fafc" font-family="sans-serif" font-size="12" font-weight="700">Mémoire Vive (RAM)</text>
+      <text x="12" y="44" fill="#94a3b8" font-family="monospace" font-size="11">tableauA &amp; tableauB (Float32)</text>
+    </g>
+
+    <!-- Command Encoder -->
+    <g transform="translate(16, 135)">
+      <rect width="218" height="60" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="12" y="24" fill="#f8fafc" font-family="sans-serif" font-size="12" font-weight="700">GPUCommandEncoder</text>
+      <text x="12" y="44" fill="#38bdf8" font-family="monospace" font-size="10">beginComputePass()</text>
+    </g>
+
+    <!-- Readback Buffer -->
+    <g transform="translate(16, 210)">
+      <rect width="218" height="70" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+      <text x="12" y="24" fill="#38bdf8" font-family="sans-serif" font-size="12" font-weight="800">Buffer Lecture CPU</text>
+      <text x="12" y="42" fill="#94a3b8" font-family="monospace" font-size="10">MAP_READ | COPY_DST</text>
+      <text x="12" y="58" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="700">await mapAsync(READ)</text>
+    </g>
+
+    <!-- Queue submit -->
+    <g transform="translate(16, 295)">
+      <rect width="218" height="50" rx="8" fill="#0284c7"/>
+      <text x="109" y="30" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="800" text-anchor="middle">
+        device.queue.submit()
+      </text>
+    </g>
+  </g>
+
+  <!-- Bus Arrow (PCIe Transfer) -->
+  <g transform="translate(300, 200)">
+    <rect width="90" height="28" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+    <text x="45" y="18" fill="#38bdf8" font-family="sans-serif" font-size="10" font-weight="800" text-anchor="middle">Bus PCIe</text>
+    <path d="M 10 38 L 80 38" stroke="#38bdf8" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="45" y="54" fill="#94a3b8" font-family="sans-serif" font-size="9" text-anchor="middle">Écriture VRAM</text>
+  </g>
+  <g transform="translate(300, 370)">
+    <path d="M 80 0 L 10 0" stroke="#34d399" stroke-width="3"/>
+    <text x="45" y="16" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="800" text-anchor="middle">Lecture VRAM</text>
+    <text x="45" y="30" fill="#94a3b8" font-family="sans-serif" font-size="9" text-anchor="middle">copyBufferToBuffer</text>
+  </g>
+
+  <!-- Section 2: Device GPU (Right) -->
+  <g transform="translate(400, 140)">
+    <rect width="560" height="380" rx="14" fill="url(#deviceGrad)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="16" y="16" width="220" height="26" rx="6" fill="#064e3b"/>
+    <text x="24" y="34" fill="#a7f3d0" font-family="sans-serif" font-size="12" font-weight="800">
+      PÉRIPHÉRIQUE GPU (VRAM &amp; CORES)
+    </text>
+
+    <!-- GPU Storage Buffers in VRAM -->
+    <g transform="translate(16, 56)">
+      <rect width="528" height="52" rx="8" fill="#022c22" stroke="#059669" stroke-width="1"/>
+      <text x="14" y="22" fill="#a7f3d0" font-family="sans-serif" font-size="12" font-weight="700">VRAM GPU (Buffers de Stockage Haute Vitesse)</text>
+      <text x="14" y="40" fill="#cbd5e1" font-family="monospace" font-size="11">
+        bufferA (read) • bufferB (read) • bufferResultat (read_write)
+      </text>
+    </g>
+
+    <!-- Workgroups Grid -->
+    <g transform="translate(16, 122)">
+      <rect width="528" height="238" rx="10" fill="#022c22" stroke="#10b981" stroke-width="1.5"/>
+      <text x="16" y="24" fill="#34d399" font-family="sans-serif" font-size="13" font-weight="800">
+        GRILLE DE CALCUL : dispatchWorkgroups(N / 64)
+      </text>
+      <text x="16" y="42" fill="#94a3b8" font-family="sans-serif" font-size="11">
+        Organisation matérielle en groupes de 64 invocations (@workgroup_size(64))
+      </text>
+
+      <!-- Workgroup 0 -->
+      <g transform="translate(16, 55)">
+        <rect width="156" height="110" rx="8" fill="url(#wgslGrad)" stroke="#818cf8" stroke-width="1"/>
+        <text x="12" y="20" fill="#e0e7ff" font-family="sans-serif" font-size="11" font-weight="800">Workgroup 0</text>
+        <text x="12" y="36" fill="#c7d2fe" font-family="monospace" font-size="10">id.x : 0 à 63</text>
+        <rect x="10" y="46" width="136" height="50" rx="4" fill="#1e1b4b"/>
+        <text x="18" y="64" fill="#34d399" font-family="monospace" font-size="9">C[0] = A[0] + B[0]</text>
+        <text x="18" y="78" fill="#34d399" font-family="monospace" font-size="9">C[1] = A[1] + B[1]</text>
+        <text x="18" y="90" fill="#94a3b8" font-family="monospace" font-size="9">... 64 threads</text>
+      </g>
+
+      <!-- Workgroup 1 -->
+      <g transform="translate(186, 55)">
+        <rect width="156" height="110" rx="8" fill="url(#wgslGrad)" stroke="#818cf8" stroke-width="1"/>
+        <text x="12" y="20" fill="#e0e7ff" font-family="sans-serif" font-size="11" font-weight="800">Workgroup 1</text>
+        <text x="12" y="36" fill="#c7d2fe" font-family="monospace" font-size="10">id.x : 64 à 127</text>
+        <rect x="10" y="46" width="136" height="50" rx="4" fill="#1e1b4b"/>
+        <text x="18" y="64" fill="#34d399" font-family="monospace" font-size="9">C[64] = A[64] + B[64]</text>
+        <text x="18" y="78" fill="#34d399" font-family="monospace" font-size="9">C[65] = A[65] + B[65]</text>
+        <text x="18" y="90" fill="#94a3b8" font-family="monospace" font-size="9">... 64 threads</text>
+      </g>
+
+      <!-- Workgroup N-1 -->
+      <g transform="translate(356, 55)">
+        <rect width="156" height="110" rx="8" fill="url(#wgslGrad)" stroke="#f59e0b" stroke-width="1"/>
+        <text x="12" y="20" fill="#fef3c7" font-family="sans-serif" font-size="11" font-weight="800">Workgroup N (Fin)</text>
+        <text x="12" y="36" fill="#fde68a" font-family="monospace" font-size="10">id.x : ... à Total</text>
+        <rect x="10" y="46" width="136" height="50" rx="4" fill="#1e1b4b"/>
+        <text x="14" y="64" fill="#fca5a5" font-family="monospace" font-size="9">if (id.x &gt;= N) return;</text>
+        <text x="14" y="80" fill="#fbbf24" font-family="sans-serif" font-size="9">Ignore les threads</text>
+        <text x="14" y="92" fill="#fbbf24" font-family="sans-serif" font-size="9">de débordement</text>
+      </g>
+
+      <!-- WGSL Shader Code Snippet -->
+      <g transform="translate(16, 178)">
+        <rect width="496" height="46" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+        <text x="12" y="18" fill="#38bdf8" font-family="monospace" font-size="10">
+          @compute @workgroup_size(64) fn main(@builtin(global_invocation_id) id: vec3u)
+        </text>
+        <text x="12" y="34" fill="#34d399" font-family="monospace" font-size="10">
+          resultat[id.x] = tableauA[id.x] + tableauB[id.x]; // Traitement vectoriel simultané
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>
+

@@ -1,0 +1,93 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Projet Pratique Final — Assistant Documentaire Intelligent RAG
+
+### 1. Présentation du projet de synthèse
+
+Le projet pratique du **Module 4** consiste à développer un **système RAG complet de bout en bout**, permettant à des utilisateurs d'importer leurs propres documents techniques ou administratifs (PDF, TXT), d'en automatiser l'indexation vectorielle dans **Qdrant**, et d'interroger un assistant conversationnel propulsé par **Google Gemini** qui répond de manière rigoureusement ancrée et vérifiable.
+
+Ce projet synthétise l'ensemble des compétences de la formation :
+- Frontend React moderne avec téléversement et affichage des sources.
+- Backend Node.js / Express en couches avec TypeScript strict.
+- Base relationnelle MySQL pour la gestion documentaire et les métadonnées.
+- Moteur vectoriel Qdrant pour la recherche de similarité cosinus.
+- Modèle d'embeddings et de raisonnement Google Gemini via `@google/genai`.
+
+---
+
+### 2. Spécification des fonctionnalités
+
+#### 1. Module de gestion documentaire
+- Téléversement sécurisé de fichiers PDF (validation de taille max 10 Mo et type MIME).
+- Suivi du statut d'indexation (`pending` -> `processing` -> `indexed` / `failed`).
+- Suppression propre et atomique dans MySQL et Qdrant.
+
+#### 2. Module d'ingestion et de vectorisation
+- Extraction du texte et normalisation des espaces.
+- Découpage en fragments de 500 mots avec chevauchement de 80 mots.
+- Génération par lots d'embeddings avec `text-embedding-004` (768 dimensions).
+- Insertion des points dans la collection `rag_documents` avec métadonnées (`userId`, `documentId`, `chunkId`).
+
+#### 3. Module de recherche et génération augmentée
+- Recherche sémantique filtrée par `userId` avec seuil minimal de pertinence (0.65).
+- Récupération du texte intégral dans MySQL avec contrôle des droits.
+- Assemblage du contexte avec délimiteurs de sources `[Source X]`.
+- Génération de la réponse finale par Gemini avec citations des documents utilisés.
+- Refus poli et transparent si aucune source pertinente n'est disponible.
+
+---
+
+### 3. Architecture logicielle complète
+
+<ArchitectureDiagram
+  title="Architecture logicielle globale du système RAG d'entreprise"
+  diagram={`+---------------------------------------------------------------------------------+
+|                        APPLICATION FRONTEND (REACT / NEXT.JS)                   |
+|   - Interface de téléversement Drag & Drop avec prévisualisation                |
+|   - Chat documentaire interactif avec cartes de sources citées cliquables       |
++---------------------------------------------------------------------------------+
+                                        |
+                                        v  (Requêtes HTTP sécurisées)
++---------------------------------------------------------------------------------+
+|                             BACKEND NODE.JS / EXPRESS                           |
+|                                                                                 |
+|   [ Ingestion Service ]  -->  pdf-parse  -->  splitIntoChunks (Overlap 80)      |
+|                                                                                 |
+|   [ RAG Orchestrator ]   -->  Embedding Service  -->  Qdrant Search             |
+|                                  --> MySQL Chunks Retrieve --> Context Builder  |
+|                                  --> Gemini RAG Generation                      |
++---------------------------------------------------------------------------------+
+                    |                                             |
+                    v  (mysql2/promise)                           v  (Qdrant Client)
++----------------------------------------+     +----------------------------------+
+|           BASE DE DONNÉES MYSQL        |     |      BASE VECTORIELLE QDRANT     |
+|   - Table 'documents'                  |     |   - Collection 'rag_documents'   |
+|   - Table 'document_chunks'            |     |   - Points 768 dimensions Cosine |
+|   - Intégrité relationnelle CASCADE    |     |   - Filtrage payload user_id     |
++----------------------------------------+     +----------------------------------+
+                                        |
+                                        v  (SDK @google/genai)
++---------------------------------------------------------------------------------+
+|                                CLOUD GOOGLE GEMINI                              |
+|   - text-embedding-004 (Génération des vecteurs 768 dim)                        |
+|   - gemini-2.5-flash (Raisonnement documentaire et formulation des réponses)     |
++---------------------------------------------------------------------------------+`}
+/>
+
+---
+
+### 4. Grille de validation des 10 exercices pratiques
+
+1. **Environnement** : Serveur Express configuré, conteneur Docker Qdrant actif et connexion MySQL validée.
+2. **Extraction** : Fonction d'extraction PDF opérationnelle avec nettoyage des sauts de ligne.
+3. **Chunking** : Découpage avec overlap préservant la continuité sémantique.
+4. **Vectorisation** : Génération systématique de vecteurs à 768 dimensions via Gemini.
+5. **Indexation** : Double enregistrement cohérent des chunks dans MySQL et de leurs vecteurs dans Qdrant.
+6. **Recherche** : Recherche de plus proches voisins retournant les bons fragments selon la question.
+7. **Filtrage** : Isolation stricte par `user_id` garantissant l'absence de fuite entre utilisateurs.
+8. **Ancrage** : Réponse de Gemini fidèle aux documents et citant expressément les numéros de sources.
+9. **Anti-hallucination** : Refus clair du modèle en cas de question hors-sujet ou d'absence d'information.
+10. **Suppression** : Disparition conjointe des données dans MySQL et des vecteurs dans Qdrant.
+

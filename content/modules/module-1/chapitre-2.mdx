@@ -1,0 +1,395 @@
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+
+# Chapitre 2 — Installation et configuration de Gemini avec Node.js et TypeScript
+
+### 1. Architecture de travail
+
+Nous allons développer une API backend qui communique avec Gemini.
+
+Le fonctionnement sera le suivant :
+
+<ArchitectureDiagram
+  title="Flux de travail de l'architecture"
+  diagram={`Utilisateur
+    |
+    v
+Frontend React
+    |
+    v
+API Node.js / Express
+    |
+    v
+Service Gemini
+    |
+    v
+SDK officiel @google/genai
+    |
+    v
+Google Gemini API
+    |
+    v
+Réponse du modèle
+    |
+    v
+API Node.js
+    |
+    v
+Frontend React`}
+/>
+
+Le frontend ne communique pas directement avec Gemini dans notre architecture de production.  
+Le backend conserve la clé API et contrôle les requêtes.
+
+---
+
+### 2. Prérequis logiciels
+
+Installer :
+- Node.js, dans une version LTS compatible avec les dépendances.
+- npm.
+- Visual Studio Code ou un éditeur équivalent.
+- Postman.
+- Un compte Google AI Studio.
+- Une clé API Gemini autorisée à utiliser le modèle sélectionné.
+
+---
+
+### 3. Création du projet
+
+Créer un dossier :
+```bash
+mkdir module1-gemini
+cd module1-gemini
+```
+
+Initialiser le projet :
+```bash
+npm init -y
+```
+
+Installer les dépendances :
+```bash
+npm install @google/genai express dotenv cors zod
+```
+
+Installer les dépendances de développement :
+```bash
+npm install -D typescript tsx @types/node @types/express @types/cors vitest supertest @types/supertest
+```
+
+---
+
+### 4. Configuration de TypeScript
+
+Créer le fichier `tsconfig.json` :
+
+<CodeBlock language="json" filename="tsconfig.json">
+{`{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
+}`}
+</CodeBlock>
+
+Dans `package.json`, configurer :
+
+<CodeBlock language="json" filename="package.json">
+{`{
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest"
+  }
+}`}
+</CodeBlock>
+
+Conserve également les dépendances générées par npm dans ton fichier `package.json`.
+
+---
+
+### 5. Organisation des fichiers
+
+Créer la structure suivante :
+
+<ArchitectureDiagram
+  title="Arborescence du projet module1-gemini"
+  diagram={`module1-gemini/
+│
+├── src/
+│   ├── config/
+│   │   └── gemini.ts
+│   │
+│   ├── services/
+│   │   └── gemini.service.ts
+│   │
+│   ├── controllers/
+│   │   └── gemini.controller.ts
+│   │
+│   ├── routes/
+│   │   └── gemini.routes.ts
+│   │
+│   ├── schemas/
+│   │   └── analysis.schema.ts
+│   │
+│   └── server.ts
+│
+├── .env
+├── .gitignore
+├── package.json
+└── tsconfig.json`}
+/>
+
+Cette organisation sépare :
+- La configuration.
+- Les services IA.
+- Les contrôleurs HTTP.
+- Les routes.
+- Les schémas de validation.
+- Le serveur.
+
+Cette séparation sera réutilisée dans les modules backend et agents.
+
+---
+
+### 6. Configuration de la clé API
+
+Créer un fichier `.env` :
+
+<CodeBlock language="bash" filename=".env">
+{`API_KEY_GEMINI=TA_CLE_API_GEMINI
+GEMINI_MODEL=gemini-3.8-flash
+PORT=3000`}
+</CodeBlock>
+
+Le nom `API_KEY_GEMINI` est volontairement conservé pour rester cohérent avec tes précédents exercices.
+
+Créer `.gitignore` :
+
+<CodeBlock language="bash" filename=".gitignore">
+{`node_modules/
+dist/
+.env`}
+</CodeBlock>
+
+<Callout type="warning" title="Attention">
+Ne jamais publier le fichier .env sur GitHub.
+</Callout>
+
+---
+
+### 7. Initialiser le client Gemini
+
+Créer `src/config/gemini.ts` :
+
+<CodeBlock language="typescript" filename="src/config/gemini.ts">
+{`import { GoogleGenAI } from "@google/genai";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const apiKey = process.env.API_KEY_GEMINI;
+
+if (!apiKey) {
+  throw new Error("La clé API Gemini est absente.");
+}
+
+export const ai = new GoogleGenAI({
+  apiKey
+});
+
+export const GEMINI_MODEL =
+  process.env.GEMINI_MODEL || "gemini-3.8-flash";`}
+</CodeBlock>
+
+#### Explication
+`GoogleGenAI` représente le client principal du SDK.
+
+```typescript
+new GoogleGenAI({
+  apiKey
+});
+```
+
+Cette initialisation permet d'authentifier les appels au service Google Gemini.  
+La variable `GEMINI_MODEL` permet de changer de modèle sans modifier les fichiers du projet.  
+Le nom du modèle est un identifiant à vérifier dans la documentation et dans les modèles accessibles à ton compte.
+
+---
+
+### 8. Premier appel à Gemini
+
+Créer `src/services/gemini.service.ts` :
+
+<CodeBlock language="typescript" filename="src/services/gemini.service.ts">
+{`import { ai, GEMINI_MODEL } from "../config/gemini.js";
+
+export async function generateText(prompt: string) {
+  const interaction = await ai.interactions.create({
+    model: GEMINI_MODEL,
+    input: prompt
+  });
+
+  return interaction.output_text;
+}`}
+</CodeBlock>
+
+#### Explication du code
+`ai.interactions.create()` crée une interaction avec le modèle.
+
+Les propriétés principales de cet exemple sont :
+- `model` : identifiant du modèle.
+- `input` : contenu transmis au modèle.
+
+La réponse est récupérée avec :
+```typescript
+interaction.output_text
+```
+Cette propriété permet de récupérer le texte final produit par le modèle lorsqu'il existe.
+
+---
+
+### 9. Créer une première route Express
+
+Créer `src/controllers/gemini.controller.ts` :
+
+<CodeBlock language="typescript" filename="src/controllers/gemini.controller.ts">
+{`import type { Request, Response } from "express";
+import { generateText } from "../services/gemini.service.js";
+
+export async function generateController(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { prompt } = req.body;
+
+    if (
+      typeof prompt !== "string" ||
+      !prompt.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Le prompt est obligatoire."
+      });
+    }
+
+    const result = await generateText(prompt);
+
+    return res.status(200).json({
+      success: true,
+      result
+    });
+  } catch (error) {
+    console.error("Erreur Gemini :", error);
+    return res.status(500).json({
+      success: false,
+      message: "Une erreur est survenue."
+    });
+  }
+}`}
+</CodeBlock>
+
+Créer `src/routes/gemini.routes.ts` :
+
+<CodeBlock language="typescript" filename="src/routes/gemini.routes.ts">
+{`import { Router } from "express";
+import { generateController } from "../controllers/gemini.controller.js";
+
+const router = Router();
+
+router.post("/generate", generateController);
+
+export default router;`}
+</CodeBlock>
+
+Créer `src/server.ts` :
+
+<CodeBlock language="typescript" filename="src/server.ts">
+{`import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import geminiRoutes from "./routes/gemini.routes.js";
+
+dotenv.config();
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api", geminiRoutes);
+
+const PORT = Number(process.env.PORT) || 3000;
+
+app.listen(PORT, () => {
+  console.log(\`Serveur lancé sur http://localhost:\${PORT}\`);
+});`}
+</CodeBlock>
+
+Démarrer le serveur :
+```bash
+npm run dev
+```
+
+---
+
+### 10. Tester avec Postman
+
+Créer une requête dans Postman :
+- **Méthode :** `POST`
+- **URL :** `http://localhost:3000/api/generate`
+- **Headers :** `Content-Type: application/json`
+- **Body :**
+<CodeBlock language="json">
+{`{
+  "prompt": "Explique-moi simplement le fonctionnement de Node.js en cinq lignes."
+}`}
+</CodeBlock>
+
+Résultat attendu :
+<CodeBlock language="json">
+{`{
+  "success": true,
+  "result": "Node.js est un environnement..."
+}`}
+</CodeBlock>
+
+La formulation exacte de la réponse dépend du modèle.
+
+---
+
+<PracticalWork title="Travail pratique 2 — Construction et durcissement de l'API">
+L'objectif de ce premier atelier est d'implémenter intégralement l'API Express connectée à Gemini, puis de lui ajouter les mécanismes de contrôle indispensables en production.
+
+#### Étape 1 : Implémentation du socle de base
+1. Reproduire l'arborescence complète (`src/config`, `src/services`, `src/controllers`, `src/routes`, `src/server.ts`).
+2. Configurer le client Gemini dans `src/config/gemini.ts` avec la variable d'environnement `GEMINI_API_KEY`.
+3. Développer le service `generateContent(prompt: string)` dans `src/services/gemini.service.ts`.
+4. Exposer la route `POST /api/generate` et tester un premier échange avec Postman ou cURL.
+
+#### Étape 2 : Durcissement et extensions obligatoires
+1. **Validation du type de prompt** : Vérifier que le corps de requête contient bien une propriété `prompt` de type chaîne de caractères non vide. Renvoyer un code HTTP `400 Bad Request` avec un message d'erreur clair si ce n'est pas le cas.
+2. **Longueur maximale configurable** : Imposer une limite de 2 000 caractères au prompt. Si la longueur dépasse cette valeur, tronquer proprement ou renvoyer une erreur `400` détaillée.
+3. **Gestion centralisée des erreurs** : Ajouter un middleware Express `(err, req, res, next)` interceptant toutes les exceptions non capturées et renvoyant une réponse JSON harmonisée `{ "success": false, "error": { "message": "..." } }` avec le code HTTP adapté (ex. `500` pour incident interne, `401` pour défaut de clé).
+4. **Route de santé `/api/health`** : Créer une route `GET /api/health` qui renvoie immédiatement `{ "status": "ok", "uptime": process.uptime() }` sans interroger Gemini.
+5. **Route de test `/api/test-gemini`** : Créer une route `GET /api/test-gemini` qui envoie un prompt figé (*"Réponds uniquement par le mot OK"*) afin de diagnostiquer rapidement la connectivité avec les serveurs de Google.
+
+<Callout type="success" title="Critère de validation du TP">
+Vous devez être capable d'expliquer le cheminement exact d'une requête : de son arrivée sur la route Express jusqu'à l'interrogation du SDK Gemini, le traitement par le contrôleur et la réponse au client.
+</Callout>
+</PracticalWork>
+

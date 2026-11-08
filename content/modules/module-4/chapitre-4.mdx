@@ -1,0 +1,179 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 4 — Ingestion documentaire et découpage en fragments (Chunking)
+
+### 1. Le pipeline d'ingestion documentaire
+
+L'ingestion documentaire est la chaîne de traitement qui transforme des fichiers bruts (PDF, Word, TXT) en fragments indexés prêts pour la recherche sémantique :
+
+```text
+FICHIER SOURCE (PDF / TXT)
+       |
+       v
+[ 1. Extraction du texte ] -------> pdf-parse / fs.readFile
+       |
+       v
+[ 2. Nettoyage & Normalisation ] -> Suppression des sauts multiples, espaces et scories
+       |
+       v
+[ 3. Découpage en fragments ] ----> splitIntoChunks (ex: 500 mots avec overlap 80)
+       |
+       v
+[ 4. Stockage initial MySQL ] ----> INSERT INTO document_chunks
+       |
+       v
+[ 5. Génération des embeddings ] -> embedContent (Vecteurs 768 dimensions)
+       |
+       v
+[ 6. Indexation vectorielle ] ----> Qdrant upsert points avec payload
+```
+
+---
+
+### 2. Extraire le texte d'un document PDF
+
+Les fichiers PDF contiennent des flux de commandes graphiques compressées. Pour extraire le texte brut :
+
+```bash
+npm install pdf-parse
+npm install -D @types/pdf-parse
+```
+
+```typescript
+// src/services/extraction.service.ts
+import fs from 'node:fs/promises';
+import pdf from 'pdf-parse';
+
+export async function extractTextFromPdf(filePath: string): Promise<string> {
+  const fileBuffer = await fs.readFile(filePath);
+  const pdfData = await pdf(fileBuffer);
+
+  if (!pdfData.text || !pdfData.text.trim()) {
+    throw new Error("Le document PDF ne contient aucun texte extractible (possible document scanné).");
+  }
+
+  return cleanDocumentText(pdfData.text);
+}
+
+export function cleanDocumentText(rawText: string): string {
+  return rawText
+    .replace(/\r/g, '\n')              // Harmonisation des retours chariot
+    .replace(/[ \t]+/g, ' ')           // Suppression des espaces consécutifs
+    .replace(/\n{3,}/g, '\n\n')        // Limitation des sauts de ligne multiples
+    .trim();
+}
+```
+
+---
+
+### 3. Pourquoi le découpage en fragments (Chunking) est-il obligatoire ?
+
+Transmettre un manuel technique ou un rapport de 100 pages d'un seul bloc à un LLM pose trois problèmes critiques :
+1. **Perte de précision sémantique** : L'embedding d'un document de 100 pages dilue les concepts précis dans une moyenne floue.
+2. **Explosion des coûts et latence** : Injecter 50 000 tokens dans chaque requête consomme votre budget et ralentit considérablement la réponse.
+3. **Phénomène du *Lost in the Middle*** : Les LLMs ont tendance à ignorer les détails enfouis au milieu de contextes excessivement volumineux.
+
+Le **chunking** consiste à découper le document en fragments de taille équilibrée (généralement entre 300 et 800 mots), chacun portant une unité d'information cohérente.
+
+---
+
+### 4. Le principe du chevauchement (*Overlap*)
+
+Si une idée importante ou une phrase clé est coupée exactement entre le mot 500 et le mot 501, le sens sera scindé et la recherche vectorielle pourrait échouer.
+
+Le **chevauchement (*overlap*)** consiste à conserver la fin du fragment précédent au début du fragment suivant :
+
+```text
+CHUNK 1 : [ Paragraphe A ] [ Paragraphe B ] [ Paragraphe C ]
+                                                    |
+CHUNK 2 :                          [ Paragraphe C ] [ Paragraphe D ] [ Paragraphe E ]
+                                   (Zone de chevauchement / Overlap)
+```
+
+---
+
+### 5. Implémenter le service de découpage
+
+Dans `src/services/chunk.service.ts` :
+
+```typescript
+// src/services/chunk.service.ts
+export function splitIntoChunks(
+  text: string,
+  chunkSize: number = 500,
+  overlap: number = 80
+): string[] {
+  if (chunkSize <= 0 || overlap < 0 || overlap >= chunkSize) {
+    throw new Error('Paramètres de chunking invalides : le chevauchement doit être inférieur à la taille.');
+  }
+
+  const words = text.split(/\s+/).filter(Boolean);
+  const chunks: string[] = [];
+  let start = 0;
+
+  while (start < words.length) {
+    const end = Math.min(start + chunkSize, words.length);
+    const chunkText = words.slice(start, end).join(' ');
+
+    if (chunkText.trim().length > 0) {
+      chunks.push(chunkText.trim());
+    }
+
+    if (end === words.length) {
+      break;
+    }
+
+    // Décalage en reculant de la taille du chevauchement
+    start = end - overlap;
+  }
+
+  return chunks;
+}
+```
+
+<Callout type="note" title="Stratégie de chunking par structure">
+Pour des documents très structurés (contrats avec articles numérotés, documentations avec titres Markdown `#` ou `##`), il est recommandé de segmenter par section logique et de préfixer chaque fragment avec le titre de son chapitre.
+</Callout>
+
+<ChunkingVisualizerLab />
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Ingestion d'un PDF et segmentation avec chevauchement (Overlap)"
+  objective="Extraire le texte brut d'un document PDF réel, normaliser les espaces et le découper en fragments calibrés avec chevauchement pour préserver le contexte sémantique."
+  duration="45 minutes"
+  steps={[
+    "Installer la bibliothèque d'extraction : `npm install pdf-parse @types/pdf-parse`.",
+    "Créer un dossier `uploads/` à la racine et y déposer un document PDF de test (guide RH, manuel ou conditions générales).",
+    "Développer le module `src/utils/pdfExtractor.ts` exportant `extractTextFromPdf(filePath: string): Promise<string>` : ouvrir le buffer avec `fs.readFile()` et nettoyer les sauts de lignes anarchiques avec regex.",
+    "Développer la fonction de segmentation `splitIntoChunks(text: string, chunkSize = 300, overlap = 50)` : découper le texte en mots et faire avancer une fenêtre glissante.",
+    "Écrire un script de vérification `src/scripts/test-chunking.ts` : afficher le nombre total de mots extraits, le nombre de fragments obtenus, et vérifier que les 50 derniers mots du chunk N se retrouvent bien au début du chunk N+1."
+  ]}
+  validationCriteria={[
+    "Le document PDF est entièrement converti en texte brut sans planter sur les caractères spéciaux.",
+    "Chaque fragment généré compte entre 250 et 300 mots environ.",
+    "Le chevauchement (overlap) garantit qu'aucune phrase n'est brutalement tronquée entre deux chunks."
+  ]}
+>
+
+#### Script d'extraction et de découpage :
+```typescript
+import fs from 'fs/promises';
+import pdfParse from 'pdf-parse';
+
+export async function processPdf(filePath: string) {
+  const dataBuffer = await fs.readFile(filePath);
+  const pdfData = await pdfParse(dataBuffer);
+
+  // Nettoyage des retours chariots multiples
+  const cleanText = pdfData.text.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+
+  console.log(`[PDF] Extraction réussie (${pdfData.numpages} pages, ${cleanText.length} caractères).`);
+  return cleanText;
+}
+```
+</PracticalWork>
+

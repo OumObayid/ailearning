@@ -1,0 +1,128 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 9 — Liaison Qdrant-MySQL et récupération des passages
+
+### 1. Faire le pont entre l'index vectoriel et la base relationnelle
+
+Une fois la recherche vectorielle exécutée dans Qdrant, nous obtenons une liste de points contenant des scores et des identifiants techniques :
+
+```typescript
+// Résultat Qdrant
+[
+  { score: 0.92, payload: { chunkId: 104, documentId: 12, title: "guide.pdf" } },
+  { score: 0.87, payload: { chunkId: 105, documentId: 12, title: "guide.pdf" } }
+]
+```
+
+Dans notre architecture, nous utilisons ces identifiants `chunkId` pour interroger **MySQL** afin d'extraire le texte intégral, vérifié et à jour des fragments correspondants.
+
+---
+
+### 2. Implémenter le service de récupération sécurisée
+
+Dans `src/services/document.service.ts` :
+
+```typescript
+// src/services/document.service.ts
+import { pool } from '../config/database.js';
+
+export interface RetrievedChunk {
+  id: number;
+  documentId: number;
+  content: string;
+  title: string;
+  score?: number;
+}
+
+export async function getChunksByIds(
+  chunkIds: number[],
+  userId: number
+): Promise<RetrievedChunk[]> {
+  if (chunkIds.length === 0) {
+    return [];
+  }
+
+  // Construction dynamique des paramètres positionnels (?, ?, ...)
+  const placeholders = chunkIds.map(() => '?').join(',');
+
+  // Requête préparée sécurisée avec jointure vérifiant le propriétaire du document
+  const [rows] = await pool.execute(
+    `SELECT
+        dc.id,
+        dc.document_id AS documentId,
+        dc.content,
+        d.title
+     FROM document_chunks AS dc
+     INNER JOIN documents AS d ON d.id = dc.document_id
+     WHERE dc.id IN (${placeholders})
+       AND d.user_id = ?`,
+    [...chunkIds, userId]
+  );
+
+  return rows as RetrievedChunk[];
+}
+```
+
+<Callout type="note" title="Pourquoi générer la liste de '?' de façon dynamique ?">
+Le code `chunkIds.map(() => '?').join(',')` fabrique uniquement une séquence de points d'interrogation (ex. `?,?,?`) correspondant au nombre d'identifiants. Aucune donnée utilisateur n'est injectée dans la requête SQL, préservant l'étanchéité totale contre les injections.
+</Callout>
+
+---
+
+### 3. Pourquoi appliquer une double vérification d'autorisation ?
+
+Bien que Qdrant ait déjà filtré les résultats avec la condition `user_id`, réitérer la clause `WHERE d.user_id = ?` dans la requête SQL MySQL constitue un principe fondamental de **défense en profondeur** (*Defense in Depth*) :
+1. Même en cas d'erreur de configuration dans le payload Qdrant, aucune fuite de données entre utilisateurs n'est possible.
+2. Si un document a été marqué comme supprimé ou désactivé dans MySQL, la jointure l'écarte instantanément.
+3. Les données textuelles sont toujours garanties être les plus fraîches et cohérentes.
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Récupération des chunks textuels par jointure préparée MySQL"
+  objective="Associer les résultats vectoriels renvoyés par Qdrant à une requête préparée MySQL pour extraire le texte intégral avec double vérification de propriété."
+  duration="35 minutes"
+  steps={[
+    "Développer la fonction `getChunksByIds(chunkIds: number[], userId: number)` dans `src/services/document.service.ts`.",
+    "Court-circuiter immédiatement si le tableau `chunkIds` est vide (`if (chunkIds.length === 0) return []`) pour économiser un aller-retour SQL inutile.",
+    "Construire dynamiquement la clause `IN (${placeholders})` avec `chunkIds.map(() => '?').join(',')` et lier les arguments `[...chunkIds, userId]` en requête préparée.",
+    "Exécuter une recherche vectorielle Qdrant, mapper les résultats pour obtenir le tableau d'identifiants `chunkIds`, et appeler `getChunksByIds`.",
+    "Tester le cloisonnement de sécurité : injecter manuellement un identifiant appartenant à un autre `userId` et vérifier que la jointure SQL l'exclut automatiquement du résultat."
+  ]}
+  validationCriteria={[
+    "La fonction retourne des objets typés `{ id, title, content, chunkIndex }`.",
+    "Aucun paramètre non vérifié n'est directement concaténé dans la chaîne SQL.",
+    "La clause `WHERE d.user_id = ?` garantit une défense en profondeur hermétique."
+  ]}
+>
+
+#### Fonction de récupération textuelle avec jointure sécurisée :
+```typescript
+import { pool } from '../config/database.js';
+
+export interface RetrievedChunk {
+  id: number;
+  title: string;
+  content: string;
+  chunkIndex: number;
+}
+
+export async function getChunksByIds(chunkIds: number[], userId: number): Promise<RetrievedChunk[]> {
+  if (chunkIds.length === 0) return [];
+
+  const placeholders = chunkIds.map(() => '?').join(',');
+  const query = `
+    SELECT c.id, d.title, c.content, c.chunk_index AS chunkIndex
+    FROM document_chunks c
+    INNER JOIN documents d ON d.id = c.document_id
+    WHERE c.id IN (${placeholders}) AND d.user_id = ?
+  `;
+
+  const [rows]: any = await pool.execute(query, [...chunkIds, userId]);
+  return rows;
+}
+```
+</PracticalWork>
+

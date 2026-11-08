@@ -1,0 +1,94 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 5 — Connecter n8n aux APIs REST et gérer l'authentification
+
+### 1. Le nœud HTTP Request polyvalent
+
+Le nœud **HTTP Request** est le couteau suisse de n8n. Il permet d'interagir avec n'importe quelle API REST du web, qu'il s'agisse d'un microservice interne développé en Node.js, d'une plateforme SaaS externe (Stripe, GitHub, Linear) ou d'une passerelle de messagerie (Twilio, Resend).
+
+Il prend en charge l'ensemble des verbes HTTP standards :
+- **GET** : Récupérer des ressources ou interroger des listes avec des paramètres d'URL (*Query Parameters*).
+- **POST** : Créer une ressource en transmettant un corps JSON structuré.
+- **PUT / PATCH** : Mettre à jour une ressource existante partiellement ou intégralement.
+- **DELETE** : Supprimer un enregistrement distant.
+
+---
+
+### 2. Configuration d'un appel POST avec payload JSON dynamique
+
+Pour transmettre des informations dynamiques issues des étapes antérieures, activez l'option **Send Body** avec le format `JSON`. Vous pouvez ensuite composer la charge utile en utilisant la syntaxe d'interpolation n8n :
+
+<CodeBlock
+  language="json"
+  title="Corps JSON dynamique configuré dans le nœud HTTP Request"
+  code={`{
+  "recipient": "{{ $json.clientEmail }}",
+  "subject": "Notification de support : Ticket {{ $json.ticketId }}",
+  "priority": "{{ $('Gemini Analysis').item.json.priority }}",
+  "metadata": {
+    "category": "{{ $('Gemini Analysis').item.json.category }}",
+    "receivedAt": "{{ $('Webhook').item.json.timestamp }}",
+    "environment": "production"
+  }
+}`}
+/>
+
+<Callout type="tip" title="Option 'Response Data'">
+Par défaut, le nœud HTTP Request tente de convertir automatiquement la réponse du serveur distant en JSON. Si l'API renvoie du texte brut ou un code d'état vide (`204 No Content`), configurez l'option *Response Data* sur *Text* ou *Never* pour éviter toute levée d'erreur de parsing.
+</Callout>
+
+---
+
+### 3. Sécurité des accès : gestionnaire de Credentials de n8n
+
+Il est strictement interdit d'écrire en clair des jetons d'accès ou des clés d'API directement dans les champs de texte d'un workflow. n8n intègre un **gestionnaire centralisé d'identifiants (*Credentials Manager*)**.
+
+#### Types d'authentification pris en charge
+1. **Header Auth** : Injecte automatiquement un en-tête d'autorisation personnalisé (ex. `X-API-Key: secret_abc123`).
+2. **Bearer Token** : Ajoute l'en-tête standard `Authorization: Bearer <TOKEN>`.
+3. **OAuth2 (Authorization Code / Client Credentials)** : Gère automatiquement le renouvellement cyclique des jetons d'accès (*refresh tokens*) sans interruption de service.
+4. **Basic Auth** : Nom d'utilisateur et mot de passe encodés en base64 pour les services hérités.
+
+<ArchitectureDiagram
+  title="Chiffrement des clés d'API dans n8n"
+  diagram={`CLÉ D'API SAISIE DANS L'UI
+           |
+           v
+[ MOTEUR DE CHIFFREMENT n8n ] <--- Chiffrement AES-256 avec clé N8N_ENCRYPTION_KEY
+           |
+           v
+BASE DE DONNÉES n8n (Stockage sécurisé sous forme de blob chiffré)`}
+/>
+
+---
+
+### 4. Quand privilégier HTTP Request face aux intégrations officielles
+
+n8n propose plus de 400 nœuds pré-configurés pour des services populaires (Slack, Google Sheets, GitHub, HubSpot). Néanmoins, le nœud générique **HTTP Request** s'avère fréquemment supérieur dans les contextes professionnels :
+
+| Critère | Nœud pré-packagé officiel | Nœud générique HTTP Request |
+| :--- | :--- | :--- |
+| **Simplicité initiale** | Très rapide, champs guidés par l'interface | Nécessite de consulter la documentation de l'API |
+| **Support des nouveaux endpoints** | Limité aux fonctionnalités implémentées par n8n | Accès immédiat à 100 % des routes de l'API cible |
+| **APIs internes d'entreprise** | Inexistant (vos microservices Node.js sont privés) | Totalement compatible avec n'importe quelle URL privée |
+| **Gestion fine des en-têtes et codes HTTP** | Abstraite et parfois contraignante | Contrôle total sur les en-têtes, les cookies et les statuts |
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Où devez-vous enregistrer une clé secrète d'API tierce dans n8n pour garantir sa sécurité et empêcher qu'elle apparaisse en clair dans les exports de workflow ?"
+  options={[
+    "Dans une variable locale écrite dans un bloc de commentaires sur le canvas",
+    "Dans le gestionnaire centralisé 'Credentials' de n8n, où elle sera chiffrée avec la clé AES de l'instance",
+    "En dur dans le champ URL du nœud HTTP Request",
+    "Dans le fichier package.json de l'application"
+  ]}
+  correctIndex={1}
+  explanation="Le gestionnaire d'identifiants de n8n chiffre les clés au repos à l'aide d'un algorithme AES-256 basé sur la variable d'environnement N8N_ENCRYPTION_KEY, et ne les exporte jamais en clair lors du partage de fichiers JSON de workflows."
+/>
+

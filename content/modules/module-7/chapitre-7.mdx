@@ -1,0 +1,137 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 7 — Contrôle des actions sensibles et patron Human-in-the-Loop
+
+### 1. Typologie des opérations critiques nécessitant une approbation
+
+Une application d'intelligence artificielle ne doit jamais être autorisée à exécuter de manière entièrement autonome des actions ayant un impact destructif, financier ou juridique irréversible.
+
+| Domaine | Actions autorisées en autonomie | Actions exigeant une approbation humaine |
+| :--- | :--- | :--- |
+| **Support client** | Consulter le statut d'un colis, expliquer les CGV | Clôturer définitivement un compte utilisateur |
+| **Finances & Achats** | Calculer un devis, lister les factures acquittées | Amorcer un virement ou un remboursement bancaire |
+| **Communication** | Rédiger un brouillon de réponse à un client | Envoyer un email groupé à l'ensemble des clients |
+| **Données & SI** | Ajouter une note de contexte sur un ticket | Réinitialiser les clés d'API ou tronquer une table |
+
+---
+
+### 2. Patron architectural Human-in-the-Loop (HITL)
+
+Le patron **Human-in-the-Loop (L'humain dans la boucle)** consiste à décomposer le cycle d'action en deux temps disjoints :
+
+<ArchitectureDiagram
+  title="Cycle d'action sous supervision humaine"
+  diagram={`DEMANDE DU CLIENT ("Annule ma commande #904 et rembourse-moi")
+               |
+               v
+     [ 1. ÉTUDE PAR L'IA ]
+- Vérifie l'éligibilité aux CGV
+- Prépare les paramètres du virement
+               |
+               v
+[ 2. CRÉATION D'UNE INTENTION D'ACTION EN ATTENTE ]
+- Enregistrement en base : status = 'pending_approval'
+- Génération d'un jeton d'approbation à usage unique
+               |
+               v
+[ 3. ALERTE SUR L'INTERFACE DU RESPONSABLE (React / Slack) ]
+"L'agent propose d'annuler la commande #904 (180,00 €). Approuver ?"
+               |
+     +---------+---------+
+     |                   |
+ [ REFUSER ]        [ APPROUVER ]
+     |                   |
+     v                   v
+Action annulée     [ 4. EXÉCUTION RÉELLE PAR LE BACKEND ]
+                   Mise à jour MySQL & virement Stripe`}
+/>
+
+---
+
+### 3. Implémentation d'un flux de confirmation lié à l'action exacte
+
+La confirmation humaine ne doit pas être un simple accord vague. Elle doit être **strictement liée à l'action, aux arguments et au demandeur** :
+
+<CodeBlock
+  language="typescript"
+  title="src/services/approvalService.ts — Gestion des actions suspendues"
+  code={`import { randomUUID } from 'crypto';
+import { pool } from '../config/database';
+
+export interface PendingActionPayload {
+  actionType: 'refund_order' | 'delete_user_data';
+  targetId: number;
+  amount?: number;
+  reason: string;
+}
+
+export async function createPendingAction(
+  userId: number,
+  payload: PendingActionPayload
+): Promise<string> {
+  const approvalId = \`ACT-\${randomUUID()}\`;
+
+  await pool.execute(
+    \`INSERT INTO pending_agent_actions 
+      (id, user_id, action_type, payload, status, expires_at)
+     VALUES (?, ?, ?, ?, 'pending', DATE_ADD(NOW(), INTERVAL 1 HOUR))\`,
+    [approvalId, userId, payload.actionType, JSON.stringify(payload)]
+  );
+
+  return approvalId;
+}
+
+export async function executePendingAction(
+  approvalId: string,
+  approvedByUserId: number,
+  decision: 'approved' | 'rejected'
+) {
+  // 1. Récupérer l'action et vérifier qu'elle est toujours en attente
+  const [rows]: any = await pool.execute(
+    \`SELECT * FROM pending_agent_actions WHERE id = ? AND status = 'pending' AND expires_at > NOW()\`,
+    [approvalId]
+  );
+
+  if (rows.length === 0) {
+    throw new Error("Action introuvable, expirée ou déjà traitée.");
+  }
+
+  const action = rows[0];
+
+  if (decision === 'rejected') {
+    await pool.execute(\`UPDATE pending_agent_actions SET status = 'rejected' WHERE id = ?\`, [approvalId]);
+    return { success: false, message: "Action rejetée par l'administrateur." };
+  }
+
+  // 2. Exécution exclusive après validation humaine
+  const data = JSON.parse(action.payload);
+  console.log(\`Exécution de l'action \${action.action_type} pour la cible \${data.targetId}\`);
+
+  await pool.execute(
+    \`UPDATE pending_agent_actions SET status = 'executed', approved_by = ? WHERE id = ?\`,
+    [approvedByUserId, approvalId]
+  );
+
+  return { success: true, message: "Opération finalisée avec succès." };
+}`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi un jeton de validation humaine ne doit-il être utilisable qu'une seule fois et lié strictement à l'action et aux paramètres exacts ?"
+  options={[
+    "Pour obliger l'administrateur à retaper son mot de passe",
+    "Pour empêcher les attaques par rejeu où un tiers réutiliserait la même autorisation pour déclencher d'autres opérations non validées",
+    "Parce que MySQL ne supporte pas les chaînes de plus de 10 caractères",
+    "Pour réduire la taille du fichier package.json"
+  ]}
+  correctIndex={1}
+  explanation="Lier formellement le jeton de confirmation aux paramètres exacts (montant, identifiant) et à un statut unique à usage unique empêche tout détournement ou réutilisation malveillante de l'approbation."
+/>
+

@@ -1,0 +1,190 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 3 — Le Function Calling de Gemini avec le SDK officiel @google/genai
+
+### 1. Principe fondamental du Tool Calling / Function Calling
+
+Le **Tool Calling** (ou *Function Calling*) est un protocole de communication structuré entre un modèle de fondation et une application hôte.
+
+Le modèle ne possède pas le code de vos fonctions. Vous lui transmettez une description JSON (*schema*) exposant le nom de l'outil, son utilité et les paramètres attendus.
+Lorsque l'utilisateur soumet une question dont la résolution requiert des données externes, **le modèle interrompt la génération textuelle standard et émet un objet JSON demandant formellement l'exécution de cet outil**.
+
+<CodeBlock
+  language="json"
+  title="Exemple d'objet function_call émis par Gemini"
+  code={`{
+  "type": "function_call",
+  "name": "get_product",
+  "arguments": {
+    "productId": 15
+  }
+}`}
+/>
+
+---
+
+### 2. Le cycle complet en 8 étapes
+
+Le déroulement d'une interaction avec Function Calling s'articule en 8 étapes rigoureuses :
+
+<ArchitectureDiagram
+  title="Les 8 étapes du cycle de Function Calling"
+  diagram={`1. L'utilisateur pose sa question en langage naturel
+           |
+           v
+2. Le backend transmet le prompt et la liste des outils (tools) à Gemini
+           |
+           v
+3. Gemini détecte qu'un outil est indispensable pour répondre
+           |
+           v
+4. Gemini renvoie une structure de type function_call avec les arguments
+           |
+           v
+5. Le serveur Node.js valide les arguments avec Zod
+           |
+           v
+6. Le serveur Node.js exécute la fonction TypeScript correspondante
+           |
+           v
+7. Le résultat réel de la fonction est réexpédié à Gemini (function_result)
+           |
+           v
+8. Gemini formule la réponse finale pour l'utilisateur en intégrant les données`}
+/>
+
+<FunctionCallingProtocolLab />
+
+---
+
+### 3. Configuration du SDK officiel @google/genai
+
+Pour initialiser votre projet avec les outils officiels de Google :
+
+<CodeBlock
+  language="bash"
+  title="Installation des dépendances du projet d'agent"
+  code={`npm install @google/genai dotenv zod
+npm install -D typescript tsx @types/node`}
+/>
+
+Configurez ensuite l'accès sécurisé à l'API dans votre fichier de configuration d'environnement :
+
+<CodeBlock
+  language="typescript"
+  title="src/config/gemini.ts — Initialisation du client officiel"
+  code={`import 'dotenv/config';
+import { GoogleGenAI } from '@google/genai';
+
+const apiKey = process.env.API_KEY_GEMINI;
+if (!apiKey) {
+  throw new Error("Erreur critique : La variable d'environnement API_KEY_GEMINI est indéfinie.");
+}
+
+export const ai = new GoogleGenAI({ apiKey });
+export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';`}
+/>
+
+---
+
+### 4. Définir des fonctions TypeScript indépendantes
+
+Avant d'exposer une fonctionnalité à l'IA, écrivez-la comme une fonction TypeScript pure et testable unitairement, indépendante de tout framework :
+
+<CodeBlock
+  language="typescript"
+  title="src/tools/productService.ts — Fonction métier native"
+  code={`export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  stock: number;
+}
+
+const mockDatabase: Product[] = [
+  { id: 15, name: 'Sac à dos technique étanche', price: 129, stock: 4 },
+  { id: 16, name: 'Chaussures de randonnée Gore-Tex', price: 189, stock: 12 },
+  { id: 17, name: 'Gourde isotherme inox 1L', price: 35, stock: 0 },
+];
+
+export async function getProductById(productId: number): Promise<Product | null> {
+  const match = mockDatabase.find((item) => item.id === productId);
+  return match ?? null;
+}`}
+/>
+
+---
+
+### 5. Décrire les outils au modèle via l'Interactions API
+
+Pour que Gemini sache quand et comment utiliser cette fonction, vous devez lui fournir son manifeste descriptif :
+
+<CodeBlock
+  language="typescript"
+  title="src/tools/definitions.ts — Manifeste de l'outil pour Gemini"
+  code={`export const agentTools = [
+  {
+    type: 'function' as const,
+    name: 'get_product',
+    description: "Recherche les détails d'un produit (nom, prix, stock) à partir de son identifiant numérique unique.",
+    parameters: {
+      type: 'object',
+      properties: {
+        productId: {
+          type: 'integer',
+          description: "L'identifiant numérique du produit recherché (ex. 15).",
+        },
+      },
+      required: ['productId'],
+    },
+  },
+];`}
+/>
+
+---
+
+### 6. Envoi de la demande et inspection des sorties
+
+Lorsque vous interrogez l'API de Gemini avec le paramètre `tools`, le modèle arbitre automatiquement entre réponse textuelle directe et proposition d'outil :
+
+<CodeBlock
+  language="typescript"
+  title="src/test-call.ts — Premier appel d'outil"
+  code={`import { ai, GEMINI_MODEL } from './config/gemini';
+import { agentTools } from './tools/definitions';
+
+async function main() {
+  const interaction = await ai.interactions.create({
+    model: GEMINI_MODEL,
+    input: "Combien d'unités reste-t-il pour le produit 15 ?",
+    tools: agentTools,
+  });
+
+  console.log("Sorties brutes émises par Gemini :");
+  console.dir(interaction.outputs, { depth: null });
+}
+
+main();`}
+/>
+
+Si vous examinez la console, vous remarquerez que `interaction.outputs` contient un élément avec `type: "function_call"` ciblant `get_product` avec `{ productId: 15 }`. Le modèle attend désormais que votre application lui renvoie le résultat réel pour formuler sa réponse.
+
+---
+
+### 7. Validation des acquis
+
+<QuickQuiz
+  question="Que renvoie l'API Google Gemini lorsqu'elle estime nécessaire d'appeler une fonction définie dans vos outils ?"
+  options={[
+    "Une exception HTTP 500 pour indiquer que l'information n'est pas dans son modèle",
+    "Un objet de type function_call avec le nom de l'outil et les arguments suggérés",
+    "Le résultat complet de la base de données déjà calculé",
+    "Un message d'erreur demandant à l'utilisateur de reformuler sa phrase"
+  ]}
+  correctIndex={1}
+  explanation="Gemini n'exécute pas la fonction lui-même : il émet une structure 'function_call' indiquant le nom de l'outil requis et les arguments extraits du texte pour que votre serveur se charge de l'exécution."
+/>
+

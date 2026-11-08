@@ -1,0 +1,181 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 10 — Sécurité et tests frontend IA
+
+### 1. Les risques de sécurité spécifiques au frontend IA
+
+Intégrer l'intelligence artificielle dans une interface utilisateur expose à des vulnérabilités inédites :
+- **Cross-Site Scripting (XSS) indirect** : Un utilisateur malveillant pousse le modèle à générer des balises `<script>` ou `<img onerror="...">`. Si le frontend injecte cette chaîne sans filtre, le script s'exécute dans la session de l'utilisateur.
+- **Exécution non sollicitée d'actions critiques** : Une réponse du modèle qui déclencherait automatiquement une suppression de compte ou un virement sans consentement explicite.
+- **Fuite de jetons secrets** : Tentative d'inspection du code JavaScript client pour y dérober des identifiants d'API.
+
+---
+
+### 2. Contrôle et confirmation humaine des actions
+
+Une réponse produite par un modèle d'IA ne doit **jamais** posséder les pleins pouvoirs d'exécution autonome sur le compte d'un utilisateur.
+
+Toute action sensible préconisée par l'IA doit être soumise à une **validation humaine explicite** (*Human-in-the-Loop*) via une boîte de dialogue modale :
+
+```tsx
+// src/components/AI/ActionConfirmationModal.tsx
+import React from 'react';
+
+interface Props {
+  actionDescription: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export const ActionConfirmationModal: React.FC<Props> = ({ actionDescription, onConfirm, onCancel }) => {
+  return (
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+        <h3 className="text-lg font-bold text-slate-900">Confirmation requise</h3>
+        <p className="text-sm text-slate-600 leading-relaxed">
+          L&apos;assistant IA suggère d&apos;effectuer l&apos;opération suivante :
+        </p>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
+          {actionDescription}
+        </div>
+        <div className="flex justify-end gap-3 pt-2">
+          <button onClick={onCancel} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            Annuler
+          </button>
+          <button onClick={onConfirm} className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            Confirmer et exécuter
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+---
+
+### 3. Tester les interfaces IA avec Vitest et Testing Library
+
+Les tests automatisés permettent de vérifier le comportement de l'interface (états d'attente, gestion d'erreurs, affichage) **sans consommer de crédits Gemini** grâce aux mocks.
+
+Installation de la suite de tests :
+
+```bash
+npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
+```
+
+Exemple de test unitaire simulant une génération réussie :
+
+```tsx
+// tests/Home.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import Home from '../src/pages/Home';
+import * as aiService from '../src/services/ai.service';
+
+describe('Composant Home Assistant IA', () => {
+  it('affiche le résultat lorsque la génération réussit', async () => {
+    const user = userEvent.setup();
+
+    // Mock du service API pour éviter d'appeler Gemini réellement
+    vi.spyOn(aiService, 'generateText').mockResolvedValueOnce({
+      success: true,
+      result: 'Gemini a généré une réponse parfaite.',
+    });
+
+    render(<Home />);
+
+    const input = screen.getByPlaceholderText(/saisis ta demande/i);
+    const submitBtn = screen.getByRole('button', { name: /générer/i });
+
+    // Simulation de la saisie utilisateur
+    await user.type(input, 'Explique TypeScript');
+    expect(submitBtn).toBeEnabled();
+
+    // Déclenchement de l'action
+    await user.click(submitBtn);
+
+    // Vérification de l'état d'attente puis de la présence du texte simulé
+    expect(await screen.findByText('Gemini a généré une réponse parfaite.')).toBeInTheDocument();
+  });
+});
+```
+
+---
+
+<PracticalWork
+  title="Travail Pratique 10 — Sécurisation et tests unitaires de composants IA"
+  objective="Concevoir une suite complète de tests unitaires sous Vitest et React Testing Library validant les états de chargement, de succès et d'échec réseau avec mock de fetch."
+  duration="45 minutes"
+  steps={[
+    "Configurer l'environnement de test dans `vitest.config.ts` avec `environment: 'jsdom'` et le fichier de configuration `@testing-library/jest-dom`.",
+    "Créer le fichier de test `src/components/__tests__/PromptForm.test.tsx`.",
+    "Test 1 (Validation d'entrée) : Rendre le formulaire et vérifier avec `expect(button).toBeDisabled()` que le bouton d'envoi est inactif tant que le champ est vide.",
+    "Test 2 (État de chargement) : Simuler la saisie d'une question, cliquer sur 'Envoyer' et vérifier l'apparition du texte 'Génération...' ainsi que la désactivation du bouton pendant le traitement.",
+    "Test 3 (Succès nominal) : Mocker l'appel `global.fetch` avec `vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, result: 'Réponse test' }) })` et vérifier avec `await screen.findByText('Réponse test')` que le texte de l'IA s'affiche bien dans le DOM.",
+    "Test 4 (Résilience d'échec) : Mocker un échec HTTP 500 (`ok: false, status: 500`) et vérifier l'apparition de la bannière rouge d'erreur sans crash de l'interface.",
+    "Lancer `npm run test` et valider un taux de réussite de 100 % en moins de 2 secondes."
+  ]}
+  validationCriteria={[
+    "Tous les tests s'exécutent en mémoire locale ultra-rapide sans jamais interroger l'API réelle de Google.",
+    "Les 4 états (inactif, chargement, succès, erreur) sont rigoureusement assertés.",
+    "Aucun avertissement `act(...)` ou fuite mémoire n'apparaît dans la console de test."
+  ]}
+>
+
+#### Suite de tests unitaires Vitest prête à l'emploi :
+```tsx
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
+import { PromptForm } from '../PromptForm';
+
+describe('Composant PromptForm — Tests unitaires', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('désactive le bouton si le champ est vide', () => {
+    render(<PromptForm />);
+    const button = screen.getByRole('button', { name: /envoyer/i });
+    expect(button).toBeDisabled();
+  });
+
+  it('affiche la réponse de l\'IA lors d\'un succès simulé', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, result: 'Bonjour, ceci est un test réussi.' }),
+    } as any);
+
+    render(<PromptForm />);
+    const input = screen.getByPlaceholderText(/posez votre question/i);
+    const button = screen.getByRole('button', { name: /envoyer/i });
+
+    fireEvent.change(input, { target: { value: 'Test de question' } });
+    expect(button).not.toBeDisabled();
+    fireEvent.click(button);
+
+    expect(await screen.findByText('Bonjour, ceci est un test réussi.')).toBeInTheDocument();
+  });
+
+  it('affiche une bannière d\'erreur en cas d\'échec 500 du serveur', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ success: false, error: { message: 'Serveur indisponible' } }),
+    } as any);
+
+    render(<PromptForm />);
+    const input = screen.getByPlaceholderText(/posez votre question/i);
+    fireEvent.change(input, { target: { value: 'Provoquer erreur' } });
+    fireEvent.click(screen.getByRole('button', { name: /envoyer/i }));
+
+    expect(await screen.findByText(/serveur indisponible/i)).toBeInTheDocument();
+  });
+});
+```
+</PracticalWork>
+

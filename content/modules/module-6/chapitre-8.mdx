@@ -1,0 +1,143 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 8 — Limites d'exécution, permissions, sécurité SSRF et Human-in-the-Loop
+
+### 1. Prévenir l'emballement : max_steps, timeout, budget de tokens
+
+Un agent en liberté sans contraintes peut provoquer des dégâts financiers et opérationnels majeurs s'il entre dans une boucle d'appels récursifs non convergente.
+
+Tout système agentique en production doit appliquer une politique de plafonnement à trois niveaux :
+1. **Nombre d'étapes maximal (*Step Limit*)** : Borner la boucle `MAX_STEPS` entre 4 et 8 itérations selon la complexité attendue de la tâche.
+2. **Délai d'expiration maximal (*Execution Timeout*)** : Clore la requête au bout de 15 à 30 secondes via un signal d'annulation `AbortController`.
+3. **Plafond budgétaire de jetons (*Token Budget*)** : Détecter et bloquer les échanges excédant un quota volumétrique défini par requête.
+
+---
+
+### 2. Gestion granulaire des permissions (Lecture vs Mutation critique)
+
+Il est indispensable de séparer rigoureusement les actions passives de consultation et les actions actives de modification :
+
+| Type d'action | Niveau de risque | Exemples d'outils | Mesure de contrôle requise |
+| :--- | :--- | :--- | :--- |
+| **Lecture passive** | Faible | `search_docs`, `get_product`, `list_orders` | Vérification de rôle (RBAC) + scope utilisateur |
+| **Modification mineure** | Modéré | `update_cart`, `change_notification_preferences` | Vérification de session + validation Zod stricte |
+| **Mutation critique** | Élevé | `cancel_order`, `refund_payment`, `delete_account` | **Validation humaine explicite (Human-in-the-Loop)** |
+
+---
+
+### 3. Protection contre les attaques SSRF sur les outils réseau
+
+Si vous permettez à un outil de télécharger des ressources ou d'interroger des webhooks, vous devez neutraliser le risque de **Server-Side Request Forgery** :
+
+<CodeBlock
+  language="typescript"
+  title="src/security/ssrfProtection.ts — Validation défensive des URLs"
+  code={`import { URL } from 'url';
+
+const FORBIDDEN_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254'];
+
+export function validateSafeUrl(rawUrl: string): boolean {
+  try {
+    const parsed = new URL(rawUrl);
+
+    // 1. Autoriser uniquement le protocole HTTPS
+    if (parsed.protocol !== 'https:') {
+      return false;
+    }
+
+    // 2. Bloquer formellement les adresses locales et les métadonnées cloud
+    if (FORBIDDEN_HOSTS.includes(parsed.hostname.toLowerCase())) {
+      return false;
+    }
+
+    // 3. Bloquer les plages d'adresses privées (RFC 1918)
+    if (parsed.hostname.startsWith('10.') || parsed.hostname.startsWith('192.168.')) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}`}
+/>
+
+---
+
+### 4. Patron Human-in-the-Loop (HITL) : Suspension et validation humaine
+
+L'automatisation ne doit jamais déclencher d'opérations irréversibles de façon autonome.
+Lorsqu'un agent identifie une action critique (par exemple rembourser une facture de 300 €), il doit **suspendre son exécution** et solliciter l'approbation d'un opérateur humain.
+
+<ArchitectureDiagram
+  title="Cycle de validation humaine (Human-in-the-Loop)"
+  diagram={`DEMANDE UTILISATEUR ("Annule ma commande #125")
+                 |
+                 v
+          ANALYSE PAR L'AGENT
+                 |
+                 v
+   DÉTECTION D'UNE ACTION SENSIBLE
+                 |
+                 v
+     [ SUSPENSION DU PROCESSUS ]
+   (Enregistrement de l'état en attente)
+                 |
+                 v
+   DEMANDE DE CONFIRMATION HUMAINE (UI)
+                 |
+       +---------+---------+
+       |                   |
+    [ REFUS ]         [ ACCEPTATION ]
+       |                   |
+       v                   v
+   ARRÊT DU FLUX    EXÉCUTION RÉELLE DE L'ACTION
+  (Avis client)    (Mise à jour en base & confirmation)`}
+/>
+
+---
+
+### 5. Journalisation et piste d'audit des actions agentiques
+
+Pour chaque action exécutée par un agent, consigner systématiquement les métadonnées d'audit dans vos logs ou dans une table d'audit dédiée :
+
+<CodeBlock
+  language="typescript"
+  title="Structure type d'une trace d'audit d'agent"
+  code={`interface AgentAuditLog {
+  auditId: string;
+  userId: number;
+  conversationId: string;
+  toolInvoked: string;
+  sanitizedArguments: Record<string, unknown>;
+  executionDurationMs: number;
+  success: boolean;
+  humanApprovalRequired: boolean;
+  humanApproverId?: number;
+  timestamp: string;
+}`}
+/>
+
+<Callout type="warning" title="Purge des données confidentielles dans les logs">
+Ne logguez jamais en clair les données sensibles (mots de passe, numéros de cartes de crédit, tokens d&apos;authentification) dans vos journaux d&apos;audit.
+</Callout>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi une demande de suppression de compte ou un remboursement bancaire ne doit-il JAMAIS être exécuté de façon purement autonome par un modèle IA ?"
+  options={[
+    "Parce que les modèles IA ne savent pas calculer les pourcentages",
+    "Car les modèles de langage sont probabilistes et sujets aux injections de prompt ; les actions critiques irréversibles exigent obligatoirement un garde-fou humain (Human-in-the-Loop)",
+    "Parce que le protocole HTTP interdit les requêtes DELETE venant d'une IA",
+    "Pour économiser des crédits de stockage MySQL"
+  ]}
+  correctIndex={1}
+  explanation="La nature probabiliste des LLM et la vulnérabilité aux attaques d'injection de prompt font qu'aucune décision financière ou destructive ne doit être exécutée sans validation humaine préalable."
+/>
+

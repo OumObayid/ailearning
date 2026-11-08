@@ -1,0 +1,227 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+## 1. Tests unitaires des services, des validateurs Zod et du RAG (Vitest)
+
+Une plateforme d'entreprise combinant modèles probabilistes et bases déterministes requiert une séparation rigoureuse de la pyramide de tests. Les tests unitaires sous **Vitest** ciblent la logique pure sans réseau, garantissant des cycles d'exécution ultra-rapides (&lt; 2 secondes pour des centaines de tests).
+
+```
+Pyramide de tests :
+  ▲
+ / \   E2E & Recette fonctionnelle (Scénarios d'usage complets)
+/---\  Tests d'intégration d'API (Supertest + DB éphémère Docker)
+/-----\ Tests unitaires purs (Vitest + Mocks étanches + Zod)
+```
+
+### Configuration de Vitest avec TypeScript
+
+Dans `vitest.config.ts`, nous configurons l'environnement Node, la résolution d'alias de chemins et la collecte de couverture :
+
+```typescript
+import { defineConfig } from 'vitest/config';
+import path from 'path';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 75,
+        statements: 80,
+      },
+    },
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
+```
+
+### Test unitaire des validateurs Zod
+
+Chaque requête entrante est validée par un schéma Zod. Nous testons systématiquement les cas nominaux et les tentatives d'injection ou de charges malformées :
+
+```typescript
+// tests/unit/validators/document.validator.test.ts
+import { describe, it, expect } from 'vitest';
+import { documentUploadSchema } from '@/validators/document.validator';
+
+describe('Document Validator Suite', () => {
+  it('doit valider une charge utile conforme', () => {
+    const validPayload = {
+      title: 'Politique de Sécurité 2026',
+      visibility: 'INTERNAL',
+      tags: ['securite', 'compliance'],
+    };
+
+    const result = documentUploadSchema.safeParse(validPayload);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.title).toBe('Politique de Sécurité 2026');
+    }
+  });
+
+  it('doit rejeter un titre trop court ou contenant du script malveillant', () => {
+    const invalidPayload = {
+      title: 'A',
+      visibility: 'INTERNAL',
+    };
+
+    const result = documentUploadSchema.safeParse(invalidPayload);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].path).toContain('title');
+    }
+  });
+
+  it('doit rejeter une visibilité non autorisée (RBAC)', () => {
+    const invalidPayload = {
+      title: 'Audit Interne',
+      visibility: 'TOP_SECRET_UNKNOWN',
+    };
+
+    const result = documentUploadSchema.safeParse(invalidPayload);
+    expect(result.success).toBe(false);
+  });
+});
+```
+
+<Callout type="tip">
+Grâce à Vitest, l'exécution des tests Zod s'effectue en mémoire en quelques millisecondes, permettant une validation immédiate en mode watch lors de chaque frappe de code.
+</Callout>
+
+---
+
+## 2. Tests d'intégration HTTP de l'API avec Supertest
+
+Les tests d'intégration valident la traversée complète des couches : Routeur Express -> Middleware d'authentification -> Validateur Zod -> Contrôleur -> Service -> Réponse HTTP.
+
+```typescript
+// tests/integration/document.routes.test.ts
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import request from 'supertest';
+import app from '@/app';
+import { generateTestJwt } from '../helpers/auth.helper';
+
+// Mocks des services externes pour isoler la couche HTTP
+vi.mock('@/services/qdrant.service');
+vi.mock('@/services/gemini.service');
+
+describe('GET /api/documents - Intégration HTTP', () => {
+  let userToken: string;
+  let adminToken: string;
+
+  beforeEach(() => {
+    userToken = generateTestJwt({ userId: 'usr-1', role: 'EMPLOYEE' });
+    adminToken = generateTestJwt({ userId: 'adm-1', role: 'ADMIN' });
+  });
+
+  it('doit refuser l’accès sans en-tête Authorization (401 Unauthorized)', async () => {
+    const response = await request(app)
+      .get('/api/documents')
+      .expect(401);
+
+    expect(response.body.success).toBe(false);
+    expect(response.body.error.code).toBe('UNAUTHORIZED');
+  });
+
+  it('doit retourner les documents accessibles pour un collaborateur connecté (200 OK)', async () => {
+    const response = await request(app)
+      .get('/api/documents')
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(200);
+
+    expect(response.body.success).toBe(true);
+    expect(Array.isArray(response.body.data)).toBe(true);
+  });
+});
+```
+
+---
+
+## 3. Mocking étanche des LLMs pour exécution en CI/CD sans coût d'API
+
+L'exécution des tests en pipeline d'intégration continue (GitHub Actions, GitLab CI) ne doit **jamais** appeler l'API Gemini réelle :
+1. Cela éviterait les dépenses inutiles de quotas et de coûts de tokens.
+2. Cela éliminerait la latence réseau (les tests passent de 30 secondes à 300 millisecondes).
+3. Cela éliminerait le non-déterminisme des réponses probabilistes de l'IA.
+
+```typescript
+// tests/mocks/gemini.mock.ts
+import { vi } from 'vitest';
+
+export const mockGeminiResponse = (textResponse: string) => {
+  return {
+    models: {
+      generateContent: vi.fn().mockResolvedValue({
+        text: textResponse,
+        usageMetadata: {
+          promptTokenCount: 120,
+          candidatesTokenCount: 45,
+          totalTokenCount: 165,
+        },
+      }),
+      generateContentStream: vi.fn().mockImplementation(async function* () {
+        const words = textResponse.split(' ');
+        for (const word of words) {
+          yield { text: word + ' ' };
+        }
+      }),
+    },
+  };
+};
+
+// Dans le fichier de test du service RAG :
+vi.mock('@google/genai', () => ({
+  GoogleGenAI: vi.fn().mockImplementation(() => mockGeminiResponse(
+    "D'après la politique interne (Source : Guide RH, p. 12), le télétravail est fixé à 2 jours par semaine."
+  )),
+}));
+```
+
+### Matrice récapitulative de la suite de tests
+
+| Type de Test | Cible | Outil | Dépendances externes | Temps d'exécution moyen |
+| :--- | :--- | :--- | :--- | :--- |
+| **Unitaire** | Zod, Parsers, Logique métier | Vitest | Zéro (Mocks purs) | ~50 ms par suite |
+| **Intégration** | Contrôleurs, Routes, RBAC | Supertest + Vitest | DB de test locale / Mocks | ~300 ms par route |
+| **Pipeline RAG** | Ancrage, Découpage, Filtrage | Vitest | Qdrant mocké, LLM mocké | ~150 ms par flux |
+| **End-to-End** | Flux utilisateur complet | Playwright / Supertest | Conteneurs Docker de staging | ~3 à 5 secondes |
+
+<Callout type="warning">
+Ne committez jamais de clés API réelles dans vos fichiers de test ou variables d'environnement de test `.env.test`. Configurez toujours des fausses clés telles que `GEMINI_API_KEY=mock-test-key-ci-cd`.
+</Callout>
+
+<QuickQuiz
+  title="Validation des Connaissances — Tests & Mocks"
+  questions={[
+    {
+      question: "Pourquoi est-il primordial de mocker l'API Google Gemini dans les tests CI/CD ?",
+      options: [
+        "(Recommended) Pour éliminer les coûts, supprimer la latence réseau et garantir un déterminisme parfait des assertions",
+        "Parce que Vitest ne supporte pas l'asynchronisme natif de JavaScript",
+        "Pour tester la vitesse maximale des serveurs de production de Google",
+        "Parce que l'API Gemini est interdite d'accès sous l'environnement Node.js"
+      ],
+      correctIndex: 0,
+      explanation: "Mocker le LLM garantit des tests reproductibles, déterministes, ultra-rapides et entièrement gratuits à chaque commit dans vos pipelines d'intégration continue."
+    },
+    {
+      question: "Quel code HTTP doit renvoyer l'API lorsqu'un utilisateur sans jeton JWT tente d'accéder à /api/documents ?",
+      options: [
+        "(Recommended) 401 Unauthorized",
+        "403 Forbidden",
+        "404 Not Found",
+        "500 Internal Server Error"
+      ],
+      correctIndex: 0,
+      explanation: "Le code 401 Unauthorized signale l'absence ou l'invalidité de l'authentification. Le code 403 Forbidden est réservé aux cas où l'utilisateur est authentifié mais n'a pas les permissions requises."
+    }
+  ]}
+/>
+

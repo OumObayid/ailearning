@@ -1,0 +1,151 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 5 — Installation, configuration et collections Qdrant
+
+### 1. Qu'est-ce que Qdrant ?
+
+**Qdrant** est un moteur de recherche vectorielle open source écrit en Rust, conçu pour offrir des performances maximales à grande échelle avec une faible empreinte mémoire.
+
+Ses atouts majeurs pour notre système RAG :
+- Capacité à héberger des millions de vecteurs d'embeddings.
+- Indexation par graphes HNSW (*Hierarchical Navigable Small World*) pour une recherche de plus proches voisins en temps quasi instantané.
+- Support natif de filtres avancés sur les métadonnées (*payload filtering*) sans dégrader la précision de la recherche.
+- API REST et interface gRPC complètes.
+
+---
+
+### 2. Déploiement rapide avec Docker
+
+La méthode recommandée pour faire tourner Qdrant localement consiste à exécuter son image Docker officielle :
+
+```bash
+# Lancement de Qdrant avec persistance du stockage sur disque
+docker run -d \
+  --name qdrant-rag \
+  -p 6333:6333 \
+  -p 6334:6334 \
+  -v qdrant_storage:/qdrant/storage \
+  qdrant/qdrant
+```
+
+- **Port 6333** : API REST et interface web de visualisation du tableau de bord (accessible sur `http://localhost:6333/dashboard`).
+- **Port 6334** : Port haute performance gRPC.
+
+---
+
+### 3. Installer et configurer le client TypeScript
+
+Dans votre projet Node.js, installez le client officiel :
+
+```bash
+npm install @qdrant/js-client-rest
+```
+
+Créez le point d'accès dans `src/config/qdrant.ts` :
+
+```typescript
+// src/config/qdrant.ts
+import { QdrantClient } from '@qdrant/js-client-rest';
+import { env } from './env.js';
+
+export const qdrant = new QdrantClient({
+  url: env.QDRANT_URL || 'http://localhost:6333',
+  apiKey: env.QDRANT_API_KEY || undefined,
+});
+```
+
+---
+
+### 4. Créer et paramétrer une collection vectorielle
+
+Une **collection** dans Qdrant est l'équivalent d'une table MySQL : c'est un espace nommé regroupant des vecteurs partageant la même dimension et la même métrique de distance.
+
+Dans `src/services/qdrant.service.ts` :
+
+```typescript
+// src/services/qdrant.service.ts
+import { qdrant } from '../config/qdrant.js';
+import { EMBEDDING_DIMENSION } from './embedding.service.js';
+
+export const DOCUMENTS_COLLECTION = 'rag_documents';
+
+export async function initQdrantCollection(): Promise<void> {
+  // Vérifier si la collection existe déjà
+  const existsResponse = await qdrant.collectionExists(DOCUMENTS_COLLECTION);
+
+  if (existsResponse.exists) {
+    console.log(`[Qdrant] Collection '${DOCUMENTS_COLLECTION}' prête et disponible.`);
+    return;
+  }
+
+  // Création de la collection avec configuration stricte
+  await qdrant.createCollection(DOCUMENTS_COLLECTION, {
+    vectors: {
+      size: EMBEDDING_DIMENSION, // 768 dimensions pour Gemini text-embedding-004
+      distance: 'Cosine',        // Métrique de comparaison par similarité cosinus
+    },
+    optimizers_config: {
+      default_segment_number: 2,
+    },
+  });
+
+  console.log(`[Qdrant] Collection '${DOCUMENTS_COLLECTION}' créée avec succès (Dimension: ${EMBEDDING_DIMENSION}).`);
+}
+```
+
+<Callout type="warning" title="Dimension immuable">
+Une fois une collection Qdrant créée avec une taille de 768, vous ne pouvez pas y insérer un vecteur d'une autre dimension. Si vous changez de modèle d'embeddings dans le futur, vous devrez créer une nouvelle collection et réindexer vos documents.
+</Callout>
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Déploiement de Qdrant et initialisation idempotente"
+  objective="Démarrer le conteneur Docker Qdrant, vérifier le dashboard web et concevoir une fonction d'initialisation de collection idempotente (dimension 768)."
+  duration="35 minutes"
+  steps={[
+    "Lancer Qdrant en local avec persistance de volume : `docker run -d -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant:latest`.",
+    "Ouvrir `http://localhost:6333/dashboard` dans votre navigateur et vérifier que le service répond avec succès.",
+    "Installer le client officiel TypeScript : `npm install @qdrant/js-client-rest`.",
+    "Créer `src/config/qdrant.ts` instanciant `new QdrantClient({ url: process.env.QDRANT_URL || 'http://localhost:6333' })`.",
+    "Créer `src/services/qdrant.service.ts` avec la fonction `initQdrantCollection()` : vérifier avec `qdrant.collectionExists('rag_documents')` avant de créer la collection pour garantir l'idempotence.",
+    "Appeler `initQdrantCollection()` au démarrage du serveur Node.js et constater l'apparition de la collection dans le dashboard Qdrant."
+  ]}
+  validationCriteria={[
+    "Le conteneur Qdrant tourne sur le port 6333 et le dashboard web est accessible.",
+    "La collection `rag_documents` est créée avec la dimension vectorielle 768 et la distance 'Cosine'.",
+    "Relancer le serveur plusieurs fois de suite n'engendre aucune erreur de doublon de collection."
+  ]}
+>
+
+#### Configuration du client et initialisation de la collection :
+```typescript
+// src/services/qdrant.service.ts
+import { QdrantClient } from '@qdrant/js-client-rest';
+
+export const qdrant = new QdrantClient({
+  url: process.env.QDRANT_URL || 'http://localhost:6333',
+});
+
+export const DOCUMENTS_COLLECTION = 'rag_documents';
+
+export async function initQdrantCollection(): Promise<void> {
+  const { exists } = await qdrant.collectionExists(DOCUMENTS_COLLECTION);
+  if (exists) {
+    console.log(`[Qdrant] Collection '${DOCUMENTS_COLLECTION}' prête.`);
+    return;
+  }
+
+  await qdrant.createCollection(DOCUMENTS_COLLECTION, {
+    vectors: {
+      size: 768,
+      distance: 'Cosine',
+    },
+  });
+  console.log(`[Qdrant] Collection '${DOCUMENTS_COLLECTION}' initialisée avec succès.`);
+}
+```
+</PracticalWork>
+

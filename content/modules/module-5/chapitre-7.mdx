@@ -1,0 +1,157 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 7 — Intégrer Google Gemini dans les workflows n8n
+
+### 1. Pourquoi injecter Gemini dans une automatisation ?
+
+Traditionnellement, les logiciels d'automatisation étaient aveugles face au langage naturel. Dès qu'un client s'exprimait avec des expressions familières, de l'argot ou des métaphores, les filtres par expressions régulières perdaient toute efficacité.
+
+En intégrant **Google Gemini** au sein d'un workflow n8n, nous dotons nos flux d'une couche d'intelligence cognitive capable de :
+- **Classifier l'intention** sans règles rigides prédéfinies.
+- **Détecter l'urgence réelle** et l'état émotionnel (sentiment positif, neutre ou frustré).
+- **Extraire des entités clés** (numéro de facture, type d'appareil, date limite) à partir d'un paragraphe brut.
+- **Produire un résumé synthétique** en une phrase pour faciliter la prise en charge par les équipes humaines.
+
+---
+
+### 2. Intégration officielle Gemini versus appel HTTP Request direct
+
+Pour solliciter Gemini dans n8n, deux options s'offrent au développeur :
+
+#### Option A : Les nœuds natifs n8n LangChain (@n8n/n8n-nodes-langchain)
+n8n intègre une suite de sous-nœuds IA basés sur LangChain :
+- Nœud racine : **Basic LLM Chain** ou **AI Agent**.
+- Modèle de langage connecté : **Google Gemini Chat Model** (sélection de `gemini-2.5-flash` ou `gemini-1.5-pro`).
+- Parser de sortie : **Structured Output Parser** pour contraindre la réponse à un schéma JSON typé.
+
+#### Option B : Le nœud HTTP Request direct vers l'API Google
+Cette option offre un contrôle total sans dépendance envers les abstractions LangChain. L'appel s'effectue via un simple POST :
+
+<CodeBlock
+  language="bash"
+  title="Appel direct de l'API Google AI Studio via HTTP Request"
+  code={`POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={{ $credentials.geminiApiKey }}
+Content-Type: application/json
+
+{
+  "contents": [
+    {
+      "parts": [
+        {
+          "text": "Analyse le texte suivant et réponds EXCLUSIVEMENT sous la forme d'un objet JSON : { ... }"
+        }
+      ]
+    }
+  ],
+  "generationConfig": {
+    "temperature": 0.1,
+    "responseMimeType": "application/json"
+  }
+}`}
+/>
+
+---
+
+### 3. Exemple d'analyse : Classification sémantique d'un message
+
+Pour obtenir une réponse exploitable par un nœud informatique en aval, nous devons imposer à Gemini un contrat d'interface strict via du **Few-Shot Prompting** et une contrainte de format JSON :
+
+<CodeBlock
+  language="text"
+  title="Prompt système de classification sémantique"
+  code={`Tu es un classificateur de tickets d'assistance technique pour une plateforme SaaS.
+Analyse le message reçu et génère UNIQUEMENT un objet JSON conforme à cette structure :
+
+{
+  "category": "technical_incident" | "billing" | "feature_request" | "spam",
+  "priority": "LOW" | "NORMAL" | "HIGH" | "CRITICAL",
+  "sentiment": "positive" | "neutral" | "frustrated",
+  "summary": "Résumé concis de la demande en moins de 15 mots"
+}
+
+Règles de classification :
+- Si le système est inaccessible ou plante en production : priority = "CRITICAL", category = "technical_incident".
+- Si le message concerne une facture, un paiement ou un remboursement : category = "billing".
+- Ne génère aucun texte explicatif avant ou après le JSON.
+
+Message à classifier :
+"{{ $json.userMessage }}"`}
+/>
+
+---
+
+### 4. Construction du workflow intelligent avec routage Switch
+
+Une fois que Gemini a renvoyé la classification JSON, les données sont transmises à un nœud **Switch** :
+
+<ArchitectureDiagram
+  title="Routage sémantique automatique propulsé par Gemini"
+  diagram={`                     [ REQUÊTE CLIENT REÇUE ]
+                                |
+                     [ NŒUD GEMINI 2.5 FLASH ]
+               (Extrait: category, priority, summary)
+                                |
+                   [ NŒUD SWITCH (Sur category) ]
+                    /          |           \\
+    (technical_incident)   (billing)    (feature_request)
+             |                 |                 |
+     [ ALERTE SLACK ]    [ MYSQL TICKET ]  [ SYNC LINEAR ]
+     (Astreinte P1)       (Assigné Compta)  (Backlog produit)`}
+/>
+
+<GeminiClassifierWorkflowLab />
+
+---
+
+### 5. Travail pratique 4 : Aiguillage automatique de demandes de support
+
+<PracticalWork
+  title="Créer un automate de tri intelligent avec Gemini et Switch"
+  difficulty="Intermédiaire"
+  duration="40 minutes"
+  objectives={[
+    "Créer une clé d'API sur Google AI Studio",
+    "Configurer la chaîne LLM n8n ou le nœud HTTP Request avec Gemini 2.5 Flash",
+    "Brancher un nœud Switch sur la propriété category émise par Gemini",
+    "Tester le workflow avec trois messages clients de natures contrastées"
+  ]}
+>
+<p className="text-sm text-slate-700 leading-relaxed">
+Dans ce TP, vous allez assembler la chaîne de traitement complète : réception d'un message, analyse par Gemini, et aiguillage vers la branche appropriée.
+</p>
+
+#### Étape 1 : Créer la clé d'API Google Gemini
+1. Connectez-vous sur **Google AI Studio** (`aistudio.google.com`).
+2. Générez une nouvelle clé d'API.
+3. Dans n8n, créez un nouveau Credential de type **Google Gemini API** (ou **Header Auth**).
+
+#### Étape 2 : Assembler les nœuds
+1. **Webhook Trigger** : Méthode POST sur `/webhook-test/support-ai`.
+2. **Google Gemini Model** : Température fixée à `0.1` pour garantir des classifications stables et déterministes.
+3. **Switch Node** :
+   - Règle 1 : `$json.category === 'technical_incident'`
+   - Règle 2 : `$json.category === 'billing'`
+   - Règle 3 : `$json.category === 'feature_request'`
+4. **Sorties** : Connectez un nœud **Code** de simulation sur chaque branche pour afficher un message d'action contextuel.
+</PracticalWork>
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi fixe-t-on la température du modèle Gemini à une valeur proche de 0 (ex. 0.1) lors d'une tâche de classification dans un workflow ?"
+  options={[
+    "Pour économiser des crédits de facturation Google Cloud",
+    "Pour maximiser le déterminisme et la régularité du format JSON de sortie sans divagations créatives",
+    "Pour accélérer la vitesse de calcul du processeur graphique du serveur",
+    "Parce que n8n rejette les températures supérieures à 0.5"
+  ]}
+  correctIndex={1}
+  explanation="Une température basse rend le modèle hautement déterministe et focalisé sur le respect strict des instructions et du format JSON demandé, évitant les hallucinations ou formulations imprévisibles."
+/>
+

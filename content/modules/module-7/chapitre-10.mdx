@@ -1,0 +1,98 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 10 — Tests des workflows, boucles d'agents et graphes LangGraph
+
+### 1. Stratégie de test des agents autonomes
+
+Tester un agent est un exercice plus complexe que tester une API CRUD classique. Un agent prend des décisions, sélectionne des fonctions, boucle sur lui-même et interprète des résultats.
+
+Pour valider unitairement le comportement d'un agent, nous devons éprouver :
+1. **La sélection de l'outil** : Le modèle choisit-il l'outil attendu face à une intention explicite ?
+2. **La gestion des pannes d'outils** : Si la base MySQL est inaccessible ou si l'API Stripe retourne une erreur 503, l'agent formule-t-il une explication polie sans crasher ?
+3. **Le respect des plafonds de récursivité** : S'assure-t-on que l'agent s'arrête systématiquement dès qu'il atteint `MAX_STEPS` ?
+
+---
+
+### 2. Validation des transitions et branches conditionnelles dans LangGraph
+
+Dans un graphe LangGraph, vous devez tester la fonction de routage conditionnel de manière totalement déterministe :
+
+<CodeBlock
+  language="typescript"
+  title="tests/graphRouting.test.ts — Test des routeurs conditionnels LangGraph"
+  code={`import { describe, it, expect } from 'vitest';
+
+// Fonction de routage extraite du graphe
+export function routeByIntent(state: { category: string; stepCount: number; maxSteps: number }) {
+  if (state.stepCount >= state.maxSteps) {
+    return 'forcedTermination';
+  }
+  if (state.category === 'billing') {
+    return 'billingSpecialistNode';
+  }
+  if (state.category === 'support') {
+    return 'supportSpecialistNode';
+  }
+  return 'generalFallbackNode';
+}
+
+describe('LangGraph Conditional Edge Router', () => {
+  it("oriente correctement vers le spécialiste de facturation", () => {
+    const route = routeByIntent({ category: 'billing', stepCount: 1, maxSteps: 5 });
+    expect(route).toBe('billingSpecialistNode');
+  });
+
+  it("force l'arrêt si le plafond d'itérations est dépassé", () => {
+    const route = routeByIntent({ category: 'billing', stepCount: 5, maxSteps: 5 });
+    expect(route).toBe('forcedTermination');
+  });
+});`}
+/>
+
+---
+
+### 3. Tests de résistance : Reprise après interruption (Human-in-the-Loop)
+
+Voici comment valider par un test automatisé le cycle complet d'interruption et de reprise via `Command` dans LangGraph :
+
+<CodeBlock
+  language="typescript"
+  title="tests/hitlGraph.test.ts — Test d'interruption et reprise programmée"
+  code={`import { describe, it, expect } from 'vitest';
+import { Command } from '@langchain/langgraph';
+import { approvalGraph } from '../src/graph/humanApprovalFlow';
+
+describe('Graphe avec interruption Human-in-the-Loop', () => {
+  it('suspend le graphe pour un montant > 100€ et reprend avec succès lors de la confirmation', async () => {
+    const config = { configurable: { thread_id: 'test_thread_approval_hitl' } };
+
+    // 1. Lancement : doit suspendre l'exécution
+    const step1 = await approvalGraph.invoke({ orderId: 404, amount: 250 }, config);
+    expect(step1.approved).toBeUndefined(); // En attente de décision
+
+    // 2. Reprise avec accord
+    const step2 = await approvalGraph.invoke(new Command({ resume: true }), config);
+    expect(step2.status).toContain("exécuté avec succès");
+  });
+});`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Que devez-vous tester en priorité pour vous assurer qu'un agent LangGraph ne plantera pas en production face à une défaillance de service tiers ?"
+  options={[
+    "Que le modèle Gemini utilise la police Roboto",
+    "La capacité de l'agent à recevoir un objet d'erreur simulé d'un outil sans lever d'exception non gérée et à terminer proprement son exécution",
+    "Le nombre de lignes de commentaires dans le code",
+    "La vitesse de connexion Wi-Fi de l'utilisateur"
+  ]}
+  correctIndex={1}
+  explanation="Les services tiers subissent inévitablement des pannes. Tester la résilience de l'agent face à des retours d'outils en échec garantit qu'il saura expliquer le problème à l'utilisateur au lieu de faire planter le serveur."
+/>
+

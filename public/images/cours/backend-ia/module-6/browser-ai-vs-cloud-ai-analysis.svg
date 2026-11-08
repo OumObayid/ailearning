@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="hybridGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350f"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="580" rx="20" fill="#020617"/>
+  <rect x="2" y="2" width="996" height="576" rx="18" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Title Badge -->
+  <g transform="translate(40, 30)">
+    <rect width="520" height="34" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="16" y="22" fill="#38bdf8" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="800" letter-spacing="1">
+      MATRICE DÉCISIONNELLE : IA DISTANTE (CLOUD) vs IA LOCALE (WEBGPU)
+    </text>
+  </g>
+  <text x="40" y="90" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="900">
+    Arbitrage d'architecture logicielle pour les applications d'intelligence artificielle
+  </text>
+  <text x="40" y="114" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+    Analyse comparative selon la confidentialité, la latence, le coût serveur et la capacité du modèle
+  </text>
+
+  <!-- 3 Columns Comparison Cards -->
+  <!-- Column 1: Cloud Gemini -->
+  <g transform="translate(40, 140)">
+    <rect width="285" height="400" rx="14" fill="url(#cloudGrad)" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="16" y="16" width="160" height="26" rx="6" fill="#4338ca"/>
+    <text x="24" y="34" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="800">
+      1. IA DISTANTE (GEMINI)
+    </text>
+    <text x="16" y="66" fill="#cbd5e1" font-family="sans-serif" font-size="11" font-style="italic">
+      React → Node.js → Google Cloud API
+    </text>
+
+    <!-- Metrics -->
+    <g transform="translate(16, 85)" font-family="sans-serif" font-size="12">
+      <!-- Latence -->
+      <text x="0" y="18" fill="#94a3b8">Latence réseau :</text>
+      <text x="0" y="36" fill="#fca5a5" font-weight="700">800 ms - 2 500 ms (RTT + Inférence)</text>
+
+      <!-- Confidentialité -->
+      <text x="0" y="68" fill="#94a3b8">Confidentialité données :</text>
+      <text x="0" y="86" fill="#fde68a" font-weight="700">Données transmises à Google</text>
+
+      <!-- Hors-ligne -->
+      <text x="0" y="118" fill="#94a3b8">Mode Hors-Ligne :</text>
+      <text x="0" y="136" fill="#fca5a5" font-weight="700">Impossible (bloquant sans Web)</text>
+
+      <!-- Capacité modèle -->
+      <text x="0" y="168" fill="#94a3b8">Puissance / Contexte :</text>
+      <text x="0" y="186" fill="#86efac" font-weight="800">Gigantesque (1M+ tokens, raisonnement)</text>
+
+      <!-- Coût -->
+      <text x="0" y="218" fill="#94a3b8">Modèle de facturation :</text>
+      <text x="0" y="236" fill="#cbd5e1" font-weight="700">Facturation au million de tokens</text>
+
+      <!-- Poids client -->
+      <text x="0" y="268" fill="#94a3b8">Poids bundle frontend :</text>
+      <text x="0" y="286" fill="#86efac" font-weight="800">Négligeable (&lt; 20 Ko API call)</text>
+    </g>
+  </g>
+
+  <!-- Column 2: Local WebGPU / WASM -->
+  <g transform="translate(355, 140)">
+    <rect width="285" height="400" rx="14" fill="url(#edgeGrad)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="16" y="16" width="190" height="26" rx="6" fill="#065f46"/>
+    <text x="24" y="34" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="800">
+      2. IA LOCALE (WEBGPU/WASM)
+    </text>
+    <text x="16" y="66" fill="#a7f3d0" font-family="sans-serif" font-size="11" font-style="italic">
+      Navigateur → Transformers.js / ONNX
+    </text>
+
+    <!-- Metrics -->
+    <g transform="translate(16, 85)" font-family="sans-serif" font-size="12">
+      <!-- Latence -->
+      <text x="0" y="18" fill="#a7f3d0">Latence inférence :</text>
+      <text x="0" y="36" fill="#86efac" font-weight="800">10 ms - 45 ms (0 ms réseau !)</text>
+
+      <!-- Confidentialité -->
+      <text x="0" y="68" fill="#a7f3d0">Confidentialité données :</text>
+      <text x="0" y="86" fill="#86efac" font-weight="800">100% Zéro-Knowledge (reste sur PC)</text>
+
+      <!-- Hors-ligne -->
+      <text x="0" y="118" fill="#a7f3d0">Mode Hors-Ligne :</text>
+      <text x="0" y="136" fill="#86efac" font-weight="800">100% Opérationnel sans connexion</text>
+
+      <!-- Capacité modèle -->
+      <text x="0" y="168" fill="#a7f3d0">Puissance / Contexte :</text>
+      <text x="0" y="186" fill="#fde68a" font-weight="700">Modèles compacts (0.5B à 3B params)</text>
+
+      <!-- Coût -->
+      <text x="0" y="218" fill="#a7f3d0">Modèle de facturation :</text>
+      <text x="0" y="236" fill="#86efac" font-weight="800">0 € de coût serveur d'inférence !</text>
+
+      <!-- Poids client -->
+      <text x="0" y="268" fill="#a7f3d0">Poids bundle / mémoire :</text>
+      <text x="0" y="286" fill="#fca5a5" font-weight="700">30 Mo à 1.5 Go (téléchargement initial)</text>
+    </g>
+  </g>
+
+  <!-- Column 3: Hybrid Architecture -->
+  <g transform="translate(670, 140)">
+    <rect width="285" height="400" rx="14" fill="url(#hybridGrad)" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="16" y="16" width="180" height="26" rx="6" fill="#92400e"/>
+    <text x="24" y="34" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="800">
+      3. ARCHITECTURE HYBRIDE
+    </text>
+    <text x="16" y="66" fill="#fde68a" font-family="sans-serif" font-size="11" font-style="italic">
+      Pré-filtrage WebGPU + Escalade Gemini
+    </text>
+
+    <!-- Metrics -->
+    <g transform="translate(16, 85)" font-family="sans-serif" font-size="12">
+      <!-- Principe -->
+      <text x="0" y="18" fill="#fde68a">Stratégie en cascade :</text>
+      <text x="0" y="36" fill="#ffffff" font-weight="700">1. Filtrage local (WebGPU) en 15ms</text>
+      <text x="0" y="52" fill="#ffffff" font-weight="700">2. Appel Gemini distant si ambigu</text>
+
+      <!-- Économie -->
+      <text x="0" y="86" fill="#fde68a">Économie de tokens :</text>
+      <text x="0" y="104" fill="#86efac" font-weight="800">70% à 85% d'appels API en moins</text>
+
+      <!-- UX -->
+      <text x="0" y="136" fill="#fde68a">Expérience Utilisateur :</text>
+      <text x="0" y="154" fill="#ffffff" font-weight="700">Réponse instantanée sur 80% des cas</text>
+
+      <!-- Cas d'usage -->
+      <text x="0" y="186" fill="#fde68a">Cas d'usage vedettes :</text>
+      <text x="0" y="204" fill="#ffffff">Classification de sentiment préalable</text>
+      <text x="0" y="220" fill="#ffffff">Reconnaissance de langue &amp; spam</text>
+      <text x="0" y="236" fill="#ffffff">Détection d'entités sensibles (PII)</text>
+      <text x="0" y="252" fill="#ffffff">Extraction d'embeddings vectoriels</text>
+
+      <rect x="0" y="274" width="253" height="30" rx="6" fill="#451a03" stroke="#f59e0b" stroke-width="1"/>
+      <text x="126" y="293" fill="#fef3c7" font-weight="800" text-anchor="middle">LE CHOIX INDUSTRIEL IDÉAL</text>
+    </g>
+  </g>
+</svg>
+

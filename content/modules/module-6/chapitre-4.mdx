@@ -1,0 +1,195 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 4 — Définition, validation des arguments avec Zod et registre d'outils
+
+### 1. Pourquoi concevoir un Tool Registry centralisé ?
+
+Lorsqu'un agent prend de l'ampleur et gère dix ou vingt fonctionnalités (recherche de commandes, vérification d'inventaire, météo des livraisons, annulation de facture), coder une longue chaîne de `switch/case` dans le contrôleur principal devient source de bugs et d'infaillibilités.
+
+Un **Tool Registry (Registre d'outils)** est une structure centralisée qui remplit quatre missions clés :
+1. **Associer un nom d'outil** à sa fonction TypeScript exécutable.
+2. **Coupler chaque outil à un schéma de validation strict** (**Zod**).
+3. **Appliquer les permissions d'accès** en fonction du profil de l'utilisateur demandeur.
+4. **Isoler l'exécution** pour éviter qu'une défaillance dans un outil n'arrête le serveur.
+
+---
+
+### 2. Validation stricte des arguments du modèle avec Zod
+
+Ne présumez **JAMAIS** que les arguments transmis par un modèle de langage sont exacts ou du type attendu. Un modèle peut produire une chaîne de caractères `"15"` là où vous attendez un entier positif, ou omettre un champ obligatoire.
+
+<CodeBlock
+  language="typescript"
+  title="Validation stricte des arguments d'un outil avec Zod"
+  code={`import { z } from 'zod';
+
+// Schéma définissant les contraintes mathématiques et fonctionnelles
+export const getProductSchema = z.object({
+  productId: z.number().int().positive({
+    message: "L'identifiant du produit doit être un entier strictement positif."
+  }),
+});
+
+// Type inféré statiquement par TypeScript
+export type GetProductInput = z.infer<typeof getProductSchema>;
+
+// Utilisation défensive avec safeParse
+const rawArgsFromModel: unknown = { productId: 15 };
+const validation = getProductSchema.safeParse(rawArgsFromModel);
+
+if (!validation.success) {
+  console.error("Arguments rejetés :", validation.error.flatten());
+} else {
+  console.log("Arguments valides :", validation.data.productId);
+}`}
+/>
+
+---
+
+### 3. Construction d'un registre d'outils typé en TypeScript
+
+Voici comment implémenter un registre d'outils générique et extensible :
+
+<CodeBlock
+  language="typescript"
+  title="src/agent/toolRegistry.ts — Implémentation du registre"
+  code={`import { z, ZodSchema } from 'zod';
+import { getProductById } from '../tools/productService';
+
+export interface RegisteredTool<TInput = any, TOutput = any> {
+  description: string;
+  schema: ZodSchema<TInput>;
+  requiredPermission?: string;
+  execute: (args: TInput, context: { userId: number }) => Promise<TOutput>;
+}
+
+export const toolRegistry: Record<string, RegisteredTool> = {
+  get_product: {
+    description: "Recherche un produit par identifiant.",
+    schema: z.object({
+      productId: z.number().int().positive(),
+    }),
+    execute: async (args, context) => {
+      return await getProductById(args.productId);
+    },
+  },
+  search_orders: {
+    description: "Consulte l'historique des commandes d'un client.",
+    schema: z.object({
+      limit: z.number().int().min(1).max(50).default(5),
+    }),
+    requiredPermission: 'orders:read',
+    execute: async (args, context) => {
+      // Filtrage hermétique par l'identité du demandeur (pas celle du prompt)
+      return [
+        { orderId: 8492, status: 'shipped', total: 129 },
+        { orderId: 8104, status: 'delivered', total: 49 },
+      ].slice(0, args.limit);
+    },
+  },
+};`}
+/>
+
+---
+
+### 4. Exécution dynamique et gestion d'erreurs contrôlée
+
+Pour déclencher un outil à la réception d'un `function_call`, nous implémentons un dispatcher sécurisé :
+
+<CodeBlock
+  language="typescript"
+  title="src/agent/executor.ts — Exécution contrôlée de l'outil"
+  code={`import { toolRegistry } from './toolRegistry';
+
+export async function executeToolCall(
+  toolName: string,
+  rawArguments: unknown,
+  context: { userId: number; permissions: string[] }
+): Promise<{ success: boolean; data?: unknown; error?: string }> {
+  const tool = toolRegistry[toolName];
+
+  // 1. Contrôle d'existence dans la liste blanche
+  if (!tool) {
+    return {
+      success: false,
+      error: \`Outil '\${toolName}' non reconnu ou interdit d'accès.\`,
+    };
+  }
+
+  // 2. Contrôle des autorisations requises
+  if (tool.requiredPermission && !context.permissions.includes(tool.requiredPermission)) {
+    return {
+      success: false,
+      error: \`Permission insuffisante pour utiliser l'outil '\${toolName}'.\`,
+    };
+  }
+
+  // 3. Validation des arguments par Zod
+  const validation = tool.schema.safeParse(rawArguments);
+  if (!validation.success) {
+    return {
+      success: false,
+      error: \`Arguments invalides : \${JSON.stringify(validation.error.flatten().fieldErrors)}\`,
+    };
+  }
+
+  // 4. Exécution protégée contre les exceptions non gérées
+  try {
+    const result = await tool.execute(validation.data, context);
+    return { success: true, data: result };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: \`Échec d'exécution de l'outil '\${toolName}' : \${error.message}\`,
+    };
+  }
+}`}
+/>
+
+---
+
+### 5. Organisation de l'arborescence recommandée
+
+Pour maintenir un projet agentique de grande taille, adoptez une structure modulaire séparant les responsabilités :
+
+```text
+src/
+├── agent/
+│   ├── agentLoop.ts         # Boucle d'orchestration de l'agent
+│   ├── executor.ts          # Moteur d'exécution des outils
+│   └── toolRegistry.ts      # Enregistrement centralisé des outils
+├── config/
+│   ├── database.ts          # Pool de connexions MySQL
+│   ├── gemini.ts            # Client SDK @google/genai
+│   └── qdrant.ts            # Client Qdrant vectoriel
+├── schemas/
+│   ├── agentState.schema.ts # Schéma de l'état partagé
+│   └── tools.schema.ts      # Schémas Zod pour chaque outil
+├── security/
+│   └── permissions.ts       # Règles RBAC et validation des rôles
+└── tools/
+    ├── docSearch.tool.ts    # Outil de recherche Qdrant
+    ├── mysqlOrders.tool.ts  # Outil SQL commandes
+    └── productService.ts    # Outil produits
+```
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Quel est le rôle primordial de la bibliothèque Zod au sein du Tool Registry d'un agent IA ?"
+  options={[
+    "Traduire automatiquement le code TypeScript en binaire WebAssembly",
+    "Valider et assainir rigoureusement les arguments bruts émis par le modèle avant toute exécution métier",
+    "Générer des images vectorielles pour le frontend",
+    "Remplacer le moteur de base de données MySQL"
+  ]}
+  correctIndex={1}
+  explanation="Zod inspecte les arguments générés par Gemini et garantit qu'ils respectent scrupuleusement les contraintes de types, de bornes numériques et de formats avant que votre fonction ne s'exécute."
+/>
+

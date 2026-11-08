@@ -1,0 +1,114 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+
+# Projet de synthèse — Assistant IA professionnel multi-outils avec LangGraph
+
+### 1. Présentation du projet
+
+Dans ce projet de synthèse, vous allez mobiliser l'ensemble des concepts abordés dans ce module pour concevoir et déployer un **assistant d'assistance technique d'entreprise multi-outils**.
+
+L'application doit permettre à un utilisateur authentifié de dialoguer avec un agent capable de :
+1. Consulter la base de données relationnelle **MySQL** (commandes, factures, statut client).
+2. Interroger la base vectorielle **Qdrant** via des embeddings **Google Gemini** pour trouver des réponses documentaires.
+3. Orchestrer ses actions via **LangGraph.js** avec état partagé et gestion des cycles.
+4. Suspendre son exécution par **Human-in-the-Loop (`interrupt`)** dès qu'une action de modification sensible (ex. annulation de commande) est demandée.
+
+---
+
+### 2. Stack technique et modélisation de l'architecture
+
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-6">
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Orchestration</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">LangGraph.js</p>
+  </div>
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Modèle & Vision</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">Gemini 2.5 Flash</p>
+  </div>
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Vectoriel</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">Qdrant Engine</p>
+  </div>
+  <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
+    <span className="text-sm font-bold uppercase tracking-wider text-slate-500">Persistance</span>
+    <p className="text-base font-extrabold text-slate-900 mt-1">MySQL + Checkpoints</p>
+  </div>
+</div>
+
+<ArchitectureDiagram
+  title="Diagramme d'architecture complet du projet final"
+  diagram={`                  UTILISATEUR (React UI)
+                            |
+                            v
+                    BACKEND API EXPRESS
+               (JWT + Scope de permissions)
+                            |
+                            v
+                [ MOTEUR LANGGRAPH.JS ]
+                            |
+         +------------------+------------------+
+         |                                     |
+         v                                     v
+[ NŒUD GEMINI DECISION ]             [ NŒUD HUMAN APPROVAL ]
+(Émet function_call)                 (interrupt si action critique)
+         |                                     |
+         v                                     v
+[ NŒUD TOOL DISPATCHER ]             [ ACTION REPRISE ]
+(Valide Zod + Exécute)                         |
+    /        \\                                 |
+   v          v                                v
+ MYSQL      QDRANT --------------------> [ END : RÉPONSE ]`}
+/>
+
+---
+
+### 3. Guide d'implémentation pas-à-pas
+
+<PracticalWork
+  title="Réalisation intégrale de l'assistant d'assistance autonome"
+  difficulty="Avancé"
+  duration="120 minutes"
+  objectives={[
+    "Définir les schémas Zod et le Tool Registry sécurisé",
+    "Construire le StateGraph avec gestion d'état, persistance et interruptions",
+    "Brancher Google Gemini pour l'interprétation cognitive et le Function Calling",
+    "Exposer les routes Express pour l'interaction et la reprise après approbation",
+    "Vérifier le bon fonctionnement de bout en bout avec des tests unitaires Vitest"
+  ]}
+>
+<p className="text-sm text-slate-700 leading-relaxed">
+Suivez scrupuleusement ces 4 étapes pour mener à bien le développement de votre système agentique :
+</p>
+
+#### Étape 1 : Le Registre d'outils et validation Zod
+Créez les outils `searchDocumentation` (Qdrant) et `getCustomerOrders` (MySQL). Chaque outil doit être typé avec un schéma Zod et vérifier que le demandeur possède bien l'autorisation requise.
+
+#### Étape 2 : Assemblage du StateGraph LangGraph.js
+1. Définissez `AgentState` avec `userMessage`, `threadId`, `toolCalls`, `results` et `finalAnswer`.
+2. Connectez le nœud coordinateur `agentModelNode` (qui appelle Gemini avec `agentTools`).
+3. Ajoutez une transition conditionnelle : si Gemini renvoie un appel d'outil, routez vers `toolExecutorNode` ; s'il renvoie du texte, routez vers `END`.
+4. Si l'outil demandé est `cancelOrder`, appelez `interrupt()` pour requérir l'accord de l'opérateur.
+
+#### Étape 3 : Exposer les routes backend Express
+Développez deux routes :
+- `POST /api/agent/chat` : Reçoit le prompt, lance `graph.invoke()`, et renvoie la réponse ou le statut suspendu (`status: "WAITING_HUMAN_APPROVAL"`).
+- `POST /api/agent/resume` : Reçoit l'accord ou le refus, et reprend le graphe avec `new Command({ resume: approved })`.
+
+#### Étape 4 : Validation du scénario nominal et sensible
+- Test 1 : L'utilisateur demande une explication technique sur la politique de retour -> L'agent utilise Qdrant et répond immédiatement.
+- Test 2 : L'utilisateur demande l'annulation de sa commande -> L'agent se suspend, vous approuvez dans l'interface, la base MySQL est mise à jour et la confirmation s'affiche.
+</PracticalWork>
+
+---
+
+### 4. Critères de recette et validation finale
+
+Pour valider ce projet de niveau production, vérifiez les exigences suivantes :
+- [ ] **Validation stricte** : Aucun argument d'outil n'est exécuté sans passer par `safeParse` de Zod.
+- [ ] **Aucune fuite de données** : Les requêtes MySQL sont obligatoirement paramétrées avec des marqueurs `?`.
+- [ ] **Reprise sans corruption** : Le graphe suspendu par `interrupt()` reprend fidèlement son exécution dès l'envoi de `Command({ resume: ... })`.
+- [ ] **Garde-fous** : La boucle ne peut en aucun cas dépasser `MAX_STEPS` même en cas de mauvaise orientation de l'IA.
+

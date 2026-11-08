@@ -1,0 +1,89 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+## 1. Grille d'évaluation sommative et barème de certification
+
+L'évaluation finale du projet professionnel de synthèse repose sur un barème d'ingénierie rigoureux sur 100 points, structuré en 5 domaines de compétences clés :
+
+| Domaine de compétence | Pondération | Description des critères d'évaluation |
+| :--- | :--- | :--- |
+| **1. Architecture & Données** | 20 pts | Modélisation MySQL relationnelle conforme, indexation vectorielle Qdrant, chunking optimisé et étanchéité multi-tenant. |
+| **2. API Backend & Sécurité** | 20 pts | Architecture Express en couches, validation préventive Zod stricte, authentification JWT et RBAC hermétique. |
+| **3. Moteur IA, RAG & Agents** | 25 pts | Intégration Gemini 2.5 Flash, pipeline RAG sans hallucination avec citation de sources, agent LangGraph et suspension Human-in-the-Loop. |
+| **4. Automatisation & Frontend** | 15 pts | Webhooks sécurisés n8n, interface React réactive avec streaming SSE et composant de visualisation documentaire. |
+| **5. Qualité, Tests & Déploiement** | 20 pts | Couverture de tests Vitest/Supertest avec mocks LLM, journalisation Pino, observabilité et orchestration Docker Compose. |
+| **Total** | **100 pts** | **Seuil d'obtention de la certification d'ingénieur IA : 70 / 100** |
+
+---
+
+## 2. Matrice de validation des 15 critères de succès du projet
+
+Pour valider la conformité de la livraison technique, chaque apprenant doit soumettre sa plateforme à la matrice d'audit suivante :
+
+1. [x] **Schéma DDL complet** : Toutes les tables (`users`, `documents`, `chunks`, `conversations`, `messages`, `runs`) sont créées avec index et contraintes de clés étrangères.
+2. [x] **Indexation vectorielle synchronisée** : Tout document téléversé est découpé, vectorisé en dimension 768 et indexé dans Qdrant avec ses métadonnées.
+3. [x] **Filtrage vectoriel RBAC** : La recherche vectorielle intègre les filtres de rôle et de tenant dans la charge utile Qdrant.
+4. [x] **Architecture backend en couches** : Séparation stricte entre contrôleurs, services, repositories et middlewares.
+5. [x] **Validation Zod intégrale** : Aucune requête non conforme ne franchit la couche de validation HTTP.
+6. [x] **Sécurité des sessions** : Les tokens JWT sont signés avec expiration et transportés de manière sécurisée.
+7. [x] **Prompt d'ancrage robuste** : Le prompt système force le modèle à s'appuyer uniquement sur le contexte documentaire fourni.
+8. [x] **Citation vérifiable des sources** : Chaque affirmation est rattachée au titre du document, à la page et à l'extrait textuel exact.
+9. [x] **Aveu d'incertitude** : En l'absence de passage pertinent, le système répond explicitement qu'il ne dispose pas de l'information.
+10. [x] **Outils typés pour l'agent** : Déclaration formelle des outils de recherche documentaire et d'audit avec validation des arguments.
+11. [x] **Suspension Human-in-the-Loop** : L'exécution s'interrompt pour validation humaine lors d'actions sensibles (suppression, publication globale).
+12. [x] **Webhooks n8n avec secret** : Les échanges asynchrones avec n8n sont signés et vérifiés par en-tête partagé.
+13. [x] **Streaming conversationnel fluide** : Le frontend restitue la réponse au fil de l'eau avec latence perçue minimale.
+14. [x] **Tests unitaires et mocks LLM** : La suite de tests Vitest s'exécute avec succès sans aucune clé API réelle.
+15. [x] **Déploiement Docker Compose opérationnel** : Une commande unique démarre l'ensemble des 5 services sans erreur de port ou de réseau.
+
+---
+
+## 3. Annexe : Documentation officielle de référence
+
+Pour approfondir les technologies mises en œuvre dans ce cursus et suivre leurs évolutions régulières :
+
+- **Google Gen AI SDK & Gemini** : [Documentation officielle Google Cloud & Gemini](https://ai.google.dev/docs)
+- **LangChain & LangGraph.js** : [Documentation LangGraph.js](https://langchain-ai.github.io/langgraphjs/)
+- **Qdrant Vector Database** : [Documentation Qdrant Vector Search](https://qdrant.tech/documentation/)
+- **n8n Workflow Automation** : [Documentation officielle n8n](https://docs.n8n.io/)
+- **Vitest & Supertest** : [Documentation de test Vitest](https://vitest.dev/)
+- **TypeScript & Express** : [Documentation officielle TypeScript](https://www.typescriptlang.org/)
+
+---
+
+## 4. Conclusion générale de la formation d'ingénierie IA
+
+Félicitations pour avoir parcouru l'intégralité des **8 modules** de ce cursus avancé !
+
+Vous avez acquis une maîtrise complète et intégrée de l'ensemble de la chaîne de valeur de l'intelligence artificielle appliquée :
+- Du **Prompt Engineering** et de la conception frontend réactive (Modules 1 et 2),
+- Au développement d'architectures **Backend Node.js / TypeScript** résilientes (Module 3),
+- À la maîtrise des architectures **RAG** et des bases relationnelles / vectorielles (Module 4),
+- Aux flux d'**automatisation intelligente avec n8n** (Module 5),
+- À l'orchestration avancée d'**Agents autonomes et graphes avec LangGraph.js** (Module 6),
+- Jusqu'à la **sécurité, l'observabilité, les tests et l'évaluation** critique (Module 7),
+- Et enfin à la concrétisation d'un **Projet professionnel de synthèse complet** (Module 8).
+
+Vous disposez désormais de tous les atouts techniques, architecturaux et méthodologiques pour concevoir, sécuriser et déployer en production des solutions d'intelligence artificielle modernes, fiables et à fort impact dans l'industrie.
+
+<Callout type="success">
+Vous pouvez exporter votre synthèse de projet, l'intégrer à votre portfolio professionnel et valoriser vos compétences certifiées sur le marché de l'emploi en ingénierie de l'IA !
+</Callout>
+
+<QuickQuiz
+  title="Validation Finale du Cursus"
+  questions={[
+    {
+      question: "Quel est le principe fondamental garantissant la fiabilité d'une plateforme d'IA en entreprise ?",
+      options: [
+        "(Recommended) L'ancrage rigoureux sur des sources vérifiables, combiné à une architecture sécurisée, testée et observable",
+        "L'utilisation d'une température maximale (2.0) pour stimuler la créativité du modèle",
+        "La suppression de toute validation de données en entrée pour accélérer les requêtes",
+        "L'exécution du backend sans conteneurisation ni suivi de logs"
+      ],
+      correctIndex: 0,
+      explanation: "La fiabilité d'une IA d'entreprise repose sur un ancrage documentaire strict (RAG), une sécurité applicative étanche (RBAC/Zod), une observabilité continue et des tests automatisés reproductibles."
+    }
+  ]}
+/>
+

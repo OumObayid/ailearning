@@ -1,0 +1,34 @@
+## CONTRAINTES — SECURITY, ACCESS AND EXECUTION RULES
+
+### 1. Sécurité
+- Ne jamais exposer, copier ou divulguer des clés API, mots de passe ou tokens.
+- Ne jamais désactiver les mécanismes de sécurité existants.
+- Ne jamais transmettre de données confidentielles à un service externe sans autorisation.
+
+### 2. Accès aux ressources
+- Travailler exclusivement dans le dossier du projet explicitement autorisé.
+- Ne jamais explorer les dossiers personnels ou les répertoires situés en dehors du projet.
+- Attendre que l'utilisateur fournisse les documents nécessaires.
+- Ne jamais rechercher ou récupérer automatiquement des documents externes au projet.
+
+### 3. Modification des fichiers
+- Ne jamais supprimer, déplacer ou remplacer un fichier sans autorisation.
+- Ne jamais modifier un fichier qui n'est pas directement concerné par la tâche.
+- Préserver l'architecture et les fonctionnalités existantes.
+- Privilégier les modifications minimales et ciblées.
+
+### 4. Exécution des commandes
+- Ne jamais exécuter de commande destructive sans autorisation.
+- Ne jamais installer de dépendance sans validation.
+- Ne jamais lancer de migration, de déploiement ou de publication sans autorisation.
+
+### 5. Respect du périmètre
+- Ne pas ajouter de fonctionnalités non demandées.
+- Ne pas prendre de décisions techniques importantes à la place de l'utilisateur.
+- Ne pas considérer une hypothèse comme une autorisation.
+- En cas de doute, suspendre l'action et demander une clarification.
+
+### 6. Transparence
+- Signaler toute erreur ou limitation rencontrée.
+- Ne jamais prétendre avoir effectué une opération qui n'a pas été exécutée.
+- Distinguer les actions réalisées, les propositions et les actions en attente de validation.

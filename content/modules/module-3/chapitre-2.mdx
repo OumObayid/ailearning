@@ -1,0 +1,175 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 2 — Préparation de l'environnement Node.js & TypeScript
+
+### 1. Prérequis techniques
+
+Pour développer notre backend IA professionnel, votre poste de travail doit disposer de :
+- **Node.js** (version 20+ recommandée) et **npm**.
+- Un éditeur de code moderne tel que **Visual Studio Code**.
+- Une clé d'API valide pour **Google Gemini** (obtenue sur Google AI Studio).
+- Une instance locale de base de données relationnelle **MySQL** (ou MariaDB).
+- Un client de test d'API comme **Postman** ou Thunder Client.
+
+---
+
+### 2. Initialiser le projet Node.js
+
+Dans un terminal dédié, créez le dossier du serveur et initialisez le descripteur de projet :
+
+```bash
+# 1. Création et accès au dossier du projet
+mkdir backend-ia
+cd backend-ia
+
+# 2. Initialisation du package.json standard
+npm init -y
+```
+
+---
+
+### 3. Installer les dépendances essentielles
+
+Nous installons les packages de production :
+
+```bash
+npm install express dotenv @google/genai zod mysql2
+```
+
+| Package | Rôle technique dans l'architecture |
+| :--- | :--- |
+| `express` | Moteur de routage, gestion des requêtes HTTP et middlewares |
+| `dotenv` | Chargement des variables d'environnement depuis le fichier `.env` |
+| `@google/genai` | SDK officiel Google pour interagir avec les modèles Gemini |
+| `zod` | Validation stricte des données et inférence automatique de types |
+| `mysql2` | Client MySQL haute performance prenant en charge les promesses et le pool |
+
+Puis les dépendances de développement et les définitions de types :
+
+```bash
+npm install -D typescript tsx @types/node @types/express
+```
+
+<Callout type="note" title="Pourquoi utiliser tsx en développement ?">
+Le package `tsx` permet d'exécuter directement les fichiers TypeScript (`.ts`) avec rechargement à chaud automatique (`watch`) sans nécessiter d'étape intermédiaire de compilation en JavaScript pendant le développement.
+</Callout>
+
+---
+
+### 4. Configuration rigoureuse de TypeScript
+
+Créez le fichier `tsconfig.json` à la racine :
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
+}
+```
+
+L'activation du mode `"strict": true` est un gage absolu de qualité : elle interdit implicitement le type `any` non contrôlé et garantit la null-safety sur l'ensemble de vos services.
+
+---
+
+### 5. Configuration des scripts d'exécution
+
+Ajoutez les scripts de cycle de vie dans `package.json` :
+
+```json
+{
+  "name": "backend-ia",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  }
+}
+```
+
+- `npm run dev` : Lance le serveur en mode écoute réactive continue.
+- `npm run build` : Compile l'ensemble du TypeScript vers le dossier `dist/`.
+- `npm start` : Démarre le binaire JavaScript compilé optimisé pour la production.
+
+---
+
+### 6. Architecture par séparation des responsabilités
+
+Une architecture modulaire professionnelle sépare rigoureusement chaque niveau de préoccupation logicielle :
+
+```text
+backend-ia/
+├── src/
+│   ├── config/               # Paramètres d'environnement et connexions MySQL
+│   │   ├── env.ts
+│   │   └── database.ts
+│   ├── controllers/          # Contrôleurs HTTP (entrées/sorties Express)
+│   │   └── ai.controller.ts
+│   ├── services/             # Logique métier et appels au SDK Gemini
+│   │   └── gemini.service.ts
+│   ├── routes/               # Déclaration et liaison des endpoints
+│   │   └── ai.routes.ts
+│   ├── schemas/              # Schémas de validation Zod
+│   │   └── ai.schema.ts
+│   ├── middlewares/          # Fonctions transversales (sécurité, validation, erreurs)
+│   │   ├── error.middleware.ts
+│   │   └── validate.middleware.ts
+│   ├── app.ts                # Configuration de l'application Express
+│   └── server.ts             # Démarrage du serveur et écoute du port
+├── .env                      # Secrets locaux exclus de Git
+├── .env.example              # Gabarit de configuration d'équipe
+├── .gitignore
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Initialisation du projet et structure de fichiers"
+  objective="Monter l'environnement complet Node.js/TypeScript avec ES Modules et valider l'arborescence cible."
+  duration="35 minutes"
+  steps={[
+    "Initialiser un nouveau projet avec `npm init -y` et ajouter `\"type\": \"module\"` dans `package.json`.",
+    "Installer les dépendances de production : `npm install express dotenv zod mysql2 @google/genai cors helmet express-rate-limit`.",
+    "Installer les dépendances de développement : `npm install -D typescript @types/node @types/express @types/cors tsx vitest supertest @types/supertest`.",
+    "Créer `tsconfig.json` avec `module: \"NodeNext\"`, `moduleResolution: \"NodeNext\"`, `target: \"ES2022\"` et `strict: true`.",
+    "Créer l'arborescence complète des dossiers sous `src/` : `config`, `controllers`, `services`, `routes`, `schemas`, `middlewares`.",
+    "Ajouter les scripts de commande (`dev`, `build`, `start`, `test`) dans `package.json` et tester la compilation initiale avec `npm run build`."
+  ]}
+  validationCriteria={[
+    "Le projet compile sans aucune erreur avec la commande `npx tsc` (génération du dossier `dist/`).",
+    "L'ensemble des dossiers sous `src/` est fidèlement créé conformément à l'arborescence cible.",
+    "L'exécution de `npx tsx -v` et `node -v` confirme un environnement moderne prêt pour l'inférence IA."
+  ]}
+>
+
+#### Gabarit minimal de `package.json` prêt à l'emploi :
+```json
+{
+  "name": "backend-ia-professionnel",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run"
+  }
+}
+```
+</PracticalWork>
+

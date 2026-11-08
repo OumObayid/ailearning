@@ -1,0 +1,87 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 2 — Architecture logicielle globale à 5 tiers et cartographie des flux
+
+### 1. Topologie générale des 5 tiers applicatifs
+
+Pour garantir une maintenabilité, une observabilité et une sécurité irréprochables, notre plateforme adopte une **architecture découpée en 5 tiers spécialisés** :
+
+<ArchitectureDiagram
+  title="Topologie industrielle des 5 tiers de la plateforme documentaire"
+  diagram={`[ TIER 1 : PRÉSENTATION FRONTEND ]
+React / Next.js, Tailwind CSS, Vercel AI SDK, Streaming
+                     |
+                     | Requêtes HTTPS (JWT Bearer)
+                     v
+[ TIER 2 : PASSERELLE & CONTRÔLE BACKEND ]
+Node.js, Express, Middlewares JWT/RBAC, Zod, Logs Pino
+                     |
+     +---------------+---------------+---------------+
+     |                               |               |
+     v                               v               v
+[ TIER 3 : DONNÉES ]       [ TIER 4 : COGNITION ]  [ TIER 5 : AUTOMATISATION ]
+- MySQL2 (Persistance)     - Google Gemini 2.5     - n8n Webhooks
+- Qdrant (Base vectorielle) - LangGraph.js Agent    - Workflows asynchrones`}
+/>
+
+<EndToEndPlatformSimulator />
+
+---
+
+### 2. Matrice des responsabilités technologiques
+
+Chaque technologie assume une responsabilité exclusive sans empiéter sur les autres :
+
+| Brique technique | Responsabilité souveraine | Ce qu'elle ne doit JAMAIS faire |
+| :--- | :--- | :--- |
+| **React / Next.js (Tier 1)** | Rendu de l'UI, formulaires, affichage réactif des streams de tokens, rendu des sources. | Ne jamais stocker de clé secrète, ne jamais appeler MySQL ou Qdrant directement. |
+| **Express.js (Tier 2)** | Authentification, contrôle des permissions (RBAC), sanitisation Zod, orchestration. | Ne pas être exposé sans pare-feu et rate-limiting. |
+| **MySQL (Tier 3A)** | Persistance relationnelle transactionnelle (utilisateurs, documents, logs d'audit). | Ne pas stocker de vecteurs d'embeddings haute dimension. |
+| **Qdrant (Tier 3B)** | Recherche de similarité cosinus sur les vecteurs d'embeddings (768 dimensions). | Ne pas gérer les comptes utilisateurs ou les règles de facturation. |
+| **Google Gemini (Tier 4A)** | Compréhension sémantique, génération ancrée de texte, Function Calling. | Ne pas exécuter de code directement sur le serveur. |
+| **LangGraph.js (Tier 4B)** | Pilotage des cycles d'agents, conservation de l'état partagé et interruptions HITL. | Ne pas remplacer la base de données de production. |
+| **n8n (Tier 5)** | Orchestration des événements externes, synchronisation multi-outils, alertes Slack/Email. | Ne pas traiter de requêtes directes non authentifiées par header. |
+
+---
+
+### 3. Cartographie des flux synchrones et asynchrones
+
+Pour offrir une expérience utilisateur ultra-fluide, la plateforme combine deux modes de traitement :
+
+1. **Les flux synchrones à haute réactivité (&lt; 200 ms)** :
+   - Connexion et vérification de session utilisateur.
+   - Consultation de la liste des documents et de l'historique conversationnel en base MySQL.
+   - Validation et mise en cache Redis des questions fréquentes.
+
+2. **Les flux asynchrones avec streaming ou tâche de fond** :
+   - **Streaming conversationnel RAG** : La requête retourne immédiatement une réponse HTTP `chunked` (`Transfer-Encoding: chunked`) permettant d'afficher les mots au fur et à mesure de leur génération par Gemini.
+   - **Indexation documentaire en tâche de fond** : À l'import d'un PDF, l'API renvoie immédiatement un code HTTP `202 Accepted` avec le statut `processing`. Le découpage en fragments et le calcul des embeddings se déroulent en tâche de fond, puis un webhook notifie la fin du traitement.
+
+---
+
+### 4. Règles d'étanchéité et frontières de sécurité réseau
+
+Pour neutraliser les attaques réseau :
+- **Seul le port 443 (HTTPS) de la passerelle backend Express est exposé publiquement.**
+- Les instances **MySQL**, **Qdrant** et **Redis** sont déployées sur un réseau interne isolé (`bridge` Docker privé). Elles sont totalement invisibles depuis Internet.
+- Les appels vers les webhooks **n8n** sont protégés par un en-tête d'authentification chiffré `X-Webhook-Secret`.
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi l'accès à la base de données relationnelle MySQL et à la base vectorielle Qdrant est-il strictement confiné derrière la passerelle backend Node.js ?"
+  options={[
+    "Pour forcer le navigateur à utiliser le protocole FTP",
+    "Pour empêcher l'exposition publique des ports internes de bases de données et garantir que toutes les requêtes soient filtrées par l'authentification et les permissions côté serveur",
+    "Parce que React ne fonctionne pas avec le format JSON",
+    "Pour réduire la taille des fichiers CSS"
+  ]}
+  correctIndex={1}
+  explanation="Exposer une base de données directement au client frontend constitue une faille de sécurité majeure. L'architecture en couches garantit que chaque requête est filtrée, vérifiée et cloisonnée par le backend souverain."
+/>
+

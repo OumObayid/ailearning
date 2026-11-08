@@ -1,0 +1,124 @@
+import { Callout } from '@/components/courses/Callout';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+## 1. Déroulé méthodologique des 9 Travaux Pratiques de construction
+
+Ce projet professionnel de synthèse concrétise l'ensemble des compétences acquises tout au long des modules de la formation. Il est découpé en 9 jalons méthodologiques progressifs permettant d'aboutir à une plateforme fonctionnelle complète et industrialisée.
+
+```
+Jalons TP :
+[TP 1] Cadrage & DDL ──► [TP 2] Ingestion & Qdrant ──► [TP 3] API Express & RBAC
+                                                               │
+[TP 6] n8n Webhooks  ◄── [TP 5] Agent & LangGraph  ◄── [TP 4] Pipeline RAG Gemini
+      │
+      ▼
+[TP 7] Frontend React ─► [TP 8] Tests & Qualité   ─► [TP 9] Docker & Production
+```
+
+### Synthèse des 9 Travaux Pratiques :
+
+1. **TP 1 — Modélisation des données et initialisation** : Création du schéma SQL MySQL complet, migrations, index et configuration de la connexion avec pool de connexions résilient.
+2. **TP 2 — Ingestion documentaire et indexation vectorielle** : Implémentation du pipeline d'extraction PDF, découpage en chunks avec chevauchement, génération des embeddings (768 dimensions) et synchronisation dans Qdrant.
+3. **TP 3 — API REST Express et sécurisation** : Développement des routes d'authentification JWT, middleware RBAC granulaire et validation préventive Zod.
+4. **TP 4 — Moteur RAG haute fidélité** : Intégration du SDK `@google/genai` avec Gemini 2.5 Flash, filtrage Qdrant par tenant, prompt d'ancrage strict et citation exhaustive des sources.
+5. **TP 5 — Agent autonome avec Tool Calling & LangGraph** : Création du graphe de décision avec gestion d'état, boucle d'appels d'outils et suspension Human-in-the-Loop sur les opérations critiques.
+6. **TP 6 — Automatisation n8n par Webhooks** : Configuration d'un workflow de traitement de fond pour les documents lourds et d'un scénario planifié d'audit documentaire.
+7. **TP 7 — Interface utilisateur React & Streaming** : Intégration de la fenêtre conversationnelle avec streaming de tokens Server-Sent Events, visualisation interactive des citations et dashboard d'administration.
+8. **TP 8 — Stratégie de tests et observabilité** : Écriture des suites de tests unitaires Vitest, tests d'intégration Supertest avec mocks LLM, et instrumentation des logs JSON Pino.
+9. **TP 9 — Conteneurisation et déploiement** : Rédaction du fichier Dockerfile multi-stage, orchestration Docker Compose (5 services) et checklist de durcissement en production.
+
+---
+
+## 2. Structuration du dossier de livraison et documentation OpenAPI
+
+Un projet d'ingénierie IA professionnel se distingue par la rigueur de sa documentation technique et de son arborescence de livraison.
+
+### Structure standard du dépôt Git :
+
+```
+plateforme-ia-synthese/
+├── docs/
+│   ├── architecture-technique.md
+│   ├── openapi-specification.yaml
+│   └── guide-deploiement.md
+├── docker/
+│   ├── docker-compose.yml
+│   └── mysql/init.sql
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   ├── validators/
+│   │   ├── agents/
+│   │   └── server.ts
+│   ├── tests/
+│   │   ├── unit/
+│   │   └── integration/
+│   ├── Dockerfile
+│   └── tsconfig.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── App.tsx
+│   └── Dockerfile
+├── workflows-n8n/
+│   ├── document-processing.json
+│   └── weekly-audit.json
+└── README.md
+```
+
+### Spécification OpenAPI / Swagger
+L'API REST doit comporter un contrat OpenAPI 3.0 documentant chaque endpoint, schéma de requête, code d'erreur et modèle de réponse JSON standardisé.
+
+---
+
+## 3. Valorisation professionnelle dans le portfolio d'ingénieur IA
+
+Le projet de synthèse constitue la pièce maîtresse de votre portfolio professionnel pour des recrutements en tant que :
+- **Ingénieur IA Fullstack (AI Fullstack Engineer)**
+- **Architecte Solutions RAG & LLMOps**
+- **Développeur Spécialiste Agents Autonomes & LangGraph**
+
+### Comment présenter ce projet sur GitHub et LinkedIn ?
+
+1. **Titre percutant** : *"Plateforme d'automatisation documentaire d'entreprise basée sur RAG haute fidélité et Agents autonomes (Gemini 2.5, LangGraph.js, Qdrant, Express, React)"*.
+2. **README professionnel orienté résultats** :
+   - Graphique d'architecture système propre (Mermaid ou schéma vectoriel).
+   - Métriques mesurées : Réduction de 90 % des hallucinations grâce au filtrage vectoriel et prompt d'ancrage, latence perçue &lt; 300 ms avec streaming SSE, économie de 40 % de tokens grâce au cache Redis et au prompt pruning.
+   - GIF animé ou vidéo de démonstration du flux conversationnel avec citation cliquable des sources PDF.
+   - Commandes claires en une ligne pour lancer l'environnement complet : `docker-compose up -d`.
+
+<Callout type="tip">
+Mettez en avant dans vos entretiens votre maîtrise des problématiques concrètes d'entreprise : sécurité RBAC, traçabilité par Correlation ID, non-régression par mocks CI/CD et contrôle humain (Human-in-the-Loop) sur les actions sensibles.
+</Callout>
+
+<QuickQuiz
+  title="Validation des Connaissances — Portfolio & Livrables"
+  questions={[
+    {
+      question: "Quel élément différencie le plus un projet IA amateur d'un projet professionnel d'ingénieur IA ?",
+      options: [
+        "(Recommended) La robustesse de l'architecture complète : sécurité RBAC, tests avec mocks, observabilité, et gestion des erreurs",
+        "L'utilisation d'une police de caractères originale dans le frontend",
+        "Le fait de cacher le code source pour que personne ne puisse le lire",
+        "L'absence totale de conteneur Docker"
+      ],
+      correctIndex: 0,
+      explanation: "Un recruteur ou client évalue avant tout la solidité industrielle : gestion des cas d'erreurs, sécurité des données, tests automatisés étanches et observabilité en production."
+    },
+    {
+      question: "Pourquoi est-il conseillé d'inclure des métriques d'optimisation dans le README de son portfolio ?",
+      options: [
+        "(Recommended) Pour démontrer un impact métier quantifiable (réduction des coûts de tokens, diminution de latence et taux de fidélité)",
+        "Pour remplir artificiellement la page de texte",
+        "Pour masquer les faiblesses éventuelles du design CSS",
+        "Parce que c'est une obligation légale sur GitHub"
+      ],
+      correctIndex: 0,
+      explanation: "Les métriques chiffrées (coûts, latence, précision) démontrent une maturité technique et une conscience de la valeur business apportée par vos solutions."
+    }
+  ]}
+/>
+

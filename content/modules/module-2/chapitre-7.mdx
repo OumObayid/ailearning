@@ -1,0 +1,214 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { GenerativeUISimulator } from '@/components/interactive/GenerativeUISimulator';
+
+# Chapitre 7 — Sorties structurées et UI générative
+
+### 1. Pourquoi utiliser des réponses structurées dans le frontend ?
+
+Une réponse textuelle brute est adaptée à un échange de conversation, mais insuffisante pour concevoir des interfaces riches, interactives et actionnables.
+
+Imaginons un assistant qui évalue les performances d'une boutique e-commerce. Si le LLM retourne du texte libre, le frontend ne peut que l'afficher dans un paragraphe. S'il produit un objet JSON conforme à un contrat de données strict :
+
+```json
+{
+  "score": 82,
+  "summary": "Les commandes progressent avec un panier moyen solide.",
+  "strengths": ["Fidélisation client élevée", "Croissance des ventes mobiles"],
+  "weaknesses": ["Délais de livraison allongés le week-end"]
+}
+```
+
+Le frontend peut instantanément transformer ces données en une **carte de score circulaire**, une **jauge de performance**, une **liste de puces colorées** et des **boutons d'actions immédiates**.
+
+---
+
+### 2. Définir le contrat de données avec Zod
+
+La bibliothèque **Zod** permet de définir la structure exacte attendue et d'inférer automatiquement les types TypeScript correspondants :
+
+```typescript
+// shared/schemas/analysis.schema.ts
+import { z } from 'zod';
+
+export const BusinessAnalysisSchema = z.object({
+  score: z.number().min(0).max(100).describe("Note globale de santé commerciale sur 100"),
+  summary: z.string().describe("Synthèse exécutive en deux phrases"),
+  strengths: z.array(z.string()).describe("Liste des 2 à 4 points forts détectés"),
+  weaknesses: z.array(z.string()).describe("Liste des axes d'amélioration critiques"),
+});
+
+export type BusinessAnalysis = z.infer<typeof BusinessAnalysisSchema>;
+```
+
+---
+
+### 3. Génération d'objets avec generateObject
+
+Vercel AI SDK propose la fonction `generateObject`, qui contraint Google Gemini à produire une réponse rigoureusement conforme au schéma Zod :
+
+```typescript
+// server/services/analysis.service.ts
+import { generateObject } from 'ai';
+import { google } from './gemini-provider.js';
+import { BusinessAnalysisSchema } from '../schemas/analysis.schema.js';
+
+export async function analyzeStorePerformance(reportText: string) {
+  const { object } = await generateObject({
+    model: google('gemini-2.5-flash'),
+    schema: BusinessAnalysisSchema,
+    prompt: `Analyse le rapport d'activité suivant et fournis une évaluation objective :\n${reportText}`,
+  });
+
+  // 'object' est garanti être de type BusinessAnalysis
+  return object;
+}
+```
+
+---
+
+### 4. Le concept de UI générative contrôlée
+
+La **UI générative** consiste à faire choisir à l'IA les composants d'interface les plus pertinents à afficher, sans jamais lui permettre d'exécuter du code arbitraire dans le navigateur.
+
+<Callout type="warning" title="Règle d'or de la UI générative">
+Le modèle IA peut choisir parmi un catalogue fermé de **composants React pré-approuvés et sécurisés**. Il ne doit **jamais** pouvoir injecter du code JSX ou JavaScript dynamique non contrôlé.
+</Callout>
+
+Pour cela, nous utilisons un **type union discriminé** :
+
+```typescript
+// src/types/widgets.types.ts
+export type UIWidget =
+  | { type: 'summary'; title: string; content: string }
+  | { type: 'list'; title: string; items: string[] }
+  | { type: 'score'; title: string; value: number; max: number };
+```
+
+Puis un composant routeur affiche le widget approprié selon la propriété `type` :
+
+```tsx
+// src/components/AI/WidgetRenderer.tsx
+import React from 'react';
+import type { UIWidget } from '@/types/widgets.types';
+
+export const WidgetRenderer: React.FC<{ widget: UIWidget }> = ({ widget }) => {
+  switch (widget.type) {
+    case 'summary':
+      return (
+        <section className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-5">
+          <h3 className="text-base font-bold text-indigo-900">{widget.title}</h3>
+          <p className="mt-1 text-sm text-slate-700 leading-relaxed">{widget.content}</p>
+        </section>
+      );
+    case 'list':
+      return (
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-base font-bold text-slate-900">{widget.title}</h3>
+          <ul className="mt-3 space-y-2">
+            {widget.items.map((item, idx) => (
+              <li key={idx} className="flex items-center gap-2 text-sm text-slate-700">
+                <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    case 'score':
+      return (
+        <section className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5 flex items-center justify-between">
+          <h3 className="text-base font-bold text-emerald-950">{widget.title}</h3>
+          <span className="text-3xl font-black text-emerald-600">{widget.value} / {widget.max}</span>
+        </section>
+      );
+  }
+};
+```
+
+---
+
+### 5. Atelier interactif : Rendu contrôlé de composants React
+
+Explorez la transformation de flux JSON typés en interfaces graphiques réactives :
+
+<GenerativeUISimulator />
+
+---
+
+<PracticalWork
+  title="Travail Pratique 7 — Interface d'analyse et UI générative contrôlée"
+  objective="Valider des données structurées avec Zod via generateObject et les projeter dynamiquement dans des composants React spécialisés."
+  duration="50 minutes"
+  steps={[
+    "Définir le contrat Zod de données dans `src/schemas/audit.schema.ts` : note globale de 1 à 100, jauge de risque ('FAIBLE', 'MOYEN', 'ELEVE'), liste de points forts et tableau d'actions recommandées avec niveau de priorité.",
+    "Créer la route Express `POST /api/audit` utilisant `generateObject({ model: google('gemini-2.5-flash'), schema: AuditSchema, prompt })` pour garantir la conformité absolue de l'objet retourné.",
+    "Développer le composant de tableau de bord `AuditDashboard.tsx` qui reçoit l'objet validé et l'affiche : jauge colorée (vert/orange/rouge), barres de progression et tableau d'actions stylisé.",
+    "Créer un composant polymorphe `WidgetRenderer.tsx` capable d'afficher soit un graphique circulaire, soit une carte métrique selon la nature des données.",
+    "Ajouter un bouton 'Exporter en JSON' permettant à l'utilisateur de télécharger le fichier de données brut sur sa machine via `URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))`."
+  ]}
+  validationCriteria={[
+    "La réponse du serveur respecte rigoureusement l'interface TypeScript sans aucun `any`.",
+    "Le rendu graphique s'adapte instantanément : badge rouge si risque élevé, vert si faible.",
+    "Aucune balise HTML ou script arbitraire n'est interprété de façon brute (sécurité XSS totale)."
+  ]}
+>
+
+#### Schéma Zod et rendu React du tableau de bord :
+```tsx
+import React from 'react';
+import { z } from 'zod';
+
+export const AuditReportSchema = z.object({
+  title: z.string(),
+  score: z.number().min(0).max(100),
+  riskLevel: z.enum(['FAIBLE', 'MOYEN', 'CRITIQUE']),
+  highlights: z.array(z.string()),
+  actions: z.array(
+    z.object({
+      task: z.string(),
+      priority: z.enum(['P1', 'P2', 'P3']),
+      deadline: z.string(),
+    })
+  ),
+});
+
+export type AuditReport = z.infer<typeof AuditReportSchema>;
+
+export const AuditDashboard: React.FC<{ report: AuditReport }> = ({ report }) => {
+  const riskColors = {
+    FAIBLE: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    MOYEN: 'bg-amber-100 text-amber-800 border-amber-300',
+    CRITIQUE: 'bg-rose-100 text-rose-800 border-rose-300',
+  };
+
+  return (
+    <div className="p-6 border rounded-2xl bg-white shadow-sm space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-xl font-bold text-slate-900">{report.title}</h3>
+          <p className="text-sm text-slate-500">Score de conformité : {report.score} / 100</p>
+        </div>
+        <span className={`px-3 py-1 rounded-full text-sm font-bold border ${riskColors[report.riskLevel]}`}>
+          Risque : {report.riskLevel}
+        </span>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="font-bold text-sm text-slate-700">Actions correctives :</h4>
+        <div className="space-y-2">
+          {report.actions.map((act, i) => (
+            <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border">
+              <span className="text-sm font-medium">{act.task}</span>
+              <span className="text-sm px-2 py-0.5 bg-slate-200 rounded font-mono">{act.priority}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+</PracticalWork>
+

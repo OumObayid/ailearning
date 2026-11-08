@@ -1,0 +1,149 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { AgentGraphSimulator } from '@/components/interactive/AgentGraphSimulator';
+
+# Chapitre 1 — Différence entre chatbot, workflow et agent IA
+
+### 1. Le chatbot : limites et modèle request-response
+
+Un **chatbot classique** est une application conversationnelle basée sur un schéma direct de question-réponse (*request-response*) :
+- L'utilisateur formule une demande textuelle en langage naturel.
+- Le backend transmet le prompt au modèle de langage (comme Google Gemini).
+- Le modèle génère une réponse textuelle en exploitant exclusivement ses poids neuronaux ou un historique conversationnel restreint.
+- Le backend retransmet cette réponse à l'interface client.
+
+<ArchitectureDiagram
+  title="Flux de traitement d'un chatbot classique"
+  diagram={`UTILISATEUR
+     |
+     v
+FRONTEND REACT
+     |
+     v
+BACKEND NODE.JS
+     |
+     v
+GOOGLE GEMINI
+     |
+     v
+RÉPONSE TEXTUELLE
+     |
+     v
+FRONTEND REACT`}
+/>
+
+Bien qu'un chatbot puisse conserver la mémoire des échanges au fil de la session, **il est incapable d'agir sur le monde extérieur** : il ne peut pas interroger une base de données de production, vérifier l'état d'un colis sur une API de transporteur ou modifier le statut d'un compte.
+
+---
+
+### 2. Le workflow déterministe : étapes linéaires pré-organisées
+
+Un **workflow d'automatisation** (tel qu'étudié dans le Module 5 avec n8n) est une chaîne de traitement séquentielle conçue à l'avance par les ingénieurs logiciels.
+
+<ArchitectureDiagram
+  title="Flux séquentiel rigide d'un workflow traditionnel"
+  diagram={`[ RÉCEPTION D'UNE DEMANDE ]
+              |
+              v
+[ VALIDATION DES DONNÉES (Zod) ]
+              |
+              v
+[ ENREGISTREMENT MYSQL ]
+              |
+              v
+[ ENVOI D'UN EMAIL (Resend / SMTP) ]
+              |
+              v
+           [ FIN ]`}
+/>
+
+Dans ce paradigme, l'ordre d'exécution est totalement déterministe. Même si une étape fait appel à Gemini pour classifier un sentiment ou extraire une entité, **les branchements et les décisions d'exécution ultérieures restent dictés par des règles impératives strictes codées en dur**. Si l'utilisateur exprime un besoin imprévu nécessitant une démarche alternative, le workflow échoue ou s'interrompt.
+
+---
+
+### 3. L'agent IA autonome : objectif, sélection d'outils et boucle décisionnelle
+
+Un **agent IA** ne se contente pas de suivre un script rigide ni de produire du texte passif. **Il reçoit un objectif de haut niveau, dispose d'un trousseau d'outils autorisés, et décide lui-même de la stratégie pas-à-pas à déployer pour l'atteindre.**
+
+Imaginons la requête utilisateur suivante :
+> *« Trouve les informations concernant ma dernière commande et explique-moi pourquoi la livraison est retardée. »*
+
+Face à cette demande, l'agent autonome orchestre un raisonnement itératif :
+1. **Compréhension & Décomposition** : Il analyse la requête et constate qu'il ignore quelle est la dernière commande du client.
+2. **Sélection d'outil** : Il sélectionne l'outil `get_customer_orders(userId)` dans son catalogue d'actions.
+3. **Appel & Réception** : Le backend exécute la fonction et retourne la commande `#8492` avec le statut `delayed`.
+4. **Nouvelle réflexion** : Constatant le retard, l'agent identifie le besoin de consulter les motifs logistiques via un second outil `search_delivery_status(orderId: 8492)`.
+5. **Résolution finale** : Une fois toutes les pièces du puzzle réunies, l'agent synthétise une réponse explicative claire et sourcée pour l'utilisateur.
+
+<ArchitectureDiagram
+  title="Cycle de raisonnement autonome de l'agent IA"
+  diagram={`                UTILISATEUR (Objectif)
+                          |
+                          v
+                      AGENT IA
+                          |
+                          v
+               ANALYSE DE LA DEMANDE
+                          |
+                          v
+           SÉLECTION D'UN OUTIL AUTORISÉ
+                          |
+                          v
+            VALIDATION STRICTE DU CODE
+                          |
+                          v
+             EXÉCUTION CÔTÉ BACKEND
+                          |
+                          v
+                  RÉSULTAT OBTENU
+                          |
+                          v
+           NOUVELLE DÉCISION DU MODÈLE
+               /                      \\
+    (Besoin d'un autre outil)    (Objectif atteint)
+             /                          \\
+      Retour en boucle               RÉPONSE FINALE`}
+/>
+
+---
+
+### 4. Tableau comparatif exhaustif
+
+| Critère | Chatbot classique | Workflow déterministe | Agent IA autonome |
+| :--- | :--- | :--- | :--- |
+| **Objectif premier** | Converser et répondre à une question | Exécuter un processus ordonné fixe | Atteindre un objectif en choisissant ses actions |
+| **Sélection d'outils** | Aucune (sauf intégration ad hoc) | Prédéterminée par le graphe statique | Dynamique, parmi une liste d'outils autorisés |
+| **Flexibilité de trajectoire** | Linéaire ou contextuelle passive | Dépendante des conditions `if/else` codées | Réactive aux données découvertes en cours de route |
+| **Interaction externe** | Nulle ou limitée | Totale mais figée | Totale, ciblée et contextualisée |
+| **Boucle décisionnelle** | Aucune (1 appel = 1 réponse) | Linéaire sans réflexion autonome | Multi-tours itératifs (Observe -> Think -> Act) |
+| **Degré d'autonomie** | Faible | Déterminé par le scénario | Élevé mais strictement borné par le code |
+
+<Callout type="tip" title="Règle fondamentale à retenir">
+Un agent n&apos;est pas un simple chatbot auquel on a greffé une fonction. Sa caractéristique essentielle réside dans sa <strong>capacité à sélectionner de façon autonome les actions appropriées</strong> et à réévaluer sa stratégie après chaque exécution d&apos;outil jusqu&apos;à l&apos;accomplissement de sa mission.
+</Callout>
+
+---
+
+### 5. Simulation interactive : Cycle de décision d'un agent
+
+Expérimentez ci-dessous la différence entre les prises de décision directes, l'utilisation d'outils vectoriels ou SQL, et l'interruption de sécurité pour validation humaine :
+
+<AgentGraphSimulator />
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Quelle est la caractéristique distinctive qui sépare un véritable agent IA d'un workflow d'automatisation classique comme ceux de n8n ?"
+  options={[
+    "L'agent IA utilise obligatoirement le langage Python alors que les workflows utilisent le YAML",
+    "L'agent sélectionne dynamiquement les outils à appeler et réajuste ses étapes en fonction des données qu'il découvre",
+    "L'agent ne peut pas se connecter à une base de données MySQL",
+    "Le workflow ne peut jamais utiliser de modèle de langage"
+  ]}
+  correctIndex={1}
+  explanation="Un workflow exécute une séquence d'étapes préprogrammées à l'avance par le développeur, tandis qu'un agent analyse son objectif et choisit dynamiquement quels outils déclencher au fur et à mesure de ses observations."
+/>
+

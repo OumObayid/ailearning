@@ -1,0 +1,125 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { SecurityAuditSimulator } from '@/components/interactive/SecurityAuditSimulator';
+
+# Chapitre 1 — Protection des clés API et gestion des secrets
+
+### 1. Pourquoi protéger les clés API Gemini ?
+
+Une clé d'API (*API Key*) est un secret cryptographique qui identifie et authentifie votre projet auprès de l'infrastructure de Google Cloud et de Google AI Studio.
+
+Une fuite ou une divulgation publique de votre clé API Gemini engendre des répercussions désastreuses :
+- **Consommation abusive et épuisement des quotas** : Un attaquant peut saturer votre bande passante et vos limites de requêtes par minute (RPM).
+- **Surcoûts financiers immédiats** : Si la clé est rattachée à un compte de facturation Google Cloud, des millions de tokens peuvent être consommés à vos dépens.
+- **Blocage de service (DDoS économique)** : La révocation d'urgence par Google interrompra immédiatement le service pour l'ensemble de vos utilisateurs légitimes.
+- **Exfiltration de données** : Si la clé donne accès à des modèles personnalisés (*fine-tuned*) ou à des caches sémantiques privés, des informations sensibles peuvent être compromises.
+
+---
+
+### 2. Le piège de l'exposition des clés côté client dans React
+
+L'une des erreurs les plus fréquentes commises par les développeurs juniors consiste à instancier le SDK Google directement dans une interface frontend React ou Next.js :
+
+<Callout type="danger" title="ANTI-PATTERN CRITIQUE (Clé d'API exposée dans le navigateur)">
+N'écrivez <strong>JAMAIS</strong> ce code dans un composant React :
+<br />
+<code>const ai = new GoogleGenAI(&#123; apiKey: &quot;AIzaSyB123456789...&quot; &#125;);</code>
+<br />
+Tout code JavaScript téléchargé par le navigateur peut être décompilé et inspecté en une seconde via l'onglet <em>Sources</em> des outils de développement (DevTools). N'importe quel internaute peut copier votre clé.
+</Callout>
+
+---
+
+### 3. Gestion sécurisée via variables d'environnement et backend Express
+
+La règle d'or architecturale est intangible : **les clés d'API privées doivent demeurer exclusivement sur votre serveur backend Node.js**.
+
+<ArchitectureDiagram
+  title="Flux hermétique de protection des clés secrètes"
+  diagram={`NAVIGATEUR (React)
+        |
+        | 1. Requête HTTP authentifiée par JWT (/api/chat)
+        v
+SERVEUR BACKEND (Node.js / Express)
+        |
+        | 2. Lecture sécurisée de process.env.GEMINI_API_KEY
+        v
+SERVEURS GOOGLE GEMINI
+        |
+        | 3. Réponse renvoyée au backend
+        v
+SERVEUR BACKEND
+        |
+        | 4. Données filtrées retransmises au client
+        v
+NAVIGATEUR (React)`}
+/>
+
+#### Configuration du serveur avec dotenv
+
+<CodeBlock
+  language="bash"
+  title="src/.env — Fichier de configuration local strictement privé"
+  code={`GEMINI_API_KEY="AIzaSyB-votre_cle_secrete_longue_et_privee"
+PORT=5000
+JWT_SECRET="votre_secret_jwt_signe_hmac_sha256"`}
+/>
+
+<CodeBlock
+  language="typescript"
+  title="src/config/gemini.ts — Instanciation hermétique côté serveur"
+  code={`import 'dotenv/config';
+import { GoogleGenAI } from '@google/genai';
+
+const apiKey = process.env.GEMINI_API_KEY;
+
+if (!apiKey) {
+  throw new Error("Erreur fatale : GEMINI_API_KEY est introuvable dans les variables d'environnement.");
+}
+
+export const ai = new GoogleGenAI({ apiKey });`}
+/>
+
+---
+
+### 4. Bonnes pratiques de stockage, rotation et exclusion Git
+
+Pour pérenniser votre infrastructure en production :
+1. **Excluez systématiquement `.env` de votre dépôt Git** : Ajoutez les lignes suivantes au fichier `.gitignore` dès la création du projet :
+   ```bash
+   node_modules/
+   .env
+   .env.local
+   .env.*.local
+   dist/
+   ```
+2. **Ne journalisez jamais les clés** : Ne faites jamais `console.log("Config:", config)` si l'objet contient des secrets d'API.
+3. **Mettez en place la rotation des clés** : En cas de doute ou lors du départ d'un collaborateur, générez une nouvelle clé sur Google AI Studio, mettez à jour les variables du serveur d'hébergement, puis révoquez l'ancienne clé.
+4. **Appliquez des restrictions d'adresses IP** : Dans Google Cloud Console, configurez des restrictions d'accès pour que la clé ne puisse être invoquée que depuis les adresses IP statiques de vos serveurs de production.
+
+---
+
+### 5. Simulation interactive : Test de vulnérabilité et banc d'audit
+
+Explorez le simulateur ci-dessous pour appréhender la manière dont une architecture défensive intercepte les fuites de secrets, bloque les injections et optimise les flux d'API :
+
+<SecurityAuditSimulator />
+
+---
+
+### 6. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi est-il formellement interdit d'initialiser le SDK GoogleGenAI avec une clé API directement dans un composant React ou Next.js client ?"
+  options={[
+    "Car React ne sait pas interpréter le protocole HTTPS",
+    "Parce que la clé API est incluse dans le bundle JavaScript envoyé au navigateur et peut être volée par n'importe quel visiteur",
+    "Car cela ralentit l'affichage du CSS Tailwind",
+    "Parce que Google interdit l'usage de TypeScript dans le navigateur"
+  ]}
+  correctIndex={1}
+  explanation="Tout code frontend est accessible en clair aux utilisateurs via les DevTools de leur navigateur. Une clé privée doit impérativement résider côté serveur pour préserver l'étanchéité des secrets."
+/>
+

@@ -1,0 +1,249 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 4 — Intégration de Google Gemini et route de génération
+
+### 1. Pourquoi isoler la logique IA au sein d'un service ?
+
+Il est fortement déconseillé d'écrire des appels directs à Google Gemini à l'intérieur de vos contrôleurs ou de vos routes Express.
+
+Isoler la logique IA dans un **service dédié** (`gemini.service.ts`) offre plusieurs atouts :
+- **Découplage** : Si le modèle ou les paramètres de Gemini évoluent, vous ne modifiez qu'un seul fichier sans toucher aux routes HTTP.
+- **Réutilisabilité** : Le service peut être invoqué indifféremment par des contrôleurs REST, des tâches planifiées (*cron jobs*) ou des scripts de test.
+- **Testabilité** : Il devient aisé de simuler (*mocker*) le service Gemini dans les tests automatisés sans envoyer de requêtes réseau coûteuses.
+
+---
+
+### 2. Initialiser le SDK officiel `@google/genai`
+
+Dans `src/services/gemini.service.ts`, nous instancions le client officiel Google Gen AI en lui transmettant la clé validée :
+
+```typescript
+// src/services/gemini.service.ts
+import { GoogleGenAI } from '@google/genai';
+import { env } from '../config/env.js';
+
+// Initialisation unique centralisée du client officiel
+const ai = new GoogleGenAI({
+  apiKey: env.API_KEY_GEMINI,
+});
+
+export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
+```
+
+---
+
+### 3. Utiliser l'Interactions API de Gemini
+
+L'Interactions API permet d'exécuter des requêtes conversationnelles et génératives modernes :
+
+```typescript
+// src/services/gemini.service.ts (suite)
+export async function generateWithGemini(prompt: string): Promise<string> {
+  const interaction = await ai.interactions.create({
+    model: DEFAULT_GEMINI_MODEL,
+    input: prompt,
+    system_instruction: "Tu es un assistant IA professionnel, précis, concis et pédagogique.",
+  });
+
+  // Extraction propre des éléments textuels de la réponse
+  const textOutput = interaction.outputs
+    ?.filter((item) => item.type === 'text')
+    .map((item) => item.text)
+    .join('\n');
+
+  if (!textOutput) {
+    throw new Error("Gemini n'a renvoyé aucun contenu textuel exploitable.");
+  }
+
+  return textOutput;
+}
+```
+
+---
+
+### 4. Définir le schéma Zod et le middleware de validation
+
+Avant d'atteindre le contrôleur, la charge utile (*payload*) doit impérativement être validée.
+
+Dans `src/schemas/ai.schema.ts` :
+
+```typescript
+// src/schemas/ai.schema.ts
+import { z } from 'zod';
+
+export const generateSchema = z.object({
+  prompt: z
+    .string({ required_error: 'Le champ prompt est obligatoire.' })
+    .trim()
+    .min(1, 'Le prompt ne peut pas être vide.')
+    .max(10000, 'Le prompt ne peut pas excéder 10 000 caractères.'),
+});
+
+export type GenerateInput = z.infer<typeof generateSchema>;
+```
+
+Puis dans `src/middlewares/validate.middleware.ts`, nous concevons un middleware générique réutilisable :
+
+```typescript
+// src/middlewares/validate.middleware.ts
+import type { RequestHandler } from 'express';
+import type { ZodType } from 'zod';
+
+export function validateBody(schema: ZodType): RequestHandler {
+  return (req, res, next) => {
+    const result = schema.safeParse(req.body);
+
+    if (!result.success) {
+      res.status(400).json({
+        success: false,
+        message: 'Données de requête invalides.',
+        errors: result.error.flatten().fieldErrors,
+      });
+      return;
+    }
+
+    // Réinjection des données nettoyées et typées
+    req.body = result.data;
+    next();
+  };
+}
+```
+
+---
+
+### 5. Construire le contrôleur et la route Express
+
+Dans `src/controllers/ai.controller.ts` :
+
+```typescript
+// src/controllers/ai.controller.ts
+import type { RequestHandler } from 'express';
+import { generateWithGemini } from '../services/gemini.service.js';
+
+export const generateController: RequestHandler = async (req, res, next) => {
+  try {
+    const { prompt } = req.body;
+    const result = await generateWithGemini(prompt);
+
+    res.json({
+      success: true,
+      result,
+    });
+  } catch (error) {
+    // Transmission de l'erreur au gestionnaire centralisé
+    next(error);
+  }
+};
+```
+
+Puis nous déclarons le routeur dans `src/routes/ai.routes.ts` :
+
+```typescript
+// src/routes/ai.routes.ts
+import { Router } from 'express';
+import { generateController } from '../controllers/ai.controller.js';
+import { validateBody } from '../middlewares/validate.middleware.js';
+import { generateSchema } from '../schemas/ai.schema.js';
+
+const router = Router();
+
+// Route POST /api/ai/generate avec validation préalable par Zod
+router.post('/generate', validateBody(generateSchema), generateController);
+
+export default router;
+```
+
+Enfin, reliez ce routeur dans `src/app.ts` :
+
+```typescript
+import aiRoutes from './routes/ai.routes.js';
+app.use('/api/ai', aiRoutes);
+```
+
+---
+
+### 6. Tests d'exécution avec Postman ou cURL
+
+#### Cas nominal (HTTP 200) :
+
+```bash
+curl -X POST http://localhost:3000/api/ai/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Explique la différence entre SQL et NoSQL en 3 points."}'
+```
+
+Réponse :
+
+```json
+{
+  "success": true,
+  "result": "1. Modèle de données...\n2. Schéma et cohérence...\n3. Scalabilité..."
+}
+```
+
+#### Rejet d'un prompt vide (HTTP 400) :
+
+```bash
+curl -X POST http://localhost:3000/api/ai/generate \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "   "}'
+```
+
+Réponse immédiate **sans consommation de quota Gemini** :
+
+```json
+{
+  "success": false,
+  "message": "Données de requête invalides.",
+  "errors": {
+    "prompt": ["Le prompt ne peut pas être vide."]
+  }
+}
+```
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Première route de génération avec Zod et Gemini"
+  objective="Développer la route POST /api/ai/generate, la sécuriser avec un validateur Zod dédié et valider le filtrage sans surcoût d'API."
+  duration="45 minutes"
+  steps={[
+    "Créer `src/services/gemini.service.ts` : instancier `GoogleGenAI` avec `env.API_KEY_GEMINI` et exporter `generateWithGemini(prompt: string)` ciblant `gemini-2.5-flash`.",
+    "Créer `src/schemas/ai.schema.ts` : définir `generateSchema` imposant un prompt nettoyé (`.trim()`) d'au moins 3 caractères et d'au plus 10 000 caractères.",
+    "Créer le middleware réutilisable `src/middlewares/validate.middleware.ts` : intercepter la requête avec `schema.safeParse(req.body)` et renvoyer un code `400 Bad Request` si la validation échoue.",
+    "Créer le contrôleur `src/controllers/ai.controller.ts` et le routeur `src/routes/ai.routes.ts`, puis brancher le sous-routeur dans `src/app.ts` sous le préfixe `/api/ai`.",
+    "Tester le scénario nominal avec Postman : envoyer un prompt valide et vérifier la réponse JSON `{ success: true, result }`.",
+    "Tester le scénario d'attaque ou d'erreur : envoyer `{ \"prompt\": \"  \" }` puis un texte dépassant 10 000 caractères. Vérifier le blocage instantané avec code HTTP 400 sans aucun appel vers Google."
+  ]}
+  validationCriteria={[
+    "Les requêtes valides retournent la réponse de Gemini au format JSON normalisé.",
+    "Les requêtes invalides ou vides sont rejetées immédiatement en moins de 5 ms avec un code HTTP 400.",
+    "Aucune exception non gérée ne fait crasher le processus Node.js en cas d'erreur de clé ou d'indisponibilité."
+  ]}
+>
+
+#### Middleware de validation Zod complet :
+```typescript
+// src/middlewares/validate.middleware.ts
+import type { RequestHandler } from 'express';
+import type { ZodSchema } from 'zod';
+
+export const validateBody = (schema: ZodSchema): RequestHandler => {
+  return (req, res, next) => {
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Données de requête non conformes.',
+        errors: result.error.flatten().fieldErrors,
+      });
+    }
+    req.body = result.data;
+    next();
+  };
+};
+```
+</PracticalWork>
+

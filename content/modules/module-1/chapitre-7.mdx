@@ -1,0 +1,162 @@
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+
+# Chapitre 7 — Analyser des images et des documents avec Gemini
+
+### 1. Qu'est-ce que la multimodalité ?
+
+Un modèle multimodal peut traiter plusieurs types de contenus.
+
+Selon le modèle et les fonctionnalités disponibles, cela peut inclure :
+- Texte.
+- Images.
+- Audio.
+- Vidéo.
+- Documents.
+
+L'intérêt est de ne plus limiter les applications IA aux seules données textuelles.
+
+---
+
+### 2. Exemple d'analyse d'image
+
+Une application de gestion de produits peut permettre à un utilisateur de transmettre une photographie.
+
+Gemini peut alors être utilisé pour :
+- Décrire le produit.
+- Identifier des caractéristiques visibles.
+- Extraire du texte présent sur l'image.
+- Répondre à des questions sur le contenu visuel.
+
+Exemple de scénario :
+
+<ArchitectureDiagram
+  title="Scénario d'analyse d'image multimodale"
+  diagram={`Utilisateur
+    |
+    v
+Upload d'une image dans React
+    |
+    v
+API Node.js
+    |
+    v
+Transmission de l'image à Gemini
+    |
+    v
+Analyse multimodale
+    |
+    v
+Réponse textuelle ou structurée
+    |
+    v
+Frontend`}
+/>
+
+---
+
+### Atelier interactif : Analyse visuelle et extraction d'images
+
+Explorez ci-dessous comment Gemini extrait des caractéristiques visuelles, lit des documents imprimés (OCR) et produit du JSON structuré à partir d'une image :
+
+<MultimodalVisionSimulator />
+
+---
+
+### 3. Préparer un fichier
+
+Dans une application réelle, il faut :
+- Recevoir le fichier.
+- Vérifier son type MIME.
+- Contrôler sa taille.
+- Contrôler les permissions.
+- Vérifier que le contenu correspond au type annoncé.
+- Transmettre le fichier selon les modalités prises en charge par le SDK et l'API.
+
+Les fichiers volumineux ou réutilisés peuvent nécessiter l'utilisation du service de fichiers plutôt qu'un transfert répété dans chaque requête.
+
+---
+
+### 4. Comprendre les entrées multimodales
+
+Une entrée multimodale peut combiner du texte et des contenus média.
+
+**Exemple conceptuel :**  
+- **Instruction :** Décris cette image.  
+- **Contenu transmis :**  
+  - Texte : `Décris cette image.`  
+  - Image : photographie fournie par l'utilisateur.
+
+La représentation technique dépend du type de média et du mécanisme utilisé : données inline, fichier téléversé ou référence de fichier.  
+Il faut utiliser le format d'entrée documenté pour le type de contenu choisi.
+
+---
+
+### 5. Exemple d'analyse d'image avec un fichier téléversé
+
+Pour les exercices pratiques, tu commenceras par tester le traitement d'une image dans Google AI Studio, puis tu reproduiras le traitement côté Node.js avec le mécanisme de fichiers ou d'entrée multimodale pris en charge par la version du SDK utilisée.
+
+La séquence sera :
+1. Sélectionner une image.
+2. Vérifier son format.
+3. Transmettre le contenu à Gemini.
+4. Poser une question précise.
+5. Récupérer le résultat.
+6. Afficher la description dans React.
+
+<Callout type="warning" title="Documentation de référence">
+Il faudra consulter la documentation de l'API pour la forme exacte des objets de contenu et des références de fichiers. Ne pas inventer un format de fichier ou une propriété du SDK.
+</Callout>
+
+---
+
+### 6. Travaux pratiques
+
+<PracticalWork title="TP 1 — Générateur de descriptions et d'accessibilité (Alt Text)">
+**Objectif :** Générer automatiquement des descriptions textuelles riches et des textes alternatifs (balise HTML `alt`) conformes aux normes d'accessibilité numérique WCAG.
+
+1. **Instructions :**
+   - Convertir une image locale (JPEG/PNG) en base64.
+   - Envoyer l'image avec un prompt demandant :
+     - Une description générale en une phrase pour la balise `alt` (sans expressions superflues comme *"Image de..."*).
+     - Une description détaillée des couleurs, de la composition et des éléments clés.
+2. **Critère de réussite :** Vérifier que la description est concise, précise et utilisable directement par un lecteur d'écran.
+</PracticalWork>
+
+<PracticalWork title="TP 2 — Contrôle qualité visuel et caractéristiques de produit e-commerce">
+**Objectif :** Analyser la photographie d'un article mis en vente pour alimenter automatiquement une fiche e-commerce.
+
+1. **Instructions :**
+   - Transmettre la photo d'un produit (ex. montre connectée, paire de baskets ou bouteille isotherme).
+   - Demander à Gemini d'extraire :
+     - Le type d'objet et la catégorie.
+     - La couleur dominante et les matières visibles.
+     - L'état visuel du produit (neuf, usagé, présence de défauts ou rayures).
+2. **Format de sortie :** Forcer une réponse sous format JSON structuré validé avec Zod.
+</PracticalWork>
+
+<PracticalWork title="TP 3 — Extraction de données d'un document ou d'une facture">
+**Objectif :** Réaliser une extraction OCR intelligente à partir d'une photo de document papier ou d'un reçu de caisse.
+
+1. **Instructions :**
+   - Prendre une photo d'un reçu, d'un ticket de caisse ou d'un devis.
+   - Demander au modèle d'extraire :
+     - Le nom du commerçant / fournisseur.
+     - La date de la transaction.
+     - La liste des articles achetés avec leur prix unitaire.
+     - Le montant total TTC et le taux de TVA détecté.
+2. **Gestion de l'incertitude :** Si un champ est illisible ou tronqué sur la photo, le modèle doit renvoyer la valeur `null` plutôt que d'inventer un montant imaginaire.
+</PracticalWork>
+
+<PracticalWork title="TP 4 — Assistant conversationnel multimodal complet">
+**Objectif :** Développer un endpoint d'API Express recevant simultanément une question utilisateur et un fichier image.
+
+1. **Instructions :**
+   - Mettre en place `multer` sur la route `POST /api/multimodal/ask`.
+   - L'utilisateur envoie en `multipart/form-data` :
+     - Le champ texte `question` (ex. : *"Comment réparer la pièce visible au centre ?"*).
+     - Le champ fichier `image` (JPEG/PNG).
+   - Le contrôleur transforme le buffer image en structure exploitable par le SDK Gemini et retourne la réponse explicative de l'IA.
+</PracticalWork>
+

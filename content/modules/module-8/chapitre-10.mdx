@@ -1,0 +1,128 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 10 — Orchestration avancée avec LangGraph.js et Human-in-the-Loop
+
+### 1. Modélisation de l'agent documentaire avec StateGraph
+
+Pour les flux décisionnels complexes nécessitant plusieurs étapes de réflexion, nous structurons la logique de l'agent à l'aide de **LangGraph.js** autour d'un état partagé :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/agents/graph/agentState.ts — Schéma d'état LangGraph"
+  code={`import { Annotation } from '@langchain/langgraph';
+
+export const PlatformAgentState = Annotation.Root({
+  userPrompt: Annotation<string>(),
+  userId: Annotation<number>(),
+  category: Annotation<string>(),
+  retrievedDocuments: Annotation<string[]>({
+    reducer: (curr, update) => [...curr, ...update],
+    default: () => [],
+  }),
+  pendingSensitiveAction: Annotation<Record<string, unknown> | null>({
+    reducer: (_, update) => update,
+    default: () => null,
+  }),
+  isApproved: Annotation<boolean | undefined>(),
+  finalAnswer: Annotation<string>(),
+});
+
+export type PlatformAgentStateType = typeof PlatformAgentState.State;`}
+/>
+
+---
+
+### 2. Gestion des branches conditionnelles et cycles d'évaluation
+
+Le graphe orchestre la circulation des données en bifurquant selon les découvertes du modèle :
+
+<ArchitectureDiagram
+  title="Graphe d'état LangGraph de la plateforme"
+  diagram={`                  START
+                    |
+                    v
+          [ ANALYSE GEMINI ]
+                    |
+                    v
+          [ REQUÊTE SENSIBLE ? ]
+              /            \\
+           (OUI)          (NON)
+            /                \\
+           v                  v
+    [ interrupt() ]     [ RECHERCHE RAG QDRANT ]
+    (Pause HITL)              |
+           |                  v
+   (Command Resume)     [ SYNTHÈSE DES SOURCES ]
+           |                  |
+           v                  v
+     [ ACTION SQL ] ------> [ END ]`}
+/>
+
+---
+
+### 3. Suspension d'action critique par interrupt() et reprise par Command
+
+Lorsqu'un collaborateur demande la suppression d'un contrat ou l'envoi d'une notification massive, le nœud d'approbation suspend l'exécution :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/agents/graph/approvalNode.ts — Interruption contrôlée"
+  code={`import { interrupt, Command } from '@langchain/langgraph';
+
+export async function sensitiveApprovalNode(state: any) {
+  if (state.pendingSensitiveAction) {
+    console.log("[LangGraph HITL] Suspension immédiate du graphe pour approbation humaine.");
+
+    // Suspend le thread et sauvegarde le checkpoint exact
+    const decision = interrupt({
+      message: "Cette opération nécessite la validation formelle d'un superviseur.",
+      actionDetails: state.pendingSensitiveAction,
+    });
+
+    return { isApproved: Boolean(decision) };
+  }
+
+  return { isApproved: true };
+}`}
+/>
+
+Dès que l'auditeur clique sur **[Valider l'opération]** dans l'interface React, le contrôleur Express reprend l'exécution sur le même `thread_id` :
+
+<CodeBlock
+  language="typescript"
+  title="src/modules/agents/controllers/agentResume.controller.ts — Reprise par Command"
+  code={`import { Command } from '@langchain/langgraph';
+import { platformCompiledGraph } from '../graph/platformGraph';
+
+export async function resumeAgentExecution(threadId: string, approved: boolean) {
+  const config = { configurable: { thread_id: threadId } };
+
+  // Reprise transparente du graphe
+  const result = await platformCompiledGraph.invoke(
+    new Command({ resume: approved }),
+    config
+  );
+
+  return result;
+}`}
+/>
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Quel est le rôle combiné des primitives 'interrupt()' et 'Command' dans LangGraph.js ?"
+  options={[
+    "Mettre en pause l'exécution d'un agent lors d'une étape critique sans consommer de CPU, et reprendre l'exécution ultérieurement dès qu'une décision humaine est émise",
+    "Télécharger automatiquement les dépendances de Node.js",
+    "Générer des tables MySQL sans schéma",
+    "Formater le code avec Prettier"
+  ]}
+  correctIndex={0}
+  explanation="interrupt() suspend le graphe et persiste son état dans un checkpoint. Dès que l'administrateur confirme ou rejette l'action, l'objet Command réveille le graphe et lui injecte la décision pour poursuivre son cours."
+/>
+

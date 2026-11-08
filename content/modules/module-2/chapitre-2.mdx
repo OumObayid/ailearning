@@ -1,0 +1,295 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 2 — Préparer l'environnement frontend
+
+### 1. Création du projet React avec TypeScript
+
+Pour bâtir des applications frontend modernes, rapides et rigoureusement typées, nous privilégions **Vite** ou **Next.js** avec le support natif de **TypeScript**.
+
+Pour initialiser une application frontend avec Vite :
+
+```bash
+# 1. Initialiser le projet avec le template React-TypeScript
+npm create vite@latest frontend-ia -- --template react-ts
+
+# 2. Entrer dans le répertoire du projet
+cd frontend-ia
+
+# 3. Installer les dépendances
+npm install
+
+# 4. Lancer le serveur de développement local
+npm run dev
+```
+
+---
+
+### 2. Architecture recommandée du projet
+
+Une organisation claire des répertoires permet de séparer nettement les composants visuels réutilisables, les services de communication HTTP et les interfaces de typage TypeScript :
+
+```text
+frontend-ia/
+├── src/
+│   ├── components/
+│   │   ├── Chat/             # Fenêtre et bulles de messages
+│   │   │   ├── ChatWindow.tsx
+│   │   │   ├── ChatInput.tsx
+│   │   │   └── Message.tsx
+│   │   ├── AI/               # Indicateurs de chargement et bandeaux d'erreurs
+│   │   │   ├── LoadingIndicator.tsx
+│   │   │   └── ErrorMessage.tsx
+│   │   └── Layout/           # En-tête, sidebar et conteneur principal
+│   │       └── MainLayout.tsx
+│   ├── services/             # Fonctions d'appel HTTP vers le backend
+│   │   └── ai.service.ts
+│   ├── hooks/                # Hooks personnalisés (gestion d'état et streaming)
+│   │   └── useAI.ts
+│   ├── types/                # Définitions de contrats TypeScript
+│   │   └── ai.types.ts
+│   ├── pages/
+│   │   └── Home.tsx
+│   ├── App.tsx
+│   └── main.tsx
+├── .env                      # Variables d'environnement publiques
+└── package.json
+```
+
+---
+
+### 3. Configurer l'URL du backend
+
+Créez un fichier `.env` à la racine de votre projet frontend pour centraliser l'adresse de votre API backend :
+
+```bash
+# URL de l'API backend Node.js / Express développé au Module 1
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+<Callout type="warning" title="Vigilance sur les variables d'environnement">
+Les variables préfixées par `VITE_` (ou `NEXT_PUBLIC_` dans Next.js) sont injectées dans le code JavaScript envoyé au client. Elles ne doivent contenir **que des URLs publiques**, jamais de clés secrètes.
+</Callout>
+
+---
+
+### 4. Créer un service API modulaire
+
+Dans le fichier `src/services/ai.service.ts`, nous regroupons les fonctions d'appel HTTP à l'aide de l'API standard `fetch` :
+
+```typescript
+// src/services/ai.service.ts
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+export async function generateText(prompt: string) {
+  const response = await fetch(`${API_URL}/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    throw new Error(errorBody.message || `Erreur serveur HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+#### Analyse des instructions :
+1. `fetch()` : Effectue une requête asynchrone sécurisée sans dépendance externe lourde.
+2. `method: 'POST'` : Indique que nous transmettons un corps de données au serveur.
+3. `JSON.stringify({ prompt })` : Sérialise l'objet JavaScript en chaîne JSON standard.
+4. `response.ok` : Propriété booléenne vérifiant si le code HTTP retourné est compris entre 200 et 299.
+
+---
+
+### 5. Définir des contrats TypeScript fiables
+
+Dans `src/types/ai.types.ts`, nous déclarons la structure exacte des données échangées entre le frontend et le backend :
+
+```typescript
+// src/types/ai.types.ts
+export interface GenerateResponse {
+  success: boolean;
+  result: string;
+  tokensCount?: number;
+  message?: string;
+}
+
+export interface ApiError {
+  message: string;
+  code?: string;
+}
+```
+
+---
+
+### 6. Créer un composant React complet avec gestion d'états
+
+Voici l'implémentation du composant principal dans `src/pages/Home.tsx` :
+
+```tsx
+// src/pages/Home.tsx
+import React, { useState } from 'react';
+import { generateText } from '../services/ai.service';
+import type { GenerateResponse } from '../types/ai.types';
+
+export default function Home() {
+  const [prompt, setPrompt] = useState('');
+  const [result, setResult] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleGenerate() {
+    if (!prompt.trim() || loading) return;
+
+    try {
+      setLoading(true);
+      setError('');
+      setResult('');
+
+      const data: GenerateResponse = await generateText(prompt.trim());
+      setResult(data.result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur inattendue est survenue.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="max-w-2xl mx-auto p-6 space-y-5">
+      <h1 className="text-2xl font-bold text-slate-900">Assistant Éditorial IA</h1>
+
+      <textarea
+        rows={4}
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Décrivez votre besoin en quelques phrases..."
+        className="w-full rounded-xl border border-slate-300 p-3 text-sm focus:border-indigo-500 focus:outline-none"
+      />
+
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-slate-500">
+          {prompt.length} / 500 caractères
+        </span>
+        <button
+          onClick={handleGenerate}
+          disabled={loading || !prompt.trim() || prompt.length > 500}
+          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {loading ? 'Génération en cours...' : 'Générer la réponse'}
+        </button>
+      </div>
+
+      {error && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+          {error}
+        </div>
+      )}
+
+      {result && (
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm text-sm text-slate-800 whitespace-pre-wrap">
+          {result}
+        </div>
+      )}
+    </main>
+  );
+}
+```
+
+---
+
+### 7. Comprendre les états d'une interface IA
+
+Dans une application d'intelligence artificielle, l'interface doit refléter en permanence le cycle de vie de la requête :
+
+| Variable d'état | Rôle dans l'interface | Rendu recommandé |
+| :--- | :--- | :--- |
+| `prompt` | Stocke la saisie en cours | Champ de texte contrôlé avec compteur de caractères |
+| `loading` | Indique qu'un appel LLM est en cours | Spinner ou pulsation visuelle, bouton désactivé |
+| `result` | Contient le texte généré par Gemini | Boîte de réponse structurée avec mise en forme |
+| `error` | Contient le message d'échec éventuel | Bannière d'alerte claire avec option de reprise |
+
+---
+
+### 8. Synchronisme et asynchronisme en JavaScript
+
+La communication réseau est intrinsèquement **asynchrone**. Une requête vers un LLM peut prendre de 1 à plusieurs secondes.
+
+- Le mot-clé `async` permet de déclarer une fonction retournant une promesse (`Promise`).
+- Le mot-clé `await` suspend temporairement l'exécution de la fonction asynchrone jusqu'à la résolution de la promesse, **sans jamais bloquer le thread principal** d'animation et de rendu de l'interface utilisateur.
+
+---
+
+### 9. Gestion des erreurs réseau et robustesse
+
+Il convient de distinguer trois niveaux de défaillance :
+1. **Erreur réseau brute** : Perte de connexion Internet ou serveur éteint (l'exception est levée immédiatement au niveau de `fetch`).
+2. **Erreur HTTP** : Le serveur répond mais renvoie un statut d'erreur (ex. `429 Too Many Requests` ou `500 Internal Error`).
+3. **Erreur de payload** : La réponse est reçue avec succès mais son format JSON est tronqué ou non conforme au contrat attendu.
+
+Un frontend professionnel intercepte chacun de ces cas pour afficher un message intelligible sans exposer de traces de pile internes à l'utilisateur.
+
+---
+
+<PracticalWork
+  title="Travail Pratique 2 — Connexion au backend et validation des entrées"
+  objective="Relier le formulaire React au serveur Express du Module 1 et sécuriser les interactions de bout en bout."
+  duration="45 minutes"
+  steps={[
+    "Configurer le fichier `.env.local` du frontend : `NEXT_PUBLIC_API_URL=http://localhost:3000/api`.",
+    "Créer le service `src/services/ai.service.ts` contenant la fonction asynchrone `generateText(prompt: string)` effectuant un appel `fetch()` vers `${NEXT_PUBLIC_API_URL}/generate`.",
+    "Structurer la requête en `POST` avec en-têtes `Content-Type: application/json` et un corps `{ prompt }` sérialisé.",
+    "Ajouter une vérification client stricte : prompt non vide, sans espaces superflus, limité à 500 caractères maximum.",
+    "Désactiver le bouton d'envoi et afficher une icône animée tant que la promesse HTTP est en attente.",
+    "Tester deux scénarios de panne : éteindre le serveur Node.js (erreur réseau 'Failed to fetch') puis injecter une mauvaise clé API côté serveur (code 401/500) pour vérifier que l'interface affiche une alerte lisible plutôt qu'un écran blanc."
+  ]}
+  validationCriteria={[
+    "Le frontend communique avec succès avec le backend via fetch et reçoit la véritable réponse de Gemini.",
+    "Les erreurs réseau et codes HTTP non-200 sont interceptés et restitués en français compréhensible.",
+    "Aucun clignotement ni double soumission n'est possible lors des clics répétés."
+  ]}
+>
+
+#### Exemple de service client sécurisé :
+```typescript
+// src/services/ai.service.ts
+export interface GenerateResponse {
+  success: boolean;
+  result?: string;
+  error?: { message: string };
+}
+
+export async function requestGeneration(prompt: string): Promise<string> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+
+  try {
+    const res = await fetch(`${apiUrl}/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    });
+
+    const data: GenerateResponse = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.error?.message || `Erreur serveur (${res.status})`);
+    }
+
+    return data.result || 'Aucune réponse reçue.';
+  } catch (err: any) {
+    if (err.name === 'TypeError' && err.message.includes('fetch')) {
+      throw new Error('Impossible de contacter le serveur backend. Vérifiez que le serveur est démarré.');
+    }
+    throw err;
+  }
+}
+```
+</PracticalWork>
+

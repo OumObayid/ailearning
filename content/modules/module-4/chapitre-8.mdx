@@ -1,0 +1,175 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+# Chapitre 8 — Recherche vectorielle sémantique et filtrage de sécurité
+
+### 1. Limites de la recherche SQL classique
+
+Supposons qu'un utilisateur pose la question suivante :
+> *« Quelles sont les modalités de renonciation après un achat ? »*
+
+Si vous effectuez une recherche SQL classique :
+
+```sql
+SELECT * FROM document_chunks WHERE content LIKE '%renonciation%';
+```
+
+La requête ne renverra **aucun résultat** si votre document interne a utilisé la formulation *« conditions de rétractation et de remboursement »*.
+
+La **recherche sémantique vectorielle** résout ce défi en comparant l'orientation des concepts dans l'espace mathématique : le modèle comprend que *renonciation* et *rétractation* désignent la même intention légale.
+
+---
+
+### 2. Les étapes de la recherche vectorielle
+
+```text
+QUESTION DE L'UTILISATEUR
+       |
+       v
+[ 1. Génération de l'embedding de la question ] -> generateEmbedding(question) -> 768 dimensions
+       |
+       v
+[ 2. Requête vers Qdrant ] -----------------------> Filtre user_id + Distance Cosine + Top-K = 5
+       |
+       v
+[ 3. Résultats ordonnés ] ------------------------> Tableau de points Qdrant avec scores de similarité
+```
+
+---
+
+### Atelier interactif : Visualisation de l'espace vectoriel et score de similarité
+
+Expérimentez ci-dessous la projection cartésienne de questions et de fragments documentaires, et ajustez le seuil de coupure (*Score Threshold*) pour observer les chunks retenus pour le RAG :
+
+<VectorSimilaritySimulator />
+
+---
+
+### 3. Implémenter le service `searchSimilarChunks`
+
+Dans `src/services/qdrant.service.ts` :
+
+```typescript
+// src/services/qdrant.service.ts (suite)
+export interface SearchResultItem {
+  pointId: string;
+  score: number;
+  payload: {
+    userId: number;
+    documentId: number;
+    chunkId: number;
+    title: string;
+  };
+}
+
+export async function searchSimilarChunks(
+  queryVector: number[],
+  userId: number,
+  limit: number = 5,
+  minScore: number = 0.65
+): Promise<SearchResultItem[]> {
+  // Requête vectorielle filtrée nativement par utilisateur
+  const searchResponse = await qdrant.query(DOCUMENTS_COLLECTION, {
+    query: queryVector,
+    limit,
+    with_payload: true,
+    filter: {
+      must: [
+        {
+          key: 'user_id',
+          match: {
+            value: userId, // Sécurité stricte : isolation des données
+          },
+        },
+      ],
+    },
+  });
+
+  return searchResponse.points
+    .filter((point) => point.score >= minScore) // Seuil minimal de pertinence
+    .map((point) => ({
+      pointId: String(point.id),
+      score: point.score,
+      payload: {
+        userId: Number(point.payload?.user_id),
+        documentId: Number(point.payload?.documentId || point.payload?.document_id),
+        chunkId: Number(point.payload?.chunkId || point.payload?.chunk_id),
+        title: String(point.payload?.title || ''),
+      },
+    }));
+}
+```
+
+---
+
+### 4. L'isolation des données multi-tenants (*Tenancy Isolation*)
+
+<Callout type="warning" title="Règle de sécurité multi-utilisateurs">
+Ne laissez jamais le frontend envoyer librement un paramètre `userId` dans le corps de la requête. L'identifiant de l'utilisateur doit être extrait **exclusivement** du jeton JWT ou de la session sécurisée vérifiée par votre middleware d'authentification.
+</Callout>
+
+Le filtre `must: [{ key: 'user_id', match: { value: userId } }]` garantit que l'utilisateur A ne recevra **jamais** de fragments provenant des documents de l'utilisateur B, même si la question posée est strictement identique.
+
+---
+
+### 5. Choisir le bon compromis pour le Top-K
+
+Le paramètre **Top-K** détermine le nombre de fragments les plus pertinents transmis au LLM :
+- **Top-K trop faible (ex: 1)** : Risque de rater des informations complémentaires réparties sur deux passages.
+- **Top-K trop élevé (ex: 20)** : Risque de diluer le contexte avec du bruit inutile, d'augmenter le temps de réponse et de multiplier la consommation de tokens.
+
+Pour des fragments de 500 mots, un **Top-K compris entre 3 et 5** offre le meilleur équilibre entre complétude et rapidité.
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Recherche de similarité vectorielle avec filtrage par tenant"
+  objective="Interroger Qdrant par similarité cosinus avec seuil de pertinence et appliquer un filtre de charge utile (payload filter) pour garantir l'étanchéité multi-utilisateurs."
+  duration="40 minutes"
+  steps={[
+    "Implémenter la fonction `searchSimilarChunks(queryVector: number[], userId: number, limit = 5, scoreThreshold = 0.70)` dans `src/services/qdrant.service.ts`.",
+    "Configurer le filtre Qdrant `must: [{ key: 'user_id', match: { value: userId } }]` pour interdire toute fuite de vecteurs entre utilisateurs distincts.",
+    "Insérer en base de démonstration deux documents : Doc A (*'Politique salariale et primes 2026'*) pour `userId = 1`, et Doc B (*'Catalogue pièces détachées moto'*) pour `userId = 2`.",
+    "Exécuter une recherche vectorielle avec la question *'Quel est le montant des primes annuelles ?'* pour `userId = 2` : vérifier que la liste retournée est strictement vide (`[]`).",
+    "Exécuter la même recherche pour `userId = 1` : vérifier que le fragment du Doc A est retourné avec un score supérieur à 0.78.",
+    "Tester une question absurde (ex. *'Quelle est la distance de la Terre à Saturne ?'*) et valider qu'elle est écartée par le seuil de score minimal `scoreThreshold`."
+  ]}
+  validationCriteria={[
+    "Le cloisonnement par `user_id` est absolu : aucun utilisateur ne peut remonter les vecteurs d'un tiers.",
+    "Le filtrage par seuil élimine les correspondances accidentelles non pertinentes.",
+    "La recherche sémantique identifie avec succès les synonymes (ex. 'tarifs' pour 'prix')."
+  ]}
+>
+
+#### Fonction de recherche avec filtre de sécurité Qdrant :
+```typescript
+export async function searchSimilarChunks(
+  queryVector: number[],
+  userId: number,
+  limit: number = 5,
+  scoreThreshold: number = 0.70
+) {
+  const searchResults = await qdrant.search(DOCUMENTS_COLLECTION, {
+    vector: queryVector,
+    limit,
+    score_threshold: scoreThreshold,
+    filter: {
+      must: [
+        {
+          key: 'user_id',
+          match: { value: userId },
+        },
+      ],
+    },
+  });
+
+  return searchResults.map((hit) => ({
+    pointId: hit.id,
+    score: hit.score,
+    chunkId: hit.payload?.chunk_id as number,
+  }));
+}
+```
+</PracticalWork>
+

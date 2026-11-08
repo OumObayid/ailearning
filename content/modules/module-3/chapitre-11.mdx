@@ -1,0 +1,168 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Chapitre 11 — Observabilité, streaming et communication avec React
+
+### 1. Pourquoi l'observabilité est-elle capitale dans un backend IA ?
+
+Dans une architecture web classique, une requête qui ralentit signale généralement une requête SQL non indexée.
+
+Dans une API d'intelligence artificielle, un ralentissement peut être dû à :
+- La congestion temporaire des serveurs de Google Cloud.
+- Un prompt utilisateur excessivement verbeux déclenchant une génération de plusieurs milliers de tokens.
+- Un goulet d'étranglement lors de l'insertion concurrente en base de données MySQL.
+
+Pour isoler la cause exacte, le backend doit mesurer et tracer séparément **chaque segment de durée** de la requête.
+
+---
+
+### 2. Middleware de journalisation structurée
+
+Voici comment implémenter un middleware mesurant la durée d'exécution sans journaliser de secrets :
+
+```typescript
+// src/middlewares/logger.middleware.ts
+import type { RequestHandler } from 'express';
+
+export const requestLogger: RequestHandler = (req, res, next) => {
+  const start = performance.now();
+
+  res.on('finish', () => {
+    const duration = (performance.now() - start).toFixed(1);
+    const logData = {
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      url: req.originalUrl,
+      statusCode: res.statusCode,
+      durationMs: `${duration}ms`,
+      ip: req.ip,
+    };
+
+    console.log(`[HTTP] ${logData.method} ${logData.url} ${logData.statusCode} — ${logData.durationMs}`);
+  });
+
+  next();
+};
+```
+
+<Callout type="note" title="Bonne pratique de journalisation">
+N'enregistrez jamais le contenu brut des prompts dans des fichiers de logs non chiffrés. Ils peuvent contenir des données personnelles confidentielles (noms, e-mails, chiffres) soumises à la réglementation sur la protection de la vie privée (RGPD).
+</Callout>
+
+---
+
+### 3. Gérer les timeouts sur les appels longs
+
+Pour éviter qu'une requête ne reste bloquée indéfiniment en cas d'indisponibilité du fournisseur IA, définissez toujours un **délai d'expiration strict** (*timeout*) :
+
+```typescript
+// src/services/gemini-timeout.service.ts
+export async function generateWithTimeout(prompt: string, timeoutMs: number = 15000): Promise<string> {
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Délai d’attente dépassé auprès de Google Gemini (Timeout 15s)')), timeoutMs)
+  );
+
+  // Course entre la réponse de Gemini et le compte à rebours
+  return Promise.race([
+    generateWithGemini(prompt),
+    timeoutPromise,
+  ]);
+}
+```
+
+<TimeoutCircuitSimulator />
+
+---
+
+### 4. Consommer l'API depuis un client React
+
+Dans votre application frontend React, la communication s'effectue via un service typé :
+
+```typescript
+// frontend/src/services/ai.service.ts
+const BACKEND_URL = 'http://localhost:3000/api';
+
+export interface GenerationResult {
+  success: boolean;
+  result: string;
+  conversationId?: number;
+}
+
+export async function askAssistant(prompt: string): Promise<string> {
+  const response = await fetch(`${BACKEND_URL}/ai/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt }),
+  });
+
+  const data: GenerationResult = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.result || 'Erreur lors de la génération.');
+  }
+
+  return data.result;
+}
+```
+
+---
+
+### 5. Le streaming : transport temps réel sans blocage
+
+Le streaming permet de transmettre au navigateur chaque mot dès qu'il est calculé par Gemini :
+
+<ArchitectureDiagram
+  title="Comparatif : Réponse synchrone monobloc versus Flux de streaming continu"
+  diagram={`A. REQUÊTE SYNCHRONE CLASSIQUE :
+Navigateur ---> [ 1. Attente complète (4 secondes) ] ---> [ Réponse 400 mots affichée d'un coup ]
+
+B. STREAMING EN TEMPS RÉEL (Server-Sent Events) :
+Navigateur ---> [ Mot 1 (0.3s) ] -> [ Mot 2 (0.4s) ] -> [ Mot 3 (0.5s) ] -> [ Fin du flux ]
+(L'utilisateur commence sa lecture immédiatement sans aucune sensation d'attente)`}
+/>
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Journalisation télémétrique et connexion au client React"
+  objective="Mesurer les temps de réponse de l'API avec un middleware d'audit et raccorder le backend Express à l'interface client React du Module 2."
+  duration="40 minutes"
+  steps={[
+    "Implémenter le middleware d'audit de performance `src/middlewares/logger.middleware.ts` : enregistrer l'horodatage de début `const start = Date.now()`, écouter l'événement `res.on('finish')`, et consigner `[METHOD] URL - Status (durée ms)`.",
+    "Créer une fonction d'exécution bornée avec un `AbortSignal.timeout(15000)` : si Gemini met plus de 15 secondes à répondre, interrompre la requête et renvoyer un statut HTTP 504 Gateway Timeout.",
+    "Connecter votre interface frontend React (développée au Module 2) à votre endpoint `POST http://localhost:3000/api/ai/generate`.",
+    "Lancer simultanément le backend et le frontend, soumettre une requête de génération depuis le navigateur et observer les traces précises dans le terminal serveur.",
+    "Valider la transmission correcte des en-têtes CORS sans blocage de sécurité navigateur."
+  ]}
+  validationCriteria={[
+    "Chaque requête entrante produit une ligne de trace horodatée indiquant sa durée d'exécution en millisecondes.",
+    "Les blocages réseau ou requêtes dépassant 15 secondes sont avortés proprement avec le statut HTTP 504.",
+    "L'échange entre le frontend React et le backend Express s'effectue sans aucune erreur de politique Cross-Origin (CORS)."
+  ]}
+>
+
+#### Middleware de journalisation télémétrique prêt à l'emploi :
+```typescript
+// src/middlewares/logger.middleware.ts
+import type { RequestHandler } from 'express';
+
+export const requestLogger: RequestHandler = (req, res, next) => {
+  const start = Date.now();
+
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const color = res.statusCode >= 400 ? '❌' : '✅';
+    console.log(
+      `${color} [${new Date().toISOString()}] ${req.method} ${req.originalUrl} — HTTP ${res.statusCode} (${duration}ms)`
+    );
+  });
+
+  next();
+};
+```
+</PracticalWork>
+

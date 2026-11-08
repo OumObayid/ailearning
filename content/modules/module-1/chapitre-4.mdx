@@ -1,0 +1,192 @@
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+
+# Chapitre 4 — Comprendre et utiliser l'Interactions API
+
+### 1. Qu'est-ce qu'une API ?
+
+Une API (Application Programming Interface) est une interface permettant à des logiciels de communiquer entre eux.
+
+Dans notre cas :
+1. Notre application envoie une requête.
+2. Google reçoit la requête.
+3. Gemini traite les informations.
+4. Google renvoie un résultat.
+5. Notre application exploite ce résultat.
+
+---
+
+### 2. Qu'est-ce que l'Interactions API ?
+
+L'Interactions API est une interface permettant de créer et de gérer des interactions avec les modèles Gemini et certaines capacités d'agents.
+
+Une interaction représente un tour de traitement.  
+Elle peut contenir différentes étapes :
+- Entrée utilisateur.
+- Traitement du modèle.
+- Appel d'outil.
+- Résultat d'outil.
+- Sortie finale.
+
+Cette approche permet de gérer des scénarios plus complexes qu'une simple génération de texte.
+
+---
+
+### 3. Première interaction
+
+<CodeBlock language="typescript">
+{`import { ai, GEMINI_MODEL } from "./config/gemini.js";
+
+const interaction = await ai.interactions.create({
+  model: GEMINI_MODEL,
+  input: "Explique le fonctionnement d'une API REST."
+});
+
+console.log(interaction.output_text);`}
+</CodeBlock>
+
+#### Explication :
+- `ai.interactions.create()` crée une interaction.
+- `model` indique le modèle utilisé.
+- `input` contient la demande.
+- `output_text` contient le texte final disponible.
+
+---
+
+### 4. Les propriétés importantes
+
+Les propriétés courantes à étudier comprennent :
+
+| Propriété | Fonction |
+| :--- | :--- |
+| `model` | Sélection du modèle |
+| `input` | Entrée transmise au modèle |
+| `system_instruction` | Instructions générales |
+| `tools` | Outils disponibles |
+| `response_format` | Format de sortie attendu |
+| `previous_interaction_id` | Continuité d'une interaction précédente |
+| `stream` | Activation du streaming |
+| `background` | Exécution en arrière-plan lorsque prise en charge |
+
+<Callout type="note" title="Prise en charge">
+La présence d'une propriété ne signifie pas que tous les modèles ou tous les environnements prennent en charge toutes les fonctionnalités.
+</Callout>
+
+---
+
+### 5. Créer une fonction réutilisable
+
+<CodeBlock language="typescript">
+{`import { ai, GEMINI_MODEL } from "./config/gemini.js";
+
+interface GenerateOptions {
+  prompt: string;
+  systemInstruction?: string;
+}
+
+export async function generate(
+  options: GenerateOptions
+) {
+  const interaction = await ai.interactions.create({
+    model: GEMINI_MODEL,
+    input: options.prompt,
+    system_instruction: options.systemInstruction
+  });
+
+  return {
+    id: interaction.id,
+    text: interaction.output_text
+  };
+}`}
+</CodeBlock>
+
+Cette fonction pourra être réutilisée par plusieurs contrôleurs.
+
+---
+
+### 6. Comprendre les réponses
+
+Il faut distinguer :
+- L'objet complet d'interaction.
+- Les étapes d'exécution.
+- La sortie textuelle finale.
+- Les éventuels appels de fonctions.
+- Les informations d'utilisation disponibles.
+
+**Exemple :**
+<CodeBlock language="typescript">
+{`const interaction = await ai.interactions.create({
+  model: GEMINI_MODEL,
+  input: "Donne trois avantages de TypeScript."
+});
+
+console.log("ID :", interaction.id);
+console.log("Réponse :", interaction.output_text);
+console.log("Interaction complète :", interaction);`}
+</CodeBlock>
+
+<Callout type="warning" title="Bonne pratique">
+Il est préférable de ne pas exposer directement l'objet complet au frontend en production.
+</Callout>
+
+---
+
+### 7. Comprendre l'API historique de génération
+
+Le SDK officiel contient également d'autres interfaces, notamment :
+```typescript
+ai.models.generateContent()
+```
+Cette méthode permet d'utiliser l'API de génération de contenu.
+
+Dans cette formation, nous privilégierons l'Interactions API pour les nouveaux exercices portant sur les conversations, les outils et les agents.
+
+Il reste utile de connaître les autres interfaces afin de comprendre les exemples existants et les différences entre les API.
+
+---
+
+<PracticalWork title="Travail pratique 4 — Interactions API, réutilisabilité et benchmarking">
+Cet atelier vous guide pas-à-pas pour maîtriser l'Interactions API et concevoir une fonction modulaire réutilisable dans vos applications Express.
+
+#### Étape 1 : Création de la fonction utilitaire réutilisable
+Dans `src/services/gemini.service.ts`, implémentez une fonction TypeScript typée :
+```typescript
+interface InteractionResult {
+  id: string;
+  text: string;
+  model: string;
+  rawUsage?: any;
+}
+
+export async function askGemini(
+  prompt: string,
+  modelName: string = "gemini-2.5-flash"
+): Promise<InteractionResult> {
+  const interaction = await ai.interactions.create({
+    model: modelName,
+    input: prompt
+  });
+
+  return {
+    id: interaction.id,
+    text: interaction.output_text,
+    model: modelName,
+    rawUsage: interaction.usage
+  };
+}
+```
+
+#### Étape 2 : Exploration et comparaison des métadonnées
+1. **Extraction de l'interaction** : Exécutez la fonction avec un prompt d'analyse technique et affichez dans la console Node.js :
+   - L'identifiant unique `interaction.id` (indispensable pour les conversations au Chapitre 5).
+   - Le texte retourné `interaction.output_text`.
+   - La structure complète de l'objet pour observer les `steps` générées.
+2. **Comparaison de modèles** :
+   - Exécutez la même requête sur `gemini-2.5-flash` puis sur un modèle plus spécialisé ou plus léger.
+   - Comparez la latence d'exécution (mesurée avec `console.time()`) et la richesse rédactionnelle du résultat.
+3. **Robustesse aux variations** :
+   - Testez des prompts courts, des prompts longs et un prompt contenant du balisage Markdown.
+   - Vérifiez que la propriété `output_text` conserve correctement le formatage attendu.
+</PracticalWork>
+

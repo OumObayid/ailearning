@@ -1,0 +1,63 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 12 — Détection, mesure et réduction active des hallucinations
+
+### 1. Mécanismes d'apparition des hallucinations
+
+Une **hallucination** se produit lorsqu'un modèle de langage émet une affirmation factuellement fausse, inexacte ou totalement inventée en la présentant avec un ton d'assurance absolue.
+
+Pourquoi les modèles hallucinent-ils ?
+- **Nature probabiliste de l'échantillonnage de tokens** : Le modèle optimise la vraisemblance syntaxique et la plausibilité statistique, et non la vérification empirique de la réalité.
+- **Lacune d'information dans le contexte fourni** : Lorsqu'un fait précis est absent du prompt ou de la base RAG, le modèle comble le vide en extrapolant à partir de motifs mémorisés lors de son pré-entraînement.
+- **Biais d'obséquiosité (*Sycophancy*)** : Les modèles sont entraînés par renforcement humain (RLHF) à se montrer coopératifs ; ils préfèrent souvent inventer une réponse plausible plutôt que de décevoir l'utilisateur en déclarant *« Je ne sais pas »*.
+
+---
+
+### 2. Stratégies d'ancrage documentaire strict (Grounding)
+
+Pour éradiquer les hallucinations dans les applications professionnelles :
+
+#### 1. Obliger à la citation directe des sources
+Exigez du modèle qu'il cite le titre exact du document, la section ou le paragraphe source pour chaque affirmation énoncée. S'il est incapable de citer un fragment textuel extrait de la base, il lui est interdit d'énoncer le fait.
+
+#### 2. Température basse pour le RAG factuel
+Pour toute tâche de synthèse documentaire ou d'extraction de données, fixez impérativement la température à une valeur proche de zéro (`temperature: 0.1` ou `0.0`). Une température basse rétrécit la distribution de probabilité sur les tokens les plus sûrs et les plus fidèles aux documents injectés.
+
+---
+
+### 3. Formuler des consignes d'aveu d'incertitude
+
+La meilleure parade contre l'hallucination consiste à donner au modèle la permission explicite et prioritaire d'**avouer son ignorance** :
+
+<CodeBlock
+  language="text"
+  title="Prompt d'ancrage strict et aveu d'incertitude"
+  code={`RÈGLES D'OR DE COMPORTEMENT :
+1. Réponds EXCLUSIVEMENT en exploitant les informations présentes dans le CONTEXTE fourni ci-dessous.
+2. Si une information nécessaire pour répondre à la question posée ne figure pas explicitement dans le CONTEXTE, réponds STRICTEMENT :
+   "D'après les documents officiels disponibles, je ne dispose pas de cette information."
+3. Tu ne dois sous aucun prétexte inventer, supposer, extrapoler ou tenter de deviner un chiffre, une date, une procédure ou un nom propre.
+4. L'absence d'hallucination a une priorité absolue sur la complétude de la réponse.`}
+/>
+
+<HallucinationDetectorLab />
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Quelle est la consigne la plus efficace pour empêcher un modèle de langage d'inventer une date ou une clause contractuelle absente de votre documentation RAG ?"
+  options={[
+    "Lui interdire d'utiliser le mot 'peut-être'",
+    "L'instruire explicitement d'avouer son incertitude dès qu'une information n'est pas vérifiable dans le contexte source et baisser la température à 0.1",
+    "Augmenter la température à 1.0 pour stimuler l'imagination",
+    "Désactiver le système de cache"
+  ]}
+  correctIndex={1}
+  explanation="Donner formellement au modèle l'autorisation d'admettre son absence d'information, combiné à une température basse et à une exigence d'ancrage strict, élimine l'incitation à fabuler."
+/>
+

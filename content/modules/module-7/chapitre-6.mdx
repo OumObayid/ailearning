@@ -1,0 +1,100 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 6 — Validation stricte des entrées et des sorties structurées avec Zod
+
+### 1. Assainissement des prompts et entrées utilisateur avec Zod
+
+Toute requête HTTP destinée à déclencher un traitement IA doit faire l'objet d'un filtrage en amont. Ne laissez jamais un client transmettre des chaînes vides, des textes gigantesques de 100 000 caractères ou des types corrompus.
+
+<CodeBlock
+  language="typescript"
+  title="src/schemas/promptInput.schema.ts — Validation du prompt"
+  code={`import { z } from 'zod';
+
+export const userPromptSchema = z.object({
+  prompt: z
+    .string()
+    .trim()
+    .min(2, "Le message doit contenir au moins 2 caractères.")
+    .max(4000, "Le message ne peut excéder 4 000 caractères pour limiter les coûts de contexte.")
+    // Neutralisation des balises susceptibles de fausser les délimiteurs
+    .refine((val) => !val.includes('</user_query>'), {
+      message: "Caractères de délimitation non autorisés dans le texte.",
+    }),
+  temperature: z.number().min(0).max(1).optional().default(0.2),
+});
+
+export type UserPromptInput = z.infer<typeof userPromptSchema>;`}
+/>
+
+---
+
+### 2. Contrôle de conformité des sorties JSON générées par l'IA
+
+Même lorsque vous configurez Gemini en mode `responseMimeType: "application/json"`, le modèle peut produire une structure syntaxiquement valide mais sémantiquement aberrante :
+- Un prix négatif (`price: -50`).
+- Un tableau d'identifiants vide.
+- Un statut imprévu ne correspondant pas à l'enum de votre base de données.
+
+<CodeBlock
+  language="typescript"
+  title="src/schemas/aiProductExtraction.schema.ts — Validation défensive des sorties"
+  code={`import { z } from 'zod';
+
+// Schéma du contrat attendu pour persistance en base MySQL
+export const productExtractionSchema = z.object({
+  productName: z.string().min(1, "Le nom du produit est obligatoire."),
+  price: z.number().positive("Le montant doit être un nombre strictement positif."),
+  currency: z.enum(['EUR', 'USD', 'GBP']),
+  inStock: z.boolean(),
+  tags: z.array(z.string().min(1)).max(10),
+});
+
+export function parseAndValidateAIResponse(rawJsonText: string) {
+  // 1. Parsing JSON sécurisé
+  let rawParsed: unknown;
+  try {
+    rawParsed = JSON.parse(rawJsonText);
+  } catch (err) {
+    throw new Error("L'IA n'a pas produit un format JSON valide.");
+  }
+
+  // 2. Validation Zod du schéma
+  const validation = productExtractionSchema.safeParse(rawParsed);
+
+  if (!validation.success) {
+    console.error("Sortie IA rejetée :", validation.error.flatten());
+    throw new Error("La structure des données émises par l'IA est non conforme au contrat.");
+  }
+
+  return validation.data; // Données garanties saines pour insertion SQL
+}`}
+/>
+
+---
+
+### 3. Prévention des valeurs aberrantes en base de données
+
+Pourquoi ce double filtrage (Zod + types MySQL) est-il indispensable ?
+- **Préservation de l'intégrité transactionnelle** : Éviter d'insérer des données corrompues qui feront planter vos calculs de comptabilité en fin de mois.
+- **Résistance aux pannes silencieuses** : Si l'IA hallucine ou inverse deux clés, l'erreur est levée immédiatement à la frontière applicative plutôt que des heures plus tard lors d'un batch de facturation.
+
+---
+
+### 4. Validation des acquis
+
+<QuickQuiz
+  question="Pourquoi devez-vous valider avec Zod la réponse JSON produite par un modèle de langage avant de l'insérer dans votre base MySQL ?"
+  options={[
+    "Parce que les serveurs MySQL n'acceptent que les données validées par Zod",
+    "Car même avec une sortie JSON, le modèle peut produire des valeurs aberrantes (prix négatifs, champs obligatoires omis, types erronés)",
+    "Pour accélérer la vitesse de la carte réseau",
+    "Parce que cela permet de contourner les clés étrangères"
+  ]}
+  correctIndex={1}
+  explanation="Les modèles LLM ne garantissent pas mathématiquement le respect des contraintes métier. La validation Zod permet d'intercepter immédiatement toute anomalie avant qu'elle ne corrompe la base de données."
+/>
+

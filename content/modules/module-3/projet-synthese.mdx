@@ -1,0 +1,94 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Projet Pratique Final — API Professionnelle d'Assistant IA
+
+### 1. Présentation du projet de synthèse
+
+Le projet pratique du **Module 3** consiste à concevoir, développer, sécuriser et tester une **API RESTful professionnelle complète** en **Node.js, Express et TypeScript**.
+
+Cette API servira de passerelle hautement sécurisée pour alimenter des applications clientes (React/Next.js) en orchestrant les modèles **Google Gemini**, en assurant la persistance des conversations dans **MySQL**, et en protégeant les ressources contre les abus.
+
+---
+
+### 2. Spécification détaillée des endpoints de l'API
+
+L'API doit exposer 8 endpoints rigoureusement typés et documentés :
+
+#### 1. Santé et diagnostic
+- `GET /api/health` : Vérifie que le serveur et la connexion au pool MySQL sont parfaitement opérationnels.
+
+#### 2. Gestion des sessions de conversation
+- `POST /api/conversations` : Crée une nouvelle conversation pour l'utilisateur authentifié.
+- `GET /api/conversations` : Liste toutes les conversations appartenant à l'utilisateur.
+- `GET /api/conversations/:id` : Récupère les métadonnées d'une conversation spécifique.
+- `DELETE /api/conversations/:id` : Supprime une conversation et ses messages associés en cascade.
+
+#### 3. Gestion des messages
+- `GET /api/conversations/:id/messages` : Récupère l'historique ordonné chronologiquement des messages d'une session.
+- `POST /api/conversations/:id/messages` : Envoie un message utilisateur, déclenche la réponse de Gemini et persiste les deux messages dans MySQL.
+
+#### 4. Traitements d'IA spécialisés
+- `POST /api/ai/generate` : Génération textuelle ponctuelle avec validation Zod.
+- `POST /api/ai/analyze` : Analyse et synthèse structurée de données textuelles ou chiffrées.
+
+---
+
+### 3. Architecture logicielle complète
+
+<ArchitectureDiagram
+  title="Organisation architecturale globale de l'API professionnelle"
+  diagram={`+-------------------------------------------------------------------------------+
+|                             CLIENTS FRONTEND REACT                            |
++-------------------------------------------------------------------------------+
+                                        |
+                                        v  (Requêtes HTTP sécurisées avec Token)
++-------------------------------------------------------------------------------+
+|                            API REST NODE.JS / EXPRESS                         |
+|                                                                               |
+|  [ Middlewares globaux ]  --> Helmet, CORS restreint, Rate Limiter (60/15min) |
+|                                                                               |
+|  [ Routes ]              --> /api/health, /api/conversations, /api/ai         |
+|                                                                               |
+|  [ Middlewares route ]   --> Authentification JWT & Validation Zod            |
+|                                                                               |
+|  [ Contrôleurs ]         --> ai.controller, conversation.controller           |
+|                                                                               |
+|  [ Services métier ]     --> gemini.service, conversation.service             |
+|                                                                               |
+|  [ Middleware Erreurs ]  --> error.middleware (Attrape toutes les exceptions)  |
++-------------------------------------------------------------------------------+
+                 |                                              |
+                 v  (Pool mysql2/promise)                       v  (SDK @google/genai)
++--------------------------------+             +--------------------------------+
+|       BASE DE DONNÉES MYSQL    |             |      CLOUD GOOGLE GEMINI       |
+|  Tables conversations/messages |             |    Modèle gemini-2.5-flash     |
++--------------------------------+             +--------------------------------+`}
+/>
+
+---
+
+### 4. Guide d'implémentation des 8 exercices pratiques
+
+1. **Exercice 1 — Validation Zod et configuration** : Implémenter le fichier `env.ts` avec Zod garantissant la présence de toutes les clés d'environnement dès le démarrage.
+2. **Exercice 2 — Endpoint de génération** : Construire la route `POST /api/ai/generate` connectée à l'Interactions API de Google Gemini.
+3. **Exercice 3 — Création du schéma relationnel** : Créer le script SQL créant la base `backend_ia` et les tables `conversations` et `messages` avec clés étrangères.
+4. **Exercice 4 — Pool de connexions** : Mettre en place `mysql2/promise` avec vérification de connectivité par ping au lancement.
+5. **Exercice 5 — Persistance conversationnelle** : Sauvegarder automatiquement chaque échange utilisateur et réponse de l'assistant via des requêtes SQL préparées.
+6. **Exercice 6 — Sécurité et limitation de débit** : Déployer Helmet, CORS et `express-rate-limit` pour plafonner les requêtes par IP.
+7. **Exercice 7 — Gestionnaire d'erreurs centralisé** : Traiter toutes les erreurs avec des codes HTTP appropriés (400, 401, 403, 404, 429, 500) sans jamais exposer de données sensibles.
+8. **Exercice 8 — Suite de tests unitaires** : Rédiger avec Vitest et Supertest au minimum 6 tests automatisés couvrant la santé, la validation Zod et les contrôleurs mockés.
+
+---
+
+### 5. Grille de conformité et validation finale
+
+Le projet final est validé lorsque :
+- Le serveur démarre sans warning et valide la configuration d'environnement.
+- La base MySQL est accessible et les requêtes utilisent des paramètres liés `?`.
+- Un utilisateur ne peut en aucun cas accéder aux conversations d'un tiers.
+- Les requêtes malformées sont rejetées avec un code HTTP 400 sans consommer de tokens Gemini.
+- Tous les tests automatisés s'exécutent avec succès (`npm test`).
+- La compilation TypeScript (`npm run build`) s'achève avec 0 erreur.
+

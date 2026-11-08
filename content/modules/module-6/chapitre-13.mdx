@@ -1,0 +1,165 @@
+import { Callout } from '@/components/courses/Callout';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 13 — Interruptions interactives, validation humaine et intégration Gemini
+
+### 1. La primitive interrupt() de LangGraph.js
+
+Dans les versions récentes de LangGraph.js, la gestion de la validation humaine (**Human-in-the-Loop**) s'opère élégamment via la primitive native **`interrupt()`** :
+- Lorsqu'un nœud atteint une décision critique, il appelle `interrupt({ action, data })`.
+- LangGraph **suspend immédiatement le graphe**, sauvegarde le checkpoint exact, et sort proprement de la fonction `invoke()`.
+- Le serveur peut alors renvoyer une notification à l'administrateur ou afficher une boîte de dialogue modale dans l'application React.
+
+---
+
+### 2. Reprise du graphe avec l'objet Command
+
+Dès que l'opérateur humain valide ou refuse l'opération, l'application réinvoque le graphe sur le même `thread_id` en transmettant un objet **`Command({ resume: true })`** :
+
+<CodeBlock
+  language="typescript"
+  title="src/graph/humanApprovalFlow.ts — Interruption et reprise"
+  code={`import {
+  StateGraph,
+  Annotation,
+  START,
+  END,
+  interrupt,
+  Command,
+  MemorySaver,
+} from '@langchain/langgraph';
+
+const OrderState = Annotation.Root({
+  orderId: Annotation<number>(),
+  amount: Annotation<number>(),
+  approved: Annotation<boolean | undefined>(),
+  status: Annotation<string>(),
+});
+
+export const approvalGraph = new StateGraph(OrderState)
+  .addNode('reviewStep', async (state) => {
+    // Si l'opération dépasse 100 €, une validation humaine est requise
+    if (state.amount > 100) {
+      console.log(\`[HITL] Interruption pour validation de la commande #\${state.orderId}\`);
+      
+      // Suspend l'exécution et attend la valeur injectée lors de la reprise
+      const humanDecision = interrupt({
+        prompt: \`Confirmez-vous le remboursement de \${state.amount} € ?\`,
+        orderId: state.orderId,
+      });
+
+      return { approved: Boolean(humanDecision) };
+    }
+
+    return { approved: true };
+  })
+  .addNode('executeStep', async (state) => {
+    if (!state.approved) {
+      return { status: "Remboursement refusé par le responsable." };
+    }
+    return { status: \`Remboursement de \${state.amount} € exécuté avec succès.\` };
+  })
+  .addEdge(START, 'reviewStep')
+  .addEdge('reviewStep', 'executeStep')
+  .addEdge('executeStep', END)
+  .compile({ checkpointer: new MemorySaver() });
+
+// --- Exemple d'utilisation séquentielle ---
+async function runApprovalDemo() {
+  const config = { configurable: { thread_id: 'order_approval_101' } };
+
+  // 1. Première exécution : le graphe s'interrompt
+  console.log("1. Lancement du flux...");
+  const firstResult = await approvalGraph.invoke(
+    { orderId: 8492, amount: 250 },
+    config
+  );
+  console.log("État après suspension :", firstResult);
+
+  // 2. Reprise après clic de validation dans l'interface
+  console.log("2. Reprise avec Command(resume: true)...");
+  const finalResult = await approvalGraph.invoke(
+    new Command({ resume: true }),
+    config
+  );
+  console.log("Résultat final :", finalResult.status);
+}
+
+runApprovalDemo();`}
+/>
+
+<Callout type="danger" title="Idempotence impérative autour de interrupt()">
+Lorsqu&apos;un graphe reprend après une interruption, LangGraph réexécute le nœud concerné depuis son début. <strong>Ne réalisez aucun effet de bord non idempotent (comme envoyer un email ou débiter une carte bancaire) avant l&apos;appel à interrupt()</strong>.
+</Callout>
+
+---
+
+### Atelier interactif : Simulation du cycle LangGraph et reprise Human-in-the-Loop
+
+Manipulez ci-dessous un graphe d'agent autonome avec suspension conditionnelle et validation humaine en temps réel :
+
+<LangGraphInteractiveLab />
+
+---
+
+### 3. Intégration de Google Gemini au cœur des nœuds LangGraph
+
+Nous pouvons maintenant relier la puissance du SDK officiel **`@google/genai`** à la structure du graphe :
+
+<CodeBlock
+  language="typescript"
+  title="src/graph/geminiNode.ts — Nœud d'analyse propulsé par Gemini"
+  code={`import { ai, GEMINI_MODEL } from '../config/gemini';
+
+export async function geminiDecisionNode(state: { userGoal: string }) {
+  const prompt = \`Tu es un superviseur d'agents. Analyse cette demande et réponds sous forme d'une courte phrase d'orientation : "\${state.userGoal}"\`;
+
+  const interaction = await ai.interactions.create({
+    model: GEMINI_MODEL,
+    input: prompt,
+  });
+
+  const textOutput = interaction.outputs?.find((o) => o.type === 'text');
+
+  return {
+    analysisSummary: textOutput?.text || "Aucune analyse produite.",
+  };
+}`}
+/>
+
+---
+
+### 4. Orchestration multi-agents avec sous-graphes (Subgraphs)
+
+Dans une architecture modulaire, chaque agent spécialisé peut être modélisé comme un graphe indépendant (*subgraph*) compilé séparément, puis inséré en tant que simple nœud dans le graphe coordinateur principal :
+
+<ArchitectureDiagram
+  title="Composition hiérarchique avec Sous-Graphes LangGraph"
+  diagram={`                  [ GRAPHE COORDINATEUR PRINCIPAL ]
+                                 |
+         +-----------------------+-----------------------+
+         |                                               |
+         v                                               v
+[ SOUS-GRAPHE DOCUMENTAIRE ]                   [ SOUS-GRAPHE FACTURATION ]
+- Nœud Embedding Gemini                        - Nœud Validation Zod
+- Nœud Qdrant Vector Search                    - Nœud Requête MySQL
+- Nœud Synthèse de sources                     - Nœud Interruption HITL`}
+/>
+
+---
+
+### 5. Validation des acquis
+
+<QuickQuiz
+  question="Que fait la primitive interrupt() de LangGraph.js lorsqu'elle est exécutée au sein d'un nœud ?"
+  options={[
+    "Elle force l'arrêt complet du serveur avec un code d'erreur fatal",
+    "Elle suspend l'exécution, enregistre le checkpoint et permet la reprise ultérieure via un objet Command({ resume: ... })",
+    "Elle supprime la base de données pour des raisons de sécurité",
+    "Elle convertit le modèle Gemini en mode local"
+  ]}
+  correctIndex={1}
+  explanation="interrupt() est la primitive officielle de suspension contrôlée de LangGraph. Elle fige l'état dans le checkpointer et attend qu'une commande de reprise lui transmette la décision de l'opérateur humain."
+/>

@@ -1,0 +1,133 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+# Chapitre 3 — Transformer un texte en vecteur numérique avec Gemini
+
+### 1. Qu'est-ce qu'un embedding sémantique ?
+
+Un ordinateur ne sait pas comparer intuitivement deux phrases formulées avec des mots différents.
+
+Un modèle d'**embedding** (tel que `text-embedding-004` de Google) analyse un texte et le projette sous la forme d'un point géométrique dans un espace à plusieurs centaines de dimensions. Ce point est représenté par un tableau ordonné de nombres réels :
+
+```typescript
+// Exemple de vecteur d'embedding (généralement 768 dimensions pour Gemini)
+[0.0142, -0.0418, 0.0891, 0.0035, -0.0512, 0.1204, ... 768 valeurs]
+```
+
+Dans cet espace sémantique :
+- Les phrases traitant du même concept se retrouvent **très proches géométriquement**, même si elles n'ont aucun mot en commun.
+- Deux phrases aux vocabulaires identiques mais au sens opposé sont projetées dans des directions différentes.
+
+#### Exemple concret :
+- Phrase A : *« Comment configurer une API avec Node.js ? »*
+- Phrase B : *« Mettre en place un serveur backend JavaScript. »*
+- Phrase C : *« Recette traditionnelle de la tarte aux pommes. »*
+
+Les vecteurs de A et B auront une distance infime, tandis que le vecteur de C sera très éloigné.
+
+---
+
+### 2. Mesurer la proximité avec la similarité cosinus
+
+Pour évaluer à quel point deux vecteurs A et B pointent dans la même direction, on calcule le cosinus de l'angle qui les sépare :
+
+```text
+Similarité Cosinus (A, B) = (A · B) / (||A|| × ||B||)
+```
+
+Où le produit scalaire divisé par le produit des normes euclidiennes mesure l'alignement géométrique :
+- Un score de **1.0** indique deux vecteurs colinéaires de sens identique (proximité sémantique maximale).
+- Un score proche de **0.0** indique deux vecteurs orthogonaux (sujets sans rapport).
+- Un score négatif indique des sens opposés.
+
+Dans les systèmes RAG d'entreprise, on retient généralement les fragments dont le score de similarité cosinus est supérieur à un seuil calibré (ex: score supérieur ou égal à 0.70).
+
+---
+
+### 3. Générer des embeddings avec `@google/genai`
+
+Avec le SDK officiel Google Gen AI, nous utilisons la méthode `embedContent` :
+
+```typescript
+// src/services/embedding.service.ts
+import { GoogleGenAI } from '@google/genai';
+import { env } from '../config/env.js';
+
+const ai = new GoogleGenAI({
+  apiKey: env.API_KEY_GEMINI,
+});
+
+// Modèle d'embeddings officiel Google
+export const EMBEDDING_MODEL = 'text-embedding-004';
+export const EMBEDDING_DIMENSION = 768;
+
+export async function generateEmbedding(text: string): Promise<number[]> {
+  const cleanInput = text.trim();
+  if (!cleanInput) {
+    throw new Error('Le texte à vectoriser ne peut pas être vide.');
+  }
+
+  const result = await ai.models.embedContent({
+    model: EMBEDDING_MODEL,
+    contents: cleanInput,
+  });
+
+  const vector = result.embeddings?.[0]?.values;
+
+  if (!vector || vector.length === 0) {
+    throw new Error("Échec de la génération d'embedding par Gemini.");
+  }
+
+  return vector;
+}
+```
+
+<Callout type="warning" title="Règle d'or : Un seul et même modèle d'embedding">
+Vous devez **obligatoirement** utiliser le même modèle d'embedding pour indexer vos documents et pour vectoriser les questions de vos utilisateurs. Si vous indexez avec un modèle à 768 dimensions et interrogez avec un modèle à 1536 dimensions, la recherche vectorielle sera mathématiquement impossible.
+</Callout>
+
+---
+
+<PracticalWork
+  title="Travail Pratique — Service de vectorisation et calcul de similarité cosinus"
+  objective="Créer le service embedding.service.ts avec le modèle text-embedding-004 (dimension 768) et calculer mathématiquement la similarité sémantique entre deux textes."
+  duration="40 minutes"
+  steps={[
+    "Installer le SDK officiel : `npm install @google/genai dotenv`.",
+    "Créer `src/services/embedding.service.ts` exportant la fonction asynchrone `generateEmbedding(text: string): Promise<number[]>` ciblant le modèle `text-embedding-004`.",
+    "Vérifier la validité mathématique : rejeter les chaînes vides avec une exception typée et s'assurer que le tableau retourné contient exactement 768 nombres à virgule flottante.",
+    "Développer la fonction mathématique pure `cosineSimilarity(vecA: number[], vecB: number[]): number` calculant le produit scalaire divisé par le produit des normes euclidiennes.",
+    "Rédiger un script de test `src/scripts/test-similarity.ts` comparant trois phrases : P1 (*'Comment réinitialiser mon mot de passe oublié ?'*), P2 (*'Procédure pour changer mon mot de passe de compte'*), et P3 (*'Recette de la tarte aux pommes maison'*).",
+    "Exécuter le script et vérifier que `similarity(P1, P2) >= 0.82` tandis que `similarity(P1, P3) < 0.45`."
+  ]}
+  validationCriteria={[
+    "Le vecteur produit possède scrupuleusement une dimension de 768 nombres.",
+    "La similarité cosinus entre phrases sémantiquement proches dépasse 0.80.",
+    "Les phrases sans rapport obtiennent un score de similarité bas démontrant la précision de l'espace vectoriel."
+  ]}
+>
+
+#### Calculateur de similarité cosinus TypeScript :
+```typescript
+export function cosineSimilarity(vecA: number[], vecB: number[]): number {
+  if (vecA.length !== vecB.length) {
+    throw new Error('Les vecteurs doivent avoir la même dimension.');
+  }
+
+  let dotProduct = 0;
+  let normA = 0;
+  let normB = 0;
+
+  for (let i = 0; i < vecA.length; i++) {
+    dotProduct += vecA[i] * vecB[i];
+    normA += vecA[i] * vecA[i];
+    normB += vecB[i] * vecB[i];
+  }
+
+  if (normA === 0 || normB === 0) return 0;
+  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+```
+</PracticalWork>

@@ -1,0 +1,274 @@
+import { Callout } from '@/components/courses/Callout';
+import { PracticalWork } from '@/components/courses/PracticalWork';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { ArchitectureDiagram } from '@/components/courses/ArchitectureDiagram';
+
+# Chapitre 3 — Développer un Chat IA avec React
+
+### 1. Qu'est-ce qu'une interface conversationnelle ?
+
+Une interface conversationnelle permet à l'utilisateur d'entretenir un dialogue interactif multi-tours avec un assistant IA. Elle se distingue fondamentalement d'un formulaire de génération ponctuelle :
+
+<ArchitectureDiagram
+  title="Formulaire ponctuel versus Interface conversationnelle multi-tours"
+  diagram={`A. FORMULAIRE CLASSIQUE (One-shot) :
+[ Prompt unique ] ---> [ Appel Backend ] ---> [ Résultat final ]
+
+B. INTERFACE CONVERSATIONNELLE (Multi-turn) :
+[ Message Utilisateur 1 ] ---> [ Assistant IA ] ---> [ Réponse 1 ]
+                                                          |
+[ Message Utilisateur 2 (avec contexte 1) ] ------------->+
+                                                          |
+                                                          v
+                                                  [ Réponse 2 contextualisée ]`}
+/>
+
+---
+
+### 2. Le modèle de données d'un message
+
+Dans une application conversationnelle, chaque message doit être représenté par un objet contenant son identifiant unique, son auteur, son contenu textuel et son horodatage :
+
+```typescript
+// src/types/chat.types.ts
+export type MessageRole = 'user' | 'assistant' | 'system';
+
+export interface ChatMessage {
+  id: string;
+  role: MessageRole;
+  content: string;
+  createdAt: Date;
+  status?: 'sending' | 'sent' | 'error';
+}
+
+export interface ConversationSession {
+  id: string;
+  title: string;
+  createdAt: Date;
+  updatedAt: Date;
+  messages: ChatMessage[];
+}
+```
+
+---
+
+### 3. Créer un composant Message modulaire
+
+Le composant `Message` affiche distinctement les bulles selon qu'elles proviennent de l'utilisateur ou du modèle :
+
+```tsx
+// src/components/Chat/Message.tsx
+import React from 'react';
+import type { ChatMessage } from '@/types/chat.types';
+
+interface MessageProps {
+  message: ChatMessage;
+}
+
+export const Message: React.FC<MessageProps> = ({ message }) => {
+  const isUser = message.role === 'user';
+
+  return (
+    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} my-2`}>
+      <div
+        className={`max-w-[80%] rounded-2xl p-4 text-sm leading-relaxed ${
+          isUser
+            ? 'bg-indigo-600 text-white rounded-br-none shadow-sm'
+            : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-xs'
+        }`}
+      >
+        <div className="flex items-center justify-between mb-1.5 gap-4">
+          <span className={`text-sm font-bold uppercase tracking-wider ${isUser ? 'text-indigo-200' : 'text-slate-400'}`}>
+            {isUser ? 'Vous' : 'Assistant Gemini'}
+          </span>
+          <span className={`text-sm ${isUser ? 'text-indigo-200' : 'text-slate-400'}`}>
+            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        </div>
+        <p className="whitespace-pre-wrap">{message.content}</p>
+      </div>
+    </div>
+  );
+};
+```
+
+---
+
+### 4. Gérer l'historique et l'envoi d'un message
+
+Dans la fenêtre de discussion, les messages de l'utilisateur sont ajoutés immédiatement (mise à jour optimiste), puis l'assistant est mis en attente :
+
+```tsx
+// src/components/Chat/ChatWindow.tsx
+import React, { useState } from 'react';
+import { Message } from './Message';
+import type { ChatMessage } from '@/types/chat.types';
+
+export const ChatWindow: React.FC = () => {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isTyping) return;
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: 'user',
+      content: input.trim(),
+      createdAt: new Date(),
+    };
+
+    // 1. Ajout optimiste du message utilisateur
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setIsTyping(true);
+
+    try {
+      // 2. Appel du backend en transmettant l'historique
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage.content }),
+      });
+
+      const data = await res.json();
+
+      // 3. Ajout de la réponse de l'assistant
+      const assistantMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: data.reply,
+        createdAt: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch {
+      // Gestion de l'échec
+      const errorMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: "Désolé, je n'ai pas pu obtenir de réponse.",
+        createdAt: new Date(),
+        status: 'error',
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-[550px] rounded-2xl border border-slate-200 bg-slate-50/50 overflow-hidden">
+      {/* Liste des messages avec défilement automatique */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        {messages.map((msg) => (
+          <Message key={msg.id} message={msg} />
+        ))}
+        {isTyping && (
+          <div className="flex justify-start my-2">
+            <div className="rounded-2xl bg-white border border-slate-200 p-3 text-sm text-slate-500 italic">
+              L&apos;assistant rédige sa réponse...
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Formulaire de saisie */}
+      <form onSubmit={handleSend} className="p-3 border-t border-slate-200 bg-white flex gap-2">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Posez votre question à Gemini..."
+          className="flex-1 rounded-xl border border-slate-200 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={!input.trim() || isTyping}
+          className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+        >
+          Envoyer
+        </button>
+      </form>
+    </div>
+  );
+};
+```
+
+---
+
+### 5. Distinction essentielle des identifiants
+
+Dans une application conversationnelle professionnelle, il est crucial de ne pas mélanger trois notions distinctes :
+
+| Identifiant | Propriétaire | Description |
+| :--- | :--- | :--- |
+| `conversationId` | **Votre Application** | Identifie la session d'échange dans votre base de données applicative (ex. PostgreSQL). |
+| `interactionId` | **Google Gemini** | Identifiant de contexte renvoyé par l'Interactions API (`previous_interaction_id`). |
+| `messageId` | **Frontend / React** | Clé unique (`crypto.randomUUID()`) attribuée à chaque bulle pour le rendu de liste dans le DOM. |
+
+<Callout type="note" title="Bonne pratique d'isolation">
+Le frontend ne doit manipuler que le `conversationId`. C'est le serveur backend qui effectue la correspondance avec les identifiants techniques de Google Gemini.
+</Callout>
+
+---
+
+<PracticalWork
+  title="Travail Pratique 3 — Interface de Chat complète avec mémoire"
+  objective="Développer un composant de dialogue conversationnel avec historique, bulles différenciées et défilement automatique."
+  duration="50 minutes"
+  steps={[
+    "Créer le fichier de types `src/types/chat.types.ts` avec les interfaces `ChatMessage` (`id`, `role: 'user' | 'assistant'`, `content`, `timestamp`) et `ConversationState` (`conversationId: string | null`, `messages: ChatMessage[]`, `isGenerating: boolean`).",
+    "Développer le composant de bulle de message `MessageItem.tsx` : bulles utilisateur alignées à droite avec fond indigo, bulles IA alignées à gauche avec fond gris clair et badge 'Gemini'.",
+    "Implémenter l'envoi de message au clavier : soumission automatique sur `Entrée` (sauf si `Shift + Entrée` pour insérer un saut de ligne).",
+    "Ajouter le défilement automatique vers le bas via un `useRef<HTMLDivElement>` : exécuter `messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })` à chaque nouveau message ajouté.",
+    "Intégrer le bouton 'Nouvelle conversation' qui réinitialise `conversationId = null`, vide la liste des messages et replace le focus sur le champ de saisie.",
+    "Relier l'interface aux endpoints de session créés au Chapitre 5 du Module 1 (`POST /api/conversations` pour initialiser puis `POST /api/conversations/:id/messages` pour continuer la discussion)."
+  ]}
+  validationCriteria={[
+    "Le message de l'utilisateur apparaît immédiatement dans la liste avant même la réponse du serveur (mise à jour optimiste).",
+    "L'état 'L'assistant est en train d'écrire...' s'affiche avec trois points animés pendant l'attente du backend.",
+    "La continuité contextuelle est validée : dire son prénom dans le premier message puis demander 'Quel est mon prénom ?' dans le second."
+  ]}
+>
+
+#### Snippet du scroll automatique en React :
+```tsx
+import React, { useEffect, useRef } from 'react';
+import { ChatMessage } from '@/types/chat.types';
+
+export const MessageList: React.FC<{ messages: ChatMessage[] }> = ({ messages }) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  return (
+    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {messages.map((m) => (
+        <div
+          key={m.id}
+          className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+        >
+          <div
+            className={`max-w-[80%] rounded-2xl p-4 ${
+              m.role === 'user'
+                ? 'bg-indigo-600 text-white rounded-br-none'
+                : 'bg-slate-100 text-slate-900 rounded-bl-none border border-slate-200'
+            }`}
+          >
+            <p className="whitespace-pre-wrap">{m.content}</p>
+            <span className="text-sm opacity-70 mt-1 block text-right">
+              {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          </div>
+        </div>
+      ))}
+      <div ref={bottomRef} />
+    </div>
+  );
+};
+```
+</PracticalWork>
