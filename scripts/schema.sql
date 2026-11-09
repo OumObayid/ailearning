@@ -1,7 +1,7 @@
--- Initialisation de la base de données iaexamen
-CREATE DATABASE IF NOT EXISTS iaexamen CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- Initialisation de la base de données ailearning
+CREATE DATABASE IF NOT EXISTS ailearning CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE iaexamen;
+USE ailearning;
 
 -- Table des utilisateurs (membres)
 CREATE TABLE IF NOT EXISTS users (

@@ -3,9 +3,9 @@ import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'super_secret_jwt_key_iaexamen_2026_antigravity_token_key_change_in_prod'
+  process.env.JWT_SECRET || 'super_secret_jwt_key_ailearning_2026_antigravity_token_key_change_in_prod'
 );
-const COOKIE_NAME = process.env.COOKIE_NAME || 'iaexamen_token';
+const COOKIE_NAME = process.env.COOKIE_NAME || 'ailearning_token';
 
 export interface UserSessionPayload {
   userId: number;
