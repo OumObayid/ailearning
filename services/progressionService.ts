@@ -2,6 +2,7 @@ import { query } from '@/lib/db';
 import type { RowDataPacket } from 'mysql2';
 import { CourseService } from '@/services/courseService';
 import { COURSES_CATALOG } from '@/lib/constants';
+import { ChapterProgressService, type UserChapterProgressSummary } from '@/services/chapterProgressService';
 
 export interface DbUserRow extends RowDataPacket {
   id: number;
@@ -71,6 +72,7 @@ export interface UserProgressionResponse {
   user: ProgressionUserData;
   courses: CourseProgression[];
   exams: ExamItem[];
+  readingProgress?: UserChapterProgressSummary;
 }
 
 export class ProgressionService {
@@ -213,6 +215,14 @@ export class ProgressionService {
       };
     });
 
+    // 3. Progression de lecture des chapitres et historique
+    let readingProgress: UserChapterProgressSummary | undefined;
+    try {
+      readingProgress = await ChapterProgressService.getUserProgress(userId);
+    } catch (err) {
+      console.warn('Erreur récupération progression chapitres dans ProgressionService :', (err as Error).message);
+    }
+
     return {
       user: {
         id: user.id,
@@ -223,6 +233,7 @@ export class ProgressionService {
       },
       courses: coursesProgression,
       exams: sortedExams,
+      readingProgress,
     };
   }
 }

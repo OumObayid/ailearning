@@ -31,12 +31,29 @@ export interface CourseChapterProgress {
   modules: ModuleChapterProgress[];
 }
 
+export interface CompletedChapterItem {
+  id?: number;
+  courseId: string;
+  courseTitle: string;
+  moduleId: string | number;
+  moduleTitle?: string;
+  chapterSlug?: string;
+  chapterId?: string;
+  chapterNumber?: number;
+  chapterTitle: string;
+  completedAt: string;
+  formattedDate?: string;
+  href: string;
+  chapterUrl: string;
+}
+
 export interface UserChapterProgressSummary {
   completedKeys: string[]; // "courseId:moduleId:chapterSlug"
   courses: CourseChapterProgress[];
   totalCompletedAllCourses: number;
   totalChaptersAllCourses: number;
   overallPercent: number;
+  history: CompletedChapterItem[];
 }
 
 let tableInitialized = false;
@@ -78,7 +95,8 @@ export class ChapterProgressService {
       rows = await query<DbChapterProgressRow[]>(
         `SELECT id, user_id, course_id, module_id, chapter_slug, completed_at
          FROM user_chapter_progress
-         WHERE user_id = ?`,
+         WHERE user_id = ?
+         ORDER BY completed_at DESC`,
         [userId]
       );
     } catch (err) {
@@ -168,12 +186,72 @@ export class ChapterProgressService {
       ? Math.round((totalCompletedAllCourses / totalChaptersAllCourses) * 100)
       : 0;
 
+    // Dictionnaire des titres et numéros de cours et chapitres pour enrichir l'historique
+    const chapterTitleCache: Record<string, string> = {};
+    const chapterNumberCache: Record<string, number> = {};
+    const courseTitleCache: Record<string, string> = {};
+
+    COURSES_CATALOG.forEach((course) => {
+      courseTitleCache[course.id] = course.title;
+      const modules = CourseService.getModulesByCourse(course.id);
+      modules.forEach((mod) => {
+        const internalModuleId =
+          course.id === 'prompt-engineering-ide'
+            ? `prompt-engineering-module-${mod.order}`
+            : course.id === 'backend-ia'
+              ? `backend-ia-module-${mod.order}`
+              : course.id === 'debugging'
+                ? `debugging-module-${mod.order}`
+                : `module-${mod.order}`;
+        const chapters = getChaptersForModule(internalModuleId);
+        chapters.forEach((c, idx) => {
+          const chNum = c.number ?? (idx + 1);
+          chapterTitleCache[`${course.id}:module-${mod.order}:${c.slug}`] = c.title;
+          chapterTitleCache[`${course.id}:${internalModuleId}:${c.slug}`] = c.title;
+          chapterNumberCache[`${course.id}:module-${mod.order}:${c.slug}`] = chNum;
+          chapterNumberCache[`${course.id}:${internalModuleId}:${c.slug}`] = chNum;
+        });
+      });
+    });
+
+    const history: CompletedChapterItem[] = rows.map((r) => {
+      const cTitle = courseTitleCache[r.course_id] || r.course_id;
+      const chTitle = chapterTitleCache[`${r.course_id}:${r.module_id}:${r.chapter_slug}`] || r.chapter_slug;
+      
+      // Récupération ou extraction du numéro de chapitre
+      let chNumber = chapterNumberCache[`${r.course_id}:${r.module_id}:${r.chapter_slug}`];
+      if (!chNumber) {
+        const match = r.chapter_slug.match(/\d+/);
+        if (match) {
+          chNumber = parseInt(match[0], 10);
+        }
+      }
+
+      const modOrderMatch = r.module_id.match(/\d+$/);
+      const modNormalized = modOrderMatch ? `module-${modOrderMatch[0]}` : r.module_id;
+      const href = `/cours/${r.course_id}/${modNormalized}/${r.chapter_slug}`;
+
+      return {
+        id: r.id,
+        courseId: r.course_id,
+        courseTitle: cTitle,
+        moduleId: modNormalized,
+        chapterSlug: r.chapter_slug,
+        chapterNumber: chNumber,
+        chapterTitle: chTitle,
+        completedAt: r.completed_at,
+        href,
+        chapterUrl: href,
+      };
+    });
+
     return {
       completedKeys,
       courses: coursesProgress,
       totalCompletedAllCourses,
       totalChaptersAllCourses,
       overallPercent,
+      history,
     };
   }
 
