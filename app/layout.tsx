@@ -7,7 +7,7 @@ import { ExamProgressProvider } from '@/context/ExamProgressContext';
 import { ChapterProgressProvider } from '@/context/ChapterProgressContext';
 import { CourseDisplayProvider } from '@/context/CourseDisplayContext';
 import { ExtensionCleanUp } from '@/components/common/ExtensionCleanUp';
-import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
+import { APP_NAME, APP_DESCRIPTION, SITE_URL } from '@/lib/constants';
 
 const inter = Inter({
   variable: '--font-sans',
@@ -22,6 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: `${APP_NAME} — Plateforme de Formation IA`,
   description: APP_DESCRIPTION,
 };
