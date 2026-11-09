@@ -71,7 +71,7 @@ export const Chapitre4Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 1.1 � Organisation générationnelle de la mémoire V8 : New Space (Nursery) et promotion vers l&apos;Old Space (Tenured).
+            Figure 1.1 — Organisation générationnelle de la mémoire V8 : New Space (Nursery) et promotion vers l&apos;Old Space (Tenured).
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export const Chapitre4Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 1.2 � Fonctionnement du Mark-and-Sweep : parcours depuis les racines (Root Objects) et recyclage des zones orphelines.
+            Figure 1.2 — Fonctionnement du Mark-and-Sweep : parcours depuis les racines (Root Objects) et recyclage des zones orphelines.
           </p>
         </div>
 
@@ -178,7 +178,7 @@ export const Chapitre4Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 1.3 � Profil caractéristique d&apos;une fuite mémoire : ascension persistante malgré les cycles du Garbage Collector.
+            Figure 1.3 — Profil caractéristique d&apos;une fuite mémoire : ascension persistante malgré les cycles du Garbage Collector.
           </p>
         </div>
 
@@ -210,7 +210,7 @@ export const Chapitre4Content: React.FC = () => {
               />
             </div>
             <p className="text-center text-sm font-bold text-slate-800">
-              Figure 1.4 � Analyse de Snapshot dans DevTools : comparaison avant/après requêtes pour isoler les constructeurs orphelins (Delta).
+              Figure 1.4 — Analyse de Snapshot dans DevTools : comparaison avant/après requêtes pour isoler les constructeurs orphelins (Delta).
             </p>
           </div>
         </div>
@@ -228,7 +228,7 @@ export const Chapitre4Content: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="rounded-2xl border-2 border-rose-300 bg-rose-50/50 p-5 space-y-2">
-            <h3 className="text-base font-black text-rose-950">�R Charge brute en mémoire (Saturation)</h3>
+            <h3 className="text-base font-black text-rose-950">❌ Charge brute en mémoire (Saturation)</h3>
             <pre className="font-mono text-xs leading-relaxed text-rose-950 bg-white p-3 rounded-xl border border-rose-200 overflow-x-auto">
 {`// Dangereux : charge 100 Mo d'un coup par requête
 const fs = require("fs");
@@ -242,7 +242,7 @@ app.get("/analyse", (req, res) => {
           </div>
 
           <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 p-5 space-y-2">
-            <h3 className="text-base font-black text-emerald-950">�S& Lecture par flux (Streams &amp; Chunks)</h3>
+            <h3 className="text-base font-black text-emerald-950">✅ Lecture par flux (Streams &amp; Chunks)</h3>
             <pre className="font-mono text-xs leading-relaxed text-emerald-950 bg-white p-3 rounded-xl border border-emerald-200 overflow-x-auto">
 {`// Optimal : lecture par morceaux (64 Ko à la fois)
 const fs = require("fs");
@@ -259,14 +259,14 @@ app.get("/analyse", (req, res) => {
         </div>
       </section>
 
-      {/* 6. Travaux Pratiques & �0valuation Finale */}
+      {/* 6. Travaux Pratiques & Évaluation Finale */}
       <section className="space-y-6">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. �0valuation finale de validation du Module 1
+          6. Évaluation finale de validation du Module 1
         </h2>
 
         <QuickQuiz
-          title="Question 1 � Garbage Collector & Tableaux globaux"
+          title="Question 1 — Garbage Collector & Tableaux globaux"
           question="Le Garbage Collector peut-il libérer la mémoire d'un objet qui est encore stocké dans un tableau déclaré au niveau global ?"
           options={[
             "Oui, automatiquement au bout de 5 secondes",
@@ -278,7 +278,7 @@ app.get("/analyse", (req, res) => {
         />
 
         <QuickQuiz
-          title="Question 2 � Comportement de RSS après nettoyage"
+          title="Question 2 — Comportement de RSS après nettoyage"
           question="Après avoir vidé un tableau avec donnees = [], pourquoi l'indicateur RSS (mémoire physique totale) ne redescend-il pas immédiatement ?"
           options={[
             "Parce que le Garbage Collector a planté",
@@ -290,7 +290,7 @@ app.get("/analyse", (req, res) => {
         />
 
         <QuickQuiz
-          title="Question 3 � Architecture pour 20 documents lourds en parallèle"
+          title="Question 3 — Architecture pour 20 documents lourds en parallèle"
           question="Votre API d'intelligence artificielle reçoit 20 requêtes simultanées contenant chacune un fichier de 50 Mo. Quelle est la bonne pratique de production ?"
           options={[
             "Charger les 20 fichiers intégralement dans des chaînes de caractères en RAM",

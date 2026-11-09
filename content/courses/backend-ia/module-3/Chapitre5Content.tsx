@@ -70,7 +70,7 @@ export const Chapitre5Content: React.FC = () => {
               Pour un texte de 500 mots, Gemini peut mettre 6 à 10 secondes à terminer son raisonnement complet. L&apos;utilisateur fait face à un spinner immobile pendant 10 secondes. La latence perçue est catastrophique.
             </p>
             <div className="mt-3 rounded bg-white p-2.5 font-mono text-[11px] text-slate-700 border border-rose-200">
-              TTFT (Time To First Token) : <strong>8 500 ms</strong> �xܴ
+              TTFT (Time To First Token) : <strong>8 500 ms</strong> 🐌
             </div>
           </div>
 
@@ -83,7 +83,7 @@ export const Chapitre5Content: React.FC = () => {
               Dès que Gemini a produit les 3 premiers mots (au bout de 400 ms), le backend les relaie immédiatement à React qui commence à les afficher à l&apos;écran comme une machine à écrire.
             </p>
             <div className="mt-3 rounded bg-white p-2.5 font-mono text-[11px] text-emerald-800 border border-emerald-200">
-              TTFT (Time To First Token) : <strong>~350 ms</strong> �a�
+              TTFT (Time To First Token) : <strong>~350 ms</strong> ⚠️
             </div>
           </div>
         </div>
@@ -210,7 +210,7 @@ app.post('/api/generate', async (req, res) => {
       if (event.event_type === 'step.delta' && event.delta?.type === 'text') {
         const chunk = event.delta.text;
 
-        // �0mission de l'événement SSE token
+        // Émission de l'événement SSE token
         res.write(
           \`event: token\\n\` +
           \`data: \${JSON.stringify({ text: chunk })}\\n\\n\`
@@ -423,7 +423,7 @@ export const GeminiStreamChat: React.FC = () => {
               <tr>
                 <td className="p-3 font-bold text-rose-700">Appel à res.status(500) après flushHeaders</td>
                 <td className="p-3">Crash du serveur : <em>ERR_HTTP_HEADERS_SENT</em></td>
-                <td className="p-3 font-semibold text-emerald-900">�0mettre un événement SSE d&apos;erreur (<code>event: error</code>)</td>
+                <td className="p-3 font-semibold text-emerald-900">Émettre un événement SSE d&apos;erreur (<code>event: error</code>)</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-rose-700">Ignorer l&apos;abandon du client</td>

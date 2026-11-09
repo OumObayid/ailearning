@@ -35,7 +35,7 @@ export const Chapitre2Content: React.FC = () => {
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Mettre en �uvre un index UNIQUE pour allier accélération de recherche et intégrité de données.</span>
+            <span>Mettre en œuvre un index UNIQUE pour allier accélération de recherche et intégrité de données.</span>
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -185,11 +185,11 @@ CREATE TABLE IF NOT EXISTS analyses_ia (
     UNIQUE KEY uq_user_ref (user_id, reference_analyse)
 ) ENGINE=InnoDB;
 
--- Insertion 1 : utilisateur 12, analyse 'DOC-01' -> SUCC��S
+-- Insertion 1 : utilisateur 12, analyse 'DOC-01' -> SUCCÈS
 INSERT INTO analyses_ia (user_id, reference_analyse, prompt) 
 VALUES (12, 'DOC-01', 'Analyse du contrat de travail');
 
--- Insertion 2 : utilisateur 18, analyse 'DOC-01' -> SUCC��S (combinaison différente)
+-- Insertion 2 : utilisateur 18, analyse 'DOC-01' -> SUCCÈS (combinaison différente)
 INSERT INTO analyses_ia (user_id, reference_analyse, prompt) 
 VALUES (18, 'DOC-01', 'Analyse financière Q3');
 

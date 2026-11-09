@@ -30,7 +30,7 @@ export const Chapitre4Content: React.FC = () => {
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-base font-semibold text-slate-950">
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Comprendre le modèle unidirectionnel (Serveur �  Client) de SSE.</span>
+            <span>Comprendre le modèle unidirectionnel (Serveur → Client) de SSE.</span>
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -65,7 +65,7 @@ export const Chapitre4Content: React.FC = () => {
         </p>
 
         <Callout type="info" title="Pourquoi SSE est parfait pour l'IA générative">
-          Lorsqu&apos;un utilisateur pose une question à un LLM (comme Gemini), l&apos;échange suit un schéma simple : le client envoie un prompt une seule fois, puis le modèle émet une série continue de tokens. �0tablir un WebSocket complet (avec ping/pong, heartbeat et framing binaire) est surdimensionné. SSE résout ce besoin avec une élégance et une légèreté incomparables.
+          Lorsqu&apos;un utilisateur pose une question à un LLM (comme Gemini), l&apos;échange suit un schéma simple : le client envoie un prompt une seule fois, puis le modèle émet une série continue de tokens. Établir un WebSocket complet (avec ping/pong, heartbeat et framing binaire) est surdimensionné. SSE résout ce besoin avec une élégance et une légèreté incomparables.
         </Callout>
 
         <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3">
@@ -112,8 +112,8 @@ data: {"finishReason": "STOP"}`}
             <tbody className="divide-y divide-slate-200 bg-white text-slate-950">
               <tr>
                 <td className="p-3 font-bold">Direction du flux</td>
-                <td className="p-3">Client �  Serveur (requêtes)</td>
-                <td className="p-3 font-black text-indigo-700">Serveur �  Client (unidirectionnel)</td>
+                <td className="p-3">Client → Serveur (requêtes)</td>
+                <td className="p-3 font-black text-indigo-700">Serveur → Client (unidirectionnel)</td>
                 <td className="p-3 font-black text-emerald-700">Bidirectionnel (Full-Duplex)</td>
               </tr>
               <tr>
@@ -320,7 +320,7 @@ export const StreamReader: React.FC = () => {
         objective="Concevoir une route SSE émettant des pourcentages d'avancement d'un job de Machine Learning (0% à 100%) et les afficher dans une jauge React fluide."
         steps={[
           "Créer la route Express GET /api/training-progress avec les headers text/event-stream.",
-          "�0mettre un événement nommé 'epoch' toutes les 800 ms contenant { epoch: i, loss: 0.42 - i * 0.03 }.",
+          "Émettre un événement nommé 'epoch' toutes les 800 ms contenant { epoch: i, loss: 0.42 - i * 0.03 }.",
           "Côté React, écouter avec new EventSource('/api/training-progress') et addEventListener('epoch').",
           "Mettre à jour une barre de progression dynamique et clore la connexion dès réception de 'done'.",
         ]}

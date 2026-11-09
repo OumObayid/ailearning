@@ -77,7 +77,7 @@ export const Chapitre5Content: React.FC = () => {
             />
           </div>
           <p className="mt-3 text-xs sm:text-sm text-center text-slate-700 font-semibold">
-            Figure 5.1 � Configuration flexible d&apos;un Rate Limiter modulaire gérant fenêtres d&apos;accès et compteurs.
+            Figure 5.1 — Configuration flexible d&apos;un Rate Limiter modulaire gérant fenêtres d&apos;accès et compteurs.
           </p>
         </div>
 
@@ -121,7 +121,7 @@ export const Chapitre5Content: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-xl border-2 border-red-200 bg-red-50/50 p-4 text-xs font-mono text-slate-900 space-y-1">
-              <div className="font-bold text-red-900 text-sm mb-2">�R Sans Rate Limiting</div>
+              <div className="font-bold text-red-900 text-sm mb-2">❌ Sans Rate Limiting</div>
               <p>Client -&gt; POST /api/generate (x10)</p>
               <p>Express -&gt; Déclenche 10 appels Gemini parallèles</p>
               <p className="text-red-700 font-bold">-&gt; Saturation CPU &amp; I/O Node.js</p>
@@ -129,7 +129,7 @@ export const Chapitre5Content: React.FC = () => {
               <p className="text-red-700 font-bold">-&gt; Multiplication des coûts de facturation API</p>
             </div>
             <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/50 p-4 text-xs font-mono text-slate-900 space-y-1">
-              <div className="font-bold text-emerald-900 text-sm mb-2">�S& Avec Rate Limiting Redis</div>
+              <div className="font-bold text-emerald-900 text-sm mb-2">✅ Avec Rate Limiting Redis</div>
               <p>Client -&gt; POST /api/generate</p>
               <p>Middleware -&gt; Interroge Redis (Script Lua atomique)</p>
               <p className="text-emerald-800 font-bold">1 à 5 -&gt; Requête autorisée -&gt; Inférence Gemini</p>
@@ -167,8 +167,8 @@ export const Chapitre5Content: React.FC = () => {
         <div className="rounded-xl border border-slate-300 bg-slate-900 text-slate-100 p-4 font-mono text-xs overflow-x-auto leading-relaxed">
           <div className="text-emerald-400 font-bold mb-2">{'// Problème de la mémoire locale multi-processus :'}</div>
           <p>Navigateur Client ---&gt; Load Balancer (Round-Robin)</p>
-          <p className="pl-24">�S���� Instance Node A (RAM: req 1, 3, 5 =&gt; 3 reqs &lt; 5 OK)</p>
-          <p className="pl-24">����� Instance Node B (RAM: req 2, 4, 6 =&gt; 3 reqs &lt; 5 OK)</p>
+          <p className="pl-24"> ├───&gt; Instance Node A (RAM: req 1, 3, 5 =&gt; 3 reqs &lt; 5 OK)</p>
+          <p className="pl-24"> └───&gt; Instance Node B (RAM: req 2, 4, 6 =&gt; 3 reqs &lt; 5 OK)</p>
           <p className="text-rose-400 mt-1">Total reçu = 6 requêtes ! La limite de 5 a été contournée.</p>
           <div className="text-emerald-400 font-bold mt-4 mb-2">{'// Solution Redis partagé :'}</div>
           <p>Instance Node A \</p>
@@ -255,7 +255,7 @@ function createRedisRateLimiter(redisClient, options = {}) {
     } catch (error) {
       console.error("[RateLimiter] Erreur Redis :", error);
       
-      // POLITIQUE DE R�0SILIENCE : Fail-Closed pour les API IA coûteuses
+      // POLITIQUE DE RÉSILIENCE : Fail-Closed pour les API IA coûteuses
       // (bloque la requête plutôt que de risquer une surconsommation financière)
       return res.status(503).json({
         success: false,
@@ -276,7 +276,7 @@ module.exports = createRedisRateLimiter;`}
           6. Panorama &amp; analyse comparative des stratégies de limitation
         </h2>
         <p className="text-base text-slate-900 leading-relaxed font-normal">
-          Le script précédent met en �uvre la méthode <strong>Fixed Window</strong> (Fenêtre Fixe). Il existe cependant quatre grands algorithmes industriels dont les compromis entre précision, mémoire et lissage de charge varient sensiblement.
+          Le script précédent met en œuvre la méthode <strong>Fixed Window</strong> (Fenêtre Fixe). Il existe cependant quatre grands algorithmes industriels dont les compromis entre précision, mémoire et lissage de charge varient sensiblement.
         </p>
 
         {/* Custom High-Resolution Analytical SVG */}
@@ -291,7 +291,7 @@ module.exports = createRedisRateLimiter;`}
             />
           </div>
           <p className="mt-3 text-xs sm:text-sm text-center text-slate-700 font-semibold">
-            Figure 5.2 � Analyse comparative des 4 algorithmes de régulation : débit crête, tolérance aux rafales et empreinte mémoire.
+            Figure 5.2 — Analyse comparative des 4 algorithmes de régulation : débit crête, tolérance aux rafales et empreinte mémoire.
           </p>
         </div>
 
@@ -308,7 +308,7 @@ module.exports = createRedisRateLimiter;`}
               />
             </div>
             <p className="mt-2 text-xs sm:text-sm text-center text-slate-700 font-semibold">
-              Figure 5.3 � Fixed Window : reset à heure fixe provoquant l&apos;effet de bord 2x limite à la charnière.
+              Figure 5.3 — Fixed Window : reset à heure fixe provoquant l&apos;effet de bord 2x limite à la charnière.
             </p>
           </div>
 
@@ -323,7 +323,7 @@ module.exports = createRedisRateLimiter;`}
               />
             </div>
             <p className="mt-2 text-xs sm:text-sm text-center text-slate-700 font-semibold">
-              Figure 5.4 � Leaky Bucket : lissage d&apos;un flux désordonné en un débit de sortie parfaitement constant.
+              Figure 5.4 — Leaky Bucket : lissage d&apos;un flux désordonné en un débit de sortie parfaitement constant.
             </p>
           </div>
         </div>
@@ -454,7 +454,7 @@ app.post("/api/generate", geminiLimiter, async (req, res) => {
     });
   } catch (error) {
     console.error("[Gemini API Error]", error);
-    res.status(500).json({ success: false, message: "�0chec de génération Gemini." });
+    res.status(500).json({ success: false, message: "Échec de génération Gemini." });
   }
 });
 
@@ -484,7 +484,7 @@ bootstrap();`}
           8. Laboratoire interactif : Test du Rate Limiting en temps réel
         </h2>
         <p className="text-base text-slate-900 leading-relaxed font-normal">
-          Expérimentez le comportement du compteur Redis avec le simulateur ci-dessous. Observez l&apos;incrémentation des requêtes, le déclenchement immédiat de l&apos;erreur <strong>HTTP 429</strong> dès la 6�0 tentative, et la mise à jour des en-têtes <code className="font-mono text-emerald-800 bg-emerald-100 px-1 py-0.5 rounded">Retry-After</code> :
+          Expérimentez le comportement du compteur Redis avec le simulateur ci-dessous. Observez l&apos;incrémentation des requêtes, le déclenchement immédiat de l&apos;erreur <strong>HTTP 429</strong> dès la 6e tentative, et la mise à jour des en-têtes <code className="font-mono text-emerald-800 bg-emerald-100 px-1 py-0.5 rounded">Retry-After</code> :
         </p>
         <RedisCacheRateLimitLab initialTab="rateLimit" />
       </section>
@@ -537,7 +537,7 @@ bootstrap();`}
       {/* 10. Travaux Pratiques */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          10. Travaux Pratiques � Exercices d&apos;application
+          10. Travaux Pratiques — Exercices d&apos;application
         </h2>
 
         <PracticalWork
@@ -547,7 +547,7 @@ bootstrap();`}
           steps={[
             "Instanciez documentLimiter avec { windowSeconds: 30, maxRequests: 3, keyPrefix: 'doc-limit' }.",
             "Ajoutez la route POST /api/analyze-doc avec ce middleware.",
-            "Lancez 4 requêtes dans Postman et vérifiez que la 4�0 requête retourne le code 429 avec un Retry-After inférieur ou égal à 30.",
+            "Lancez 4 requêtes dans Postman et vérifiez que la 4e requête retourne le code 429 avec un Retry-After inférieur ou égal à 30.",
             "Inspectez avec redis-cli la clé générée : ttl doc-limit:ip:127.0.0.1 pour voir le compte à rebours décroître."
           ]}
         />

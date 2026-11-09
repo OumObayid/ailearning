@@ -393,7 +393,7 @@ export const LiveChat: React.FC = () => {
     if (!inputText.trim() || socketRef.current?.readyState !== WebSocket.OPEN) return;
 
     socketRef.current.send(JSON.stringify({
-      user: '�0tudiant IA',
+      user: 'Étudiant IA',
       text: inputText.trim(),
     }));
 
@@ -405,7 +405,7 @@ export const LiveChat: React.FC = () => {
       <div className="flex items-center justify-between border-b pb-2">
         <span className="font-black text-slate-950">Salon WebSocket</span>
         <span className={\`text-xs font-black px-2 py-0.5 rounded \${isConnected ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}\`}>
-          {isConnected ? 'CONNECT�0 (OPEN)' : 'D�0CONNECT�0'}
+          {isConnected ? 'CONNECTÉ (OPEN)' : 'DÉCONNECTÉ'}
         </span>
       </div>
 

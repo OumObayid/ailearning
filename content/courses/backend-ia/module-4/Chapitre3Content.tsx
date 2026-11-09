@@ -298,7 +298,7 @@ LIMIT 20;
                 "Que MySQL utilise un fichier texte",
               ],
               correctIndex: 0,
-              explanation: "'Using index' indique un index couvrant (Covering Index) : les données nécessaires au SELECT sont 100% présentes dans les n�uds feuilles de l'index, évitant tout accès aux pages de la table.",
+              explanation: "'Using index' indique un index couvrant (Covering Index) : les données nécessaires au SELECT sont 100% présentes dans les nœuds feuilles de l'index, évitant tout accès aux pages de la table.",
             },
             {
               id: 5,

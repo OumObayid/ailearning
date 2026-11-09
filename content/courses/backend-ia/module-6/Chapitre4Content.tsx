@@ -269,7 +269,7 @@ export const Chapitre4Content: React.FC = () => {
         const tempsGPU = performance.now() - t1;
 
         output.textContent =
-          "�0léments traités : " + N.toLocaleString() + "\\n" +
+          "Éléments traités : " + N.toLocaleString() + "\\n" +
           "Temps CPU JavaScript : " + tempsCPU.toFixed(2) + " ms\\n" +
           "Temps GPU (Transferts inclus) : " + tempsGPU.toFixed(2) + " ms\\n" +
           "Résultats conformes : " + (resCPU[0] === resGPU[0] && resCPU[N-1] === resGPU[N-1]);
@@ -304,7 +304,7 @@ export const Chapitre4Content: React.FC = () => {
       {/* 5. Travaux Pratiques */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Travaux Pratiques � Exercices d&apos;application
+          5. Travaux Pratiques — Exercices d&apos;application
         </h2>
 
         <PracticalWork

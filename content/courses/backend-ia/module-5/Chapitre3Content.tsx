@@ -149,7 +149,7 @@ export const Chapitre3Content: React.FC = () => {
           5. Implémentation : Architecture robuste avec invalidation automatique
         </h2>
         <p className="text-base text-slate-950 font-medium">
-          Ce code met en �uvre le cycle complet : lecture rapide avec TTL de 60 secondes et invalidation instantanée sur la route de mise à jour <code>PATCH</code> :
+          Ce code met en œuvre le cycle complet : lecture rapide avec TTL de 60 secondes et invalidation instantanée sur la route de mise à jour <code>PATCH</code> :
         </p>
 
         <CodeBlock
@@ -175,17 +175,17 @@ app.get('/api/users/:id', async (req, res) => {
     const userId = Number(req.params.id);
     const cacheKey = \`user:\${userId}\`;
 
-    // �0tape A : Recherche dans Redis
+    // Étape A : Recherche dans Redis
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData !== null) {
       return res.json({ source: 'Redis (Cache Hit)', data: JSON.parse(cachedData) });
     }
 
-    // �0tape B : Cache Miss -> Lecture MySQL
+    // Étape B : Cache Miss -> Lecture MySQL
     const user = usersDb.get(userId);
     if (!user) return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
 
-    // �0tape C : �0criture dans Redis avec TTL de 60 secondes
+    // Étape C : Écriture dans Redis avec TTL de 60 secondes
     await redisClient.set(cacheKey, JSON.stringify(user), { EX: 60 });
 
     res.json({ source: 'MySQL (Cache Miss)', data: user });
@@ -203,7 +203,7 @@ app.patch('/api/users/:id', async (req, res) => {
 
     if (!user) return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
 
-    // �0tape 1 : Mettre à jour la base de données relationnelle
+    // Étape 1 : Mettre à jour la base de données relationnelle
     const updatedUser = {
       ...user,
       ...(nom !== undefined ? { nom } : {}),
@@ -211,7 +211,7 @@ app.patch('/api/users/:id', async (req, res) => {
     };
     usersDb.set(userId, updatedUser);
 
-    // �0tape 2 : INVALIDATION IMM�0DIATE DU CACHE REDIS
+    // Étape 2 : INVALIDATION IMMÉDIATE DU CACHE REDIS
     await redisClient.del(\`user:\${userId}\`);
     console.log(\`[Cache] Clé user:\${userId} invalidée avec succès.\`);
 

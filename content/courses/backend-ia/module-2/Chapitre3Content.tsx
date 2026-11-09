@@ -103,7 +103,7 @@ utilisateur.age = 40;
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.9 � Mécanisme de transfert : la propriété du bloc binaire est déplacée vers le Worker récepteur. L&apos;original dans le parent est immédiatement « détaché » (byteLength = 0).
+            Figure 2.9 — Mécanisme de transfert : la propriété du bloc binaire est déplacée vers le Worker récepteur. L&apos;original dans le parent est immédiatement « détaché » (byteLength = 0).
           </p>
         </div>
 
@@ -143,7 +143,7 @@ console.log("Taille après transfert :", buffer.byteLength); // 0 (Détaché !)`
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.10 � SharedArrayBuffer : les deux threads lisent et écrivent directement sur la même zone physique sans aucun transfert de message.
+            Figure 2.10 — SharedArrayBuffer : les deux threads lisent et écrivent directement sur la même zone physique sans aucun transfert de message.
           </p>
         </div>
       </section>
@@ -187,7 +187,7 @@ parentPort.on("message", (texte) => {
         </h2>
 
         <QuickQuiz
-          title="Question 1 � Envoi Parent vers Worker"
+          title="Question 1 — Envoi Parent vers Worker"
           question="Quelle instruction permet au thread principal d'envoyer une charge utile au Worker Thread ?"
           options={[
             "worker.postMessage(data)",
@@ -199,7 +199,7 @@ parentPort.on("message", (texte) => {
         />
 
         <QuickQuiz
-          title="Question 2 � Conséquence du transfert d'un ArrayBuffer"
+          title="Question 2 — Conséquence du transfert d'un ArrayBuffer"
           question="Que devient l'ArrayBuffer dans le thread parent immédiatement après avoir été transféré avec worker.postMessage(buf, [buf]) ?"
           options={[
             "Il reste lisible et modifiable",
@@ -211,7 +211,7 @@ parentPort.on("message", (texte) => {
         />
 
         <QuickQuiz
-          title="Question 3 � �0vénement en cas de crash du Worker"
+          title="Question 3 — Événement en cas de crash du Worker"
           question="Quel écouteur d'événement doit impérativement être configuré sur le Worker pour éviter qu'une exception non gérée ne plante tout le serveur ?"
           options={[
             "worker.on('error', (err) => ...)",

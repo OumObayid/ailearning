@@ -42,7 +42,7 @@ export const Chapitre2Content: React.FC = () => {
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>�0viter le chevauchement de requêtes réseau avec le motif setTimeout récursif.</span>
+            <span>Éviter le chevauchement de requêtes réseau avec le motif setTimeout récursif.</span>
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />

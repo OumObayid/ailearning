@@ -69,7 +69,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 
   return (
     <div className={cn('space-y-4 pb-4 border-b-2 border-slate-300 w-full', title && isLarge && 'space-y-6 pb-8')}>
-      <div className="flex items-center justify-between gap-4 w-full">
+      <div className={cn('flex items-center justify-between gap-4 w-full', actions ? 'pr-12' : undefined)}>
         {breadcrumbs && breadcrumbs.length > 0 && (
           <nav
             aria-label="Fil d'Ariane"

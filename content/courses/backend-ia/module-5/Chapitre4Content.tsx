@@ -214,14 +214,14 @@ app.post('/api/generate', async (req, res) => {
   const cacheKey = computeCacheKey(cleanPrompt);
   let cachedResponse = null;
 
-  // �0TAPE 1 : Consultation du cache Redis (avec tolérance aux pannes)
+  // ÉTAPE 1 : Consultation du cache Redis (avec tolérance aux pannes)
   try {
     cachedResponse = await redisClient.get(cacheKey);
   } catch (redisReadErr) {
     console.warn('[Redis] Lecture impossible, bascule directe sur Gemini:', redisReadErr.message);
   }
 
-  // �0TAPE 2 : Si CACHE HIT -> Réponse immédiate en 2 millisecondes !
+  // ÉTAPE 2 : Si CACHE HIT -> Réponse immédiate en 2 millisecondes !
   if (cachedResponse !== null) {
     console.log('[Cache HIT] Inférence servie depuis Redis RAM');
     return res.json({
@@ -231,7 +231,7 @@ app.post('/api/generate', async (req, res) => {
     });
   }
 
-  // �0TAPE 3 : Si CACHE MISS -> Inférence auprès de Google Gemini
+  // ÉTAPE 3 : Si CACHE MISS -> Inférence auprès de Google Gemini
   console.log('[Cache MISS] Sollicitation du modèle Google Gemini...');
   try {
     const interaction = await ai.interactions.create({
@@ -243,15 +243,15 @@ app.post('/api/generate', async (req, res) => {
     const outputText = interaction.output_text;
     if (!outputText) throw new Error('Aucun texte produit par Gemini');
 
-    // �0TAPE 4 : �0criture dans Redis avec TTL de 300 secondes
+    // ÉTAPE 4 : Écriture dans Redis avec TTL de 300 secondes
     try {
       await redisClient.set(cacheKey, JSON.stringify(outputText), { EX: CACHE_TTL_SECONDS });
       console.log(\`[Cache] Réponse mise en cache avec succès pour 300s (clé: \${cacheKey.slice(0, 24)}...)\`);
     } catch (redisWriteErr) {
-      console.warn('[Redis] �0criture impossible:', redisWriteErr.message);
+      console.warn('[Redis] Écriture impossible:', redisWriteErr.message);
     }
 
-    // �0TAPE 5 : Renvoyer le texte frais à l'utilisateur
+    // ÉTAPE 5 : Renvoyer le texte frais à l'utilisateur
     res.json({
       success: true,
       source: 'Google Gemini (Nouveaux tokens générés)',

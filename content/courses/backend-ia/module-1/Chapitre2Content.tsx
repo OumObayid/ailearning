@@ -132,7 +132,7 @@ export const Chapitre2Content: React.FC = () => {
                 <td className="p-3.5">Usage interne réservé à libuv pour préparer la suite du cycle.</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-indigo-700">4. Poll (Le c�ur)</td>
+                <td className="p-3.5 font-bold text-indigo-700">4. Poll (Le cœur)</td>
                 <td className="p-3.5">Récupère et traite les nouveaux événements I/O (lecture disque, sockets entrants). Si la file est vide, la boucle peut s&apos;y mettre en sommeil contrôlé.</td>
               </tr>
               <tr>
@@ -265,7 +265,7 @@ app.get("/task-b", (req, res) => {
         </h2>
 
         <QuickQuiz
-          title="Question 1 � Rôle de l'Event Loop"
+          title="Question 1 — Rôle de l'Event Loop"
           question="Quel est le rôle principal de l'Event Loop dans Node.js ?"
           options={[
             "Allouer la mémoire dynamique dans le Heap",
@@ -277,7 +277,7 @@ app.get("/task-b", (req, res) => {
         />
 
         <QuickQuiz
-          title="Question 2 � Priorité d'exécution"
+          title="Question 2 — Priorité d'exécution"
           question="Quelle tâche est exécutée en priorité absolue dès que le code synchrone courant s'achève ?"
           options={[
             "Les callbacks de process.nextTick() puis les microtasks (Promises)",
@@ -289,7 +289,7 @@ app.get("/task-b", (req, res) => {
         />
 
         <QuickQuiz
-          title="Question 3 � await et le thread principal"
+          title="Question 3 — await et le thread principal"
           question="Le mot-clé await bloque-t-il le thread principal pendant une requête réseau vers Gemini ?"
           options={[
             "Oui, le serveur entier est immobilisé",

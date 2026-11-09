@@ -43,7 +43,7 @@ export const Chapitre2Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.6 � Impact d&apos;un Worker : à gauche, le thread principal saturé fige l&apos;UI ; à droite, le Worker traite la tâche en tâche de fond et garde l&apos;interface 100% fluide.
+            Figure 2.6 — Impact d&apos;un Worker : à gauche, le thread principal saturé fige l&apos;UI ; à droite, le Worker traite la tâche en tâche de fond et garde l&apos;interface 100% fluide.
           </p>
         </div>
       </section>
@@ -70,7 +70,7 @@ export const Chapitre2Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.7 � Communication asynchrone par messages entre le Main Thread (DOM, événements, rendu) et le Web Worker (calculs lourds).
+            Figure 2.7 — Communication asynchrone par messages entre le Main Thread (DOM, événements, rendu) et le Web Worker (calculs lourds).
           </p>
         </div>
 
@@ -132,7 +132,7 @@ export default function App() {
         </h2>
 
         <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-          Côté serveur, Node.js propose le module natif <code className="font-mono font-bold bg-slate-200 px-1.5 py-0.5 rounded text-indigo-950">node:worker_threads</code>. Contrairement aux Web Workers, les Worker Threads ont accès au moteur d&apos;E/S de Node.js et peuvent exécuter des tâches CPU de fond en utilisant les capacités multi-c�urs du processeur :
+          Côté serveur, Node.js propose le module natif <code className="font-mono font-bold bg-slate-200 px-1.5 py-0.5 rounded text-indigo-950">node:worker_threads</code>. Contrairement aux Web Workers, les Worker Threads ont accès au moteur d&apos;E/S de Node.js et peuvent exécuter des tâches CPU de fond en utilisant les capacités multi-cœurs du processeur :
         </p>
 
         {/* IMAGE 8 : Worker Threads Backend Server */}
@@ -140,14 +140,14 @@ export default function App() {
           <div className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/worker-threads-backend-server.jpeg"
-              alt="Serveur backend Node.js avec processeur multi-c�urs et base de données"
+              alt="Serveur backend Node.js avec processeur multi-cœurs et base de données"
               width={800}
               height={400}
               className="h-auto w-full object-contain"
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.8 � Worker Threads côté serveur : exploitation directe des c�urs CPU pour traiter les calculs sans bloquer l&apos;Event Loop.
+            Figure 2.8 — Worker Threads côté serveur : exploitation directe des cœurs CPU pour traiter les calculs sans bloquer l&apos;Event Loop.
           </p>
         </div>
 
@@ -272,7 +272,7 @@ app.listen(3000, () => console.log("Serveur démarré sur :3000"));`}
         </h2>
 
         <QuickQuiz
-          title="Question 1 � Environnement des Web Workers"
+          title="Question 1 — Environnement des Web Workers"
           question="Dans quel environnement fonctionne un Web Worker ?"
           options={[
             "Dans le moteur interne de Node.js uniquement",
@@ -284,7 +284,7 @@ app.listen(3000, () => console.log("Serveur démarré sur :3000"));`}
         />
 
         <QuickQuiz
-          title="Question 2 � Canal de communication du Worker Thread"
+          title="Question 2 — Canal de communication du Worker Thread"
           question="Comment un Worker Thread dans Node.js renvoie-t-il son résultat au thread principal ?"
           options={[
             "parentPort.postMessage(resultat)",
@@ -296,7 +296,7 @@ app.listen(3000, () => console.log("Serveur démarré sur :3000"));`}
         />
 
         <QuickQuiz
-          title="Question 3 � Accès direct au DOM"
+          title="Question 3 — Accès direct au DOM"
           question="Un Web Worker ou un Worker Thread peut-il manipuler directement le DOM d'une application ?"
           options={[
             "Oui, sans aucune restriction",

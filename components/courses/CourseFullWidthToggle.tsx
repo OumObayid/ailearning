@@ -10,17 +10,17 @@ export type CourseThemeKey = 'amber' | 'blue' | 'purple' | 'emerald' | 'lime' | 
 
 const THEME_STYLES: Record<CourseThemeKey, string> = {
   amber:
-    'border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 hover:border-amber-400 hover:text-amber-950 focus-visible:ring-amber-500 shadow-amber-900/5',
+    'border-amber-300 bg-amber-50/95 text-amber-950 hover:bg-amber-100 hover:border-amber-400 focus-visible:ring-amber-500 shadow-amber-900/10',
   blue:
-    'border-blue-300 bg-blue-50 text-blue-900 hover:bg-blue-100 hover:border-blue-400 hover:text-blue-950 focus-visible:ring-blue-500 shadow-blue-900/5',
+    'border-blue-300 bg-blue-50/95 text-blue-950 hover:bg-blue-100 hover:border-blue-400 focus-visible:ring-blue-500 shadow-blue-900/10',
   purple:
-    'border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 hover:border-purple-400 hover:text-purple-950 focus-visible:ring-purple-500 shadow-purple-900/5',
+    'border-purple-300 bg-purple-50/95 text-purple-950 hover:bg-purple-100 hover:border-purple-400 focus-visible:ring-purple-500 shadow-purple-900/10',
   emerald:
-    'border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 hover:border-emerald-400 hover:text-emerald-950 focus-visible:ring-emerald-500 shadow-emerald-900/5',
+    'border-emerald-300 bg-emerald-50/95 text-emerald-950 hover:bg-emerald-100 hover:border-emerald-400 focus-visible:ring-emerald-500 shadow-emerald-900/10',
   lime:
-    'border-lime-300 bg-lime-50 text-lime-900 hover:bg-lime-100 hover:border-lime-400 hover:text-lime-950 focus-visible:ring-lime-500 shadow-lime-900/5',
+    'border-lime-300 bg-lime-50/95 text-lime-950 hover:bg-lime-100 hover:border-lime-400 focus-visible:ring-lime-500 shadow-lime-900/10',
   default:
-    'border-slate-300 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-950 focus-visible:ring-slate-400 shadow-slate-900/5',
+    'border-slate-300 bg-white/95 text-slate-800 hover:bg-slate-100 hover:text-slate-950 focus-visible:ring-slate-400 shadow-slate-900/10',
 };
 
 export function resolveCourseTheme(pathname?: string | null, explicitTheme?: string): CourseThemeKey {
@@ -58,7 +58,7 @@ export const CourseFullWidthToggle: React.FC<CourseFullWidthToggleProps> = ({ cl
       title="Afficher en pleine largeur"
       aria-label="Afficher en pleine largeur"
       className={cn(
-        'inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-150 shadow-sm active:scale-95 cursor-pointer outline-hidden focus-visible:ring-2',
+        'fixed top-3 right-4 z-40 inline-flex h-10 w-10 items-center justify-center rounded-xl border shadow-md backdrop-blur-sm transition-all duration-150 active:scale-95 cursor-pointer outline-hidden focus-visible:ring-2',
         THEME_STYLES[currentTheme],
         className
       )}

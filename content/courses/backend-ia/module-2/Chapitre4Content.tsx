@@ -43,7 +43,7 @@ export const Chapitre4Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.11 � Mémoire binaire sous-jacente (Backing store) : différentes vues (Uint8, Int32, DataView) accédant aux mêmes octets sans duplication de mémoire.
+            Figure 2.11 — Mémoire binaire sous-jacente (Backing store) : différentes vues (Uint8, Int32, DataView) accédant aux mêmes octets sans duplication de mémoire.
           </p>
         </div>
 
@@ -99,7 +99,7 @@ export const Chapitre4Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.12 � Espace mémoire partagé : aucun message ni copie requise, lecture/écriture ultra-rapide à coût zéro.
+            Figure 2.12 — Espace mémoire partagé : aucun message ni copie requise, lecture/écriture ultra-rapide à coût zéro.
           </p>
         </div>
       </section>
@@ -126,7 +126,7 @@ export const Chapitre4Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.13 � Collision de concurrence : Thread 1 et Thread 2 lisent simultanément la valeur 5. Chacun calcule 6 et l&apos;écrit en mémoire. Le résultat final vaut 6 au lieu de 7 (un incrément définitivement perdu !).
+            Figure 2.13 — Collision de concurrence : Thread 1 et Thread 2 lisent simultanément la valeur 5. Chacun calcule 6 et l&apos;écrit en mémoire. Le résultat final vaut 6 au lieu de 7 (un incrément définitivement perdu !).
           </p>
         </div>
       </section>
@@ -160,7 +160,7 @@ export const Chapitre4Content: React.FC = () => {
           <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4.5 space-y-1.5">
             <h3 className="text-base font-black text-indigo-950">Atomics.store()</h3>
             <p className="text-sm font-semibold text-slate-800">
-              �0criture atomique avec barrière de synchronisation mémoire.
+              Écriture atomique avec barrière de synchronisation mémoire.
             </p>
           </div>
         </div>
@@ -240,7 +240,7 @@ w2.postMessage(shared);`}
         </h2>
 
         <QuickQuiz
-          title="Question 1 � Capacité d'un Int32Array"
+          title="Question 1 — Capacité d'un Int32Array"
           question="Un ArrayBuffer de 32 octets est manipulé à travers une vue Int32Array. Combien d'éléments numériques contient-il ?"
           options={[
             "4 éléments",
@@ -252,7 +252,7 @@ w2.postMessage(shared);`}
         />
 
         <QuickQuiz
-          title="Question 2 � Cause d'une Race Condition"
+          title="Question 2 — Cause d'une Race Condition"
           question="Pourquoi deux threads écrivant en même temps avec 'compteur[0]++' perdent-ils des incréments ?"
           options={[
             "Parce que le processeur surchauffe",
@@ -260,11 +260,11 @@ w2.postMessage(shared);`}
             "Parce que JavaScript n'a pas le droit de compter au-delà de 10 000"
           ]}
           correctIndex={1}
-          explanation="L'opération ++ n'est pas indivisible. Deux c�urs CPU peuvent lire la même valeur initiale avant que le premier n'ait eu le temps d'écrire son résultat, écrasant la mise à jour."
+          explanation="L'opération ++ n'est pas indivisible. Deux cœurs CPU peuvent lire la même valeur initiale avant que le premier n'ait eu le temps d'écrire son résultat, écrasant la mise à jour."
         />
 
         <QuickQuiz
-          title="Question 3 � Utilisation d'Atomics.wait"
+          title="Question 3 — Utilisation d'Atomics.wait"
           question="Pourquoi est-il formellement interdit d'appeler Atomics.wait() sur le thread principal de Node.js ?"
           options={[
             "Parce que cela provoque une fuite de mémoire",

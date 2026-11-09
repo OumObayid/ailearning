@@ -27,7 +27,7 @@ export const Chapitre1Content: React.FC = () => {
           1. Objectifs pédagogiques du chapitre
         </h2>
         <p className="text-base sm:text-lg font-medium text-slate-900">
-          ì l&apos;issue de ce premier chapitre, vous serez capable de :
+          A l&apos;issue de ce premier chapitre, vous serez capable de :
         </p>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-base font-semibold text-slate-950">
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
@@ -129,7 +129,7 @@ calculer(); // Entrée dans la Stack, puis retrait dès la fin d'exécution`}
           </p>
 
           <div className="rounded-2xl border border-rose-300 bg-rose-50/50 p-5">
-            <span className="text-xs font-mono uppercase text-rose-800 font-bold block mb-1">�a�️ Risque de fuite mémoire (Memory Leak)</span>
+            <span className="text-xs font-mono uppercase text-rose-800 font-bold block mb-1">⚠️ Risque de fuite mémoire (Memory Leak)</span>
             <pre className="font-mono text-sm leading-relaxed text-rose-950 overflow-x-auto">
 {`const utilisateurs = []; // Tableau global qui ne se vide JAMAIS
 
@@ -278,7 +278,7 @@ Promise.resolve().then(() => {
 
 console.log("Fin");
 
-// R�0SULTAT OBTENU :
+// RÉSULTAT OBTENU :
 // Début
 // Fin
 // Promise
@@ -304,7 +304,7 @@ console.log("Fin");
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="rounded-2xl border-2 border-rose-300 bg-rose-50/50 p-5 space-y-3">
-            <h3 className="text-lg font-black text-rose-950">�R Route CPU bloquante</h3>
+            <h3 className="text-lg font-black text-rose-950">❌ Route CPU bloquante</h3>
             <pre className="font-mono text-xs leading-relaxed text-rose-950 bg-white/80 p-3 rounded-xl border border-rose-200 overflow-x-auto">
 {`app.get("/block", (req, res) => {
   const debut = Date.now();
@@ -321,7 +321,7 @@ console.log("Fin");
           </div>
 
           <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 p-5 space-y-3">
-            <h3 className="text-lg font-black text-emerald-950">�S& Route asynchrone non-bloquante</h3>
+            <h3 className="text-lg font-black text-emerald-950">✅ Route asynchrone non-bloquante</h3>
             <pre className="font-mono text-xs leading-relaxed text-emerald-950 bg-white/80 p-3 rounded-xl border border-emerald-200 overflow-x-auto">
 {`app.get("/async", async (req, res) => {
   // Attente non-bloquante (ex: appel API IA)
@@ -405,7 +405,7 @@ function App() {
         </h2>
 
         <QuickQuiz
-          title="Exercice 1 � Prédire l'ordre d'exécution"
+          title="Exercice 1 — Prédire l'ordre d'exécution"
           question={`Considérez ce code sans l'exécuter :
 console.log("1");
 setTimeout(() => console.log("2"), 0);
@@ -425,7 +425,7 @@ Quelle sera la séquence exacte affichée dans la console ?`}
         />
 
         <QuickQuiz
-          title="Exercice 2 � Identifier un risque de fuite mémoire"
+          title="Exercice 2 — Identifier un risque de fuite mémoire"
           question={`Soit le code suivant :
 const historique = [];
 app.get("/historique", (req, res) => {
@@ -444,7 +444,7 @@ Pourquoi ce code provoque-t-il une croissance infinie de la mémoire RAM ?`}
         />
 
         <QuickQuiz
-          title="Exercice 3 � Comprendre le blocage CPU"
+          title="Exercice 3 — Comprendre le blocage CPU"
           question="Si une route /analyse effectue un calcul synchrone lourd de 10 secondes sur le thread principal, que se passe-t-il pour un autre utilisateur appelant la route légère /status ?"
           options={[
             "/status répond toujours immédiatement car Node.js crée un thread par requête",
@@ -506,7 +506,7 @@ Pourquoi ce code provoque-t-il une croissance infinie de la mémoire RAM ?`}
           9. Le lien avec votre futur Backend IA
         </h2>
         <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-          Dans une architecture moderne combinant <strong>React �  Node.js Express �  Google Gemini</strong> :
+          Dans une architecture moderne combinant <strong>React → Node.js Express → Google Gemini</strong> :
         </p>
         <ul className="list-disc list-inside space-y-2 text-base font-semibold text-slate-900">
           <li><strong>React</strong> s&apos;exécute dans le navigateur client et utilise la mémoire de la machine cliente.</li>

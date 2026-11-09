@@ -415,7 +415,7 @@ export const PromptAnalyzer: React.FC = () => {
       {/* 8. Travaux pratiques guidés */}
       <PracticalWork
         title="Atelier pratique : Construire une API REST sécurisée pour prompts d'IA"
-        objective="Mettre en �uvre une API Express avec gestion des méthodes HTTP, validation des types de données, gestion de codes d'erreur 400 et 404, et intégration Postman."
+        objective="Mettre en œuvre une API Express avec gestion des méthodes HTTP, validation des types de données, gestion de codes d'erreur 400 et 404, et intégration Postman."
         steps={[
           "Créer le projet Node.js avec npm init -y et installer express et cors.",
           "Déclarer une route GET /api/status renvoyant { server: 'ok', timestamp: Date.now() }.",

@@ -68,7 +68,7 @@ export const Chapitre2Content: React.FC = () => {
               />
             </div>
             <h4 className="mt-3 font-black text-slate-950 text-base">Redis In-Memory</h4>
-            <p className="mt-1 text-xs text-slate-700 font-medium">Remote Dictionary Server � Structure Clé-Valeur en RAM</p>
+            <p className="mt-1 text-xs text-slate-700 font-medium">Remote Dictionary Server — Structure Clé-Valeur en RAM</p>
           </div>
 
           <div className="md:col-span-2 overflow-x-auto rounded-xl border border-slate-300">
@@ -198,7 +198,7 @@ docker exec -it redis-formation redis-cli`}
           </table>
         </div>
 
-        <Callout type="warning" title="�0vitez KEYS * en production !">
+        <Callout type="warning" title="Évitez KEYS * en production !">
           La commande <code>KEYS *</code> parcourt la totalité de la base Redis de manière synchrone. Si votre cache contient 500 000 clés, cela <strong>gèle l&apos;Event Loop de Redis</strong> pendant plusieurs secondes. En environnement de production, privilégiez toujours la commande non bloquante <code>SCAN 0 MATCH motif* COUNT 100</code>.
         </Callout>
       </section>
@@ -254,7 +254,7 @@ app.post('/api/cache', async (req, res) => {
     const payload = JSON.stringify(value);
 
     if (ttlSeconds && Number(ttlSeconds) > 0) {
-      // �0criture avec TTL atomique (EX)
+      // Écriture avec TTL atomique (EX)
       await redisClient.set(key, payload, { EX: Number(ttlSeconds) });
     } else {
       await redisClient.set(key, payload);
@@ -304,7 +304,7 @@ async function start() {
     console.log('Connexion établie avec le serveur Redis sur le port 6379');
     app.listen(3000, () => console.log('API opérationnelle sur http://localhost:3000'));
   } catch (err) {
-    console.error('�0chec critique de démarrage:', err);
+    console.error('Échec critique de démarrage:', err);
     process.exit(1);
   }
 }

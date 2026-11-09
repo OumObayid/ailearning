@@ -259,7 +259,7 @@ main().catch(console.error);`}
       {/* 8. Travaux Pratiques */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Travaux Pratiques � Exercices d&apos;application
+          8. Travaux Pratiques — Exercices d&apos;application
         </h2>
 
         <PracticalWork

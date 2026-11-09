@@ -31,7 +31,7 @@ export const Chapitre3Content: React.FC = () => {
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-base font-semibold text-slate-950">
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Distinguer les architectures matérielles : c�urs séquentiels rapides du CPU vs milliers de c�urs parallèles du GPU.</span>
+            <span>Distinguer les architectures matérielles : cœurs séquentiels rapides du CPU vs milliers de cœurs parallèles du GPU.</span>
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -43,7 +43,7 @@ export const Chapitre3Content: React.FC = () => {
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>�0crire, compiler et exécuter un Compute Shader en langage <strong>WGSL</strong>.</span>
+            <span>Écrire, compiler et exécuter un Compute Shader en langage <strong>WGSL</strong>.</span>
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -75,7 +75,7 @@ export const Chapitre3Content: React.FC = () => {
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">Le processeur central (CPU)</h3>
             <p className="text-xs text-slate-700 mt-1">
-              Composé de quelques c�urs très puissants (4 à 16 c�urs) optimisés pour exécuter des instructions complexes en série avec prédiction de branchement et mémoire cache L1/L2/L3 massive.
+              Composé de quelques cœurs très puissants (4 à 16 cœurs) optimisés pour exécuter des instructions complexes en série avec prédiction de branchement et mémoire cache L1/L2/L3 massive.
             </p>
           </div>
 
@@ -91,7 +91,7 @@ export const Chapitre3Content: React.FC = () => {
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">Le processeur graphique (GPU)</h3>
             <p className="text-xs text-slate-700 mt-1">
-              Composé de milliers de c�urs plus simples (2 000 à 16 000 unités ALU) conçus pour exécuter la même opération mathématique simultanément sur d&apos;immenses tableaux de données (SIMD/SIMT).
+              Composé de milliers de cœurs plus simples (2 000 à 16 000 unités ALU) conçus pour exécuter la même opération mathématique simultanément sur d&apos;immenses tableaux de données (SIMD/SIMT).
             </p>
           </div>
         </div>
@@ -119,7 +119,7 @@ export const Chapitre3Content: React.FC = () => {
             />
           </div>
           <p className="mt-3 text-xs sm:text-sm text-center text-slate-700 font-semibold">
-            Figure 6.2 � Cycle complet : Allocation de buffers en VRAM, encodage des commandes de calcul et lecture asynchrone sécurisée par le CPU.
+            Figure 6.2 — Cycle complet : Allocation de buffers en VRAM, encodage des commandes de calcul et lecture asynchrone sécurisée par le CPU.
           </p>
         </div>
       </section>
@@ -286,7 +286,7 @@ runGpuCompute().catch(console.error);`}
       {/* 7. Travaux Pratiques */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Travaux Pratiques � Exercices d&apos;application
+          7. Travaux Pratiques — Exercices d&apos;application
         </h2>
 
         <PracticalWork
@@ -314,7 +314,7 @@ runGpuCompute().catch(console.error);`}
               question: "Quelle est la caractéristique architecturale principale d'un GPU par rapport à un CPU ?",
               options: [
                 "Le GPU possède une vitesse d'horloge beaucoup plus rapide",
-                "Le GPU possède des milliers de c�urs simples conçus pour exécuter la même instruction en parallèle",
+                "Le GPU possède des milliers de cœurs simples conçus pour exécuter la même instruction en parallèle",
                 "Le GPU ne peut fonctionner qu'avec des chaînes de caractères",
                 "Le GPU remplace obligatoirement la carte réseau"
               ],
@@ -368,7 +368,7 @@ runGpuCompute().catch(console.error);`}
         </h2>
         <InteractiveChecklist
           items={[
-            "J'ai compris la différence entre un c�ur séquentiel CPU et les milliers d'ALU parallèles d'un GPU.",
+            "J'ai compris la différence entre un cœur séquentiel CPU et les milliers d'ALU parallèles d'un GPU.",
             "Je sais initialiser l'adaptateur et le périphérique avec navigator.gpu.requestDevice().",
             "Je sais écrire un shader de calcul basique en langage WGSL avec @compute.",
             "J'ai compris le mécanisme de copie vers un buffer mappable (MAP_READ) pour récupérer le résultat dans JavaScript."

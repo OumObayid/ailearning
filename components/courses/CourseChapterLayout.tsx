@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { Icon } from '@/components/common/Icon';
 import { CourseThemeKey, resolveCourseTheme } from '@/components/courses/CourseFullWidthToggle';
+import { SelectionTutorPopover } from '@/components/courses/SelectionTutorPopover';
 import { cn } from '@/lib/utils';
 
 interface CourseChapterLayoutProps {
@@ -218,7 +219,7 @@ export const CourseChapterLayout: React.FC<CourseChapterLayoutProps> = ({
           title="Quitter la pleine largeur (Échap)"
           aria-label="Quitter la pleine largeur"
           className={cn(
-            'fixed top-3 right-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-xl border shadow-md backdrop-blur-sm active:scale-95 cursor-pointer transition-all duration-150 outline-hidden focus-visible:ring-2',
+            'fixed top-3 right-4 z-40 inline-flex h-10 w-10 items-center justify-center rounded-xl border shadow-md backdrop-blur-sm active:scale-95 cursor-pointer transition-all duration-150 outline-hidden focus-visible:ring-2',
             EXIT_THEME_STYLES[currentTheme]
           )}
         >
@@ -246,6 +247,9 @@ export const CourseChapterLayout: React.FC<CourseChapterLayoutProps> = ({
         initialMode={authMode}
         onSuccess={() => setIsAuthOpen(false)}
       />
+
+      {/* Tuteur IA Interactif au surlignage de mot ou texte */}
+      <SelectionTutorPopover />
     </div>
   );
 };

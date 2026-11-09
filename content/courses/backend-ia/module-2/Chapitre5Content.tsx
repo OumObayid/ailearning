@@ -90,7 +90,7 @@ export const Chapitre5Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.14 � Blocage en chaîne : l&apos;opération synchrone monopolise la roue de l&apos;Event Loop, empêchant le traitement des requêtes légères en attente dans l&apos;Event Queue.
+            Figure 2.14 — Blocage en chaîne : l&apos;opération synchrone monopolise la roue de l&apos;Event Loop, empêchant le traitement des requêtes légères en attente dans l&apos;Event Queue.
           </p>
         </div>
       </section>
@@ -141,7 +141,7 @@ setInterval(() => {
         </h2>
 
         <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-          Créer 50 ou 100 Workers sur une machine à 4 c�urs dégrade dramatiquement les performances en raison du coût de changement de contexte (*context switching*) :
+          Créer 50 ou 100 Workers sur une machine à 4 cœurs dégrade dramatiquement les performances en raison du coût de changement de contexte (*context switching*) :
         </p>
 
         {/* IMAGE 17 : Worker pool optimal cores */}
@@ -149,14 +149,14 @@ setInterval(() => {
           <div className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/worker-pool-optimal-cores.jpeg"
-              alt="Optimisation : 2 Worker Threads pour 4 c�urs vs congestion avec 8 Worker Threads pour 4 c�urs"
+              alt="Optimisation : 2 Worker Threads pour 4 cœurs vs congestion avec 8 Worker Threads pour 4 cœurs"
               width={800}
               height={450}
               className="h-auto w-full object-contain"
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.15 � Allocation optimale contre congestion : la formule recommandée est <code className="font-bold">Math.max(1, os.availableParallelism() - 1)</code> pour réserver un c�ur au thread principal.
+            Figure 2.15 — Allocation optimale contre congestion : la formule recommandée est <code className="font-bold">Math.max(1, os.availableParallelism() - 1)</code> pour réserver un cœur au thread principal.
           </p>
         </div>
       </section>
@@ -183,7 +183,7 @@ setInterval(() => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.16 � Architecture du Worker Pool : le Worker Manager distribue les tâches entrantes aux Workers inactifs et file les requêtes excédentaires.
+            Figure 2.16 — Architecture du Worker Pool : le Worker Manager distribue les tâches entrantes aux Workers inactifs et file les requêtes excédentaires.
           </p>
         </div>
       </section>
@@ -249,14 +249,14 @@ module.exports = WorkerPool;`}
         </div>
       </PracticalWork>
 
-      {/* 7. Exercices interactifs & �0valuation finale */}
+      {/* 7. Exercices interactifs & Évaluation finale */}
       <section className="space-y-6">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. �0valuation finale de validation du Module 2
+          7. Évaluation finale de validation du Module 2
         </h2>
 
         <QuickQuiz
-          title="Question 1 � Diagnostic CPU-bound vs I/O-bound"
+          title="Question 1 — Diagnostic CPU-bound vs I/O-bound"
           question="Une API de génération RAG attend la réponse HTTP d'un modèle Gemini hébergé par Google. De quel type de charge s'agit-il ?"
           options={[
             "I/O-bound (l'Event Loop est disponible, aucun Worker Thread n'est requis)",
@@ -268,11 +268,11 @@ module.exports = WorkerPool;`}
         />
 
         <QuickQuiz
-          title="Question 2 � Rôle du Worker Pool"
+          title="Question 2 — Rôle du Worker Pool"
           question="Pourquoi utilise-t-on un Worker Pool plutôt que d'instancier 'new Worker()' à chaque requête HTTP ?"
           options={[
             "Pour contourner les permissions de l'OS",
-            "Pour éviter le coût très lourd de démarrage d'un moteur V8 et borner le nombre de threads aux c�urs physiques",
+            "Pour éviter le coût très lourd de démarrage d'un moteur V8 et borner le nombre de threads aux cœurs physiques",
             "Parce que Node.js interdit plus de 3 fichiers .js"
           ]}
           correctIndex={1}
@@ -280,7 +280,7 @@ module.exports = WorkerPool;`}
         />
 
         <QuickQuiz
-          title="Question 3 � Mesure du blocage de l'Event Loop"
+          title="Question 3 — Mesure du blocage de l'Event Loop"
           question="Quelle méthode officielle de 'node:perf_hooks' permet d'observer les retards d'ordonnancement de l'Event Loop en millisecondes ?"
           options={[
             "monitorEventLoopDelay()",

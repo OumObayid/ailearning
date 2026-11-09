@@ -85,7 +85,7 @@ export const Chapitre5Content: React.FC = () => {
             </p>
             <ul className="text-xs text-slate-700 space-y-1 font-semibold">
               <li>⬢ Fonctionne 100% hors-ligne après téléchargement.</li>
-              <li>⬢ 0 �� de coût de tokens d&apos;API pour votre backend.</li>
+              <li>⬢ 0 ⚡ de coût de tokens d&apos;API pour votre backend.</li>
               <li>⬢ Confidentialité absolue (les données ne quittent pas la machine).</li>
               <li>⬢ Modèles limités en taille (souvent &lt; 2 Go pour la RAM client).</li>
             </ul>
@@ -93,7 +93,7 @@ export const Chapitre5Content: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. L'�0cosystème des Runtimes IA Côté Client */}
+      {/* 3. L'Écosystème des Runtimes IA Côté Client */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. L&apos;écosystème d&apos;outils IA pour le navigateur
@@ -170,7 +170,7 @@ export const Chapitre5Content: React.FC = () => {
             />
           </div>
           <p className="mt-3 text-xs sm:text-sm text-center text-slate-700 font-semibold">
-            Figure 6.3 � Matrice décisionnelle : Pourquoi l&apos;architecture hybride (filtrage local WebGPU + escalade vers Gemini) représente le compromis industriel idéal.
+            Figure 6.3 — Matrice décisionnelle : Pourquoi l&apos;architecture hybride (filtrage local WebGPU + escalade vers Gemini) représente le compromis industriel idéal.
           </p>
         </div>
       </section>
@@ -215,7 +215,7 @@ export default function AnalyseSentiment() {
       setResultat(prediction[0]);
     } catch (err) {
       console.error("[IA Locale Erreur]", err);
-      setErreur("�0chec du chargement ou de l'exécution du modèle local.");
+      setErreur("Échec du chargement ou de l'exécution du modèle local.");
     } finally {
       setChargement(false);
     }
@@ -231,7 +231,7 @@ export default function AnalyseSentiment() {
         rows={3}
         value={texte}
         onChange={(e) => setTexte(e.target.value)}
-        placeholder="�0crivez une phrase (ex: I love this amazing software)..."
+        placeholder="Écrivez une phrase (ex: I love this amazing software)..."
         className="w-full rounded-xl border border-slate-300 p-3 font-medium text-slate-950"
       />
 
@@ -278,7 +278,7 @@ export default function AnalyseSentiment() {
       {/* 7. Travaux Pratiques */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Travaux Pratiques � Exercices d&apos;application
+          7. Travaux Pratiques — Exercices d&apos;application
         </h2>
 
         <PracticalWork

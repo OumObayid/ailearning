@@ -73,12 +73,12 @@ export const Chapitre4Content: React.FC = () => {
             <tbody className="divide-y divide-slate-200 bg-white text-slate-950">
               <tr>
                 <td className="p-3 font-mono font-bold text-emerald-700">LIKE &apos;JavaScript%&apos;</td>
-                <td className="p-3 font-bold text-emerald-800">�S OUI (Recherche par plage)</td>
+                <td className="p-3 font-bold text-emerald-800">✅ OUI (Recherche par plage)</td>
                 <td className="p-3">Le préfixe étant connu, InnoDB saute au début de la lettre J et scanne la plage correspondante.</td>
               </tr>
               <tr>
                 <td className="p-3 font-mono font-bold text-rose-700">LIKE &apos;%JavaScript%&apos;</td>
-                <td className="p-3 font-bold text-rose-800">�S� NON (Full Table Scan obligatoire)</td>
+                <td className="p-3 font-bold text-rose-800">✅ NON (Full Table Scan obligatoire)</td>
                 <td className="p-3">Le mot pouvant apparaître au milieu ou à la fin, l&apos;index B+Tree est incapable d&apos;éliminer la moindre ligne.</td>
               </tr>
             </tbody>

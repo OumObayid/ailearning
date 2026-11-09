@@ -61,7 +61,7 @@ export const Chapitre1Content: React.FC = () => {
           Le <strong>cache</strong> est une couche de stockage temporaire à haute vitesse (généralement en mémoire vive RAM) qui conserve les résultats de requêtes ou de calculs coûteux pour les restituer instantanément lors des sollicitations futures.
         </p>
 
-        <Callout type="info" title="Le principe fondamental : �0viter le travail redondant">
+        <Callout type="info" title="Le principe fondamental : Éviter le travail redondant">
           Si 1 000 utilisateurs posent à votre API la question <em>« Résume-moi le fonctionnement de Node.js en 5 lignes »</em>, appeler le modèle Gemini 1 000 fois est un gaspillage colossal de quotas, d&apos;argent et de temps (1 000 x 1.8s = 30 minutes de temps cumulé). Avec le cache, le LLM n&apos;est appelé <strong>qu&apos;une seule fois</strong>, et les 999 requêtes suivantes sont servies en 2 millisecondes depuis la mémoire vive !
         </Callout>
 
@@ -198,7 +198,7 @@ async function fetchUserFromMySQL(id) {
 app.get('/api/users/:id', async (req, res) => {
   const { id } = req.params;
 
-  // �0tape 1 : Vérifier la présence dans le cache (Cache-Aside)
+  // Étape 1 : Vérifier la présence dans le cache (Cache-Aside)
   if (memoryCache.has(id)) {
     console.log(\`[Cache HIT] Donnée servie instantanément pour l'id \${id}\`);
     return res.json({
@@ -207,14 +207,14 @@ app.get('/api/users/:id', async (req, res) => {
     });
   }
 
-  // �0tape 2 : Cache MISS -> Lecture depuis la source de vérité
+  // Étape 2 : Cache MISS -> Lecture depuis la source de vérité
   console.log(\`[Cache MISS] Récupération requise auprès de MySQL pour l'id \${id}\`);
   const user = await fetchUserFromMySQL(id);
 
-  // �0tape 3 : Enregistrement dans le cache pour les prochains visiteurs
+  // Étape 3 : Enregistrement dans le cache pour les prochains visiteurs
   memoryCache.set(id, user);
 
-  // �0tape 4 : Réponse au client
+  // Étape 4 : Réponse au client
   res.json({
     source: 'Base de données MySQL (2 000 ms)',
     data: user,
@@ -291,7 +291,7 @@ app.listen(3000, () => console.log('Serveur Cache-Aside sur http://localhost:300
                 "Chiffrement matériel de la carte graphique",
               ],
               correctIndex: 0,
-              explanation: "�0viter d'appeler l'API Google pour des requêtes identiques supprime les coûts en tokens et élimine le délai d'inférence (1.5s à 4s).",
+              explanation: "Éviter d'appeler l'API Google pour des requêtes identiques supprime les coûts en tokens et élimine le délai d'inférence (1.5s à 4s).",
             },
             {
               id: 5,

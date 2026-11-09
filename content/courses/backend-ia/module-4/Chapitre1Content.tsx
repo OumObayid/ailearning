@@ -35,7 +35,7 @@ export const Chapitre1Content: React.FC = () => {
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Comprendre la structure d&apos;un B+Tree (N�ud racine, pages intermédiaires, feuilles chaînées).</span>
+            <span>Comprendre la structure d&apos;un B+Tree (Nœud racine, pages intermédiaires, feuilles chaînées).</span>
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -47,7 +47,7 @@ export const Chapitre1Content: React.FC = () => {
           </li>
           <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>�0valuer le coût d&apos;un index sur les opérations d&apos;écriture (INSERT, UPDATE, DELETE).</span>
+            <span>Évaluer le coût d&apos;un index sur les opérations d&apos;écriture (INSERT, UPDATE, DELETE).</span>
           </li>
         </ul>
       </section>
@@ -109,7 +109,7 @@ export const Chapitre1Content: React.FC = () => {
             />
           </div>
           <p className="mt-3 text-center text-xs font-bold text-slate-700">
-            Figure 1.1 : Structure B+Tree. Les n�uds internes orientent la recherche par comparaison d&apos;intervalles. Les feuilles tout en bas contiennent les clés primaires et sont reliées par une liste doublement chaînée pour les tris séquentiels ultra-rapides.
+            Figure 1.1 : Structure B+Tree. Les nœuds internes orientent la recherche par comparaison d&apos;intervalles. Les feuilles tout en bas contiennent les clés primaires et sont reliées par une liste doublement chaînée pour les tris séquentiels ultra-rapides.
           </p>
         </div>
 
@@ -216,7 +216,7 @@ SELECT COUNT(*) AS total_conversations FROM conversations;`}
                 <td className="p-3">Recherche logarithmique O(log N) au lieu de balayer séquentiellement chaque page disque.</td>
               </tr>
               <tr>
-                <td className="p-3 font-bold text-rose-700">INSERT (�0criture)</td>
+                <td className="p-3 font-bold text-rose-700">INSERT (Écriture)</td>
                 <td className="p-3 text-rose-700 font-bold">Ralentissement proportionnel au nombre d&apos;index</td>
                 <td className="p-3">MySQL doit insérer la ligne dans le Clustered Index, puis insérer un pointeur dans chaque index secondaire.</td>
               </tr>

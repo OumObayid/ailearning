@@ -68,7 +68,7 @@ export const Chapitre1Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.1 � Isolation des processus : chaque processus dispose de son propre espace d&apos;adressage (Code, Data, Stack, Heap).
+            Figure 2.1 — Isolation des processus : chaque processus dispose de son propre espace d&apos;adressage (Code, Data, Stack, Heap).
           </p>
         </div>
 
@@ -101,7 +101,7 @@ export const Chapitre1Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.2 � Multithreading dans un même processus : ressources partagées (Code, Data, Heap) et contextes privés (Registers, Stack).
+            Figure 2.2 — Multithreading dans un même processus : ressources partagées (Code, Data, Heap) et contextes privés (Registers, Stack).
           </p>
         </div>
 
@@ -162,7 +162,7 @@ export const Chapitre1Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.3 � Architecture I/O non-bloquante de Node.js : l&apos;Event Loop délègue les tâches lourdes au noyau (Kernel) et au threadpool libuv.
+            Figure 2.3 — Architecture I/O non-bloquante de Node.js : l&apos;Event Loop délègue les tâches lourdes au noyau (Kernel) et au threadpool libuv.
           </p>
         </div>
       </section>
@@ -192,7 +192,7 @@ export const Chapitre1Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.4 � Goulot d&apos;étranglement CPU : un calcul intensif sur le thread principal fige l&apos;Event Loop et met toutes les autres requêtes en attente.
+            Figure 2.4 — Goulot d&apos;étranglement CPU : un calcul intensif sur le thread principal fige l&apos;Event Loop et met toutes les autres requêtes en attente.
           </p>
         </div>
 
@@ -208,7 +208,7 @@ export const Chapitre1Content: React.FC = () => {
             />
           </div>
           <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.5 � Solution d&apos;optimisation : le Main Thread délègue la tâche CPU à un Worker Thread indépendant pour préserver sa fluidité.
+            Figure 2.5 — Solution d&apos;optimisation : le Main Thread délègue la tâche CPU à un Worker Thread indépendant pour préserver sa fluidité.
           </p>
         </div>
       </section>
@@ -220,7 +220,7 @@ export const Chapitre1Content: React.FC = () => {
         </h2>
 
         <QuickQuiz
-          title="Question 1 � Exécution de node server.js"
+          title="Question 1 — Exécution de node server.js"
           question="Lorsque vous exécutez 'node server.js' dans un terminal, que démarre le système d'exploitation ?"
           options={[
             "Un simple thread léger",
@@ -232,7 +232,7 @@ export const Chapitre1Content: React.FC = () => {
         />
 
         <QuickQuiz
-          title="Question 2 � Attente d'une réponse de Gemini avec await"
+          title="Question 2 — Attente d'une réponse de Gemini avec await"
           question="Votre serveur Node.js appelle l'API Google Gemini avec 'await fetch(...)'. De quelle nature est cette opération ?"
           options={[
             "Une opération CPU-bound bloquant le thread principal",
@@ -244,7 +244,7 @@ export const Chapitre1Content: React.FC = () => {
         />
 
         <QuickQuiz
-          title="Question 3 � Quand utiliser un Worker Thread ?"
+          title="Question 3 — Quand utiliser un Worker Thread ?"
           question="Dans quelle situation l'utilisation d'un Worker Thread est-elle particulièrement recommandée dans une API IA ?"
           options={[
             "Pour chaque requête HTTP GET basique",

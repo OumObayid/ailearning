@@ -200,7 +200,7 @@ module.exports = pool;`}
       [userId, 'Nouvelle session', prompt]
     );
 
-    // 5. Tout s'est bien déroulé : VALIDATION D�0FINITIVE (COMMIT)
+    // 5. Tout s'est bien déroulé : VALIDATION DÉFINITIVE (COMMIT)
     await connection.commit();
 
     res.json({ success: true, conversationId: insertResult.insertId });
@@ -215,7 +215,7 @@ module.exports = pool;`}
     }
     res.status(400).json({ success: false, message: err.message });
   } finally {
-    // 7. RESTITUTION IMP�0RATIVE au pool (jamais connection.end() !)
+    // 7. RESTITUTION IMPÉRATIVE au pool (jamais connection.end() !)
     if (connection) {
       connection.release();
     }
@@ -242,10 +242,10 @@ module.exports = pool;`}
             </div>
             <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-3">
               <span className="font-black text-purple-900 block">Phase 2 : Streaming IA (~4 000 ms)</span>
-              �0change réseau pur avec l&apos;API Google Gemini en streaming SSE. <strong>0 connexion MySQL réservée</strong>.
+              Échange réseau pur avec l&apos;API Google Gemini en streaming SSE. <strong>0 connexion MySQL réservée</strong>.
             </div>
             <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
-              <span className="font-black text-emerald-900 block">Phase 3 : �0criture SQL (~2 ms)</span>
+              <span className="font-black text-emerald-900 block">Phase 3 : Écriture SQL (~2 ms)</span>
               Une fois le streaming achevé, un socket est ré-emprunté 2 millisecondes pour enregistrer la réponse dans la table.
             </div>
           </div>

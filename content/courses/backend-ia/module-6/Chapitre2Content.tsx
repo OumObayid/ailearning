@@ -113,7 +113,7 @@ export const Chapitre2Content: React.FC = () => {
             />
           </div>
           <p className="mt-3 text-xs sm:text-sm text-center text-slate-700 font-semibold">
-            Figure 6.1 � Cycle d&apos;exécution V8 : pourquoi le code JavaScript nécessite un échauffement JIT tandis que WebAssembly s&apos;exécute immédiatement à cadence nominale.
+            Figure 6.1 — Cycle d&apos;exécution V8 : pourquoi le code JavaScript nécessite un échauffement JIT tandis que WebAssembly s&apos;exécute immédiatement à cadence nominale.
           </p>
         </div>
       </section>
@@ -164,12 +164,12 @@ function calculJavaScript(n) {
 
 const n = 100_000_000;
 
-// �0tape 1 : Préchauffage du moteur V8 (Warm-up)
+// Étape 1 : Préchauffage du moteur V8 (Warm-up)
 for (let i = 0; i < 3; i++) {
   calculJavaScript(n);
 }
 
-// �0tape 2 : Mesures statistiques répétées
+// Étape 2 : Mesures statistiques répétées
 const durees = [];
 for (let i = 0; i < 5; i++) {
   const debut = performance.now();
@@ -223,7 +223,7 @@ console.log("Moyenne JS :", moyenne.toFixed(2), "ms");`}
       {/* 7. Travaux Pratiques */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Travaux Pratiques � Exercices d&apos;application
+          7. Travaux Pratiques — Exercices d&apos;application
         </h2>
 
         <PracticalWork

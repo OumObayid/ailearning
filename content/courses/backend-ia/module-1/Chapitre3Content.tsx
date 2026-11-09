@@ -57,7 +57,7 @@ export const Chapitre3Content: React.FC = () => {
               Dans une boulangerie traditionnelle : vous commandez, le boulanger prépare votre pain devant vous. Vous restez figé au comptoir, et personne derrière vous ne peut commander avant que vous ayez payé et récupéré votre commande.
             </p>
             <div className="rounded-xl bg-slate-100 p-3 font-mono text-sm text-slate-900 font-bold">
-              Instruction 1 �~ Attend fin �~ Instruction 2
+              Instruction 1 →  Attend fin →  Instruction 2
             </div>
           </div>
 
@@ -67,7 +67,7 @@ export const Chapitre3Content: React.FC = () => {
               Dans un restaurant moderne : vous commandez, on vous donne un ticket ou un beeper (la Promise). Vous allez vous asseoir et lire un livre. Dès que la commande est prête, le beeper sonne et vous récupérez votre plateau. Le comptoir a pu servir 50 autres clients pendant ce temps !
             </p>
             <div className="rounded-xl bg-white p-3 font-mono text-sm text-indigo-950 font-bold border border-indigo-200">
-              Démarre opération �~ Reçoit Promise �~ Poursuit l&apos;exécution
+              Démarre opération →  Reçoit Promise →  Poursuit l&apos;exécution
             </div>
           </div>
         </div>
@@ -86,19 +86,19 @@ export const Chapitre3Content: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-4">
-              <span className="text-xs uppercase font-black text-amber-950">�0tat 1</span>
+              <span className="text-xs uppercase font-black text-amber-950">État 1</span>
               <p className="text-xl font-black text-amber-950 mt-1">Pending</p>
               <span className="text-xs font-semibold text-amber-900">En cours de traitement</span>
             </div>
             <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-4">
-              <span className="text-xs uppercase font-black text-emerald-950">�0tat 2</span>
+              <span className="text-xs uppercase font-black text-emerald-950">État 2</span>
               <p className="text-xl font-black text-emerald-950 mt-1">Fulfilled (Resolved)</p>
               <span className="text-xs font-semibold text-emerald-900">Succès avec valeur</span>
             </div>
             <div className="rounded-2xl border-2 border-rose-300 bg-rose-50 p-4">
-              <span className="text-xs uppercase font-black text-rose-950">�0tat 3</span>
+              <span className="text-xs uppercase font-black text-rose-950">État 3</span>
               <p className="text-xl font-black text-rose-950 mt-1">Rejected</p>
-              <span className="text-xs font-semibold text-rose-900">�0chec avec erreur</span>
+              <span className="text-xs font-semibold text-rose-900">Échec avec erreur</span>
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export const Chapitre3Content: React.FC = () => {
               <tr>
                 <td className="p-3.5 font-mono text-rose-700">fs.readFileSync()</td>
                 <td className="p-3.5">Synchrone &amp; Bloquant</td>
-                <td className="p-3.5">�a�️ Bloque tout le serveur pendant la lecture disque</td>
+                <td className="p-3.5">⚠️ Bloque tout le serveur pendant la lecture disque</td>
               </tr>
               <tr>
                 <td className="p-3.5 font-mono text-emerald-700">fs.readFile()</td>
@@ -185,7 +185,7 @@ export const Chapitre3Content: React.FC = () => {
               <tr>
                 <td className="p-3.5 font-mono text-rose-700">for(let i=0; i&lt;1e9; i++)</td>
                 <td className="p-3.5">Synchrone &amp; Bloquant</td>
-                <td className="p-3.5">�a�️ Monopolise le processeur à 100%</td>
+                <td className="p-3.5">⚠️ Monopolise le processeur à 100%</td>
               </tr>
             </tbody>
           </table>
@@ -236,7 +236,7 @@ const [user, history, params] = await Promise.all([
         </h2>
 
         <QuickQuiz
-          title="Exercice 1 � Prédire l'ordre avec async/await"
+          title="Exercice 1 — Prédire l'ordre avec async/await"
           question={`Observez ce code :
 console.log("A");
 async function test() {
@@ -259,7 +259,7 @@ Quel résultat obtiendrez-vous ?`}
         />
 
         <QuickQuiz
-          title="Exercice 2 � Le piège du calcul dans une fonction async"
+          title="Exercice 2 — Le piège du calcul dans une fonction async"
           question={`Soit cette route Express :
 app.get("/calcul", async (req, res) => {
   let total = 0;
@@ -278,7 +278,7 @@ Pourquoi le serveur reste-t-il totalement figé malgré le mot-clé async ?`}
         />
 
         <QuickQuiz
-          title="Exercice 3 � Requêtes vers 3 microservices d'IA"
+          title="Exercice 3 — Requêtes vers 3 microservices d'IA"
           question="Vous devez interroger 3 modèles d'IA indépendants (Gemini, analyseur sémantique, base vectorielle). Quelle structure offre la plus faible latence totale ?"
           options={[
             "Trois appels consécutifs avec await l'un après l'autre",
