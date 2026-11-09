@@ -3,7 +3,6 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
-import { Icon } from '@/components/common/Icon';
 
 export const Chapitre5Content: React.FC = () => {
   return (

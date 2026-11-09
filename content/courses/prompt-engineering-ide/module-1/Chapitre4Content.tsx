@@ -3,7 +3,6 @@
 import React from 'react';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { ContextWindowSimulator } from '@/components/interactive/ContextWindowSimulator';
-import { Icon } from '@/components/common/Icon';
 
 export const Chapitre4Content: React.FC = () => {
   return (

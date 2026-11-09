@@ -6,7 +6,6 @@ import { PracticalWork } from '@/components/courses/PracticalWork';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
 import { NodeMemoryEventLoopLab } from '@/components/interactive/NodeMemoryEventLoopLab';
-import { Icon } from '@/components/common/Icon';
 
 export const Chapitre2Content: React.FC = () => {
   return (

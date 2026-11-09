@@ -6,7 +6,6 @@ import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
-import { Icon } from '@/components/common/Icon';
 
 export const Chapitre3Content: React.FC = () => {
   return (

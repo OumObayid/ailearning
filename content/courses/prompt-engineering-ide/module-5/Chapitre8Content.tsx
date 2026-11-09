@@ -4,7 +4,6 @@ import React from 'react';
 import Image from 'next/image';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
-import { Icon } from '@/components/common/Icon';
 
 export const Chapitre8Content: React.FC = () => {
   return (

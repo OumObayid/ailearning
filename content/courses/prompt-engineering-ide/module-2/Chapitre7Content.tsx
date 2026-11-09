@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
-import { Icon } from '@/components/common/Icon';
 
 export const Chapitre7Content: React.FC = () => {
   return (
