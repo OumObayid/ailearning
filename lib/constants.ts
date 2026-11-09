@@ -407,3 +407,16 @@ export const COURSE_MODULES: CourseModule[] = [
   ...PROMPT_ENGINEERING_IDE_MODULES,
   ...DEBUGGING_MODULES,
 ];
+
+/**
+ * URLs de base de la plateforme (Local vs Production)
+ */
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.NEXT_PUBLIC_APP_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://ailearning.oumportfolio.com'
+    : 'http://localhost:3000');
+
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || `${SITE_URL}/api`;
