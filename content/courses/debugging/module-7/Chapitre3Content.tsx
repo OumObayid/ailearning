@@ -1,1076 +1,379 @@
 ﻿'use client';
 
-import React from 'react';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import React, { useState } from 'react';
 import { Callout } from '@/components/courses/Callout';
-import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+interface ReproductionRecipe {
+  id: string;
+  title: string;
+  targetEndpoint: string;
+  method: 'GET' | 'POST';
+  preconditions: string[];
+  curlCommand: string;
+  expectedStatus: number;
+  actualStatus: number;
+  serverOutput: string;
+  diagnosis: string;
+}
+
+const REPRO_RECIPES: ReproductionRecipe[] = [
+  {
+    id: 'repro-idor',
+    title: 'Recette 1 : Reproduction de la faille IDOR (SEC-01)',
+    targetEndpoint: '/api/orders/1042',
+    method: 'GET',
+    preconditions: [
+      'Compte utilisateur B authentifié (ID: 99, token JWT actif)',
+      'Commande 1042 appartenant légitimement à l\'utilisateur A (ID: 12)'
+    ],
+    curlCommand: `curl -X GET http://localhost:4000/api/orders/1042 \\
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTksInJvbGUiOiJVU0VSIn0..." \\
+  -H "Accept: application/json" -v`,
+    expectedStatus: 403,
+    actualStatus: 200,
+    serverOutput: `{
+  "id": 1042,
+  "userId": 12,
+  "clientName": "Société Dupont SAS",
+  "totalAmount": 14500.00,
+  "billingAddress": "14 Avenue Montaigne, 75008 Paris",
+  "status": "PAID"
+}`,
+    diagnosis: 'Reproduction confirmée : le serveur renvoie HTTP 200 et divulgue les données sensibles d\'un tiers alors qu\'il devrait renvoyer HTTP 403 Forbidden.'
+  },
+  {
+    id: 'repro-crash-500',
+    title: 'Recette 2 : Reproduction du Crash Null Pointer (TECH-02)',
+    targetEndpoint: '/api/orders/999999',
+    method: 'GET',
+    preconditions: [
+      'Identifiant inexistant dans la base de données MySQL',
+      'Token JWT valide'
+    ],
+    curlCommand: `curl -X GET http://localhost:4000/api/orders/999999 \\
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5..." \\
+  -H "Accept: application/json" -v`,
+    expectedStatus: 404,
+    actualStatus: 500,
+    serverOutput: `<!DOCTYPE html>
+<html>
+  <head><title>Internal Server Error</title></head>
+  <body>
+    <h1>TypeError: Cannot read properties of undefined (reading 'totalAmount')</h1>
+    <pre>at getOrderById (src/backend/controllers/order.controller.ts:28:34)</pre>
+  </body>
+</html>`,
+    diagnosis: 'Reproduction confirmée : absence de garde-fou if (!order). Le crash lève une 500 et divulgue la stack trace interne dans le HTML.'
+  },
+  {
+    id: 'repro-ai-timeout',
+    title: 'Recette 3 : Reproduction du Gel Réseau Gemini (PERF-05)',
+    targetEndpoint: '/api/ai/analyze-document',
+    method: 'POST',
+    preconditions: [
+      'Document PDF de 8 Mo contenant des scans haute résolution',
+      'Simulation de latence WAN sur le endpoint Google AI Studio'
+    ],
+    curlCommand: `curl -X POST http://localhost:4000/api/ai/analyze-document \\
+  -H "Authorization: Bearer eyJhbGci..." \\
+  -F "document=@./test/fixtures/heavy_scanned_invoice.pdf" \\
+  --max-time 20 -v`,
+    expectedStatus: 200,
+    actualStatus: 504,
+    serverOutput: `curl: (28) Operation timed out after 20002 milliseconds with 0 bytes received
+HTTP/1.1 504 Gateway Timeout
+Content-Type: application/json
+
+{"error": "Upstream service timeout: Gemini did not respond within limit"}`,
+    diagnosis: 'Reproduction confirmée : l\'Event Loop est resté suspendu sans streaming ni AbortController, conduisant au timeout de la passerelle.'
+  }
+];
 
 export const Chapitre3Content: React.FC = () => {
+  const [selectedRecipe, setSelectedRecipe] = useState<ReproductionRecipe>(REPRO_RECIPES[0]);
+  const [simulatedExecution, setSimulatedExecution] = useState<boolean>(false);
+
+  const handleSelect = (r: ReproductionRecipe) => {
+    setSelectedRecipe(r);
+    setSimulatedExecution(false);
+  };
+
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
-      {/* Hero Banner */}
+    <div className="space-y-12 text-slate-900 leading-relaxed font-sans pb-16">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+      <div className="rounded-3xl border-2 border-emerald-300 bg-linear-to-r from-emerald-50 via-teal-50 to-green-100/60 p-6 sm:p-8 shadow-xs">
+        <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs uppercase tracking-wider mb-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+          <span>Module 7 — Grand Projet de Fin d&apos;Études (Capstone) • Section 7.3</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 3 — Reproduction des bugs
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Méthodologie de Reproduction Contrôlée des Bugs
         </h1>
+        <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">
+          &laquo; Ça ne marche pas &raquo; n&apos;est pas un bug : c&apos;est un bruit. Tant qu&apos;une anomalie n&apos;est pas isolée dans un <strong>script de reproduction déterministe et répétable à l&apos;infini</strong>, toute tentative de correction relève de la superstition. Maîtrisez le protocole expérimental de reproduction.
+        </p>
       </div>
 
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 3 — 7.3. Reproduction des bugs
-      </p>
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs pédagogiques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous serez capable de :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Reproduire un dysfonctionnement dans des conditions contrôlées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Transformer un signalement utilisateur en scénario de reproduction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les préconditions nécessaires à l&apos;apparition d&apos;un bug.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser les outils de développement pour observer les erreurs.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Reproduire des anomalies frontend, backend, MySQL et API.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Demander à un agent IA de reproduire un bug sans modifier le code.</span>
-          </li>
-        </ul>
+      {/* Section 1: La Formule Canonique de Reproduction */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Démarche Scientifique</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            1. L&apos;Équation Canonique de la Reproduction Logicielle
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Pour qu&apos;une anomalie soit reproductible de façon irréfutable par n&apos;importe quel membre de l&apos;équipe ou par un agent d&apos;IDE, elle doit obligatoirement réunir quatre paramètres invariables :
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black mb-2">1</span>
+            <div className="text-sm font-bold text-slate-900 mb-1">Préconditions</div>
+            <p className="text-xs text-slate-600">État initial de la base de données, session utilisateur, variables d&apos;environnement actives.</p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black mb-2">2</span>
+            <div className="text-sm font-bold text-slate-900 mb-1">Vecteur d&apos;Entrée</div>
+            <p className="text-xs text-slate-600">Payload JSON exact, en-têtes HTTP (Content-Type, Auth Bearer), paramètres d&apos;URL et fichiers joints.</p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black mb-2">3</span>
+            <div className="text-sm font-bold text-slate-900 mb-1">Résultat Observé</div>
+            <p className="text-xs text-slate-600">Code statut réel (ex: 500 ou 200 non autorisé), stack trace, délai de réponse constaté.</p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black mb-2">4</span>
+            <div className="text-sm font-bold text-slate-900 mb-1">Résultat Attendu</div>
+            <p className="text-xs text-slate-600">Spécification contractuelle officielle (ex: HTTP 404 avec message d&apos;erreur standardisé).</p>
+          </div>
+        </div>
+
+        <Callout type="warning" title="Bugs Systématiques vs Heisenbugs">
+          Un bug systématique se produit à 100% dès que les préconditions sont réunies. Un <em>Heisenbug</em> (bug intermittent) dépend de conditions de course (race conditions), d&apos;un état de concurrence réseau ou du ramasse-miettes V8. Pour reproduire un Heisenbug, on utilise des outils de charge comme <code className="text-xs font-mono">autocannon</code> ou <code className="text-xs font-mono">Promise.all()</code> simulant 50 requêtes simultanées.
+        </Callout>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Pourquoi reproduire un bug avant de le corriger ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Identifier une anomalie ne suffit pas. Il faut être capable de la reproduire.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La reproduction permet de vérifier que le problème existe réellement et de comprendre dans quelles conditions il apparaît.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un utilisateur signale :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        « Lorsque je consulte mes commandes, l&apos;application affiche une erreur. »
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette description est insuffisante pour commencer une correction.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut déterminer :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;utilisateur est-il connecté ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La commande existe-t-elle ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;identifiant transmis est-il valide ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;erreur apparaît-elle pour toutes les commandes ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;erreur apparaît-elle uniquement pour un utilisateur particulier ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le problème est-il reproductible à chaque tentative ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La reproduction transforme un signalement imprécis en un problème technique observable.
-      </p>
+      {/* Section 2: Outils de Reproduction (cURL & Chrome DevTools) */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Arsenal d&apos;Ingénierie</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            2. Les deux instruments rois : cURL et l&apos;inspection réseau DevTools
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Ne reproduisez jamais une anomalie d&apos;API en cliquant frénétiquement dans l&apos;interface React : l&apos;état graphique masque la réalité des échanges réseau. Utilisez plutôt :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 my-6">
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+            <h3 className="text-base font-bold text-slate-900 mb-2">1. La commande cURL scriptable</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+              Permet d&apos;isoler complètement la requête en s&apos;affranchissant du navigateur. Idéal pour être transmis dans un prompt d&apos;agent ou intégré dans un script bash de test.
+            </p>
+            <CodeBlock language="bash">{`# Reproduction isolée sans navigateur
+curl -i -X POST http://localhost:4000/api/auth/login \\
+  -H "Content-Type: application/json" \\
+  -d '{"email": "admin@corp.com", "passwordUser": "Secret123!"}'`}</CodeBlock>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+            <h3 className="text-base font-bold text-slate-900 mb-2">2. DevTools &laquo; Copy as cURL &raquo;</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+              Dans l&apos;onglet <strong>Network</strong> de Chrome DevTools, faites un clic droit sur la requête en échec $\rightarrow$ <em>Copy</em> $\rightarrow$ <em>Copy as cURL (bash)</em>. Vous capturez fidèlement tous les cookies, headers et tokens réels de la session en cours.
+            </p>
+            <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-700 font-mono border border-slate-200">
+              Avantage : Capture instantanée de l&apos;état exact du client au moment précis du crash.
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Les éléments nécessaires à la reproduction
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un scénario de reproduction doit contenir plusieurs informations.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Élément</th>
-              <th className="px-4 py-3">Description</th>
-              <th className="px-4 py-3">Exemple</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Préconditions</td>
-              <td className="px-4 py-2.5 font-medium">État nécessaire avant le test</td>
-              <td className="px-4 py-2.5 font-medium">Utilisateur connecté</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Données</td>
-              <td className="px-4 py-2.5 font-medium">Données utilisées</td>
-              <td className="px-4 py-2.5 font-medium">ID commande = 125</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Actions</td>
-              <td className="px-4 py-2.5 font-medium">Manipulations effectuées</td>
-              <td className="px-4 py-2.5 font-medium">Cliquer sur « Mes commandes »</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Résultat attendu</td>
-              <td className="px-4 py-2.5 font-medium">Comportement normal</td>
-              <td className="px-4 py-2.5 font-medium">Affichage de la commande</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Résultat observé</td>
-              <td className="px-4 py-2.5 font-medium">Comportement réel</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 500</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fréquence</td>
-              <td className="px-4 py-2.5 font-medium">Régularité du problème</td>
-              <td className="px-4 py-2.5 font-medium">Systématique ou intermittent</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Environnement</td>
-              <td className="px-4 py-2.5 font-medium">Conditions techniques</td>
-              <td className="px-4 py-2.5 font-medium">Chrome, Node.js, environnement de test</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de scénario documenté
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        BUG-002 — Erreur lors de la consultation d&apos;une commande
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Gravité élevée — exemple pédagogique
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Préconditions
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utilisateur authentifié.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Commande inexistante avec ID 125.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Actions
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ouvrir la page des commandes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Demander la consultation de la commande 125.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultat attendu
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        HTTP 404 — Commande introuvable.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultat observé
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        HTTP 500 — Erreur interne du serveur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce scénario est suffisamment précis pour commencer une investigation.
-      </p>
+      {/* Section 3: Studio Interactif de Reproduction de Bugs */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Simulateur Interactif</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            3. Atelier : Studio de Reproduction Contrôlée du Projet Capstone
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Sélectionnez un scénario d&apos;anomalie parmi les dysfonctionnements du projet Capstone, examinez la commande de reproduction et déclenchez son exécution simulée pour observer la réponse brute du serveur :
+        </p>
+
+        {/* Sélecteur de scénario */}
+        <div className="flex flex-wrap gap-2.5">
+          {REPRO_RECIPES.map((recipe) => (
+            <button
+              key={recipe.id}
+              onClick={() => handleSelect(recipe)}
+              className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-left ${
+                selectedRecipe.id === recipe.id
+                  ? 'bg-emerald-700 text-white shadow-md'
+                  : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              {recipe.title}
+            </button>
+          ))}
+        </div>
+
+        {/* Détails de la recette */}
+        <div className="rounded-2xl bg-white border border-slate-300 shadow-sm overflow-hidden">
+          <div className="bg-slate-900 text-white p-4 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-xs font-mono font-black bg-emerald-600 text-white">
+                {selectedRecipe.method}
+              </span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-slate-200">
+                {selectedRecipe.targetEndpoint}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-xs font-mono">
+              <span className="text-slate-400">Attendu : <strong className="text-emerald-400">{selectedRecipe.expectedStatus}</strong></span>
+              <span className="text-slate-400">Observé : <strong className="text-rose-400">{selectedRecipe.actualStatus}</strong></span>
+            </div>
+          </div>
+
+          <div className="p-5 space-y-4">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Préconditions obligatoires :</div>
+              <ul className="space-y-1">
+                {selectedRecipe.preconditions.map((p, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-xs sm:text-sm text-slate-700">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Commande de reproduction cURL :</div>
+              <CodeBlock language="bash">{selectedRecipe.curlCommand}</CodeBlock>
+            </div>
+
+            <div className="pt-2">
+              <button
+                onClick={() => setSimulatedExecution(true)}
+                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition-all shadow-xs flex items-center gap-2"
+              >
+                <span>▶ Exécuter la requête dans l&apos;environnement de test</span>
+              </button>
+            </div>
+
+            {simulatedExecution && (
+              <div className="mt-4 space-y-3 pt-3 border-t border-slate-200">
+                <div className="text-xs font-bold uppercase tracking-wider text-rose-700">
+                  Réponse brute interceptée (Status: {selectedRecipe.actualStatus}) :
+                </div>
+                <CodeBlock language="json">{selectedRecipe.serverOutput}</CodeBlock>
+
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-xs sm:text-sm font-medium">
+                  <strong>Diagnostic d&apos;ingénierie :</strong> {selectedRecipe.diagnosis}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Reproduire les bugs selon leur origine
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        4.1. Reproduction d&apos;un bug frontend React
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prenons un formulaire de connexion.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 4: Quiz d'évaluation de 6 questions */}
+      <section className="space-y-6 pt-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Validation des Connaissances</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            4. Quiz : Méthodologie et protocoles de reproduction
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`function LoginForm() {
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
 
-async function login() {
-await axios.post("/api/login", {
-email,
-passwordUser: password
-});
-}
-
-return (
-&lt;button onClick={login}&gt;
-Se connecter
-&lt;/button&gt;
-);
-}
-Supposons que le backend attende un champ password et non passwordUser.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour reproduire le problème :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ouvrir la page de connexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Saisir un email et un mot de passe valides.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Cliquer sur « Se connecter ».</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ouvrir Chrome DevTools.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Consulter l&apos;onglet Network.</span>
-          </li>
-        </ul>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Examiner la requête POST /api/login.`}</code></pre>
-      </div>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier le corps JSON transmis.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        On peut alors constater que le frontend transmet un nom de champ différent de celui attendu.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        4.2. Reproduction d&apos;un bug backend Express
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Examinons ce contrôleur :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getOrder(req, res) {
-const order = await orderRepository.findById(
-Number(req.params.id)
-);
-
-return res.json({
-id: order.id,
-total: order.total
-});
-}
-Si la commande n'existe pas, findById() peut retourner undefined.
-L'accès à order.id provoquera une exception.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour reproduire le problème :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/orders/999999
-Authorization: Bearer TOKEN_VALID`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultat possible :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`HTTP/1.1 500 Internal Server Error`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La reproduction confirme le comportement, mais ne suffit pas encore à démontrer toutes les causes possibles.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        4.3. Reproduction d&apos;un bug MySQL
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une requête peut retourner un résultat inattendu.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`SELECT *
-FROM orders
-WHERE user_id = 15;`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour examiner les données :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`SELECT id, user_id, total, status
-FROM orders
-WHERE user_id = 15;`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        On peut comparer les résultats avec les attentes métier.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Autres éléments à examiner :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Absence d&apos;enregistrements.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Mauvaise relation entre tables.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiant incorrect.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Valeur NULL inattendue.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Requête qui retourne plusieurs lignes au lieu d&apos;une seule.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        4.4. Reproduction d&apos;un bug dans le service IA
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Supposons que le backend transmette un document à Gemini.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le problème signalé : « L&apos;analyse IA ne fonctionne pas. »
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut vérifier :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le document est-il correctement reçu ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Son contenu est-il exploitable ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La clé API est-elle correctement configurée ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La requête atteint-elle le service IA ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le service retourne-t-il une erreur ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le backend traite-t-il correctement la réponse ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut distinguer une erreur de transmission du document, une erreur d&apos;authentification API et une erreur provenant du service IA.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Utiliser les outils pour reproduire les anomalies
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les outils de développement permettent d&apos;observer le comportement réel.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Outil</th>
-              <th className="px-4 py-3">Utilisation</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Chrome DevTools — Console</td>
-              <td className="px-4 py-2.5 font-medium">Observer les erreurs JavaScript</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Chrome DevTools — Network</td>
-              <td className="px-4 py-2.5 font-medium">Examiner les requêtes HTTP</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">VS Code Debugger</td>
-              <td className="px-4 py-2.5 font-medium">Examiner l&apos;exécution du code</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Terminal Node.js</td>
-              <td className="px-4 py-2.5 font-medium">Observer les erreurs backend</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Postman</td>
-              <td className="px-4 py-2.5 font-medium">Reproduire les appels API</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">MySQL Workbench</td>
-              <td className="px-4 py-2.5 font-medium">Examiner les données SQL</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Git</td>
-              <td className="px-4 py-2.5 font-medium">Comparer les versions du code</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple avec Postman
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour reproduire une erreur sur une route Express :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Configuration de la requête
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        GET
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`http://localhost:3000/api/orders/999999`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Headers
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Authorization: Bearer TOKEN_VALID`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultat à observer
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Code HTTP.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Temps de réponse.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Corps de la réponse.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Éventuels messages d&apos;erreur.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;avantage de Postman est de tester le backend indépendamment de React. Si l&apos;erreur apparaît également dans Postman, le problème ne dépend probablement pas de l&apos;interface frontend.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Distinguer un bug systématique d&apos;un bug intermittent
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tous les bugs ne se reproduisent pas de la même manière.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Bug systématique :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il apparaît chaque fois que les mêmes conditions sont réunies.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : un utilisateur inexistant provoque toujours HTTP 500.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Bug intermittent :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il apparaît uniquement dans certaines circonstances.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemples :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une requête échoue occasionnellement.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un téléchargement échoue avec un fichier volumineux.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un appel IA dépasse parfois le délai d&apos;attente.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Deux opérations simultanées provoquent une incohérence.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour un bug intermittent, il faut noter les conditions, les horaires, la fréquence et les éventuelles dépendances externes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ne pas conclure qu&apos;un problème est résolu simplement parce qu&apos;il ne s&apos;est pas reproduit lors d&apos;une seule tentative.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Demander à un agent IA de reproduire un bug
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un agent IA peut aider à préparer les scénarios et à examiner les conditions nécessaires.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cependant, il faut lui demander de reproduire le problème sans modifier le projet.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MISSION — REPRODUCTION D&apos;UNE ANOMALIE LOGICIELLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur QA spécialisé dans les applications React, Node.js, Express et MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Reproduire une anomalie signalée et confirmer les conditions dans lesquelles elle apparaît.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONTEXT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;application comprend un frontend React, un backend Express, une API REST et une base MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        BUG SIGNALÉ
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La consultation d&apos;une commande inexistante provoque une erreur HTTP 500 au lieu d&apos;une réponse HTTP 404.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner le code concerné.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les préconditions nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir les données de test.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Construire un scénario de reproduction précis.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les requêtes HTTP nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Déterminer les résultats attendus et observés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Rechercher les logs utiles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Déterminer si le problème est systématique ou intermittent.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Indiquer les preuves disponibles et les informations manquantes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifier aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne supprimer aucune donnée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas exécuter de migration SQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas utiliser la base de production.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas exposer les secrets.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas présenter une reproduction théorique comme une reproduction réellement exécutée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Demander une autorisation avant toute action destructive ou modification.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT FORMAT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présenter :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Description du bug.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Préconditions.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Données de test.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Étapes de reproduction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Requête HTTP.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Résultat attendu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Résultat observé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Logs et preuves.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Conclusion : reproduit, non reproduit ou reproduction impossible.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Informations complémentaires nécessaires.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Aucune correction ne doit être effectuée.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Point essentiel : un agent peut proposer un scénario de reproduction sans l&apos;avoir réellement exécuté. Il doit clairement indiquer la différence entre une hypothèse, une simulation et un test effectivement réalisé.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. TP — Reproduire une anomalie dans une application complète
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travaux pratiques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte : votre application de gestion documentaire possède un endpoint permettant de récupérer les informations d&apos;une commande.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le repository :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findById(id: number) {
-const [rows] = await db.execute(
-"SELECT * FROM orders WHERE id = ?",
-[id]
-);
-
-return rows[0];
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le contrôleur :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getOrder(req, res) {
-const order = await findById(
-Number(req.params.id)
-);
-
-return res.json({
-id: order.id,
-total: order.total
-});
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 1 — Préparer les conditions
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Démarrer MySQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Démarrer le backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier que la route fonctionne avec une commande existante.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Préparer un identifiant qui n&apos;existe pas dans la base de test.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 2 — Tester avec Postman
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Effectuer deux requêtes :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/orders/1
-GET /api/orders/999999`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Adapter le premier identifiant à une commande réellement présente dans votre base de test.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 3 — Observer les résultats
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Relever :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le code HTTP.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le corps de la réponse.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les logs backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le comportement de la route pour les deux identifiants.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 4 — Documenter
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créer une fiche de reproduction :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`BUG-006
-
-Fonctionnalité :
-Consultation d'une commande.
-
-Préconditions :
-Backend démarré.
-Base de test accessible.
-Utilisateur authentifié si nécessaire.
-
-Action :
-GET /api/orders/999999
-
-Résultat attendu :
-HTTP 404.
-
-Résultat observé :
-HTTP 500.
-
-Fréquence :
-À vérifier par plusieurs exécutions.
-
-Conclusion :
-Anomalie reproduite si le résultat est confirmé.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé attendu
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour une commande existante, le contrôleur doit retourner les informations de la commande.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Pour une commande inexistante, le code actuel peut provoquer une exception lors de l'accès à order.id.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La reproduction permet donc de confirmer une anomalie dans le traitement des résultats absents.
-      </p>
-      <Callout type="warning" title="Attention ">
-        <p className="text-xs sm:text-sm">à ce stade, ne corrigez pas encore le code. La correction sera étudiée dans les étapes suivantes du projet.</p>
-      </Callout>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Bonnes pratiques professionnelles
-        </h2>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Reproduire le bug avant de proposer une correction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser des données de test contrôlées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Enregistrer les étapes exactes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comparer les résultats attendus et observés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tester le backend indépendamment du frontend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne jamais expérimenter sur une base de production.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Conserver les logs et les preuves.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas confondre une reproduction simulée et une reproduction réelle.</span>
-          </li>
-        </ul>
-      </section>
-
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
         <QuickQuiz
-          title="Quiz de révision — Chapitre 7.3"
+          title="Quiz 7.3 — Reproduction Contrôlée et Isolation de Bugs"
           questions={[
             {
               id: 1,
-              question: "Quel est l'objectif principal de la reproduction d'un bug ?",
-              options: ["Modifier directement le code.", "Supprimer les logs."],
+              question: "Pourquoi est-il interdit de tenter de corriger un bug tant qu'il n'a pas été reproduit dans un scénario déterministe ?",
+              options: [
+                "Pour permettre au compilateur de créer un index temporaire sur le disque.",
+                "Parce que sans preuve de reproduction, il est impossible de vérifier si la modification apportée résout effectivement l'anomalie ou si elle n'a fait que masquer le problème par coïncidence.",
+                "Parce que les serveurs de bases de données refusent les modifications non précédées d'un script bash.",
+                "Pour respecter une obligation légale de la CNIL."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "La reproduction est la première moitié du test Red-Green : tant qu'on ne sait pas faire échouer le système de manière contrôlée, on ne peut pas prouver sa réparation."
             },
             {
               id: 2,
-              question: "Quel outil permet de tester une API indépendamment de React ?",
-              options: ["Postman.", "Photoshop.", "Figma."],
-              correctIndex: 0,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              question: "Dans le jargon d'ingénierie logicielle, qu'appelle-t-on un 'Heisenbug' ?",
+              options: [
+                "Un bug causé par une faute de frappe dans le fichier package.json.",
+                "Une anomalie intermittente qui semble disparaître ou modifier son comportement dès que l'on tente de l'observer (ex: en activant le mode debug ou en ajoutant des logs console qui altèrent le timing de concurrence).",
+                "Un virus informatique conçu en Allemagne dans les années 1980.",
+                "Un dépassement de pile provoqué par une fonction récursive infinie."
+              ],
+              correctIndex: 1,
+              explanation: "Nommé par analogie avec le principe d'incertitude d'Heisenberg en physique quantique, ce type de bug dépend de conditions temporelles critiques (race conditions) perturbées par l'acte même de mesure."
             },
             {
               id: 3,
-              question: "Que faut-il documenter dans un scénario de reproduction ?",
-              options: ["Uniquement le nom du développeur.", "Les préconditions, les actions et les résultats.", "Uniquement le fichier concerné."],
+              question: "Quel est l'avantage décisif d'isoler une requête de reproduction avec 'cURL' plutôt que de la relancer depuis l'interface web React ?",
+              options: [
+                "cURL permet d'envoyer des requêtes 1 000 fois plus volumineuses.",
+                "cURL élimine tous les biais liés au navigateur (mise en cache, gestionnaires d'état Redux/Zustand, cookies tiers, extensions) et permet de scriptoriser une requête HTTP brute identique.",
+                "cURL garantit que le serveur répondra en moins de 1 milliseconde.",
+                "cURL supprime automatiquement les erreurs HTTP 500."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "En s'affranchissant du runtime navigateur, cURL permet de cibler directement le contrat d'interface HTTP de l'API avec des données rigoureusement contrôlées."
             },
             {
               id: 4,
-              question: "Un bug intermittent apparaît-il systématiquement ?",
-              options: ["Oui.", "Non."],
+              question: "Comment extraire en un clic une requête réelle en échec depuis le navigateur pour la reproduire en ligne de commande ?",
+              options: [
+                "Prendre une photo de l'écran avec un smartphone.",
+                "Ouvrir l'onglet Network de Chrome DevTools, faire un clic droit sur la requête en rouge, puis choisir 'Copy' -> 'Copy as cURL'.",
+                "Copier le code source de la page HTML dans un fichier texte.",
+                "Redémarrer le navigateur en mode sans échec."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "L'option 'Copy as cURL' capture l'intégralité des en-têtes exacts, cookies de session et payloads transmis par le navigateur au moment précis de l'incident."
             },
             {
               id: 5,
-              question: "Un agent IA peut-il déclarer qu'un bug a été reproduit sans avoir exécuté le test ?",
-              options: ["Oui, sans précision.", "Non, il doit distinguer scénario proposé et reproduction réellement exécutée."],
+              question: "Que doit contenir obligatoirement le rapport de reproduction transmis à un collègue ou à un agent IA ?",
+              options: [
+                "Le salaire du développeur ayant écrit le code défaillant.",
+                "Les préconditions de départ, la séquence d'actions exacte (ou commande cURL), le résultat observé et le résultat contractuellement attendu.",
+                "Une capture d'écran du logo de l'entreprise.",
+                "La liste de tous les paquets installés dans Windows."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Cette structure rigoureuse permet à tout ingénieur de rejouer l'incident en moins de 60 secondes et d'objectiver l'existence de la défaillance."
             },
+            {
+              id: 6,
+              question: "Lorsque la reproduction d'un bug de timeout IA (comme l'envoi de PDF à Gemini) échoue en local faute de réseau lent, comment le provoquer de façon fiable ?",
+              options: [
+                "Couper le câble Ethernet à coups de ciseaux.",
+                "Utiliser la fonction de bridage réseau (Throttling) de Chrome DevTools ou un middleware d'émulation de latence injectant artificiellement un délai sur le port de sortie.",
+                "Attendre un jour d'orage.",
+                "Remplacer le processeur par un modèle plus ancien."
+              ],
+              correctIndex: 1,
+              explanation: "Le Network Throttling et l'injection de latence artificielle dans les tests permettent d'éprouver la résistance aux délais d'expiration (timeouts) en conditions reproductibles."
+            }
           ]}
         />
-      </div>
+      </section>
     </div>
   );
 };

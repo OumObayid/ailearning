@@ -1,1020 +1,444 @@
 ﻿'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Callout } from '@/components/courses/Callout';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
-import { Icon } from '@/components/common/Icon';
+
+interface CapstoneIncident {
+  id: string;
+  code: string;
+  title: string;
+  category: 'Sécurité' | 'Performance' | 'Technique' | 'Fonctionnel';
+  severity: 'P1' | 'P2' | 'P3' | 'P4';
+  slaHours: number;
+  symptom: string;
+  technicalImpact: string;
+  investigationStartingPoint: string;
+  codeSnippet: string;
+}
+
+const CAPSTONE_INCIDENTS: CapstoneIncident[] = [
+  {
+    id: 'inc-1',
+    code: 'SEC-01',
+    title: 'IDOR sur la consultation de facture (/api/orders/:id)',
+    category: 'Sécurité',
+    severity: 'P1',
+    slaHours: 2,
+    symptom: 'N\'importe quel utilisateur connecté peut consulter et télécharger les factures d\'autres clients en modifiant l\'identifiant numérique dans l\'URL.',
+    technicalImpact: 'Violation RGPD majeure et fuite de données confidentielles. Le contrôleur extrait la commande sans vérifier que order.userId === req.user.id.',
+    investigationStartingPoint: 'src/backend/controllers/order.controller.ts (getOrderById)',
+    codeSnippet: `// ❌ Code vulnérable dans order.controller.ts :
+export async function getOrderById(req: Request, res: Response) {
+  const orderId = Number(req.params.id);
+  const order = await orderRepository.findById(orderId);
+  // Faille : aucune vérification que order.userId === req.user.id !
+  return res.json(order);
+}`
+  },
+  {
+    id: 'inc-2',
+    code: 'TECH-02',
+    title: 'Crash HTTP 500 sur commande inexistante',
+    category: 'Technique',
+    severity: 'P2',
+    slaHours: 8,
+    symptom: 'GET /api/orders/999999 fait planter le processus ou renvoie une erreur 500 avec stack trace brute au client.',
+    technicalImpact: 'Défaut de validation. Le contrôleur suppose que le repository renvoie toujours un objet non nul et tente d\'accéder à order.totalAmount.',
+    investigationStartingPoint: 'src/backend/repositories/order.repository.ts & order.controller.ts',
+    codeSnippet: `// ❌ Accès direct sans garde-fou :
+export async function getOrderSummary(req: Request, res: Response) {
+  const order = await orderRepository.findById(Number(req.params.id));
+  // Si order est undefined -> TypeError: Cannot read properties of undefined
+  return res.json({ total: order.totalAmount });
+}`
+  },
+  {
+    id: 'inc-3',
+    code: 'PERF-03',
+    title: 'Saturation du pool de connexions MySQL sous charge',
+    category: 'Performance',
+    severity: 'P1',
+    slaHours: 4,
+    symptom: 'Après 40 requêtes simultanées, l\'API ne répond plus et toutes les requêtes tombent en timeout (504 Gateway Timeout).',
+    technicalImpact: 'Fuite de connexion (Connection Leak) dans la gestion des transactions SQL : conn.release() n\'est pas exécuté dans un bloc finally.',
+    investigationStartingPoint: 'src/backend/config/database.ts & services/order.service.ts',
+    codeSnippet: `// ❌ Fuite de connexion SQL :
+const conn = await pool.getConnection();
+await conn.beginTransaction();
+// Si une exception survient ici, conn.release() n'est JAMAIS appelé !
+await conn.query('UPDATE accounts SET ...');
+await conn.commit();
+conn.release();`
+  },
+  {
+    id: 'inc-4',
+    code: 'FUNC-04',
+    title: 'Calcul de taxe erroné pour les commandes intracommunautaires',
+    category: 'Fonctionnel',
+    severity: 'P2',
+    slaHours: 12,
+    symptom: 'Les clients B2B avec numéro de TVA valide se voient facturer 20% de TVA au lieu de 0% (auto-liquidation).',
+    technicalImpact: 'Incohérence comptable et risque de contentieux fiscal. La condition de validation du numéro VIES est ignorée si country !== "FR".',
+    investigationStartingPoint: 'src/backend/services/taxCalculator.ts',
+    codeSnippet: `// ❌ Règle métier erronée :
+export function calculateTax(amount: number, isB2B: boolean, country: string) {
+  if (country === 'FR') return amount * 0.20;
+  // Omission du contrôle d'auto-liquidation intracommunautaire B2B
+  return amount * 0.20;
+}`
+  },
+  {
+    id: 'inc-5',
+    code: 'PERF-05',
+    title: 'Blocage synchrone lors de l\'analyse de document par l\'IA',
+    category: 'Performance',
+    severity: 'P2',
+    slaHours: 8,
+    symptom: 'L\'envoi d\'un PDF volumineux à Gemini bloque le thread Express pendant 15 secondes, pénalisant tous les autres utilisateurs du site.',
+    technicalImpact: 'Absence d\'architecture asynchrone (files d\'attente / worker) et absence de timeout sur l\'appel SDK Google GenAI.',
+    investigationStartingPoint: 'src/backend/services/gemini.service.ts',
+    codeSnippet: `// ❌ Appel sans timeout ni isolation asynchrone :
+export async function analyzeInvoiceSync(buffer: Buffer) {
+  // Pas d'AbortSignal -> bloque le thread si l'API externe ralentit
+  const response = await geminiClient.generateContent({ ... });
+  return response.text();
+}`
+  }
+];
 
 export const Chapitre2Content: React.FC = () => {
+  const [selectedIncident, setSelectedIncident] = useState<CapstoneIncident>(CAPSTONE_INCIDENTS[0]);
+  const [filterCategory, setFilterCategory] = useState<string>('ALL');
+
+  const filtered = filterCategory === 'ALL'
+    ? CAPSTONE_INCIDENTS
+    : CAPSTONE_INCIDENTS.filter((i) => i.category === filterCategory);
+
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
-      {/* Hero Banner */}
+    <div className="space-y-12 text-slate-900 leading-relaxed font-sans pb-16">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+      <div className="rounded-3xl border-2 border-emerald-300 bg-linear-to-r from-emerald-50 via-teal-50 to-green-100/60 p-6 sm:p-8 shadow-xs">
+        <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs uppercase tracking-wider mb-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+          <span>Module 7 — Grand Projet de Fin d&apos;Études (Capstone) • Section 7.2</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 2 — Identification des dysfonctionnements
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Identification, Typologie et Priorisation des Dysfonctionnements
         </h1>
+        <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">
+          Sur un système d&apos;entreprise dégradé, toutes les anomalies ne se valent pas. Une faille de sécurité IDOR engage la responsabilité pénale de l&apos;entreprise sous 2 heures, tandis qu&apos;une erreur de libellé peut attendre le prochain sprint. Maîtrisez la <strong>taxonomie des défaillances</strong> et la matrice de priorité P1 à P4.
+        </p>
       </div>
 
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 2 — 7.2. Identification des dysfonctionnements
-      </p>
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs pédagogiques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous serez capable de :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les dysfonctionnements d&apos;une application complète.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Distinguer les anomalies fonctionnelles, techniques, de sécurité et de performance.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les comportements inattendus du frontend et du backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Construire un inventaire structuré des anomalies.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser un agent IA pour repérer les problèmes potentiels sans modifier le code.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Prioriser les anomalies selon leur gravité.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Qu&apos;est-ce qu&apos;un dysfonctionnement logiciel ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un dysfonctionnement est un comportement de l&apos;application qui ne correspond pas au comportement attendu.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il peut provoquer :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une fonctionnalité inutilisable.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un résultat incorrect.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une erreur serveur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une faille de sécurité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une lenteur excessive.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une perte ou une corruption de données.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un utilisateur souhaite consulter ses commandes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comportement attendu :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Afficher uniquement ses propres commandes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Retourner une liste vide s&apos;il n&apos;en possède aucune.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Refuser l&apos;accès si l&apos;utilisateur n&apos;est pas authentifié.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comportement observé :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        - L&apos;application affiche les commandes d&apos;un autre utilisateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il s&apos;agit d&apos;un dysfonctionnement de sécurité, même si la page fonctionne techniquement sans erreur.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Les principales catégories de dysfonctionnements
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.1. Anomalies fonctionnelles
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une fonctionnalité ne respecte pas les règles métier.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemples :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Fonctionnalité</th>
-              <th className="px-4 py-3">Dysfonctionnement</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Connexion</td>
-              <td className="px-4 py-2.5 font-medium">Un utilisateur valide ne peut pas se connecter</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Inscription</td>
-              <td className="px-4 py-2.5 font-medium">Un compte est créé deux fois</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Commandes</td>
-              <td className="px-4 py-2.5 font-medium">Le montant total est incorrect</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Documents</td>
-              <td className="px-4 py-2.5 font-medium">Le téléchargement ne fonctionne pas</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Analyse IA</td>
-              <td className="px-4 py-2.5 font-medium">Le résultat ne correspond pas au document transmis</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.2. Anomalies techniques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elles concernent le fonctionnement interne de l&apos;application.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemples :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 1: La Taxonomie des 4 Familles d'Anomalies */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Cadre Taxonomique</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            1. Les quatre grandes familles de dysfonctionnements logiciels
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`TypeError dans React.`}</code></pre>
-      </div>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Erreur HTTP 500 dans Express.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Connexion MySQL refusée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Mauvaise configuration CORS.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Route API inexistante.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Dépendance incompatible.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Exception non gérée.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.3. Anomalies de sécurité
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elles peuvent compromettre les utilisateurs, les données ou l&apos;application.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemples :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Route accessible sans authentification.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un utilisateur peut consulter les données d&apos;un autre.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Mot de passe stocké en clair.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Fichier téléversé sans validation.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Clé API exposée dans le frontend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Injection SQL possible.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.4. Anomalies de performance
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;application fonctionne, mais ses performances sont insuffisantes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemples :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Requête MySQL trop lente.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Chargement excessif des composants React.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Absence de pagination.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Appels IA trop nombreux.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Fuite mémoire dans le backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Téléchargement de fichiers volumineux sans contrôle.</span>
-          </li>
-        </ul>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Examiner les dysfonctionnements par composant
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour auditer notre application pédagogique, il faut examiner chaque partie séparément.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Composant</th>
-              <th className="px-4 py-3">Points à contrôler</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">React</td>
-              <td className="px-4 py-2.5 font-medium">Formulaires, affichage, états, erreurs</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">API REST</td>
-              <td className="px-4 py-2.5 font-medium">Endpoints, méthodes HTTP, validation</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Express</td>
-              <td className="px-4 py-2.5 font-medium">Contrôleurs, services, middlewares</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">MySQL</td>
-              <td className="px-4 py-2.5 font-medium">Requêtes, relations, contraintes</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Authentification</td>
-              <td className="px-4 py-2.5 font-medium">JWT, expiration, connexion</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Autorisations</td>
-              <td className="px-4 py-2.5 font-medium">Rôles, permissions, accès aux ressources</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fichiers</td>
-              <td className="px-4 py-2.5 font-medium">Taille, format, stockage, accès</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Service IA</td>
-              <td className="px-4 py-2.5 font-medium">Appels API, erreurs, délais, résultats</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple concret :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un utilisateur téléverse un document PDF et demande son analyse par Gemini.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Plusieurs dysfonctionnements sont possibles :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>React transmet un mauvais nom de champ.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Express ne reçoit pas correctement le fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Multer refuse le fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le backend ne retrouve pas le document.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gemini retourne une erreur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le backend ne traite pas correctement la réponse IA.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>React ne sait pas afficher le résultat.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut identifier précisément le composant concerné avant de proposer une correction.
-      </p>
-      </section>
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Face à une pile de tickets de bugs ou de retours clients, un Lead Engineer classe immédiatement chaque anomalie dans l&apos;une des quatre catégories fondamentales :
+        </p>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Distinguer anomalie, symptôme et cause racine
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ces trois notions ne désignent pas la même chose.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Notion</th>
-              <th className="px-4 py-3">Signification</th>
-              <th className="px-4 py-3">Exemple</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Symptôme</td>
-              <td className="px-4 py-2.5 font-medium">Ce que l&apos;on observe</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 500</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Anomalie</td>
-              <td className="px-4 py-2.5 font-medium">Comportement incorrect</td>
-              <td className="px-4 py-2.5 font-medium">Consultation d&apos;un utilisateur inexistant provoque une erreur serveur</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Cause racine</td>
-              <td className="px-4 py-2.5 font-medium">Origine réelle du problème</td>
-              <td className="px-4 py-2.5 font-medium">Le contrôleur ne vérifie pas le résultat du repository avant d&apos;accéder à user.id</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de raisonnement
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le serveur retourne HTTP 500.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Anomalie
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La consultation d&apos;un identifiant inexistant provoque une exception.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cause racine
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;absence de résultat MySQL n&apos;est pas gérée dans le contrôleur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette distinction évite de confondre le message d&apos;erreur avec l&apos;origine réelle du problème.
-      </p>
-      </section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 my-6">
+          <div className="p-5 rounded-2xl bg-white border border-rose-200 shadow-xs">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-black uppercase text-rose-800 bg-rose-100 px-2 py-0.5 rounded">Famille 1</span>
+              <span className="text-xs font-mono text-rose-700 font-bold">Risque Majeur / Juridique</span>
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-2">Anomalies de Sécurité & Contrôle d&apos;Accès</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Bypass d&apos;authentification, élévation de privilèges, IDOR (consultation de ressources d&apos;autrui), injection SQL, fuite de tokens JWT dans les URLs ou injection de prompt dans les analyses IA.
+            </p>
+          </div>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Construire un inventaire des anomalies
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pendant l&apos;audit, il ne faut pas corriger les problèmes au fur et à mesure sans les documenter.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut construire un registre des anomalies.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Composant</th>
-              <th className="px-4 py-3">Anomalie</th>
-              <th className="px-4 py-3">Gravité</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-001</td>
-              <td className="px-4 py-2.5 font-medium">React</td>
-              <td className="px-4 py-2.5 font-medium">Le formulaire de connexion ne valide pas les champs</td>
-              <td className="px-4 py-2.5 font-medium">Moyenne</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-002</td>
-              <td className="px-4 py-2.5 font-medium">Express</td>
-              <td className="px-4 py-2.5 font-medium">Route utilisateur accessible sans JWT</td>
-              <td className="px-4 py-2.5 font-medium">Critique</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-003</td>
-              <td className="px-4 py-2.5 font-medium">MySQL</td>
-              <td className="px-4 py-2.5 font-medium">Requête de recherche trop lente</td>
-              <td className="px-4 py-2.5 font-medium">Moyenne</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-004</td>
-              <td className="px-4 py-2.5 font-medium">Fichiers</td>
-              <td className="px-4 py-2.5 font-medium">Extension non autorisée acceptée</td>
-              <td className="px-4 py-2.5 font-medium">Élevée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-005</td>
-              <td className="px-4 py-2.5 font-medium">IA</td>
-              <td className="px-4 py-2.5 font-medium">Erreur externe non gérée</td>
-              <td className="px-4 py-2.5 font-medium">Élevée</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.1. Comprendre les niveaux de gravité
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Critique : compromission de données, accès non autorisé majeur ou indisponibilité générale.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Élevée : fonctionnalité importante inutilisable ou vulnérabilité sérieuse.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Moyenne : dysfonctionnement limité avec solution de contournement.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Faible : problème mineur sans impact majeur.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La gravité dépend de l&apos;impact réel, pas simplement du nombre de lignes de code concernées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.2. Ajouter une priorité
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La gravité et la priorité sont deux notions différentes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une anomalie critique doit généralement être traitée immédiatement. Une anomalie faible peut être planifiée ultérieurement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour organiser le travail, on peut utiliser les priorités suivantes :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>P1 : intervention immédiate.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>P2 : correction urgente.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>P3 : correction planifiée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>P4 : amélioration secondaire.</span>
-          </li>
-        </ul>
-      </section>
+          <div className="p-5 rounded-2xl bg-white border border-amber-200 shadow-xs">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-black uppercase text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Famille 2</span>
+              <span className="text-xs font-mono text-amber-700 font-bold">Disponibilité / Scalabilité</span>
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-2">Anomalies de Performance & Concurrence</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Fuites de mémoire V8 (Heap saturation), blocage de l&apos;Event Loop Node.js par des calculs CPU intensifs synchrones, saturation du pool de connexions MySQL et requêtes N+1 sans jointure.
+            </p>
+          </div>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Utiliser un agent IA pour identifier les dysfonctionnements
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Après avoir compris l&apos;architecture au chapitre précédent, nous pouvons demander à un agent de rechercher les problèmes potentiels.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut toutefois distinguer :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une anomalie confirmée par des preuves.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un risque potentiel détecté dans le code.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une simple recommandation d&apos;amélioration.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un agent ne doit pas déclarer qu&apos;un bug existe sans justification.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici un prompt professionnel :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MISSION — AUDIT ET IDENTIFICATION DES DYSFONCTIONNEMENTS
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur logiciel senior spécialisé dans l&apos;audit d&apos;applications React, Node.js, Express et MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Identifier et documenter les dysfonctionnements potentiels de l&apos;application existante.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONTEXT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;application comprend :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un frontend React.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un backend Node.js et Express.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une API REST.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une base de données MySQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une authentification JWT et des autorisations.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un système de gestion des fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une intégration avec un service IA.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les composants frontend et backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Rechercher les incohérences fonctionnelles et techniques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les validations des données.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les mécanismes d&apos;authentification et d&apos;autorisation.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les risques liés aux requêtes SQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner la gestion des fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier la gestion des erreurs des services externes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les problèmes potentiels de performance.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Classer les anomalies selon leur gravité et leur priorité.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifier aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne supprimer aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifier aucune dépendance.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas exécuter de migration ou de modification SQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas exposer les secrets.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas considérer une hypothèse comme un bug confirmé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Justifier chaque anomalie par un élément observable : fichier, fonction, code ou résultat de test.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Signaler les informations manquantes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT FORMAT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour chaque anomalie, fournir :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiant.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Composant concerné.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Description.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comportement attendu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comportement observé ou risque identifié.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Preuve technique.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gravité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Priorité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Informations nécessaires pour confirmer le problème.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Terminer par un inventaire global des anomalies et les points nécessitant une investigation complémentaire.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Aucune correction ne doit être effectuée.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Conseil : demandez à l&apos;agent de commencer par un composant précis si le projet est volumineux. Par exemple, auditer d&apos;abord l&apos;authentification, puis les fichiers, puis les services IA.
-      </p>
-      </section>
+          <div className="p-5 rounded-2xl bg-white border border-blue-200 shadow-xs">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-black uppercase text-blue-800 bg-blue-100 px-2 py-0.5 rounded">Famille 3</span>
+              <span className="text-xs font-mono text-blue-700 font-bold">Stabilité Runtime</span>
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-2">Anomalies Techniques & Exceptions Non Gérées</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Crashes de routes Express renvoyant des HTTP 500, désynchronisation de contrats d&apos;interfaces TypeScript/JSON entre frontend et backend, et rejets de promesses non interceptés (unhandled rejections).
+            </p>
+          </div>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. TP — Identifier les anomalies d&apos;une application
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travaux pratiques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte : vous auditez une application de gestion documentaire intégrant React, Express, MySQL et Gemini.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous découvrez les situations suivantes :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Anomalie A — Authentification
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La route suivante permet de récupérer un profil :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+          <div className="p-5 rounded-2xl bg-white border border-emerald-200 shadow-xs">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Famille 4</span>
+              <span className="text-xs font-mono text-emerald-700 font-bold">Conformité Métier</span>
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-2">Anomalies Fonctionnelles & Règles Métier</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Le code s&apos;exécute sans lever d&apos;exception technique, mais le résultat produit est faux au regard du cahier des charges (ex: calcul d&apos;arrondi bancaire faussé, statut de commande non mis à jour).
+            </p>
+          </div>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`router.get("/users/:id", getUserById);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Aucun middleware d&apos;authentification n&apos;est visible sur cette route.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Anomalie B — Gestion des données
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le repository contient :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const [rows] = await db.execute(
-"SELECT * FROM users WHERE id = ?",
-[id]
-);
-
-return rows[0];`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le contrôleur utilise ensuite :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await userRepository.findById(id);
-
-return res.json({
-id: user.id,
-email: user.email
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Anomalie C — Gestion des fichiers
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le serveur accepte des fichiers téléversés sans vérifier correctement leur type réel ni leur taille.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Anomalie D — Service IA
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;appel à Gemini ne possède aucun traitement spécifique des erreurs ou des délais d&apos;attente.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les catégories de chaque anomalie.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Décrire le comportement attendu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les risques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Attribuer une gravité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Attribuer une priorité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Construire un registre des anomalies.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Catégorie</th>
-              <th className="px-4 py-3">Risque</th>
-              <th className="px-4 py-3">Gravité indicative</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">A</td>
-              <td className="px-4 py-2.5 font-medium">Sécurité</td>
-              <td className="px-4 py-2.5 font-medium">Accès non autorisé aux profils</td>
-              <td className="px-4 py-2.5 font-medium">Critique si les données sont privées</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">B</td>
-              <td className="px-4 py-2.5 font-medium">Technique</td>
-              <td className="px-4 py-2.5 font-medium">Exception si aucun utilisateur n&apos;existe</td>
-              <td className="px-4 py-2.5 font-medium">Moyenne</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">C</td>
-              <td className="px-4 py-2.5 font-medium">Sécurité</td>
-              <td className="px-4 py-2.5 font-medium">Téléversement de fichiers dangereux ou volumineux</td>
-              <td className="px-4 py-2.5 font-medium">Élevée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">D</td>
-              <td className="px-4 py-2.5 font-medium">Technique / disponibilité</td>
-              <td className="px-4 py-2.5 font-medium">Requêtes bloquées ou erreurs non maîtrisées</td>
-              <td className="px-4 py-2.5 font-medium">Élevée</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les priorités doivent être confirmées selon le contexte métier et l&apos;exposition réelle de l&apos;application.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Observation importante : pour l&apos;anomalie A, il faut examiner les autres mécanismes de protection éventuels avant de conclure définitivement. L&apos;absence de middleware sur cette ligne ne prouve pas, à elle seule, que toute la route est accessible sans authentification.
-      </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Bonnes pratiques professionnelles
-        </h2>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner toutes les couches de l&apos;application.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Documenter les anomalies avant de les corriger.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Fournir des preuves techniques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas confondre amélioration et bug.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Prioriser les problèmes de sécurité et d&apos;intégrité des données.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas autoriser l&apos;agent IA à modifier le projet pendant l&apos;audit.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Conserver un registre unique pour suivre les anomalies jusqu&apos;à leur résolution.</span>
-          </li>
-        </ul>
+      {/* Section 2: La Matrice de Gravité P1 à P4 */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Standard Opérationnel</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            2. La Matrice de Gravité Industrielle (P1 à P4) & Contrats de Service (SLA)
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Dans les organisations d&apos;ingénierie de haut niveau, le traitement des dysfonctionnements obéit à une échelle stricte dictée par l&apos;impact direct sur les utilisateurs finaux et l&apos;intégrité du business :
+        </p>
+
+        <div className="overflow-x-auto my-6">
+          <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+              <tr>
+                <th className="px-4 py-3">Priorité</th>
+                <th className="px-4 py-3">Niveau d&apos;impact</th>
+                <th className="px-4 py-3">Délai maximal (SLA)</th>
+                <th className="px-4 py-3">Exemple concret Capstone</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-black text-rose-700 bg-rose-50/40">P1 (Bloquant / Sev-1)</td>
+                <td className="px-4 py-3 font-semibold">Interruption totale de service ou fuite active de données</td>
+                <td className="px-4 py-3 font-mono font-bold text-rose-800">&lt; 2 heures</td>
+                <td className="px-4 py-3">IDOR sur les factures clients / Saturation totale de la DB</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-black text-amber-700 bg-amber-50/40">P2 (Critique / Sev-2)</td>
+                <td className="px-4 py-3 font-semibold">Fonctionnalité clé indisponible sans contournement</td>
+                <td className="px-4 py-3 font-mono font-bold text-amber-800">&lt; 8 heures</td>
+                <td className="px-4 py-3">Crash 500 sur consultation de commande / Blocage SDK IA</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-black text-blue-700 bg-blue-50/40">P3 (Majeur / Sev-3)</td>
+                <td className="px-4 py-3 font-semibold">Dégradation avec solution de contournement (workaround)</td>
+                <td className="px-4 py-3 font-mono font-bold text-blue-800">&lt; 48 heures</td>
+                <td className="px-4 py-3">Erreur d&apos;arrondi sur la prévisualisation dans le panier</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-black text-slate-700 bg-slate-50/40">P4 (Mineur / Sev-4)</td>
+                <td className="px-4 py-3 font-semibold">Anomalie cosmétique ou warning sans impact utilisateur</td>
+                <td className="px-4 py-3 font-mono font-bold text-slate-600">Sprint suivant</td>
+                <td className="px-4 py-3">Warning de dépréciation de package dans la console</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <Callout type="danger" title="La règle de non-négociation P1">
+          Lorsqu&apos;une anomalie de niveau **P1** est avérée (ex: fuite de données IDOR ou déni de service complet), <strong>tous les développements en cours sont suspendus</strong>. L&apos;équipe se concentre exclusivement sur le confinement, la reproduction et le correctif chirurgical.
+        </Callout>
       </section>
 
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
+      {/* Section 3: Tableau de Bord Interactif des Incidents du Projet */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Inventaire Opérationnel</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            3. Atelier : Triage et Diagnostic Préalable des Incidents du Capstone
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Voici le registre réel des 5 anomalies identifiées lors de l&apos;audit initial de notre application Capstone. Filtrez par catégorie et sélectionnez un incident pour examiner son point de départ d&apos;investigation :
+        </p>
+
+        {/* Filtres de catégorie */}
+        <div className="flex flex-wrap gap-2">
+          {['ALL', 'Sécurité', 'Performance', 'Technique', 'Fonctionnel'].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFilterCategory(cat)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                filterCategory === cat
+                  ? 'bg-emerald-700 text-white shadow-xs'
+                  : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              {cat === 'ALL' ? 'Tous les incidents' : cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Grille des incidents */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2.5">
+            {filtered.map((inc) => {
+              const isSelected = selectedIncident.id === inc.id;
+              return (
+                <button
+                  key={inc.id}
+                  onClick={() => setSelectedIncident(inc)}
+                  className={`w-full p-4 rounded-xl border text-left transition-all ${
+                    isSelected
+                      ? 'border-emerald-600 bg-emerald-50/70 text-slate-950 ring-2 ring-emerald-400'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-mono text-xs font-black text-slate-600">{inc.code}</span>
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-black ${
+                      inc.severity === 'P1'
+                        ? 'bg-rose-100 text-rose-800'
+                        : inc.severity === 'P2'
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {inc.severity} — SLA {inc.slaHours}h
+                    </span>
+                  </div>
+                  <div className="text-xs sm:text-sm font-bold text-slate-900">{inc.title}</div>
+                  <div className="text-xs text-slate-500 mt-1">Catégorie : {inc.category}</div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Fiche de triage détaillée */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-300 shadow-xs flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+                <div>
+                  <span className="text-xs font-mono font-bold uppercase text-emerald-700">{selectedIncident.code}</span>
+                  <h4 className="text-base font-bold text-slate-950">{selectedIncident.title}</h4>
+                </div>
+                <span className="text-xs font-mono font-black px-2.5 py-1 rounded bg-slate-900 text-white">
+                  Priorité {selectedIncident.severity}
+                </span>
+              </div>
+
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Symptôme constaté :</div>
+                <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">{selectedIncident.symptom}</p>
+              </div>
+
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-rose-700 mb-1">Impact technique sous-jacent :</div>
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{selectedIncident.technicalImpact}</p>
+              </div>
+
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Point d&apos;entrée pour l&apos;enquête :</div>
+                <div className="p-2.5 bg-slate-100 rounded-lg text-xs font-mono text-slate-800 mb-2">
+                  {selectedIncident.investigationStartingPoint}
+                </div>
+                <CodeBlock language="typescript">{selectedIncident.codeSnippet}</CodeBlock>
+              </div>
+            </div>
+
+            <div className="mt-5 p-3 rounded-xl bg-slate-900 text-white font-mono text-xs">
+              Action immédiate : Isoler le composant et rédiger le test de reproduction (Red Test).
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4: Quiz d'évaluation de 6 questions */}
+      <section className="space-y-6 pt-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Validation des Connaissances</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            4. Quiz : Identification des dysfonctionnements et priorisation
+          </h2>
+        </div>
+
         <QuickQuiz
-          title="Quiz de révision — Chapitre 7.2"
+          title="Quiz 7.2 — Typologie, Sévérité et Triage d'Incidents"
           questions={[
             {
               id: 1,
-              question: "Une route retourne HTTP 500. Que représente ce résultat ?",
-              options: ["La cause racine.", "Un symptôme observable.", "Une correction."],
+              question: "Quelle est la définition formelle d'une faille de sécurité de type IDOR (Insecure Direct Object Reference) constatée sur /api/orders/:id ?",
+              options: [
+                "Une erreur de syntaxe dans le fichier HTML de la page d'accueil.",
+                "L'absence de vérification d'autorisation permettant à un utilisateur authentifié d'accéder aux données privées d'un autre utilisateur en modifiant simplement l'identifiant dans la requête.",
+                "Une lenteur excessive lors de la transmission d'images en WiFi.",
+                "La déconnexion automatique de l'utilisateur après 15 minutes d'inactivité."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "L'IDOR se produit lorsque l'API expose une référence directe à un objet de base de données (ex: l'id numérique de commande) sans vérifier que l'utilisateur émetteur détient les droits légitimes sur cette ressource."
             },
             {
               id: 2,
-              question: "Quel dysfonctionnement relève principalement de la sécurité ?",
-              options: ["Une page React mal alignée.", "Une route privée accessible sans authentification.", "Une animation lente."],
+              question: "Pourquoi une anomalie causant un blocage complet du pool de connexions MySQL doit-elle être classée en priorité P1 (Bloquante) ?",
+              options: [
+                "Parce qu'elle empêche la couleur du bouton de changer au survol.",
+                "Parce qu'elle prive l'ensemble des utilisateurs de l'accès à l'application en bloquant toutes les requêtes en timeout 504, provoquant un déni de service généralisé.",
+                "Parce que MySQL supprime automatiquement la base si le pool est plein pendant plus de 30 secondes.",
+                "Pour forcer l'hébergeur cloud à augmenter ses tarifs."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Une fuite de connexions rend le serveur incapable de traiter la moindre requête entrante : c'est une indisponibilité totale de la production qui exige une remédiation d'urgence (P1)."
             },
             {
               id: 3,
-              question: "Pourquoi construire un registre des anomalies ?",
-              options: ["Pour documenter, classer et suivre les problèmes.", "Pour remplacer les tests.", "Pour supprimer les fichiers inutiles."],
-              correctIndex: 0,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              question: "Quelle est la différence fondamentale entre une anomalie technique (Runtime Exception) et une anomalie fonctionnelle ?",
+              options: [
+                "L'anomalie technique est écrite en Python et la fonctionnelle en Java.",
+                "L'anomalie technique provoque une rupture d'exécution (crash, HTTP 500, unhandled promise), tandis que l'anomalie fonctionnelle s'exécute sans erreur apparente mais produit un résultat métier erroné.",
+                "L'anomalie fonctionnelle ne se produit que le week-end.",
+                "Il n'existe aucune différence, ce sont des synonymes parfaits."
+              ],
+              correctIndex: 1,
+              explanation: "Une fonction qui calcule un taux de TVA à 20% au lieu de 0% s'exécute avec succès au niveau du CPU (code HTTP 200), mais constitue une anomalie fonctionnelle majeure."
             },
             {
               id: 4,
-              question: "Une anomalie détectée par l'IA est-elle automatiquement confirmée ?",
-              options: ["Oui.", "Non, elle doit être vérifiée."],
+              question: "Dans le cadre d'un contrat de niveau de service (SLA), que représente le délai maximal associé à un incident de sévérité P1 ?",
+              options: [
+                "Le temps accordé au développeur pour partir en vacances.",
+                "Le délai maximal strict imposé à l'équipe d'ingénierie pour mobiliser les ressources, isoler le problème et déployer une mitigation ou un correctif en production.",
+                "La durée de validité du mot de passe de l'administrateur système.",
+                "Le temps nécessaire pour réinstaller le système d'exploitation Windows."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Le SLA P1 (généralement inférieur à 2 heures) fixe l'engagement contractuel de reprise d'activité pour protéger l'entreprise contre des pertes financières ou juridiques immédiates."
             },
             {
               id: 5,
-              question: "Quelle anomalie doit généralement être traitée en priorité ?",
-              options: ["Une erreur de couleur dans un bouton.", "Une faille permettant un accès non autorisé à des données privées.", "Un titre légèrement décalé."],
+              question: "Face à une liste de 10 anomalies recensées sur le projet Capstone, par laquelle devez-vous impérativement débuter l'investigation ?",
+              options: [
+                "Par la correction des fautes d'orthographe dans les commentaires de code.",
+                "Par les anomalies de niveau P1 (failles de sécurité critiques et dénis de service affectant tous les utilisateurs).",
+                "Par le renommage de toutes les variables pour respecter une convention personnelle.",
+                "Par le bug le plus facile à résoudre pour faire monter les statistiques de fermeture de tickets."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "La priorisation d'ingénierie impose d'éteindre les incendies critiques (P1) menaçant la viabilité du service avant de s'intéresser aux améliorations cosmétiques ou de confort."
             },
+            {
+              id: 6,
+              question: "Quel danger existe-t-il à demander à un agent IA de 'résoudre tous les bugs du projet d'un seul coup' ?",
+              options: [
+                "L'agent IA va consommer toute la mémoire RAM de l'ordinateur en 3 secondes.",
+                "L'agent va mélanger les périmètres, introduire des régressions massives et masquer les causes profondes sous des patchs superficiels désordonnés.",
+                "L'agent refusera de répondre en raison d'une clause syndicale.",
+                "Les fichiers sources seront automatiquement traduits en assembleur."
+              ],
+              correctIndex: 1,
+              explanation: "Traiter plusieurs anomalies de natures divergentes en une seule consigne disperse le contexte du modèle et engendre des régressions croisées incontrôlables. La règle est : un incident ciblé à la fois."
+            }
           ]}
         />
-      </div>
+      </section>
     </div>
   );
 };

@@ -1,1224 +1,324 @@
 ﻿'use client';
 
-import React from 'react';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import React, { useState } from 'react';
 import { Callout } from '@/components/courses/Callout';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Icon } from '@/components/common/Icon';
 import { FullStackAuditCapstoneLab } from '@/components/interactive/FullStackAuditCapstoneLab';
 
+interface QualityGate {
+  id: string;
+  name: string;
+  category: string;
+  metric: string;
+  threshold: string;
+  actual: string;
+  passed: boolean;
+}
+
+const QUALITY_GATES: QualityGate[] = [
+  {
+    id: 'gate-ts',
+    name: 'Compilation Statique TypeScript Strict',
+    category: 'Qualité Code',
+    metric: 'Erreurs tsc',
+    threshold: '0 erreur',
+    actual: '0 erreur',
+    passed: true
+  },
+  {
+    id: 'gate-lint',
+    name: 'Conformité ESLint (Zéro Warning / Erreur)',
+    category: 'Qualité Code',
+    metric: 'Problèmes linter',
+    threshold: '0 problème',
+    actual: '0 problème',
+    passed: true
+  },
+  {
+    id: 'gate-coverage',
+    name: 'Couverture de Tests Automatisés (@vitest/coverage-v8)',
+    category: 'Tests',
+    metric: 'Couverture branches',
+    threshold: '≥ 85.0%',
+    actual: '92.4%',
+    passed: true
+  },
+  {
+    id: 'gate-sec-idor',
+    name: 'Protection Multi-tenant & IDOR (/api/orders/:id)',
+    category: 'Sécurité',
+    metric: 'Statut test 403',
+    threshold: '100% PASS',
+    actual: '100% PASS',
+    passed: true
+  },
+  {
+    id: 'gate-pool-leak',
+    name: 'Libération Garantie du Pool MySQL (Stress Test)',
+    category: 'Infrastructure',
+    metric: 'Connexions orphelines',
+    threshold: '0 fuite',
+    actual: '0 fuite (active: 0)',
+    passed: true
+  },
+  {
+    id: 'gate-redaction',
+    name: 'Masquage des Secrets dans les Logs (Data Redaction)',
+    category: 'Sécurité RGPD',
+    metric: 'Secrets en clair',
+    threshold: '0 secret',
+    actual: '0 secret (Pino redact)',
+    passed: true
+  }
+];
+
 export const Chapitre10Content: React.FC = () => {
+  const [reportCopied, setReportCopied] = useState<boolean>(false);
+
+  const allGatesPassed = QUALITY_GATES.every((g) => g.passed);
+
+  const handleCopyReport = () => {
+    setReportCopied(true);
+    setTimeout(() => setReportCopied(false), 2000);
+  };
+
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
-      {/* Hero Banner */}
+    <div className="space-y-12 text-slate-900 leading-relaxed font-sans pb-16">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+      <div className="rounded-3xl border-2 border-emerald-300 bg-linear-to-r from-emerald-50 via-teal-50 to-green-100/60 p-6 sm:p-8 shadow-xs">
+        <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs uppercase tracking-wider mb-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+          <span>Module 7 — Grand Projet de Fin d&apos;Études (Capstone) • Section 7.10 (Certification Finale)</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 10 — Audit final et rédaction du rapport technique
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Audit Final, Homologation de Production et Rédaction du Rapport Technique
         </h1>
+        <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">
+          Votre intervention de débogage ne se conclut pas au dernier commit Git : elle s&apos;achève par la validation formelle des <strong>Quality Gates</strong> de mise en production et la rédaction d&apos;un <strong>Rapport Technique d&apos;Audit</strong> exhaustif. Officialisez la certification et l&apos;homologation de votre système d&apos;entreprise.
+        </p>
       </div>
 
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 10 — 7.10. Audit final et rédaction du rapport technique
-      </p>
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs pédagogiques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous serez capable de :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Réaliser un audit final après les corrections.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier la conformité technique et fonctionnelle de l&apos;application.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Contrôler les résultats des tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Évaluer les risques résiduels.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Documenter les anomalies corrigées et celles qui restent ouvertes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Produire un rapport technique professionnel.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Présenter clairement les résultats d&apos;une intervention de débogage.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Qu&apos;est-ce qu&apos;un audit final ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;audit final est la dernière étape du processus de diagnostic et de correction.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il permet de vérifier que le travail réalisé respecte les objectifs définis au départ.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il ne s&apos;agit pas simplement de vérifier que l&apos;application démarre.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut examiner plusieurs dimensions :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Domaine</th>
-              <th className="px-4 py-3">Vérifications</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fonctionnel</td>
-              <td className="px-4 py-2.5 font-medium">Les fonctionnalités attendues fonctionnent-elles ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Backend</td>
-              <td className="px-4 py-2.5 font-medium">Les routes, contrôleurs et services sont-ils corrects ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Frontend</td>
-              <td className="px-4 py-2.5 font-medium">Les interfaces gèrent-elles correctement les réponses ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Base de données</td>
-              <td className="px-4 py-2.5 font-medium">Les données et requêtes sont-elles cohérentes ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Sécurité</td>
-              <td className="px-4 py-2.5 font-medium">Authentification, autorisations et fichiers sont-ils protégés ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Performance</td>
-              <td className="px-4 py-2.5 font-medium">Les lenteurs et timeouts ont-ils été traités ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Tests</td>
-              <td className="px-4 py-2.5 font-medium">Les tests nécessaires ont-ils été exécutés ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Git</td>
-              <td className="px-4 py-2.5 font-medium">Les modifications sont-elles maîtrisées et documentées ?</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Réaliser la checklist de l&apos;audit final
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Avant de rédiger le rapport, il faut rassembler les preuves.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        A. Vérification fonctionnelle
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Connexion et déconnexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Consultation et modification des commandes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gestion des utilisateurs.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Upload et téléchargement de fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Analyse documentaire par IA.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gestion des erreurs côté frontend.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        B. Vérification technique
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Aucune erreur critique dans la console.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Aucune route défaillante non expliquée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gestion cohérente des erreurs HTTP.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Validation des données entrantes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gestion des erreurs MySQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gestion des erreurs des services externes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        C. Vérification de sécurité
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Routes privées protégées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Permissions vérifiées côté serveur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Fichiers uploadés contrôlés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Secrets absents du code et des logs.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Données sensibles correctement protégées.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        D. Vérification des tests
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests unitaires exécutés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests d&apos;intégration exécutés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests de non-régression exécutés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests échoués analysés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Scénarios non testés documentés.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Établir le bilan des anomalies
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chaque anomalie doit avoir un statut final.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Statut</th>
-              <th className="px-4 py-3">Signification</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Corrigée et validée</td>
-              <td className="px-4 py-2.5 font-medium">Correction appliquée et tests réussis</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Corrigée, validation partielle</td>
-              <td className="px-4 py-2.5 font-medium">Correction appliquée, tests incomplets</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Non corrigée</td>
-              <td className="px-4 py-2.5 font-medium">Anomalie toujours présente</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Non reproductible</td>
-              <td className="px-4 py-2.5 font-medium">Impossible de reproduire dans les conditions testées</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Reportée</td>
-              <td className="px-4 py-2.5 font-medium">Correction prévue ultérieurement</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <Callout type="warning" title="Attention ">
-        <p className="text-xs sm:text-sm">« non reproductible » ne signifie pas nécessairement « inexistante ».</p>
-      </Callout>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de registre final :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Anomalie</th>
-              <th className="px-4 py-3">Statut</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-001</td>
-              <td className="px-4 py-2.5 font-medium">Incohérence du champ mot de passe</td>
-              <td className="px-4 py-2.5 font-medium">Corrigée et validée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-002</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 500 pour commande absente</td>
-              <td className="px-4 py-2.5 font-medium">Corrigée et validée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-003</td>
-              <td className="px-4 py-2.5 font-medium">Gestion du timeout Gemini</td>
-              <td className="px-4 py-2.5 font-medium">Validation partielle</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-004</td>
-              <td className="px-4 py-2.5 font-medium">Validation des fichiers uploadés</td>
-              <td className="px-4 py-2.5 font-medium">Reportée</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ces statuts sont illustratifs : dans un véritable audit, ils doivent provenir des résultats réellement observés.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Mesurer la couverture des tests
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La couverture des tests indique quelle partie du code a été exécutée pendant les tests instrumentés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Avec Vitest :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
+      {/* Section 1: Les 7 Portes d'Homologation (Quality Gates) */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Gouvernance de Livraison</div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+              1. La Matrice des Quality Gates de Mise en Production
+            </h2>
+          </div>
+          <span className={`text-xs font-mono font-black px-3 py-1 rounded-full ${
+            allGatesPassed
+              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+              : 'bg-amber-100 text-amber-800'
+          }`}>
+            {allGatesPassed ? '✓ 6/6 QUALITY GATES FRANCHIES' : 'EN COURS D\'AUDIT'}
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npx vitest run --coverage
-Si le fournisseur de couverture n'est pas installé, Vitest peut demander l'installation d'un package compatible, par exemple @vitest/coverage-v8.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les indicateurs habituels sont :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Statements : instructions exécutées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Branches : branches conditionnelles exécutées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Functions : fonctions exécutées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Lines : lignes exécutées.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple fictif :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Indicateur</th>
-              <th className="px-4 py-3">Couverture</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Statements</td>
-              <td className="px-4 py-2.5 font-medium">85 %</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Branches</td>
-              <td className="px-4 py-2.5 font-medium">72 %</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Functions</td>
-              <td className="px-4 py-2.5 font-medium">90 %</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Lines</td>
-              <td className="px-4 py-2.5 font-medium">86 %</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une couverture élevée ne garantit pas l&apos;absence de bugs. Un test peut exécuter une ligne sans vérifier correctement son résultat.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut donc privilégier la qualité des scénarios et des assertions.
-      </p>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Examiner l&apos;état final avec Git
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Avant la livraison :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Dans l&apos;ingénierie logicielle d&apos;élite, la livraison en production ne repose pas sur une impression de confiance subjective, mais sur le franchissement mathématique et binaire de critères de contrôle non négociables :
+        </p>
+
+        <div className="overflow-x-auto my-6">
+          <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+              <tr>
+                <th className="px-4 py-3">Quality Gate</th>
+                <th className="px-4 py-3">Catégorie</th>
+                <th className="px-4 py-3">Seuil Requis</th>
+                <th className="px-4 py-3">Mesure Constatée</th>
+                <th className="px-4 py-3">Décision</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+              {QUALITY_GATES.map((g) => (
+                <tr key={g.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 font-bold text-slate-900">{g.name}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-600">{g.category}</td>
+                  <td className="px-4 py-3 font-mono text-xs">{g.threshold}</td>
+                  <td className="px-4 py-3 font-mono text-xs font-bold text-slate-900">{g.actual}</td>
+                  <td className="px-4 py-3">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800">
+                      ✓ HOMOLOGUÉ
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git status
-git diff
-git diff --check`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Puis, si les modifications doivent être enregistrées :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+
+        <Callout type="info" title="Le Sign-Off d'Ingénierie Formel">
+          Le <em>Sign-Off</em> est l&apos;engagement écrit par le Lead Engineer attestant que l&apos;ensemble des risques identifiés lors de l&apos;audit initial (IDOR, saturation de connexions, timeouts IA) ont été éradiqués, documentés et sanctuarisés par des tests de non-régression pérennes.
+        </Callout>
+      </section>
+
+      {/* Section 2: Structure Officielle du Rapport Technique */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Livrable Certifiant</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            2. Le Rapport Technique Officiel d&apos;Audit et de Remédiation
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git add .
-git commit -m "fix: resolve application defects"
-Attention : git add . ajoute tous les changements du répertoire courant. Il faut d'abord vérifier précisément ce qui sera inclus. Pour un contrôle plus strict, sélectionner les fichiers explicitement.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Voici le document officiel de fin d&apos;études récapitulant l&apos;intervention complète de débogage réalisée sur l&apos;application Capstone, prêt pour transmission au comité de direction technique (CTO / VP Engineering) :
+        </p>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 text-slate-100 shadow-md overflow-hidden">
+          <div className="bg-slate-900 px-4 py-3 flex items-center justify-between text-xs font-mono text-slate-300 border-b border-slate-800">
+            <span className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+              <span>RAPPORT_AUDIT_TECHNIQUE_CAPSTONE_2026.md</span>
+            </span>
+            <button
+              onClick={handleCopyReport}
+              className="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+            >
+              {reportCopied ? '✓ Copié dans le presse-papier' : 'Copier le rapport'}
+            </button>
+          </div>
+          <div className="p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed">
+            <CodeBlock language="markdown">{`# RAPPORT D'AUDIT TECHNIQUE, RCA ET HOMOLOGATION FINALE
+Date : 9 Novembre 2026
+Projet : Capstone Audit Enterprise (React 19 / Express 5 / MySQL 8 / Gemini API)
+Auditeur Principal : Ingénieur en Débogage Certifié
+
+## 1. RÉSUMÉ EXÉCUTIF
+L'application présentait 5 dysfonctionnements majeurs dont une faille de sécurité critique IDOR (P1) et une fuite de ressources provoquant la saturation du pool MySQL sous charge (P1). 
+L'intervention a suivi le protocole strict de découplage en 10 étapes : cartographie, reproduction cURL, traçabilité par Correlation ID, RCA des 5 Pourquoi, planification de remédiation sous whitelist et vérification automatisée Red-Green.
+Statut actuel : HOMOLOGATION DE PRODUCTION ACCORDÉE (100% des Quality Gates franchies).
+
+## 2. INVENTAIRE DES INCIDENTS RÉSOLUS
+- [FIX-01] PERF-03 (P1) : Libération des connexions du pool MySQL sanctuarisée dans un bloc 'finally' (dbPoolStress: 50 requêtes concurrentes OK).
+- [FIX-02] SEC-01 (P1) : Contrôle d'autorisation strict (order.userId === req.user.id) dans getOrderById colmatant la faille IDOR (Test 403 OK).
+- [FIX-03] TECH-02 (P2) : Implémentation du contrat d'erreur HTTP 404 sur commande absente avec élimination du TypeError 500.
+- [FIX-04] FUNC-04 (P2) : Harmonisation du contrat d'authentification React (useAuth.ts) avec le schéma backend (clé 'password').
+- [FIX-05] PERF-05 (P2) : Découplage asynchrone et injection d'AbortController (timeout 8000ms) sur le client Google Gemini.
+
+## 3. BILAN DES MÉTRIQUES D'ASSURANCE QUALITÉ
+- Compilation TypeScript : 0 erreur ('npx tsc --noEmit' en mode strict).
+- Linter ESLint : 0 warning, 0 erreur sur l'ensemble du workspace.
+- Couverture de branches (@vitest/coverage-v8) : 92.4% (seuil requis ≥ 85%).
+- Suite de non-régression : 24 tests unitaires et d'intégration validés au vert (PASS).
+- Traçabilité et hygiène des données : Logs structurés JSON Pino avec Correlation ID et masquage PII conforme RGPD.
+
+## 4. RECOMMANDATIONS POUR LA DETTE TECHNIQUE RÉSIDUELLE
+1. Déployer un cache Redis distribué pour stocker les analyses de documents fréquentes de Gemini API.
+2. Ajouter des index composites sur la table MySQL 'orders' (tenant_id, created_at) pour prévenir les slow queries.
+3. Intégrer un linter de schémas OpenAPI automatisé dans la CI GitHub Actions.`}</CodeBlock>
+          </div>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git add src/controllers/orderController.ts
-git add tests/integration/orders.test.ts`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le commit permet de conserver une trace identifiable des corrections.
-      </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Rédiger le rapport technique final
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le rapport technique est le document qui présente l&apos;ensemble de l&apos;intervention.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il doit permettre à un autre développeur, un responsable technique ou un client de comprendre :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les problèmes détectés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les causes racines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les corrections appliquées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests effectués.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les résultats obtenus.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les risques restants.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les recommandations.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Structure professionnelle du rapport
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Informations générales du projet.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Objectif de l&apos;audit.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Périmètre technique.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Méthodologie utilisée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Anomalies identifiées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Causes racines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Corrections réalisées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Résultats des tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Résultats de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Risques résiduels.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Recommandations.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Conclusion et statut final.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Exemple de rapport technique
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        RAPPORT TECHNIQUE FINAL
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Audit, diagnostic et correction d&apos;une application
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Projet : Application intelligente de gestion documentaire
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Architecture technique :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Frontend : React et TypeScript</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Backend : Node.js et Express</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>API : REST</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Base de données : MySQL</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Authentification : JWT</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Service IA : Google Gemini</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Nature de l&apos;intervention : Audit technique, diagnostic et correction des anomalies.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectif de l&apos;intervention
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;objectif était d&apos;identifier les dysfonctionnements de l&apos;application, d&apos;en déterminer les causes racines, d&apos;appliquer les corrections nécessaires et de vérifier la stabilité du système après intervention.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Périmètre de l&apos;audit
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;audit a porté sur :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le frontend React.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les routes et contrôleurs Express.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les services backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les repositories MySQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;authentification et les autorisations.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La gestion des fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;intégration du service IA.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Méthodologie
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La démarche suivie :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Inspection de l&apos;architecture.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identification des dysfonctionnements.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Reproduction des anomalies.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Collecte et analyse des logs.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Diagnostic des causes racines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Élaboration du plan de correction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Correction progressive.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests unitaires et d&apos;intégration.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérification de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Audit final.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Anomalies et corrections
-        </h2>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Anomalie</th>
-              <th className="px-4 py-3">Cause racine</th>
-              <th className="px-4 py-3">Statut</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-001</td>
-              <td className="px-4 py-2.5 font-medium">Échec de connexion</td>
-              <td className="px-4 py-2.5 font-medium">Incohérence du contrat JSON</td>
-              <td className="px-4 py-2.5 font-medium">Corrigée et validée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-002</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 500 pour commande absente</td>
-              <td className="px-4 py-2.5 font-medium">Résultat repository non contrôlé</td>
-              <td className="px-4 py-2.5 font-medium">Corrigée et validée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-003</td>
-              <td className="px-4 py-2.5 font-medium">Timeout du service IA</td>
-              <td className="px-4 py-2.5 font-medium">Gestion insuffisante des erreurs externes</td>
-              <td className="px-4 py-2.5 font-medium">Validation partielle</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Résultats des tests
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les tests unitaires et d&apos;intégration ont été utilisés pour contrôler les corrections.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les scénarios de connexion, de consultation des commandes et de gestion des erreurs externes ont été examinés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les tests dont l&apos;exécution reste à confirmer sont explicitement identifiés comme tels.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Non-régression
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les fonctionnalités dépendantes des corrections ont été examinées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les contrôles ont notamment porté sur :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;accès aux routes privées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La consultation des commandes existantes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La gestion des erreurs API.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le fonctionnement du service IA.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Risques résiduels
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La gestion des timeouts du service IA nécessite des vérifications complémentaires dans les conditions de charge et d&apos;indisponibilité du fournisseur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les scénarios non exécutés doivent faire l&apos;objet d&apos;une validation avant la mise en production.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Recommandations
-        </h2>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Renforcer les tests d&apos;intégration.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Automatiser les tests de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Centraliser les logs backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Surveiller les erreurs des services externes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Contrôler régulièrement les permissions.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Maintenir une documentation technique à jour.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Conclusion
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;intervention a permis de traiter plusieurs anomalies et de vérifier une partie des fonctionnalités concernées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Toutefois, les validations restant à effectuer doivent être terminées avant de considérer l&apos;ensemble de l&apos;application comme totalement validé.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Statut final : PARTIELLEMENT VALIDÉ
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce statut devra être actualisé après l&apos;exécution des tests restants.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Fin du rapport technique.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Prompt professionnel — Audit final et rapport technique
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MISSION — AUDIT FINAL ET RAPPORT TECHNIQUE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un auditeur logiciel senior spécialisé en qualité, sécurité, architecture et fiabilité des applications web.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Réaliser l&apos;audit final d&apos;une application ayant fait l&apos;objet d&apos;un diagnostic, de corrections et de tests.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONTEXT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Architecture :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>React / TypeScript</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Node.js / Express</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>API REST</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>MySQL</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>JWT</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Gestion de fichiers</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Intégration IA</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner le plan de correction initial.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les anomalies et leurs statuts.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les fichiers modifiés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Analyser les résultats des tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les tests de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les risques de sécurité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les contrats API.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les logs et erreurs résiduelles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les points non validés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Produire un rapport technique final.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifier aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne supprimer aucune donnée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas exécuter de migration.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas accéder aux secrets.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas inventer de résultats de tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Distinguer les faits observés des hypothèses.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Signaler les limites de l&apos;audit.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas déclarer l&apos;application conforme sans preuves suffisantes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le rapport doit comprendre :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Présentation du projet.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Périmètre de l&apos;audit.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Méthodologie.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Anomalies identifiées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Causes racines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Corrections réalisées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Résultats des tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Résultats de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Évaluation de sécurité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Risques résiduels.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Recommandations.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Conclusion et statut final.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        STATUTS AUTORISÉS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>VALIDÉ</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>PARTIELLEMENT VALIDÉ</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>NON VALIDÉ</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chaque conclusion doit être justifiée par des éléments vérifiables.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présenter également un résumé exécutif destiné à un responsable non technique.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          10. TP — Réaliser l&apos;audit final
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Projet final du module
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mission : finaliser l&apos;audit de l&apos;application pédagogique.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 1 — Examiner les anomalies
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Reprendre le registre créé au chapitre 2.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 2 — Vérifier les corrections
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comparer le plan de correction du chapitre 6 avec les changements réellement réalisés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 3 — Examiner les tests
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Rassembler les résultats :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 3: Laboratoire Capstone Récapitulatif */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Laboratoire Final</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950 flex items-center gap-2">
+            <Icon name="terminal" className="w-6 h-6 text-emerald-700" />
+            <span>3. Synthèse Finale dans le Laboratoire Interactif Capstone</span>
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npx vitest run
-npx vitest run --coverage`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 4 — Vérifier Git
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git status
-git diff
-git log -5 --oneline`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 5 — Réaliser l&apos;audit
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Examiner les fonctionnalités, la sécurité, les erreurs résiduelles et les risques non vérifiés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 6 — Produire le rapport
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Utiliser la structure professionnelle présentée dans ce chapitre.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Livrables attendus
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Registre final des anomalies.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Plan de correction réalisé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Résultats des tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Matrice de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Rapport technique final.</span>
-          </li>
-        </ul>
-      </section>
 
-      {/* Laboratoire Interactif Capstone */}
-      <div className="my-8">
-        <h2 className="text-[19px] font-bold text-slate-900 mb-2.5 flex items-center gap-2">
-          <Icon name="terminal" className="w-5 h-5 text-emerald-700" />
-          <span>Laboratoire interactif Capstone : Audit, RCA &amp; Homologation</span>
-        </h2>
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Accédez à la vue finale du laboratoire Capstone pour vérifier l&apos;état consolidé de votre mission d&apos;homologation :
+        </p>
+
         <FullStackAuditCapstoneLab />
-      </div>
+      </section>
 
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
+      {/* Section 4: Quiz de Clôture du Cours */}
+      <section className="space-y-6 pt-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Épreuve de Clôture du Cours</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            4. Quiz de Clôture : Homologation finale et gouvernance technique d&apos;ingénierie
+          </h2>
+        </div>
+
         <QuickQuiz
-          title="Quiz de révision — Chapitre 7.10"
+          title="Quiz 7.10 — Audit Final, Sign-off et Bilan du Cours d'Ingénierie du Débogage"
           questions={[
             {
               id: 1,
-              question: "Quel est l'objectif de l'audit final ?",
-              options: ["Vérifier uniquement que le serveur démarre.", "Évaluer l'état global de l'application après les corrections.", "Supprimer les anciens logs."],
+              question: "Quelle est la raison d'être fondamentale d'un Rapport Technique d'Audit rédigé après une intervention de débogage ?",
+              options: [
+                "Justifier l'achat d'un nouvel ordinateur portable pour l'équipe.",
+                "Consigner formellement les causes racines identifiées, prouver l'absence de régression par des métriques chiffrées, documenter les commits de patchs et engager la responsabilité d'homologation de production.",
+                "Remplacer le code source par un fichier texte pour alléger le serveur.",
+                "Supprimer l'historique des tickets Jira pour repartir de zéro."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Le rapport technique est la mémoire de l'organisation : il prouve que le système est sain, prévient la reproduction des mêmes erreurs et formalise l'accord de mise en production."
             },
             {
               id: 2,
-              question: "Une couverture de tests de 100 % garantit-elle l'absence de bugs ?",
-              options: ["Oui.", "Non."],
+              question: "Que signifie concrètement le terme 'Sign-off' dans un processus d'homologation d'ingénierie logicielle ?",
+              options: [
+                "La fermeture de la session Windows.",
+                "L'approbation formelle et documentée d'un ingénieur responsable attestant que l'ensemble des critères de qualité, de sécurité et de robustesse sont satisfaits pour autoriser le déploiement.",
+                "La déconnexion du réseau Internet pendant 24 heures.",
+                "L'annulation de toutes les commandes clients."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Le Sign-off engage formellement la responsabilité de l'auditeur sur la fiabilité du système livré."
             },
             {
               id: 3,
-              question: "Que doit contenir un rapport technique ?",
-              options: ["Uniquement les fichiers modifiés.", "Les anomalies, causes, corrections, tests et risques résiduels.", "Uniquement les captures d'écran."],
+              question: "Si une application démarre sans erreur visible mais qu'une seule Quality Gate échoue (ex: couverture de code à 70% au lieu de 85%), que doit être la décision d'homologation ?",
+              options: [
+                "Homologuer immédiatement en considérant que 70% est suffisant.",
+                "Refuser l'homologation (GO / NO-GO : NO-GO), car le seuil contractuel de sécurité et de couverture n'est pas atteint : les tests manquants doivent être écrits avant livraison.",
+                "Supprimer la Quality Gate pour faire passer le statut au vert.",
+                "Déployer en production en secret un dimanche matin."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Les Quality Gates sont binaires et non négociables : un seul critère non satisfait bloque la mise en production pour protéger l'intégrité du service."
             },
             {
               id: 4,
-              question: "Peut-on déclarer une application validée si des tests critiques n'ont pas été exécutés ?",
-              options: ["Oui.", "Non."],
+              question: "Pourquoi est-il indispensable de documenter la 'Dette Technique Résiduelle' dans le rapport d'audit final ?",
+              options: [
+                "Pour critiquer le travail des développeurs précédents.",
+                "Pour identifier en toute transparence les points de vigilance non urgents (ex: absence d'index SQL composite, besoin de cache Redis) et planifier leur traitement lors des sprints futurs sans masquer le risque.",
+                "Pour demander une augmentation de salaire immédiate.",
+                "Pour occuper les stagiaires de l'entreprise."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Tout système comporte de la dette technique. La cartographier clairement permet au management technique d'anticiper les futurs chantiers de scalabilité."
             },
             {
               id: 5,
-              question: "Pourquoi conserver un historique Git des corrections ?",
-              options: ["Pour tracer les modifications et faciliter leur examen.", "Pour remplacer les tests.", "Pour supprimer les anomalies."],
-              correctIndex: 0,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              question: "Quelle est la méthode scientifique qui résume l'intégralité du cours d'Ingénierie du Débogage ?",
+              options: [
+                "Modifier du code au hasard jusqu'à ce que l'erreur disparaisse de l'écran.",
+                "La boucle rigoureuse : Cartographie -> Reproduction déterministe -> Traçabilité des logs -> 5 Pourquoi (RCA) -> Plan de patch sous whitelist -> Cycle Red-Green -> Zero Trust AI -> Non-régression globale.",
+                "Faire aveuglément confiance aux réponses générées par les chatbots gratuits.",
+                "Désactiver TypeScript et les linters pour coder plus vite."
+              ],
+              correctIndex: 1,
+              explanation: "Cette discipline d'ingénierie transforme le débogage d'une pratique intuitive aléatoire en une science déterministe, reproductible et industrielle."
             },
+            {
+              id: 6,
+              question: "Quelle est la posture professionnelle d'un ingénieur face à un agent IA de développement intégré à son IDE ?",
+              options: [
+                "Lui donner les droits administrateur complets et le laisser tout modifier sans relecture.",
+                "Considérer l'IA comme un copilote de calcul probabiliste sous supervision humaine stricte : encadrer son périmètre de fichiers, auditer impitoyablement ses diffs et valider chaque modification par des tests déterministes (Zero Trust AI Code).",
+                "Refuser catégoriquement d'utiliser les outils d'IA et revenir à l'éditeur de texte bloc-notes.",
+                "Laisser l'IA décider elle-même des règles de sécurité de l'entreprise."
+              ],
+              correctIndex: 1,
+              explanation: "L'ingénieur moderne exploite la puissance de calcul et d'exploration de l'IA tout en maintenant un contrôle absolu de sécurité, de typage et de validation humaine."
+            }
           ]}
         />
-      </div>
+      </section>
     </div>
   );
 };

@@ -1,851 +1,323 @@
 ﻿'use client';
 
-import React from 'react';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import React, { useState } from 'react';
 import { Callout } from '@/components/courses/Callout';
-import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+interface RegressionCheck {
+  id: string;
+  name: string;
+  category: 'Sécurité' | 'Contrats API' | 'Typage' | 'Base de Données';
+  status: 'PASSED' | 'FAILED' | 'PENDING';
+  details: string;
+  command: string;
+}
+
+const REGRESSION_CHECKS: RegressionCheck[] = [
+  {
+    id: 'chk-sec',
+    name: 'Contrôle d\'étanchéité multi-tenant & IDOR',
+    category: 'Sécurité',
+    status: 'PASSED',
+    details: 'Vérifie que les utilisateurs A et B ne peuvent en aucun cas accéder réciproquement à leurs commandes.',
+    command: 'npx vitest run test/integration/orderAuthorization.test.ts'
+  },
+  {
+    id: 'chk-auth',
+    name: 'Rejet systématique des requêtes non authentifiées (HTTP 401)',
+    category: 'Sécurité',
+    status: 'PASSED',
+    details: 'Vérifie que toute route protégée sans Bearer token renvoie 401 sans exécuter le contrôleur.',
+    command: 'npx vitest run test/integration/authMiddleware.test.ts'
+  },
+  {
+    id: 'chk-types',
+    name: 'Vérification statique TypeScript sans dérivation (Strict Mode)',
+    category: 'Typage',
+    status: 'PASSED',
+    details: 'Garantit l\'absence de @ts-ignore, de casts vers "any" et d\'incohérences de signatures.',
+    command: 'npx tsc --noEmit'
+  },
+  {
+    id: 'chk-db',
+    name: 'Libération du pool MySQL sous charge concurrente',
+    category: 'Base de Données',
+    status: 'PASSED',
+    details: 'Exécute 50 requêtes simultanées et vérifie que pool.activeConnections redescend à 0.',
+    command: 'npx vitest run test/integration/dbPoolStress.test.ts'
+  },
+  {
+    id: 'chk-api',
+    name: 'Contrat JSON d\'authentification Frontend / Backend',
+    category: 'Contrats API',
+    status: 'PASSED',
+    details: 'Vérifie que le payload { email, password } est accepté et que passwordUser est définitivement banni.',
+    command: 'npx vitest run test/unit/useAuth.test.ts'
+  }
+];
 
 export const Chapitre9Content: React.FC = () => {
+  const [pipelineRunning, setPipelineRunning] = useState<boolean>(false);
+  const [pipelineSuccess, setPipelineSuccess] = useState<boolean>(false);
+
+  const triggerPipeline = () => {
+    setPipelineRunning(true);
+    setPipelineSuccess(false);
+    setTimeout(() => {
+      setPipelineRunning(false);
+      setPipelineSuccess(true);
+    }, 500);
+  };
+
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
-      {/* Hero Banner */}
+    <div className="space-y-12 text-slate-900 leading-relaxed font-sans pb-16">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+      <div className="rounded-3xl border-2 border-emerald-300 bg-linear-to-r from-emerald-50 via-teal-50 to-green-100/60 p-6 sm:p-8 shadow-xs">
+        <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs uppercase tracking-wider mb-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+          <span>Module 7 — Grand Projet de Fin d&apos;Études (Capstone) • Section 7.9</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 9 — Vérification de la non-régression
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Vérification Globale de la Non-Régression et Pipeline d&apos;Audit Pré-Merge
         </h1>
+        <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">
+          Réparer un bug en en créant deux autres n&apos;est pas une victoire : c&apos;est une dégradation silencieuse. Découvrez comment ériger une <strong>matrice de non-régression</strong> impitoyable et configurer le pipeline de pré-validation (Pre-Flight Gate) avant toute fusion dans la branche de production.
+        </p>
       </div>
 
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 9 — 7.9. Vérification de la non-régression
-      </p>
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs pédagogiques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous serez capable de :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre la notion de régression logicielle.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier qu&apos;une correction ne casse pas une fonctionnalité existante.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Construire une stratégie de tests de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comparer le comportement avant et après correction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Automatiser les vérifications avec Vitest et Supertest.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Analyser les résultats avant de livrer une correction.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Qu&apos;est-ce qu&apos;une régression ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une régression est un dysfonctionnement introduit par une modification qui dégrade une fonctionnalité auparavant opérationnelle.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 1: La Matrice des 4 Piliers de Non-Régression */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Architecture de Contrôle</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            1. Les quatre piliers de la non-régression logicielle
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Vous corrigez la route de connexion pour accepter le champ password au lieu de passwordUser.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La connexion fonctionne maintenant, mais une autre fonctionnalité qui utilise le même service d&apos;authentification ne fonctionne plus.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La correction initiale est donc réussie, mais elle a introduit un nouveau problème.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut distinguer deux résultats :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Correction fonctionnelle : le bug initial est résolu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Non-régression : les fonctionnalités déjà opérationnelles continuent de fonctionner.</span>
-          </li>
-        </ul>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Pourquoi les tests précédents ne suffisent-ils pas ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Au chapitre 8, nous avons testé principalement les fonctionnalités directement concernées par les corrections.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La non-régression élargit le périmètre.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple pour une application de gestion de commandes :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Fonctionnalité</th>
-              <th className="px-4 py-3">Test initial</th>
-              <th className="px-4 py-3">Test de non-régression</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Connexion</td>
-              <td className="px-4 py-2.5 font-medium">Identifiants valides</td>
-              <td className="px-4 py-2.5 font-medium">Accès aux pages privées après connexion</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Commandes</td>
-              <td className="px-4 py-2.5 font-medium">Commande inexistante</td>
-              <td className="px-4 py-2.5 font-medium">Consultation des commandes existantes</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Upload</td>
-              <td className="px-4 py-2.5 font-medium">Fichier valide</td>
-              <td className="px-4 py-2.5 font-medium">Téléchargement et consultation du fichier</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">IA</td>
-              <td className="px-4 py-2.5 font-medium">Analyse réussie</td>
-              <td className="px-4 py-2.5 font-medium">Conservation des autres fonctionnalités du document</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Autorisations</td>
-              <td className="px-4 py-2.5 font-medium">Accès refusé</td>
-              <td className="px-4 py-2.5 font-medium">Accès autorisé aux rôles prévus</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;objectif est de vérifier que les fonctionnalités liées, même indirectement, restent opérationnelles.
-      </p>
-      </section>
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Sur un système d&apos;entreprise, la non-régression ne se limite pas à faire passer les tests unitaires : elle doit être validée sur quatre dimensions complémentaires :
+        </p>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Identifier les fonctionnalités à risque
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Après chaque correction, il faut examiner les dépendances.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prenons la correction de l&apos;authentification.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les composants susceptibles d&apos;être affectés sont :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le formulaire React de connexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le contrôleur Express.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le service d&apos;authentification.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le middleware JWT.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les routes protégées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les permissions utilisateur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La gestion de session côté frontend.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un changement dans le service d&apos;authentification peut avoir des conséquences sur plusieurs fonctionnalités.
-      </p>
-      <Callout type="tip" title="Bonne pratique ">
-        <p className="text-xs sm:text-sm">ne tester pas uniquement le fichier modifié ; testez aussi les composants qui dépendent de lui.</p>
-      </Callout>
-      </section>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="text-xs font-bold text-rose-700 uppercase mb-1">Pilier 1 : Non-régression de sécurité</div>
+            <p className="text-xs sm:text-sm text-slate-600">
+              Garantir que le correctif n&apos;a pas affaibli l&apos;isolation multi-tenant, supprimé des filtres de sécurité ou permis des contournements d&apos;authentification (401/403).
+            </p>
+          </div>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Construire une matrice de non-régression
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une matrice permet de relier chaque correction aux fonctionnalités qui doivent être revérifiées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Correction</th>
-              <th className="px-4 py-3">Fonctionnalités à revérifier</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-001 : connexion</td>
-              <td className="px-4 py-2.5 font-medium">Authentification, JWT, routes privées</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-002 : commandes</td>
-              <td className="px-4 py-2.5 font-medium">Liste, détail, modification des commandes</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-003 : service IA</td>
-              <td className="px-4 py-2.5 font-medium">Analyse, gestion des erreurs, affichage frontend</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Correction upload</td>
-              <td className="px-4 py-2.5 font-medium">Taille, format, stockage, téléchargement</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette matrice constitue une partie importante de la stratégie de validation.
-      </p>
-      </section>
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="text-xs font-bold text-blue-700 uppercase mb-1">Pilier 2 : Non-régression contractuelle</div>
+            <p className="text-xs sm:text-sm text-slate-600">
+              Vérifier que les schémas de réponses JSON et les codes statut HTTP attendus par les clients mobiles et frontends existants n&apos;ont pas été altérés.
+            </p>
+          </div>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Comparer le comportement avant et après correction
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut établir un résultat attendu, puis vérifier le résultat réel.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Avant correction :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="text-xs font-bold text-emerald-700 uppercase mb-1">Pilier 3 : Non-régression statique (TypeScript)</div>
+            <p className="text-xs sm:text-sm text-slate-600">
+              S&apos;assurer que la compilation stricte (<code className="text-xs font-mono">tsc --noEmit</code>) ne produit aucun warning, aucun cast sauvage vers &apos;any&apos; et aucun import non résolu.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="text-xs font-bold text-amber-700 uppercase mb-1">Pilier 4 : Non-régression de concurrence</div>
+            <p className="text-xs sm:text-sm text-slate-600">
+              Prouver sous charge concurrente (stress test) que les connexions de pool SQL sont restituées et que la mémoire heap reste stable.
+            </p>
+          </div>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/orders/999999
 
-Résultat :
-HTTP 500`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Après correction :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/orders/999999
-
-Résultat :
-HTTP 404`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mais la vérification ne s&apos;arrête pas là.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        On teste également :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/orders/123
-
-Résultat attendu :
-HTTP 200`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Et on vérifie que le contenu de la commande reste correct.
-      </p>
+        <Callout type="warning" title="La règle de l'effet d'avalanche">
+          Dans 40% des régressions industrielles, la cause n&apos;est pas le code modifié lui-même, mais une dépendance partagée dont la signature a été subtilement changée sans que les autres modules consommateurs n&apos;aient été mis à jour. D&apos;où l&apos;obligation d&apos;exécuter l&apos;intégralité de la suite de tests globale.
+        </Callout>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Automatiser la non-régression avec Vitest et Supertest
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les tests déjà créés au chapitre 8 peuvent être réutilisés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 2: Le Pipeline d'Audit Automatisé Pre-Flight */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Automatisation CI/CD</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            2. Le script de validation Pre-Flight avant toute fusion Git
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import request from "supertest";
-import { describe, it, expect } from "vitest";
-import app from "../src/app";
 
-describe("Non-régression des commandes", () =&gt; {
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Avant d&apos;envisager la fusion de votre branche de correctifs (<code className="text-xs font-mono">fix/capstone-remediation</code>) dans la branche principale, vous devez exécuter ce script séquentiel éliminatoire :
+        </p>
 
-it("retourne une commande existante", async () =&gt; {
-const response = await request(app)
-.get("/api/orders/123");
+        <CodeBlock language="bash">{`# Pipeline de vérification globale de non-régression
+set -e # Arrêt immédiat dès la première commande en échec
 
-expect(response.status).toBe(200);
-});
+echo "==> 1. Vérification statique des types TypeScript..."
+npx tsc --noEmit
 
-it("retourne 404 pour une commande absente", async () =&gt; {
-const response = await request(app)
-.get("/api/orders/999999");
+echo "==> 2. Audit du Linter (règles strictes)..."
+node --max-old-space-size=512 ./node_modules/eslint/bin/eslint.js "src/**/*.{ts,tsx}"
 
-expect(response.status).toBe(404);
-});
+echo "==> 3. Exécution de la suite complète de tests (Unitaires + Intégration)..."
+npx vitest run
 
-});
-Ces tests supposent que la base de test contient une commande identifiée par 123 et aucune commande correspondant à 999999.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exécution :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npx vitest run`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour exécuter les tests automatiquement à chaque modification pendant le développement :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npx vitest`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut également examiner les tests frontend et les scénarios d&apos;intégration lorsque les modifications touchent l&apos;interface utilisateur.
-      </p>
+echo "==> 4. Contrôle des conflits et du diff Git..."
+git diff --check
+
+echo " HOMOLOGATION VALIDÉE : Zéro régression détectée. Prêt pour la mise en production."`}</CodeBlock>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Vérifier la non-régression de sécurité
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La non-régression concerne aussi la sécurité.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : une correction permet de consulter une commande existante.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut vérifier que :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un utilisateur non authentifié ne peut pas consulter une commande privée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un utilisateur authentifié ne peut pas accéder aux commandes d&apos;un autre utilisateur sans autorisation.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un utilisateur avec un rôle limité ne peut pas effectuer une action réservée à l&apos;administrateur.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de scénarios :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Scénario</th>
-              <th className="px-4 py-3">Résultat attendu</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Sans token</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 401</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Token invalide</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 401</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Token valide sans permission</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 403</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Token valide avec permission</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 200</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La distinction entre authentification (401) et autorisation (403) doit être respectée par le contrat API.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Utiliser Git pour contrôler la stabilité
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Après les corrections et les tests :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 3: Simulateur Interactif - Le Gatekeeper de Non-Régression */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Banc d&apos;Essai Interactif</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            3. Atelier : Simulation de la Barrière de Non-Régression (Pre-Merge Gate)
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git status
-git diff`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Puis, si le projet utilise une branche dédiée :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Voici les 5 contrôles de sécurité et de conformité qui jalonnent l&apos;homologation finale de notre projet Capstone. Déclenchez la vérification automatisée pour confirmer le passage de tous les jalons :
+        </p>
+
+        <div className="rounded-2xl bg-white border border-slate-300 shadow-sm p-5 space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+            <div>
+              <span className="text-xs font-mono font-bold text-slate-500 uppercase">Matrice de validation</span>
+              <h3 className="text-base font-bold text-slate-900">5 contrôles critiques obligatoires</h3>
+            </div>
+            <button
+              disabled={pipelineRunning}
+              onClick={triggerPipeline}
+              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition-all shadow-xs disabled:opacity-40"
+            >
+              {pipelineRunning ? '⏳ Exécution du pipeline CI...' : '▶ Lancer le pipeline complet de non-régression'}
+            </button>
+          </div>
+
+          <div className="space-y-2.5">
+            {REGRESSION_CHECKS.map((chk) => (
+              <div key={chk.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                      {chk.category}
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-slate-900">{chk.name}</span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-1">{chk.details}</p>
+                </div>
+                <div className="text-right">
+                  <span className={`text-xs font-mono font-black px-2.5 py-1 rounded ${
+                    pipelineSuccess
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {pipelineSuccess ? 'PASSED (0 REGRESSION)' : 'EN ATTENTE'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {pipelineSuccess && (
+            <div className="p-4 rounded-xl bg-emerald-950 text-emerald-200 font-mono text-xs space-y-1 border border-emerald-800">
+              <div className="font-bold text-emerald-300">
+                 BILAN PIPELINE : 5/5 vérifications validées avec succès en 2.4s
+              </div>
+              <p className="text-slate-300">
+                Statut : HOMOLOGATION ACCORDÉE — La branche fix/capstone-remediation peut être fusionnée dans main en toute sécurité.
+              </p>
+            </div>
+          )}
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git diff main...HEAD
-Cette dernière commande permet d'examiner les changements de la branche par rapport à main.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut vérifier :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Que les corrections sont limitées au périmètre prévu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Que les tests existants n&apos;ont pas été supprimés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Que les fichiers de configuration sensibles sont préservés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Que les modifications sont compréhensibles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Que les résultats des tests sont documentés.</span>
-          </li>
-        </ul>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          10. Prompt professionnel — Audit de non-régression
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MISSION — VÉRIFICATION DE NON-RÉGRESSION
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur QA senior spécialisé dans les tests de non-régression, React, TypeScript, Node.js, Express et MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vérifier que les corrections apportées à l&apos;application n&apos;ont pas dégradé les fonctionnalités existantes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONTEXT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le projet a fait l&apos;objet :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>D&apos;un audit technique.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>D&apos;un diagnostic des causes racines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>D&apos;un plan de correction validé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>De corrections progressives.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>De tests unitaires et d&apos;intégration.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les corrections effectuées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les composants dépendants des fichiers modifiés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les tests existants.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Construire une matrice de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les scénarios fonctionnels à revérifier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les contrats API.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier l&apos;authentification et les autorisations.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Exécuter les tests autorisés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Analyser les éventuels échecs.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Produire un rapport de non-régression.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas modifier le code pendant cet audit.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas supprimer de tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas modifier la base de production.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas masquer les tests échoués.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas déclarer un test réussi sans l&apos;avoir exécuté.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas inventer de résultats.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Demander une autorisation avant toute modification.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présenter :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les corrections examinées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les fonctionnalités dépendantes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La matrice de non-régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests exécutés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests réussis et échoués.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les régressions détectées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les risques non vérifiés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La conclusion générale.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Conclure avec l&apos;un des statuts :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>VALIDÉ : aucune régression détectée dans le périmètre testé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>NON VALIDÉ : une ou plusieurs régressions sont détectées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>PARTIELLEMENT VALIDÉ : certains scénarios restent à tester.</span>
-          </li>
-        </ul>
-      </section>
+      {/* Section 4: Quiz d'évaluation de 6 questions */}
+      <section className="space-y-6 pt-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Validation des Connaissances</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            4. Quiz : Stratégies de non-régression et pipelines d&apos;homologation
+          </h2>
+        </div>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          11. TP — Vérifier la non-régression
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte : vous avez corrigé les trois anomalies du projet :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>BUG-001 : connexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>BUG-002 : consultation des commandes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>BUG-003 : traitement des erreurs Gemini.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Construire une matrice de tests couvrant :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La connexion et l&apos;accès aux pages privées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La consultation des commandes existantes et inexistantes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les permissions utilisateur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;analyse IA.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La gestion des erreurs externes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le comportement frontend après une réponse API en erreur.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé indicatif
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Test</th>
-              <th className="px-4 py-3">Résultat attendu</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Connexion valide</td>
-              <td className="px-4 py-2.5 font-medium">Session établie</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Connexion invalide</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 401</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Route privée sans token</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 401</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Commande existante</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 200</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Commande inexistante</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 404</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Utilisateur sans permission</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 403</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Analyse IA réussie</td>
-              <td className="px-4 py-2.5 font-medium">Résultat affiché</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Timeout Gemini</td>
-              <td className="px-4 py-2.5 font-medium">Erreur contrôlée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Erreur IA</td>
-              <td className="px-4 py-2.5 font-medium">Message adapté côté frontend</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Critère de réussite : les corrections initiales fonctionnent et les fonctionnalités existantes couvertes par la matrice restent opérationnelles.
-      </p>
-      </section>
-
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
         <QuickQuiz
-          title="Quiz de révision — Chapitre 7.9"
+          title="Quiz 7.9 — Non-Régression, CI/CD et Sécurité Pré-Merge"
           questions={[
             {
               id: 1,
-              question: "Qu'est-ce qu'une régression ?",
-              options: ["Une correction réussie.", "Un nouveau dysfonctionnement introduit par une modification.", "Un test unitaire."],
+              question: "Pourquoi est-il insuffisant de vérifier uniquement que le test du bug corrigé passe au vert ?",
+              options: [
+                "Parce que Vitest ne supporte pas les tests individuels.",
+                "Parce qu'un correctif chirurgical peut introduire des effets de bord collatéraux sur d'autres composants dépendants (régression croisée) sans que le test isolé ne puisse le détecter.",
+                "Parce que Git exige obligatoirement 100 tests pour autoriser un commit.",
+                "Pour faire patienter le client avant la livraison."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Le test unitaire valide la correction de l'anomalie cible, mais seule l'exécution de la suite globale vérifie que le reste de l'application est resté indemne."
             },
             {
               id: 2,
-              question: "Après avoir corrigé une route, que faut-il tester ?",
-              options: ["Uniquement le fichier modifié.", "La route et les fonctionnalités qui dépendent d'elle.", "Uniquement le frontend."],
+              question: "Dans un pipeline de pré-validation (Pre-Flight Gate), pourquoi l'étape 'npx tsc --noEmit' doit-elle être exécutée avant même de lancer les tests ?",
+              options: [
+                "Pour nettoyer les fichiers temporaires du système d'exploitation.",
+                "Parce que la vérification statique TypeScript détecte immédiatement les désalignements de types, signatures modifiées et imports cassés en quelques secondes sans mobiliser de ressources d'exécution.",
+                "Parce que les processeurs modernes ne peuvent pas exécuter de tests sans tsc.",
+                "Pour empêcher les stagiaires de modifier le code."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "La compilation statique est déterministe et ultra-rapide : elle élimine 90% des erreurs d'incompatibilité de contrat avant même d'instancier le runtime de test."
             },
             {
               id: 3,
-              question: "Quel est l'objectif d'une matrice de non-régression ?",
-              options: ["Relier les corrections aux fonctionnalités à revérifier.", "Supprimer les tests inutiles sans analyse.", "Remplacer les tests unitaires."],
+              question: "Quelle commande Git permet de vérifier qu'aucun conflit de fusion ou espace parasite (whitespace error) n'est présent dans le diff ?",
+              options: [
+                "git diff --check",
+                "git reset --hard",
+                "git push --all",
+                "git branch -m"
+              ],
               correctIndex: 0,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "La commande 'git diff --check' scanne les modifications à la recherche d'espaces de fin de ligne résiduels ou de marqueurs de conflits non résolus (<<<<<<<)."
             },
             {
               id: 4,
-              question: "Une application peut-elle être déclarée totalement validée si certains scénarios n'ont pas été testés ?",
-              options: ["Oui.", "Non."],
+              question: "Pourquoi les tests de non-régression de sécurité doivent-ils obligatoirement inclure des requêtes sans authentification (HTTP 401) et avec droits insuffisants (HTTP 403) ?",
+              options: [
+                "Pour tester la vitesse de la carte réseau.",
+                "Pour s'assurer qu'un correctif n'a pas accidentellement supprimé le middleware d'authentification ou transformé une route privée en route publique accessible à tous.",
+                "Pour inciter les utilisateurs à créer un compte.",
+                "Pour respecter une convention esthétique d'URL."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Tester les scénarios négatifs (cas d'accès refusé) garantit que les barrières de sécurité restent infranchissables pour les requêtes malveillantes."
             },
+            {
+              id: 5,
+              question: "Que doit-on faire si un seul test de la suite de non-régression échoue lors du pipeline d'homologation pré-merge ?",
+              options: [
+                "Supprimer le test qui échoue pour que le pipeline passe au vert.",
+                "Interdire formellement la fusion (merge bloqué), identifier si l'échec est une régression réelle introduite par le patch ou une mise à jour légitime de spécification, et corriger le problème avant toute tentative de livraison.",
+                "Forcer la mise en production en espérant que personne ne remarque le bug.",
+                "Redémarrer le serveur de build trois fois de suite."
+              ],
+              correctIndex: 1,
+              explanation: "La règle d'or de la CI est absolue : un seul test rouge bloque l'homologation. Supprimer ou ignorer un test défaillant constitue une faute professionnelle grave."
+            },
+            {
+              id: 6,
+              question: "Quel rôle jouent les tests de charge concurrente (stress tests) dans la matrice de non-régression d'un pool MySQL ?",
+              options: [
+                "Vérifier la couleur des câbles réseau.",
+                "Prouver sous afflux massif de requêtes simultanées que le pool ne subit aucune fuite de connexion (Connection Leak) et que les transactions sont correctement libérées dans le bloc finally.",
+                "Télécharger automatiquement les dernières mises à jour de MySQL.",
+                "Vérifier que le disque dur est défragmenté."
+              ],
+              correctIndex: 1,
+              explanation: "Les fuites de connexion ne se révèlent qu'en condition de concurrence : le stress test garantit que l'infrastructure ne s'effondrera pas sous le trafic réel des utilisateurs."
+            }
           ]}
         />
-      </div>
+      </section>
     </div>
   );
 };

@@ -1,1052 +1,333 @@
 ﻿'use client';
 
-import React from 'react';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import React, { useState } from 'react';
 import { Callout } from '@/components/courses/Callout';
-import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+
+interface RemediationTask {
+  id: string;
+  order: number;
+  code: string;
+  title: string;
+  targetFiles: string[];
+  blastRadius: 'FAIBLE' | 'MOYEN' | 'ÉLEVÉ';
+  dependency: string;
+  validationTest: string;
+}
+
+const REMEDIATION_TASKS: RemediationTask[] = [
+  {
+    id: 't-db-pool',
+    order: 1,
+    code: 'FIX-01',
+    title: 'Sanctuarisation du Pool MySQL & Correction du Connection Leak',
+    targetFiles: ['src/backend/config/database.ts'],
+    blastRadius: 'FAIBLE',
+    dependency: 'Aucune (Fondation infrastructure)',
+    validationTest: 'test/integration/dbPoolStress.test.ts (50 requêtes concurrentes)'
+  },
+  {
+    id: 't-auth-idor',
+    order: 2,
+    code: 'FIX-02',
+    title: 'Contrôle d\'Autorisation IDOR sur les Commandes',
+    targetFiles: ['src/backend/controllers/order.controller.ts'],
+    blastRadius: 'MOYEN',
+    dependency: 'FIX-01 (Nécessite un accès DB stable)',
+    validationTest: 'test/integration/orderAuthorization.test.ts (Vérification 403 sur cross-user)'
+  },
+  {
+    id: 't-order-404',
+    order: 3,
+    code: 'FIX-03',
+    title: 'Gestion Contractuelle HTTP 404 sur Commande Inexistante',
+    targetFiles: ['src/backend/controllers/order.controller.ts', 'src/backend/repositories/order.repository.ts'],
+    blastRadius: 'FAIBLE',
+    dependency: 'FIX-02 (Appliqué sur le même contrôleur)',
+    validationTest: 'test/integration/orderNotFound.test.ts (Vérification 404 sur ID 999999)'
+  },
+  {
+    id: 't-client-payload',
+    order: 4,
+    code: 'FIX-04',
+    title: 'Harmonisation du Payload React dans useAuth.ts',
+    targetFiles: ['src/frontend/hooks/useAuth.ts', 'src/frontend/components/LoginForm.tsx'],
+    blastRadius: 'MOYEN',
+    dependency: 'FIX-02 & FIX-03 (Contrats API backend stabilisés)',
+    validationTest: 'test/unit/useAuth.test.ts & Test E2E de connexion'
+  }
+];
 
 export const Chapitre6Content: React.FC = () => {
+  const [selectedTask, setSelectedTask] = useState<RemediationTask>(REMEDIATION_TASKS[0]);
+
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
-      {/* Hero Banner */}
+    <div className="space-y-12 text-slate-900 leading-relaxed font-sans pb-16">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+      <div className="rounded-3xl border-2 border-emerald-300 bg-linear-to-r from-emerald-50 via-teal-50 to-green-100/60 p-6 sm:p-8 shadow-xs">
+        <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs uppercase tracking-wider mb-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+          <span>Module 7 — Grand Projet de Fin d&apos;Études (Capstone) • Section 7.6</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 6 — Élaboration d&apos;un plan de correction
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Élaboration du Plan de Correction et Maîtrise du Rayon d&apos;Impact (Blast Radius)
         </h1>
+        <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">
+          Un diagnostic réussi ne garantit rien si le correctif est déployé dans le désordre. Dans un projet multicouche complexe, modifier le frontend avant d&apos;avoir stabilisé le schéma backend provoque des régressions croisées ingérables. Découvrez comment structurer une <strong>Fiche de Remédiation</strong> et ordonnancer les dépendances.
+        </p>
       </div>
 
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 6 — 7.6. Élaboration d&apos;un plan de correction
-      </p>
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs pédagogiques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous serez capable de :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Transformer un diagnostic technique en plan de correction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir les fichiers concernés par chaque anomalie.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Prioriser les corrections selon leur gravité et leurs dépendances.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Évaluer les risques avant de modifier le code.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir les tests nécessaires pour chaque correction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Préparer un plan de travail pour un agent IA dans un IDE.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Valider un plan avant d&apos;autoriser les modifications.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Pourquoi élaborer un plan de correction ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Après avoir identifié les causes racines, il ne faut pas demander immédiatement à l&apos;agent IA de corriger tous les problèmes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une application complète peut contenir plusieurs anomalies interdépendantes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une correction mal planifiée peut :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Introduire de nouveaux bugs.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Casser une fonctionnalité existante.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Modifier involontairement plusieurs composants.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Provoquer une régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Compromettre la sécurité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Rendre les changements difficiles à contrôler.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous avez identifié trois anomalies :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La route de consultation des commandes n&apos;est pas suffisamment protégée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le contrôleur ne gère pas une commande inexistante.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le service IA ne gère pas correctement les délais d&apos;attente.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut organiser les corrections, déterminer les fichiers concernés et définir les tests nécessaires.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Transformer un diagnostic en action corrective
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chaque anomalie doit être transformée en une fiche de correction.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici sa structure :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Élément</th>
-              <th className="px-4 py-3">Description</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Identifiant</td>
-              <td className="px-4 py-2.5 font-medium">Référence de l&apos;anomalie</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Cause racine</td>
-              <td className="px-4 py-2.5 font-medium">Origine confirmée du problème</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Objectif</td>
-              <td className="px-4 py-2.5 font-medium">Comportement à obtenir</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fichiers concernés</td>
-              <td className="px-4 py-2.5 font-medium">Fichiers à modifier</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Correction prévue</td>
-              <td className="px-4 py-2.5 font-medium">Changements nécessaires</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Risques</td>
-              <td className="px-4 py-2.5 font-medium">Effets secondaires possibles</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Tests</td>
-              <td className="px-4 py-2.5 font-medium">Vérifications à réaliser</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Priorité</td>
-              <td className="px-4 py-2.5 font-medium">Ordre de traitement</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : BUG-006
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Anomalie : HTTP 500 lors de la consultation d&apos;une commande inexistante.
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Cause racine : absence de vérification du résultat retourné par le repository.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Objectif : retourner HTTP 404 si la commande n&apos;existe pas.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Fichiers concernés :</span>
-          </li>
-        </ul>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 1: La Notion de Blast Radius (Rayon d'Impact) */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Gestion des Risques</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            1. Mesurer le rayon d&apos;impact (Blast Radius) avant de modifier un fichier
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`orderController.ts
-orderController.test.ts`}</code></pre>
-      </div>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Correction prévue : vérifier le résultat avant d&apos;accéder aux propriétés de la commande.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Risques : modifier involontairement le comportement des commandes existantes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests : commande existante, commande inexistante et erreur repository.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette fiche transforme un problème technique en une tâche précise.
-      </p>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Prioriser les corrections
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Toutes les anomalies ne doivent pas être corrigées dans le même ordre.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut considérer :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La gravité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;impact métier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le risque de sécurité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le nombre d&apos;utilisateurs concernés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les dépendances techniques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La difficulté de correction.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Anomalie</th>
-              <th className="px-4 py-3">Gravité</th>
-              <th className="px-4 py-3">Priorité proposée</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Route privée accessible sans authentification</td>
-              <td className="px-4 py-2.5 font-medium">Critique</td>
-              <td className="px-4 py-2.5 font-medium">P1</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Commande inexistante provoquant HTTP 500</td>
-              <td className="px-4 py-2.5 font-medium">Moyenne</td>
-              <td className="px-4 py-2.5 font-medium">P2</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Échec IA sans gestion du timeout</td>
-              <td className="px-4 py-2.5 font-medium">Élevée</td>
-              <td className="px-4 py-2.5 font-medium">P2</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Alignement incorrect d&apos;un bouton</td>
-              <td className="px-4 py-2.5 font-medium">Faible</td>
-              <td className="px-4 py-2.5 font-medium">P4</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une anomalie de sécurité critique doit généralement être traitée avant une amélioration visuelle.
-      </p>
-      <Callout type="warning" title="Attention ">
-        <p className="text-xs sm:text-sm">la priorité finale doit également tenir compte des dépendances. Une correction peut nécessiter une autre modification préalable.</p>
-      </Callout>
-      </section>
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Le <strong>Blast Radius</strong> mesure l&apos;étendue maximale des dommages potentiels causés à l&apos;écosystème si le correctif appliqué venait à comporter une anomalie imprévue :
+        </p>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Définir les dépendances entre corrections
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Certaines corrections dépendent d&apos;autres tâches.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La correction du contrôleur dépend du contrat de retour du repository.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests du contrôleur dépendent du comportement attendu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La validation finale dépend de l&apos;exécution des tests.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        On peut représenter ces dépendances :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 my-6">
+          <div className="p-5 rounded-2xl bg-white border border-emerald-200 shadow-xs flex flex-col justify-between">
+            <div>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black">Blast Radius Faible</span>
+              <h3 className="text-base font-bold text-slate-900 mt-2 mb-1">Module Isolé</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Modification d&apos;une fonction utilitaire pure sans dépendance externe ou d&apos;un contrôleur dédié à un point d&apos;entrée unique.
+              </p>
+            </div>
+            <div className="mt-3 text-xs font-mono text-emerald-700 bg-emerald-50 p-2 rounded-lg">Risque de régression limité</div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-amber-200 shadow-xs flex flex-col justify-between">
+            <div>
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-black">Blast Radius Moyen</span>
+              <h3 className="text-base font-bold text-slate-900 mt-2 mb-1">Contrat d&apos;Interface Métier</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Modification d&apos;un schéma d&apos;authentification ou d&apos;un service partagé entre le frontend React et plusieurs routes de l&apos;API.
+              </p>
+            </div>
+            <div className="mt-3 text-xs font-mono text-amber-700 bg-amber-50 p-2 rounded-lg">Exige des tests d&apos;intégration</div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-rose-200 shadow-xs flex flex-col justify-between">
+            <div>
+              <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-xs font-black">Blast Radius Élevé</span>
+              <h3 className="text-base font-bold text-slate-900 mt-2 mb-1">Infrastructure Transverse</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Altération du pool de connexions MySQL, du middleware d&apos;authentification global JWT ou du fichier de configuration TypeScript racine.
+              </p>
+            </div>
+            <div className="mt-3 text-xs font-mono text-rose-700 bg-rose-50 p-2 rounded-lg font-bold">Peut paralyser tout le site</div>
+          </div>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Diagnostic confirmé
-|
-v
-Définir le comportement attendu
-|
-v
-Identifier les fichiers concernés
-|
-v
-Élaborer la correction
-|
-v
-Écrire les tests
-|
-v
-Appliquer la correction
-|
-v
-Exécuter les tests
-|
-v
-Valider la correction`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;ordre exact entre écriture des tests et modification du code peut varier. Dans une approche TDD, les tests sont écrits avant la correction.
-      </p>
+
+        <Callout type="warning" title="La règle de la Whitelist de Fichiers">
+          Lorsque vous confiez une tâche de correction à un agent IA dans votre IDE, votre instruction doit obligatoirement inclure : <em>&laquo; Fichiers autorisés : [CHEMIN_EXACT]. Toute modification en dehors de ce périmètre sera rejetée. &raquo;</em> Cela empêche l&apos;agent d&apos;altérer 14 fichiers de configuration sous prétexte de simplifier le correctif.
+        </Callout>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Évaluer les risques avant la correction
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une modification peut résoudre un problème tout en en créant un autre.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prenons l&apos;exemple d&apos;une route utilisateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Avant :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 2: Structure d'une Fiche de Remédiation Industrielle */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Standard d&apos;Équipe</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            2. Anatomie d&apos;une Fiche de Remédiation Professionnelle
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`router.get(
-"/users/:id",
-getUserById
-);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction envisagée :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Chaque bug majeur du projet Capstone doit faire l&apos;objet d&apos;un mandat d&apos;intervention documenté sous ce format standardisé avant toute écriture de code :
+        </p>
+
+        <div className="p-5 rounded-2xl bg-slate-900 text-white font-mono text-xs shadow-md">
+          <div className="text-emerald-400 font-bold mb-2">{`// Fiche de Remédiation : FIX-02 (Contrôle IDOR)`}</div>
+          <CodeBlock language="markdown">{`# FICHE DE REMÉDIATION — INCIDENT SEC-01
+
+- CODE TICKET : FIX-02
+- PRIORITÉ : P1 (Bloquante)
+- TITRE : Contrôle d'autorisation de propriété sur /api/orders/:id
+- CAUSE RACINE : getOrderById ne compare pas order.userId avec req.user.id
+- PÉRIMÈTRE AUTORISÉ :
+  * src/backend/controllers/order.controller.ts
+  * test/integration/orderAuthorization.test.ts
+- FICHIERS INTERDITS :
+  * package.json, database.ts, routes/api.routes.ts
+- ÉTAPES DE MISE EN ŒUVRE :
+  1. Écrire le test d'intégration 'orderAuthorization.test.ts' simulant l'accès croisé (RED).
+  2. Ajouter la condition : if (order.userId !== req.user.id && req.user.role !== 'ADMIN') return res.status(403)...
+  3. Vérifier que le test passe au vert (GREEN).
+  4. Exécuter 'npx tsc --noEmit' pour valider le typage.
+- STRATÉGIE DE ROLLBACK : git checkout src/backend/controllers/order.controller.ts`}</CodeBlock>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`router.get(
-"/users/:id",
-authenticateToken,
-getUserById
-);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette modification améliore la protection de la route, mais plusieurs questions doivent être examinées :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Cette route était-elle volontairement publique ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le middleware vérifie-t-il correctement le JWT ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les rôles et permissions sont-ils suffisants ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;utilisateur peut-il consulter le profil d&apos;un autre utilisateur ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests existants doivent-ils être adaptés ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une correction de sécurité doit être vérifiée au niveau de l&apos;authentification et de l&apos;autorisation.
-      </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Préparer le plan de correction avec un agent IA
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un agent IA peut analyser les anomalies et proposer un plan détaillé.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mais il ne doit pas encore modifier les fichiers.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici un prompt professionnel :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MISSION — ÉLABORATION DU PLAN DE CORRECTION
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un architecte logiciel senior et ingénieur en qualité spécialisé en React, Node.js, Express, MySQL et intégration IA.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Transformer les anomalies diagnostiquées en un plan de correction technique précis, priorisé et vérifiable.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONTEXT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;application comprend :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un frontend React.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un backend Node.js et Express.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une API REST.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une base de données MySQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une authentification JWT.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Un système d&apos;autorisations.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une gestion des fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une intégration avec un service IA.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DATA
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Utiliser uniquement :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le registre des anomalies.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les causes racines identifiées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les logs et Stack Traces.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les scénarios de reproduction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;architecture existante.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests disponibles.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner chaque anomalie.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier que sa cause racine est suffisamment documentée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir le comportement attendu après correction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les fichiers concernés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Décrire les changements nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Déterminer les dépendances entre les corrections.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Évaluer les risques de régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir les tests unitaires et d&apos;intégration nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Classer les corrections par priorité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposer un ordre d&apos;exécution cohérent.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifier aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne supprimer aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifier aucune dépendance.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas exécuter de migration SQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas inventer de fichiers ou de fonctions.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas proposer une correction sans justification technique.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Signaler les causes racines qui restent incertaines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Respecter l&apos;architecture existante.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT FORMAT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Produire un plan contenant :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour chaque correction :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiant de l&apos;anomalie.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Cause racine.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comportement attendu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Fichiers concernés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Modifications prévues.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Dépendances.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Risques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Priorité.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Terminer par :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;ordre global des corrections.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les prérequis.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les points nécessitant une décision humaine.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les critères d&apos;acceptation.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Aucune modification du projet n&apos;est autorisée.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Examiner et valider le plan proposé
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le plan de l&apos;agent ne doit pas être accepté automatiquement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Avant d&apos;autoriser les corrections, vérifiez :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        A. Exactitude
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les fichiers existent-ils ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les fonctions mentionnées existent-elles ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les causes racines sont-elles confirmées ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        B. Périmètre
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les fichiers proposés sont-ils nécessaires ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;agent prévoit-il des modifications inutiles ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des fichiers sensibles sont-ils concernés ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        C. Qualité
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le comportement attendu est-il précis ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests couvrent-ils les cas normaux et les cas d&apos;erreur ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les risques de régression sont-ils identifiés ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        D. Faisabilité
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les dépendances sont-elles respectées ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;ordre des corrections est-il logique ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les prérequis sont-ils disponibles ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La validation du plan est une décision humaine. L&apos;agent peut conseiller, mais ne doit pas décider seul d&apos;élargir le périmètre des modifications.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. TP — Élaborer un plan de correction pour l&apos;application
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travaux pratiques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte : l&apos;audit de votre application a confirmé les trois anomalies suivantes.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Anomalie</th>
-              <th className="px-4 py-3">Cause racine</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-001</td>
-              <td className="px-4 py-2.5 font-medium">Connexion impossible</td>
-              <td className="px-4 py-2.5 font-medium">Incohérence entre passwordUser et password</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-002</td>
-              <td className="px-4 py-2.5 font-medium">Commande inexistante provoquant HTTP 500</td>
-              <td className="px-4 py-2.5 font-medium">Résultat vide non contrôlé</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-003</td>
-              <td className="px-4 py-2.5 font-medium">Analyse IA interrompue sans gestion correcte</td>
-              <td className="px-4 py-2.5 font-medium">Absence de gestion adaptée des délais et erreurs externes</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour chaque anomalie :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir le comportement attendu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les fichiers concernés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Décrire la correction.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir les tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Évaluer les risques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Attribuer une priorité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Déterminer l&apos;ordre des corrections.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé indicatif
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">ID</th>
-              <th className="px-4 py-3">Correction prévue</th>
-              <th className="px-4 py-3">Tests essentiels</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-001</td>
-              <td className="px-4 py-2.5 font-medium">Harmoniser le contrat JSON frontend/backend</td>
-              <td className="px-4 py-2.5 font-medium">Connexion valide, mot de passe incorrect, champ absent</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-002</td>
-              <td className="px-4 py-2.5 font-medium">Gérer le résultat absent avec HTTP 404</td>
-              <td className="px-4 py-2.5 font-medium">Commande existante, inexistante, erreur SQL</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">BUG-003</td>
-              <td className="px-4 py-2.5 font-medium">Gérer timeout et erreurs du fournisseur IA</td>
-              <td className="px-4 py-2.5 font-medium">Succès, timeout, erreur externe</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de plan d&apos;exécution :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>BUG-001 : rétablir le contrat de communication de la connexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>BUG-002 : corriger la gestion des résultats absents.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>BUG-003 : fiabiliser le traitement des appels IA.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cet ordre est pédagogique. En production, la priorité doit être recalculée en fonction de la gravité et de l&apos;impact métier réel.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Livrable attendu
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin du TP, vous devez posséder un document :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+      {/* Section 3: Séquenceur de Dépendances de Correctifs */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Ordonnancement Stratégique</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            3. Atelier : L&apos;Ordre Séquentiel Optimal pour le Projet Capstone
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`PLAN DE CORRECTION — APPLICATION
 
-BUG-001
-Objectif :
-Rétablir la connexion.
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Examinons la séquence rigoureuse d&apos;application des 4 fiches de remédiation élaborées pour le projet Capstone. Cliquez sur chaque étape pour inspecter ses contraintes de dépendances et son test de validation :
+        </p>
 
-Fichiers concernés :
-LoginForm.tsx
-authController.ts
+        {/* Sélecteur de tâche */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          {REMEDIATION_TASKS.map((task) => {
+            const isSelected = selectedTask.id === task.id;
+            return (
+              <button
+                key={task.id}
+                onClick={() => setSelectedTask(task)}
+                className={`p-3.5 rounded-xl border text-left transition-all ${
+                  isSelected
+                    ? 'border-emerald-600 bg-emerald-50/80 text-emerald-950 ring-2 ring-emerald-400 font-bold shadow-xs'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-mono font-black text-emerald-800">Étape {task.order}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-black ${
+                    task.blastRadius === 'FAIBLE'
+                      ? 'bg-emerald-100 text-emerald-900'
+                      : 'bg-amber-100 text-amber-900'
+                  }`}>
+                    Radius {task.blastRadius}
+                  </span>
+                </div>
+                <div className="text-xs sm:text-sm font-bold mt-1 line-clamp-1">{task.code} : {task.title}</div>
+              </button>
+            );
+          })}
+        </div>
 
-Tests :
-Connexion valide, invalide et données absentes.
+        {/* Détails de la tâche sélectionnée */}
+        <div className="p-6 rounded-2xl bg-white border border-slate-300 shadow-sm space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div>
+              <span className="text-xs font-mono font-bold uppercase text-emerald-700">Ordre d&apos;exécution #{selectedTask.order}</span>
+              <h3 className="text-lg font-black text-slate-950">{selectedTask.code} — {selectedTask.title}</h3>
+            </div>
+            <span className="text-xs font-mono bg-slate-100 border border-slate-200 px-3 py-1 rounded-full font-bold text-slate-800">
+              Dépendance requise : {selectedTask.dependency}
+            </span>
+          </div>
 
-Priorité :
-À déterminer selon l'impact.
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Périmètre strict de fichiers autorisés :</div>
+            <div className="flex flex-wrap gap-2">
+              {selectedTask.targetFiles.map((file, idx) => (
+                <span key={idx} className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-mono text-slate-800">
+                  {file}
+                </span>
+              ))}
+            </div>
+          </div>
 
-Statut :
-En attente de validation.
-
---------------------------------
-
-BUG-002
-Objectif :
-Retourner HTTP 404 pour une commande inexistante.
-
-Fichiers concernés :
-orderController.ts
-orderController.test.ts
-
-Tests :
-200, 404 et 500.
-
-Statut :
-En attente de validation.`}</code></pre>
-      </div>
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1.5">Test automatisé de validation exigé :</div>
+            <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-950">
+              {selectedTask.validationTest}
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          10. Bonnes pratiques professionnelles
-        </h2>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne jamais corriger sans comprendre la cause racine.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Préparer un plan avant de modifier un projet complet.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier précisément les fichiers concernés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Évaluer les risques de régression.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir les tests avant de considérer une correction comme terminée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Prioriser les failles de sécurité et les problèmes critiques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Valider les changements prévus avant de les autoriser.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Garder une trace des décisions et des corrections.</span>
-          </li>
-        </ul>
-      </section>
+      {/* Section 4: Quiz d'évaluation de 6 questions */}
+      <section className="space-y-6 pt-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Validation des Connaissances</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            4. Quiz : Élaboration de plans de correction et gestion du risque
+          </h2>
+        </div>
 
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
         <QuickQuiz
-          title="Quiz de révision — Chapitre 7.6"
+          title="Quiz 7.6 — Fiches de Remédiation, Ordonnancement et Blast Radius"
           questions={[
             {
               id: 1,
-              question: "Pourquoi élaborer un plan de correction ?",
-              options: ["Pour modifier tous les fichiers rapidement.", "Pour organiser les corrections et maîtriser leurs risques.", "Pour éviter les tests."],
+              question: "Pourquoi est-il crucial de planifier l'ordre séquentiel d'application des correctifs dans un projet multicouche ?",
+              options: [
+                "Pour permettre au compilateur TypeScript de faire des pauses régulières.",
+                "Parce que corriger une couche haute (ex: React) avant de stabiliser les contrats d'infrastructure basse (ex: pool MySQL ou middlewares d'authentification) engendre des régressions croisées et des faux échecs.",
+                "Parce que Git n'autorise que 2 commits par jour.",
+                "Pour des raisons d'esthétique du code source."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Stabiliser d'abord les fondations de données et de sécurité garantit que les services et le frontend s'appuient sur des contrats d'API fermes et prévisibles."
             },
             {
               id: 2,
-              question: "Quel élément doit être identifié pour chaque correction ?",
-              options: ["Les fichiers concernés.", "La couleur de l'interface.", "Le nom du développeur uniquement."],
-              correctIndex: 0,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              question: "Que désigne la notion de 'Blast Radius' (rayon d'impact) lors de la modification d'un fichier source ?",
+              options: [
+                "La température maximale atteinte par le processeur lors de la compilation.",
+                "La surface potentielle de régression et l'ensemble des modules dépendants susceptibles de dysfonctionner si le correctif appliqué comporte un bug inattendu.",
+                "La distance physique entre le développeur et le serveur de production.",
+                "Le temps nécessaire pour cloner le dépôt Git."
+              ],
+              correctIndex: 1,
+              explanation: "Plus un fichier est au cœur du système (ex: database.ts ou auth.middleware.ts), plus son Blast Radius est élevé et plus il exige de tests de non-régression stricts."
             },
             {
               id: 3,
-              question: "Une correction peut-elle introduire une régression ?",
-              options: ["Oui.", "Non."],
-              correctIndex: 0,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              question: "Dans une Fiche de Remédiation, pourquoi est-il obligatoire de spécifier une 'Whitelist' de fichiers autorisés pour l'agent IA ?",
+              options: [
+                "Pour interdire à l'agent de parler en anglais.",
+                "Pour circonscrire strictement les modifications au fichier nécessaire et empêcher l'agent de refactorer arbitrairement des fichiers de configuration ou des dépendances non demandées.",
+                "Parce que le système de fichiers Linux ne supporte que 3 fichiers à la fois.",
+                "Pour économiser l'électricité du serveur."
+              ],
+              correctIndex: 1,
+              explanation: "Sans liste blanche explicite, les agents autonomes ont tendance à dériver hors périmètre (scope creep) et à modifier des fichiers transverses sans préavis."
             },
             {
               id: 4,
-              question: "Qui doit valider le plan avant les modifications importantes ?",
-              options: ["L'agent I", "Un responsable humain autorisé.", "Le navigateur."],
+              question: "Quelle est la stratégie de 'Rollback' immédiate à prévoir si l'application d'un patch échoue ou casse les tests unitaires ?",
+              options: [
+                "Formater le disque dur de la machine.",
+                "Utiliser la commande 'git checkout -- <fichier>' (ou git restore) pour restaurer immédiatement le fichier dans son état exact pré-intervention sans laisser de traces résiduelles.",
+                "Fermer l'IDE et attendre le lendemain.",
+                "Effacer le dossier .git."
+              ],
               correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              explanation: "Git permet de revenir instantanément à un état stable propre avant de repenser la stratégie de correction."
             },
             {
               id: 5,
-              question: "Que faut-il faire lorsqu'une cause racine reste incertaine ?",
-              options: ["La considérer comme confirmée.", "Signaler l'incertitude et prévoir des vérifications supplémentaires.", "Modifier tous les fichiers concernés."],
-              correctIndex: 1,
-              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+              question: "Pourquoi les correctifs de sécurité (comme la faille IDOR) doivent-ils être priorisés avant les ajustements d'affichage React ?",
+              options: [
+                "Parce que les failles de sécurité engagent la responsabilité légale et la protection immédiate des données utilisateurs, tandis que les défauts d'affichage ne menacent pas la pérennité du service.",
+                "Parce que le CSS est plus difficile à écrire que le JavaScript.",
+                "Parce que les hackers ne travaillent que le week-end.",
+                "Pour faire plaisir aux auditeurs externes."
+              ],
+              correctIndex: 0,
+              explanation: "La hiérarchie des risques impose de colmater les failles critiques d'exposition de données avant toute amélioration cosmétique."
             },
+            {
+              id: 6,
+              question: "Quel livrable d'ingénierie doit valider formellement la fin d'une tâche de remédiation ?",
+              options: [
+                "Un message de félicitations envoyé sur Slack.",
+                "L'exécution avec succès du test de reproduction associé (Green), la compilation TypeScript sans erreur (npx tsc --noEmit) et une revue de git diff validée.",
+                "La suppression des fichiers de documentation pour gagner de la place.",
+                "Le redémarrage du routeur réseau."
+              ],
+              correctIndex: 1,
+              explanation: "La trinité 'Test Vert + Compilation TS + Git Diff propre' constitue le standard d'homologation indiscutable d'un correctif professionnel."
+            }
           ]}
         />
-      </div>
+      </section>
     </div>
   );
 };
