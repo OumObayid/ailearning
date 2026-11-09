@@ -1,825 +1,464 @@
 ﻿'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Callout } from '@/components/courses/Callout';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 import { Icon } from '@/components/common/Icon';
 
+interface WhyStep {
+  level: number;
+  question: string;
+  answer: string;
+  technicalCategory: 'Symptôme' | 'Cause Immédiate' | 'Cause Intermédiaire' | 'Cause Racine';
+  badgeColor: string;
+}
+
+const FIVE_WHYS_SCENARIO: WhyStep[] = [
+  {
+    level: 1,
+    question: "Pourquoi l'utilisateur reçoit-il une erreur HTTP 500 sur le tableau de bord ?",
+    answer: "Parce que le microservice Express a crashé avec une exception 'TypeError: Cannot read properties of undefined (reading name)'.",
+    technicalCategory: 'Symptôme',
+    badgeColor: 'bg-rose-100 text-rose-800 border-rose-300',
+  },
+  {
+    level: 2,
+    question: "Pourquoi la variable 'user' était-elle undefined dans le contrôleur ?",
+    answer: "Parce que l'appel 'await userRepository.findById(req.params.id)' a renvoyé undefined au lieu d'un objet utilisateur.",
+    technicalCategory: 'Cause Immédiate',
+    badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
+  },
+  {
+    level: 3,
+    question: "Pourquoi le repository n'a-t-il trouvé aucun utilisateur avec cet identifiant ?",
+    answer: "Parce que la requête exécutée était 'SELECT * FROM users WHERE id = NaN', le paramètre d'URL n'ayant pas été validé.",
+    technicalCategory: 'Cause Intermédiaire',
+    badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
+  },
+  {
+    level: 4,
+    question: "Pourquoi la variable id valait-elle NaN dans le repository ?",
+    answer: "Parce que le contrôleur a exécuté 'Number(req.params.userId)', or la route Express déclare le paramètre sous le nom ':id' et non ':userId'.",
+    technicalCategory: 'Cause Intermédiaire',
+    badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-300',
+  },
+  {
+    level: 5,
+    question: "Pourquoi cette incohérence de nommage n'a-t-elle pas été interceptée avant la mise en production ?",
+    answer: "Parce que la route n'avait aucun middleware de validation de schéma (Zod) à l'entrée et qu'aucun test d'intégration Supertest ne couvrait ce point d'accès.",
+    technicalCategory: 'Cause Racine',
+    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+  },
+];
+
 export const Chapitre7Content: React.FC = () => {
+  const [revealedWhy, setRevealedWhy] = useState<number>(1);
+
   return (
     <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
-      {/* Hero Banner */}
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className="px-3 py-1 rounded-full text-xs font-black tracking-wide uppercase bg-lime-200 text-lime-900 border border-lime-400">
+            Module 6 • Chapitre 7 / 13
+          </span>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/80 text-slate-700 border border-slate-200">
+            Analyse Causale Approfondie (RCA) & Méthode des 5 Pourquoi
+          </span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 7 — Identifier les causes probables et les causes racines
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Identifier les causes probables et les causes racines : Décomposition causale, méthode des 5 Pourquoi et classement probabiliste
         </h1>
+        <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">
+          Lorsqu&apos;une rupture de digue inonde une vallée, l&apos;inondation est le <strong>symptôme</strong> visible.
+          La brèche béante dans le béton est la <strong>cause immédiate</strong>.
+          Mais si les ingénieurs se contentent de colmater la brèche avec du ciment rapide, le barrage cédera à nouveau lors du prochain orage.
+          La <strong>cause racine</strong> se trouve 3 ans plus tôt : l&apos;utilisation d&apos;un ciment non conforme au gel par le sous-traitant et l&apos;absence de vanne de délestage d&apos;urgence.
+          En génie logiciel, identifier la cause racine (Root Cause Analysis - RCA), c&apos;est <strong>isoler le défaut fondamental qui, une fois éliminé, rend la réapparition de l&apos;incident mathématiquement impossible</strong>.
+        </p>
       </div>
 
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 7 — 6.7. Identifier les causes probables et les causes racines.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Aucun support image dans ce chapitre
-      </p>
+      {/* 1. Objectifs pédagogiques */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs pédagogiques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous serez capable de :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-lime-500 text-slate-950 flex items-center justify-center font-black text-sm">
+            1
+          </div>
+          <h2 className="text-xl font-bold text-slate-950 tracking-tight">
+            Objectifs d&apos;apprentissage du chapitre
+          </h2>
+        </div>
+
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs sm:text-sm font-semibold text-slate-900">
+          <li className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Distinguer un symptôme, une cause immédiate et une cause racine.</span>
+            <span>Distinguer avec rigueur scientifique la hiérarchie : Symptôme $\rightarrow$ Cause Immédiate $\rightarrow$ Cause Racine (RCA).</span>
           </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+          <li className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier plusieurs causes possibles à partir d&apos;une erreur.</span>
+            <span>Piloter un modèle IA avec la méthode des <strong>5 Pourquoi (5 Whys)</strong> pour percer les illusions de surface.</span>
           </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+          <li className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Classer les hypothèses selon leur probabilité.</span>
+            <span>Structurer une matrice d&apos;hypothèses classées par probabilité technique (Élevée, Moyenne, Faible) avec critères de réfutation.</span>
           </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+          <li className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser l&apos;IA pour remonter à l&apos;origine réelle d&apos;un bug.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier qu&apos;une cause racine est réellement confirmée.</span>
+            <span>Formuler des remédiations pérennes (schémas Zod, contraintes DDL, tests de régression) plutôt que des pansements locaux.</span>
           </li>
         </ul>
       </section>
 
+      {/* 2. La décomposition causale en 3 strates */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Comprendre les trois niveaux d&apos;analyse
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Lorsqu&apos;une application rencontre un bug, il faut distinguer trois éléments.
-      </p>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-lime-500 text-slate-950 flex items-center justify-center font-black text-sm">
+            2
+          </div>
+          <h2 className="text-xl font-bold text-slate-950 tracking-tight">
+            La décomposition causale : Symptôme vs Cause Immédiate vs Cause Racine
+          </h2>
+        </div>
+
+        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+          Tout dysfonctionnement logiciel s&apos;articule autour de 3 strates imbriquées. Confondre ces niveaux est l&apos;erreur la plus fréquente lors de l&apos;usage d&apos;un LLM :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-rose-700 text-sm">1. Le Symptôme</span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-900 border border-rose-300">Visible</span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              La conséquence observable subie par le client ou le système de surveillance.
+            </p>
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs text-slate-800">
+              HTTP 500 sur checkout.<br />
+              &quot;TypeError: Cannot read properties of null&quot;
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-amber-700 text-sm">2. La Cause Immédiate</span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">Local</span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              L&apos;instruction précise du code qui a déclenché l&apos;interruption du flux d&apos;exécution.
+            </p>
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs text-slate-800">
+              Ligne 47 de cartService.ts :<br />
+              user.cartItems est null au lieu d&apos;être un tableau.
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-emerald-700 text-sm">3. La Cause Racine (RCA)</span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">Fondamental</span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              La défaillance systémique (requête SQL sans jointure, migration manquante, absence de validation Zod).
+            </p>
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs text-slate-800">
+              LEFT JOIN manquant sur la table cart_items lors de la désérialisation du panier.
+            </div>
+          </div>
+        </div>
+
+        <Callout type="tip" title="L'analogie de l'arbre et des feuilles">
+          <p className="text-xs sm:text-sm">
+            Couper une feuille malade (supprimer un symptôme par un pansement local) n&apos;empêche pas l&apos;arbre de dépérir si la racine est contaminée par un champignon (défaut d&apos;architecture de données).
+            En ingénierie, concentrez 80% de votre énergie d&apos;investigation à localiser la racine plutôt qu&apos;à balayer les feuilles mortes.
+          </p>
+        </Callout>
       </section>
 
+      {/* 3. La méthode des 5 Pourquoi en action */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Le symptôme
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        C&apos;est ce que l&apos;on observe : une erreur, un comportement anormal ou un résultat inattendu.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-lime-500 text-slate-950 flex items-center justify-center font-black text-sm">
+            3
+          </div>
+          <h2 className="text-xl font-bold text-slate-950 tracking-tight">
+            La méthode des 5 Pourquoi (5 Whys) appliquée à l&apos;investigation logicielle
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`HTTP 500 - Internal Server Error`}</code></pre>
-      </div>
+
+        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+          Conçue à l&apos;origine par Sakichi Toyoda pour l&apos;ingénierie industrielle, la méthode des 5 Pourquoi est l&apos;outil d&apos;investigation le plus efficace pour contraindre un modèle IA à creuser sous la surface.
+          Explorez le scénario interactif ci-dessous pour voir comment l&apos;analyse remonte du crash console jusqu&apos;au défaut d&apos;ingénierie initial :
+        </p>
+
+        {/* Simulateur interactif 5 Pourquoi */}
+        <div className="p-5 rounded-3xl border-2 border-slate-200 bg-white shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div className="flex items-center gap-2 text-slate-950 font-bold text-sm">
+              <Icon name="sparkles" className="w-4 h-4 text-emerald-700" />
+              <span>Simulateur d&apos;Arbre Causal des 5 Pourquoi (Incident API Profile)</span>
+            </div>
+            <span className="text-xs font-bold text-slate-500 font-mono">
+              Étape {revealedWhy} / 5
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {FIVE_WHYS_SCENARIO.slice(0, revealedWhy).map((step) => (
+              <div key={step.level} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-900 text-xs">
+                    Pourquoi #{step.level} : {step.question}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold border ${step.badgeColor}`}>
+                    {step.technicalCategory}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-700 font-medium pl-3 border-l-2 border-emerald-500">
+                  {step.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 pt-2">
+            {revealedWhy < 5 ? (
+              <button
+                onClick={() => setRevealedWhy((prev) => Math.min(prev + 1, 5))}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-lime-500 text-slate-950 hover:bg-lime-400 transition shadow-sm flex items-center gap-1.5"
+              >
+                <span>Poser le Pourquoi #{revealedWhy + 1}</span>
+                <Icon name="arrow-right" className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setRevealedWhy(1)}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 text-slate-800 hover:bg-slate-300 transition"
+              >
+                Réinitialiser la simulation
+              </button>
+            )}
+          </div>
+        </div>
       </section>
 
+      {/* 4. Arbre d'hypothèses et classement probabiliste */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. La cause immédiate
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        C&apos;est l&apos;événement directement responsable du dysfonctionnement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-lime-500 text-slate-950 flex items-center justify-center font-black text-sm">
+            4
+          </div>
+          <h2 className="text-xl font-bold text-slate-950 tracking-tight">
+            Hiérarchisation des hypothèses par probabilité technique
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Cannot read properties of undefined (reading 'email')
-Le code tente d'accéder à email sur une variable qui vaut undefined.`}</code></pre>
-      </div>
+
+        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+          Lorsqu&apos;un problème peut avoir plusieurs origines, vous devez exiger du modèle qu&apos;il produise un <strong>classement probabiliste justifié</strong> avec son critère de réfutation associé :
+        </p>
+
+        <div className="overflow-x-auto my-4">
+          <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+            <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+              <tr>
+                <th className="px-4 py-3">Niveau de Probabilité</th>
+                <th className="px-4 py-3">Hypothèse Formulée</th>
+                <th className="px-4 py-3">Justification Technique</th>
+                <th className="px-4 py-3">Épreuve de Réfutation</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-2.5 font-bold text-emerald-700">Probabilité Forte (80%)</td>
+                <td className="px-4 py-2.5">L&apos;enregistrement recherché n&apos;existe pas dans la table <code>users</code>.</td>
+                <td className="px-4 py-2.5">L&apos;ID transmis dans l&apos;URL provient d&apos;un compte récemment purgé par le batch de nettoyage.</td>
+                <td className="px-4 py-2.5 font-mono text-xs">SELECT COUNT(*) FROM users WHERE id = :id; $\rightarrow$ Résultat = 0.</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-2.5 font-bold text-amber-700">Probabilité Moyenne (15%)</td>
+                <td className="px-4 py-2.5">Défaut de parsing du paramètre d&apos;URL (coercition string vers number).</td>
+                <td className="px-4 py-2.5">La route Express extrait <code>req.params.id</code> en tant que <code>string</code> (&quot;123&quot;), or le repository utilise une comparaison stricte.</td>
+                <td className="px-4 py-2.5 font-mono text-xs">Vérifier <code>typeof req.params.id</code> sous le debugger VS Code.</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-2.5 font-bold text-slate-400">Probabilité Faible (5%)</td>
+                <td className="px-4 py-2.5">Panne réseau ou déconnexion soudaine du serveur MySQL.</td>
+                <td className="px-4 py-2.5">Si MySQL était inaccessible, l&apos;erreur serait <code>ECONNREFUSED</code> ou <code>ETIMEDOUT</code> et non un <code>TypeError</code> applicatif.</td>
+                <td className="px-4 py-2.5 font-mono text-xs">Vérifier l&apos;état du pool de connexions (Active Connections &gt; 0).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
+      {/* 5. Cas pratique : Résolution d'un crash de recherche d'utilisateurs */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. La cause racine
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        C&apos;est le problème fondamental qui explique pourquoi la situation s&apos;est produite.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le service de recherche utilisateur ne gère pas le cas où la requête SQL ne retourne aucun résultat.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de chaîne causale
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;API retourne HTTP 500.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cause immédiate
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-lime-500 text-slate-950 flex items-center justify-center font-black text-sm">
+            5
+          </div>
+          <h2 className="text-xl font-bold text-slate-950 tracking-tight">
+            Cas pratique : Dépister la cause racine d&apos;un crash de recherche SQL
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Le contrôleur tente de lire user.email alors que user vaut undefined.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cause racine possible
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le service retourne un résultat vide sans que ce cas soit pris en charge.
-      </p>
-      <Callout type="warning" title="Attention ">
-        <p className="text-xs sm:text-sm">la cause racine doit être confirmée par des preuves. Une explication techniquement plausible n&apos;est pas automatiquement la bonne.</p>
-      </Callout>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Identifier plusieurs causes probables
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une même erreur peut avoir plusieurs origines.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prenons cet exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+          Considérons un endpoint de recherche d&apos;utilisateurs par filtre optionnel :
+        </p>
+
+        <CodeBlock
+          filename="src/services/userSearchService.ts"
+          language="typescript"
+          code={`export async function searchUsers(searchTerm?: string) {
+  // L'ingénieur novice a rédigé cette requête :
+  const query = searchTerm
+    ? 'SELECT id, email, full_name FROM users WHERE email LIKE ?'
+    : 'SELECT id, email, full_name FROM users';
+
+  const params = searchTerm ? [\`%\${searchTerm}%\`] : [];
+
+  // Exécution sur le pool MySQL
+  const [rows] = await db.execute<RowDataPacket[]>(query, params);
+
+  // Crash si l'utilisateur n'a pas renseigné son profil :
+  return rows.map((u) => ({
+    id: u.id,
+    email: u.email,
+    initials: u.full_name.split(' ').map((n: string) => n[0]).join(''),
+  }));
+}`}
+        />
+
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+          <h4 className="font-bold text-slate-950 text-sm">Déroulé des 5 Pourquoi guidé par l&apos;IA :</h4>
+          <ol className="list-decimal list-inside space-y-2 text-xs sm:text-sm text-slate-700 font-medium">
+            <li><strong>Pourquoi l&apos;application crashe-t-elle avec <code>TypeError: Cannot read properties of null (reading split)</code> ?</strong> Parce que <code>u.full_name</code> vaut <code>null</code> pour certains enregistrements.</li>
+            <li><strong>Pourquoi full_name vaut-il null ?</strong> Parce que la colonne <code>full_name</code> dans la table <code>users</code> a été créée avec la contrainte <code>NULL</code> (facultative lors de l&apos;inscription par Google OAuth).</li>
+            <li><strong>Pourquoi le service a-t-il supposé que full_name était toujours une chaîne ?</strong> Parce que l&apos;interface TypeScript déclarait <code>full_name: string</code> au lieu de <code>full_name: string | null</code>.</li>
+            <li><strong>Pourquoi le typage était-il faux ?</strong> Parce que les interfaces ont été saisies manuellement sans synchronisation automatisée avec le schéma MySQL.</li>
+            <li><strong>Quelle est la cause racine (RCA) ?</strong> Absence de synchronisation de typage entre la base de données et TypeScript, combinée à l&apos;absence de gestion du cas null dans le mapper d&apos;initiales.</li>
+          </ol>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUserProfile(id: number) {
-const user = await userRepository.findById(id);
 
-return {
-name: user.name,
-email: user.email
-};
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Erreur observée :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`TypeError: Cannot read properties of undefined
-(reading 'name')`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Plusieurs hypothèses sont possibles :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Hypothèse</th>
-              <th className="px-4 py-3">Explication</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">H1</td>
-              <td className="px-4 py-2.5 font-medium">L&apos;utilisateur n&apos;existe pas dans la base.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">H2</td>
-              <td className="px-4 py-2.5 font-medium">Le repository retourne undefined .</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">H3</td>
-              <td className="px-4 py-2.5 font-medium">La requête SQL ne retourne aucune ligne.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">H4</td>
-              <td className="px-4 py-2.5 font-medium">Le repository interprète mal le résultat SQL.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il ne faut pas choisir arbitrairement une hypothèse.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut rechercher des preuves permettant de confirmer ou d&apos;écarter chacune d&apos;elles.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Par exemple :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await userRepository.findById(id);
-
-console.log("Utilisateur retourné :", user);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce contrôle permet d&apos;observer le résultat du repository, mais ne suffit pas à lui seul à expliquer pourquoi il est vide.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Classer les hypothèses selon leur probabilité
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;IA peut aider à classer les causes possibles.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        On peut utiliser une grille d&apos;analyse :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Critère</th>
-              <th className="px-4 py-3">Question</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Cohérence</td>
-              <td className="px-4 py-2.5 font-medium">L&apos;hypothèse explique-t-elle l&apos;erreur observée ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Preuves</td>
-              <td className="px-4 py-2.5 font-medium">Existe-t-il des éléments qui la soutiennent ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Reproductibilité</td>
-              <td className="px-4 py-2.5 font-medium">Peut-on reproduire le problème avec cette hypothèse ?</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Vérification</td>
-              <td className="px-4 py-2.5 font-medium">Quel test permet de la confirmer ?</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de classement provisoire :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Hypothèse</th>
-              <th className="px-4 py-3">Probabilité estimée</th>
-              <th className="px-4 py-3">Vérification</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Utilisateur inexistant</td>
-              <td className="px-4 py-2.5 font-medium">Élevée</td>
-              <td className="px-4 py-2.5 font-medium">Vérifier son existence dans MySQL</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Repository retourne undefined</td>
-              <td className="px-4 py-2.5 font-medium">Élevée</td>
-              <td className="px-4 py-2.5 font-medium">Examiner sa valeur de retour</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Mauvaise interprétation SQL</td>
-              <td className="px-4 py-2.5 font-medium">Moyenne</td>
-              <td className="px-4 py-2.5 font-medium">Examiner le résultat de execute()</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Problème de connexion</td>
-              <td className="px-4 py-2.5 font-medium">Faible</td>
-              <td className="px-4 py-2.5 font-medium">Examiner les logs de connexion</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les niveaux « élevée », « moyenne » et « faible » sont des estimations de travail, pas des probabilités statistiques.
-      </p>
-      <Callout type="tip" title="Bonne pratique ">
-        <p className="text-xs sm:text-sm">demander à l&apos;IA de justifier chaque classement et de préciser les preuves manquantes.</p>
-      </Callout>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Remonter jusqu&apos;à la cause racine
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour aller au-delà de l&apos;erreur visible, on peut utiliser la méthode des « 5 pourquoi ».
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elle consiste à poser plusieurs fois la question « Pourquoi ? » afin de remonter progressivement vers l&apos;origine du problème.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : une API retourne HTTP 500.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Question</th>
-              <th className="px-4 py-3">Réponse</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Pourquoi l&apos;API retourne-t-elle 500 ?</td>
-              <td className="px-4 py-2.5 font-medium">Le contrôleur déclenche une exception.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Pourquoi une exception est-elle déclenchée ?</td>
-              <td className="px-4 py-2.5 font-medium">Il accède à user.email .</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Pourquoi user est-il undefined ?</td>
-              <td className="px-4 py-2.5 font-medium">Le service ne retourne aucun utilisateur.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Pourquoi le service ne retourne-t-il aucun utilisateur ?</td>
-              <td className="px-4 py-2.5 font-medium">La requête ne trouve aucune ligne pour cet identifiant.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Pourquoi ce cas provoque-t-il une exception ?</td>
-              <td className="px-4 py-2.5 font-medium">Le contrôleur ne traite pas le cas d&apos;un utilisateur absent.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La cause racine identifiée ici concerne l&apos;absence de gestion du cas métier « utilisateur inexistant ».
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mais il faut également vérifier si l&apos;identifiant fourni est valide et si l&apos;utilisateur est effectivement absent de la base.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La méthode des 5 pourquoi est un outil d&apos;investigation, pas une obligation de poser exactement cinq questions.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Utiliser l&apos;IA pour rechercher la cause racine
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici un prompt spécialisé qui demande à l&apos;IA de remonter des symptômes vers leurs causes possibles, sans modifier le projet.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        PROMPT — ANALYSE DES CAUSES RACINES
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur logiciel spécialisé dans l&apos;analyse des anomalies et la recherche des causes racines (Root Cause Analysis).
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Identifier les causes probables d&apos;une anomalie et rechercher son origine réelle.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier le symptôme observé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier la cause immédiate.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Formuler plusieurs hypothèses de causes racines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Classer les hypothèses selon leur probabilité et les preuves disponibles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Expliquer la chaîne causale de chaque hypothèse.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposer des vérifications permettant de confirmer ou d&apos;écarter chaque hypothèse.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les informations manquantes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifie aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne présente pas une hypothèse comme un fait confirmé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne conclus pas sans preuves suffisantes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne confonds pas le symptôme avec la cause racine.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Signale les contradictions éventuelles dans les informations fournies.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT FORMAT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présente les résultats sous cette forme :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Symptôme.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Cause immédiate.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Hypothèses de causes racines.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Classement des hypothèses avec justification.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Chaîne causale.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifications nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Cause racine confirmée ou diagnostic encore incertain.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce prompt est particulièrement utile lorsqu&apos;un bug implique plusieurs couches : frontend, API, service métier, repository et base de données.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. TP — Recherche de la cause racine dans une application
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travaux pratiques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte : une application React communique avec une API Node.js/Express et une base MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un utilisateur signale que la page de son profil affiche une erreur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Frontend React :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const response = await fetch("/api/users/25");
-const user = await response.json();
-
-setProfile(user);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contrôleur Express :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
-try {
-const user = await userService.findById(
-Number(req.params.id)
-);
-
-return res.json({
-name: user.name,
-email: user.email
-});
-
-} catch (error) {
-return res.status(500).json({
-message: "Erreur serveur"
-});
+        <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          <h4 className="font-bold text-slate-900 text-sm">Remédiation pérenne certifiée (Clean Mapper) :</h4>
+          <CodeBlock
+            filename="src/services/userSearchService.ts (Corrigé)"
+            language="typescript"
+            code={`export interface UserDbRow {
+  id: number;
+  email: string;
+  full_name: string | null; // Typage synchronisé et conforme au schéma DDL
 }
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Service :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findById(id: number) {
-return userRepository.findById(id);
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Repository :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findById(id: number) {
-const [rows] = await db.execute(
-"SELECT * FROM users WHERE id = ?",
-[id]
-);
 
-return (rows as any[])[0];
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Erreur constatée :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/users/25
-HTTP 500
+export async function searchUsers(searchTerm?: string) {
+  const query = searchTerm
+    ? 'SELECT id, email, full_name FROM users WHERE email LIKE ?'
+    : 'SELECT id, email, full_name FROM users';
 
-TypeError: Cannot read properties of undefined
-(reading 'name')`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier le symptôme.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier la cause immédiate.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposer trois causes racines possibles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Classer les hypothèses.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposer les vérifications nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Rédiger un prompt pour demander à l&apos;IA de rechercher la cause racine sans modifier les fichiers.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé
-      </p>
+  const params = searchTerm ? [\`%\${searchTerm}%\`] : [];
+  const [rows] = await db.execute<RowDataPacket[]>(query, params);
+
+  return (rows as unknown as UserDbRow[]).map((u) => {
+    // Calcul défensif des initiales
+    const initials = u.full_name
+      ? u.full_name.trim().split(/\\s+/).map((n) => n[0]?.toUpperCase()).join('')
+      : u.email.substring(0, 2).toUpperCase();
+
+    return {
+      id: u.id,
+      email: u.email,
+      initials,
+    };
+  });
+}`}
+          />
+        </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Symptôme
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La consultation du profil retourne HTTP 500.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Cause immédiate
-        </h2>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Le contrôleur tente d'accéder à user.name alors que user vaut probablement undefined.`}</code></pre>
+      {/* Quiz de certification (6 questions) */}
+      <div className="pt-6 border-t-2 border-slate-200">
+        <QuickQuiz
+          title="Quiz de certification — Chapitre 6.7 : Causes Probables et Causes Racines"
+          questions={[
+            {
+              id: 1,
+              question: "Quelle est la définition formelle d'une 'Cause Racine' (Root Cause) dans un système logiciel en production ?",
+              options: [
+                "Le premier message rouge qui apparaît dans la console du navigateur.",
+                "Le dysfonctionnement sous-jacent fondamental qui, une fois éliminé par une correction d'architecture ou de logique, garantit mathématiquement que la classe d'incident ne réapparaîtra jamais.",
+                "Le nom du serveur Linux sur lequel tourne l'application.",
+                "La ligne de code la plus longue du microservice."
+              ],
+              correctIndex: 1,
+              explanation: "Une cause racine est la source fondamentale de la défaillance. Résoudre une cause immédiate (un pansement) déplace le bug ; éliminer la cause racine détruit la possibilité même de l'anomalie."
+            },
+            {
+              id: 2,
+              question: "Dans la méthode des 5 Pourquoi appliquée au logiciel, quel est l'objectif premier d'itérer 5 fois avec la question 'Pourquoi' ?",
+              options: [
+                "Fatiguer le modèle d'IA pour réduire sa consommation d'énergie.",
+                "Traverser les couches superficielles (symptômes, erreurs immédiates) pour remonter jusqu'au défaut d'architecture, de contrat de données ou de processus ayant permis au bug d'exister.",
+                "Vérifier si le développeur parle couramment anglais.",
+                "Remplir automatiquement les rapports hebdomadaires de l'entreprise."
+              ],
+              correctIndex: 1,
+              explanation: "Chaque itération 'Pourquoi' franchit une couche d'abstraction : du symptôme console au code fautif, puis à la validation d'entrée manquante, et enfin au défaut de conception initial."
+            },
+            {
+              id: 3,
+              question: "Si une application Express plante avec 'TypeError: Cannot read properties of null (reading total)', que constitue ce TypeError ?",
+              options: [
+                "La cause racine indiscutable de l'incident.",
+                "Le symptôme d'exécution immédiat (l'effet visible de l'anomalie), dont la cause racine doit être recherchée en amont dans la création ou l'extraction de la donnée.",
+                "Une panne matérielle du processeur hôte.",
+                "Une tentative d'intrusion cybercriminelle par déni de service."
+              ],
+              correctIndex: 1,
+              explanation: "Le crash à l'exécution est le symptôme visible. La cause racine est la raison pour laquelle cet objet valait null (absence de validation de clé étrangère, suppression concurrente, etc.)."
+            },
+            {
+              id: 4,
+              question: "Pourquoi est-il crucial de classer les hypothèses techniques par probabilité (Forte, Moyenne, Faible) au lieu de les tester toutes au hasard ?",
+              options: [
+                "Pour optimiser le temps d'investigation de l'ingénieur en testant d'abord le scénario le plus probable avec le test de réfutation le plus économique.",
+                "Parce que les langages de programmation interdisent de formuler plus de deux hypothèses.",
+                "Parce que MySQL supprime les bases de données dont les requêtes d'investigation sont trop lentes.",
+                "Pour empêcher les stagiaires de poser des questions."
+              ],
+              correctIndex: 0,
+              explanation: "Classer les hypothèses permet d'appliquer la démarche scientifique : vérifier d'abord les causes statistiques majeures (ex: 80% des crashs sur un findById proviennent d'un identifiant inexistant) avant d'échafauder des théories complexes sur le réseau."
+            },
+            {
+              id: 5,
+              question: "Qu'est-ce qu'une 'épreuve de réfutation' associée à une hypothèse formulée par une IA ?",
+              options: [
+                "Une dispute verbale entre deux développeurs seniors.",
+                "Une commande factuelle (requête SQL précise, inspection de métrique, test unitaire isolé) conçue pour prouver immédiatement si l'hypothèse est vraie ou fausse sans altérer le code.",
+                "Une mise en demeure juridique envoyée à l'éditeur du framework.",
+                "Une suppression du fichier package-lock.json."
+              ],
+              correctIndex: 1,
+              explanation: "Une hypothèse non réfutable n'a aucune valeur scientifique. L'ingénieur doit toujours définir l'expérience minimale (ex: SELECT COUNT(*)) qui validera ou détruira l'hypothèse en quelques secondes."
+            },
+            {
+              id: 6,
+              question: "Dans le cas pratique du mapper de profil (full_name.split), pourquoi l'ajout d'un chaînage optionnel (full_name?.split) aurait-il constitué une mauvaise pratique s'il avait été appliqué seul ?",
+              options: [
+                "Parce que le chaînage optionnel est incompatible avec Node.js 22.",
+                "Parce qu'il aurait renvoyé undefined pour les initiales, sans traiter le cas métier (afficher les deux premières lettres de l'email) et sans synchroniser l'interface TypeScript avec la réalité du schéma SQL.",
+                "Parce que le split de chaîne de caractères est illégal en base de données.",
+                "Parce que les emails ne peuvent pas avoir d'initiales."
+              ],
+              correctIndex: 1,
+              explanation: "L'optional chaining isole le crash immédiat mais dégrade l'interface (initiales vides ou cassées). La remédiation d'ingénierie synchronise le typage réel (null) et implémente une valeur de repli métier explicite."
+            }
+          ]}
+        />
       </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Causes racines possibles
-        </h2>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>H1 : l&apos;utilisateur 25 n&apos;existe pas dans la base.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>H2 : la requête SQL ne retourne aucune ligne.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>H3 : le repository retourne un résultat incorrect à cause d&apos;une mauvaise interprétation de la réponse SQL.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Classement provisoire
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        H1 et H2 sont fortement liées : si l&apos;utilisateur n&apos;existe pas, la requête ne trouvera aucune ligne.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`H3 reste possible, mais doit être vérifiée en examinant la structure réelle du résultat de db.execute().`}</code></pre>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Vérifications
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exécuter :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`SELECT * FROM users WHERE id = 25;`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Puis examiner :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const [rows] = await db.execute(
-"SELECT * FROM users WHERE id = ?",
-[id]
-);
-
-console.log("Résultat SQL :", rows);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Enfin, vérifier la valeur retournée par le repository.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Diagnostic provisoire
-        </h2>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Le problème semble provenir d'un résultat utilisateur absent ou mal interprété, suivi d'un accès non protégé à user.name.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La cause racine exacte reste à confirmer avec les vérifications précédentes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de correction envisageable après validation :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await userService.findById(
-Number(req.params.id)
-);
-
-if (!user) {
-return res.status(404).json({
-message: "Utilisateur introuvable"
-});
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette correction traite le cas où l&apos;utilisateur est absent, mais ne résout pas nécessairement un éventuel problème dans la requête SQL.
-      </p>
-      </section>
-
     </div>
   );
 };
+
+export default Chapitre7Content;

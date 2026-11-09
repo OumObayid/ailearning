@@ -1,972 +1,497 @@
 ﻿'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Callout } from '@/components/courses/Callout';
-import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
-export const Chapitre9Content: React.FC = () => {
-  return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
-      {/* Hero Banner */}
-      {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
-        </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 9 — Utiliser les agents IA intégrés aux IDE
-        </h1>
-      </div>
-
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 9 — 6.9. Utiliser les agents IA intégrés aux IDE.
-      </p>
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs pédagogiques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous serez capable de :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre ce qu&apos;est un agent IA intégré à un IDE.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Distinguer un chatbot IA d&apos;un agent de développement.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre comment un agent analyse un projet et ses fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser un agent pour diagnostiquer et résoudre un bug.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Contrôler ses outils, ses permissions et ses modifications.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Travailler avec un agent dans Google Antigravity et d&apos;autres IDE.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Qu&apos;est-ce qu&apos;un agent IA intégré à un IDE ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un agent IA intégré à un environnement de développement (IDE) est un assistant capable d&apos;interagir avec un projet logiciel pour accomplir des tâches de développement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contrairement à un simple chatbot, il peut, selon les fonctionnalités de l&apos;IDE et les permissions accordées :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Explorer l&apos;arborescence du projet.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Lire plusieurs fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre les relations entre les composants.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Rechercher une fonction ou une variable.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Exécuter des commandes dans le terminal.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Lancer des tests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposer ou appliquer des modifications.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les résultats de ses propres actions.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Par exemple, vous pouvez lui demander :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Analyse pourquoi la page de connexion React affiche une erreur après l&apos;envoi du formulaire. Examine le frontend et le backend, mais ne modifie aucun fichier.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;agent peut alors rechercher le formulaire, examiner l&apos;appel Axios ou Fetch, suivre la route Express et consulter les logs disponibles.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Point essentiel : un agent ne comprend pas automatiquement tout le projet. Il doit collecter le contexte nécessaire et ses conclusions doivent être vérifiées.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Chatbot IA et agent IA : quelle différence ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chatbot IA
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Répond principalement
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous fournissez du code ou une erreur dans une conversation.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : vous copiez une Stack Trace et demandez son explication.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Agent IA intégré à l&apos;IDE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Peut agir sur le projet
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il peut rechercher les fichiers, analyser le code et utiliser les outils autorisés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : il recherche la route concernée, examine le service associé et lance un test.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Capacité</th>
-              <th className="px-4 py-3">Chatbot classique</th>
-              <th className="px-4 py-3">Agent IDE</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Répondre à une question</td>
-              <td className="px-4 py-2.5 font-medium">Oui</td>
-              <td className="px-4 py-2.5 font-medium">Oui</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Analyser du code fourni</td>
-              <td className="px-4 py-2.5 font-medium">Oui</td>
-              <td className="px-4 py-2.5 font-medium">Oui</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Explorer le projet</td>
-              <td className="px-4 py-2.5 font-medium">Selon le contexte fourni</td>
-              <td className="px-4 py-2.5 font-medium">Oui, selon les permissions</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Lire plusieurs fichiers</td>
-              <td className="px-4 py-2.5 font-medium">Si on les transmet</td>
-              <td className="px-4 py-2.5 font-medium">Peut les rechercher</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Utiliser le terminal</td>
-              <td className="px-4 py-2.5 font-medium">Généralement non</td>
-              <td className="px-4 py-2.5 font-medium">Selon les autorisations</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Modifier les fichiers</td>
-              <td className="px-4 py-2.5 font-medium">Non directement</td>
-              <td className="px-4 py-2.5 font-medium">Selon les autorisations</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Exécuter les tests</td>
-              <td className="px-4 py-2.5 font-medium">Non directement</td>
-              <td className="px-4 py-2.5 font-medium">Selon les outils disponibles</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un chatbot peut fournir une excellente analyse. La différence principale réside dans la capacité de l&apos;agent à interagir avec l&apos;environnement de développement.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Comment fonctionne un agent dans un IDE ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un agent utilise généralement plusieurs éléments complémentaires.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Instruction de l&apos;utilisateur
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : diagnostiquer une erreur de connexion.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Modèle IA
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Interprète la demande et planifie les étapes.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Outils de l&apos;IDE
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Recherche, lecture de fichiers, terminal, tests.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Résultat
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Diagnostic, preuves, propositions ou modifications autorisées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le fonctionnement peut être itératif : l&apos;agent analyse un résultat, décide de l&apos;étape suivante, utilise un autre outil puis vérifie le résultat.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de cycle d&apos;un agent
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Il recherche login.controller.ts.`}</code></pre>
-      </div>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Il examine la fonction de connexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Il recherche le service appelé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Il consulte les logs ou exécute un test autorisé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Il compare le résultat avec le comportement attendu.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Il présente son diagnostic.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;agent ne se limite donc pas à générer du code : il peut effectuer une succession d&apos;actions pour atteindre un objectif.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Les principaux agents intégrés aux IDE
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici quelques environnements connus :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Google Antigravity Logo PNG &amp;amp; SVG Vector
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Google Antigravity
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Environnement de développement orienté agents. Il permet de travailler avec des agents capables d&apos;explorer un projet, d&apos;utiliser des outils et de réaliser des tâches de développement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Particulièrement pertinent pour apprendre le travail avec des agents spécialisés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        File:Visual Studio Code 1.35 icon.svg - Wikimedia Commons
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Visual Studio Code
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Éditeur extensible avec des fonctionnalités d&apos;IA et des extensions permettant d&apos;utiliser des agents de développement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cursor AI Code Editor | Paul Stamatiou
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cursor
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Éditeur basé sur l&apos;écosystème VS Code, proposant des fonctionnalités d&apos;IA pour comprendre et modifier un projet.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Windsurf Editor: IDE com IA para desenvolvimento ágil
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Windsurf
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Environnement de développement intégrant des fonctions agentiques pour accompagner les tâches de programmation.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les interfaces, les noms des fonctionnalités et les permissions varient selon les produits et leurs versions.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Utiliser un agent IA pour diagnostiquer un bug
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prenons un exemple concret dans une application React + Node.js + Express.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Situation : le formulaire de connexion affiche « Erreur serveur » après l&apos;envoi des identifiants.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;objectif est de demander à l&apos;agent d&apos;examiner le parcours complet :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Frontend React
-↓
-authService.ts
-↓
-POST /api/auth/login
-↓
-auth.controller.ts
-↓
-auth.service.ts
-↓
-MySQL`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de demande à l&apos;agent
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DIAGNOSTIC D&apos;UNE ERREUR DE CONNEXION
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur logiciel spécialisé en React, Node.js, Express et MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Identifier l&apos;origine de l&apos;erreur rencontrée lors de la connexion d&apos;un utilisateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Repérer le formulaire de connexion dans le frontend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier le service qui envoie la requête HTTP.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner la route et le contrôleur Express.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner le service métier et la requête SQL concernés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Comparer les données envoyées par le frontend avec celles attendues par le backend.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les logs et les erreurs disponibles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Présenter les causes probables avec leurs preuves.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifie aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>N&apos;exécute aucune commande destructive.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifie pas la base de données.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne révèle aucune clé API ni aucun secret.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Demande mon autorisation avant toute modification.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT FORMAT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présente :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les fichiers examinés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le parcours de la requête.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les faits constatés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les hypothèses.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les preuves.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les tests nécessaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le diagnostic provisoire.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;intérêt de cette demande est que l&apos;agent peut suivre le parcours de la requête entre plusieurs fichiers, au lieu d&apos;analyser uniquement le message d&apos;erreur.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Les outils qu&apos;un agent peut utiliser dans un IDE
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un agent dispose potentiellement de plusieurs catégories d&apos;outils.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Outil</th>
-              <th className="px-4 py-3">Utilisation dans le débogage</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Explorateur de fichiers</td>
-              <td className="px-4 py-2.5 font-medium">Découvrir l&apos;organisation du projet</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Recherche dans le code</td>
-              <td className="px-4 py-2.5 font-medium">Trouver une fonction ou une variable</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Lecteur de fichiers</td>
-              <td className="px-4 py-2.5 font-medium">Examiner le code source</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Terminal</td>
-              <td className="px-4 py-2.5 font-medium">Exécuter des commandes autorisées</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Tests</td>
-              <td className="px-4 py-2.5 font-medium">Vérifier le comportement</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Git</td>
-              <td className="px-4 py-2.5 font-medium">Examiner les changements et l&apos;historique</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Navigateur intégré</td>
-              <td className="px-4 py-2.5 font-medium">Consulter une application ou une documentation, selon l&apos;IDE</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;agent peut rechercher toutes les utilisations de :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`findUserById`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il peut ainsi identifier :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Sa déclaration dans le repository.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Son utilisation dans le service.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Son appel depuis le contrôleur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ses éventuels tests.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette exploration permet de mieux comprendre les dépendances entre les différentes parties du projet.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Comprendre les permissions de l&apos;agent
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un agent puissant doit être encadré.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut distinguer plusieurs niveaux d&apos;autorisation :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Lecture : consulter les fichiers et comprendre le projet.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Recherche : rechercher des symboles, fonctions et références.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Exécution : lancer des commandes et des tests autorisés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Modification : ajouter, supprimer ou modifier du code.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Actions sensibles : modifier des configurations, installer des dépendances ou effectuer des opérations sur des données.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour une mission de diagnostic, on peut autoriser la lecture et certaines vérifications, tout en interdisant les modifications.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de règle à ajouter aux instructions principales de l&apos;agent :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        PERMISSIONS ET LIMITES
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu peux lire et analyser les fichiers du projet.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu peux rechercher des fonctions et leurs références.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu peux consulter les logs.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu peux exécuter les tests non destructifs autorisés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu ne peux pas modifier, supprimer ou créer des fichiers sans autorisation explicite.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu ne peux pas installer de dépendances sans autorisation.</span>
-          </li>
-        </ul>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Tu ne peux pas modifier les fichiers .env.`}</code></pre>
-      </div>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu ne peux pas exécuter de commande destructive.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu dois présenter les modifications envisagées avant de demander leur autorisation.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tu dois attendre mon accord explicite avant toute modification.</span>
-          </li>
-        </ul>
-      <Callout type="warning" title="Attention ">
-        <p className="text-xs sm:text-sm">écrire ces règles dans un prompt ne remplace pas les paramètres de permissions de l&apos;IDE. Il faut également configurer les autorisations disponibles dans l&apos;environnement.</p>
-      </Callout>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Travailler avec plusieurs agents spécialisés
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans un projet important, il est possible de répartir les responsabilités entre plusieurs agents.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici un exemple d&apos;organisation :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Coordination
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Agent principal / Orchestrateur
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comprend la demande et répartit les tâches.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Architect
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Analyse l&apos;architecture et les dépendances.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Developer
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prépare et réalise les corrections autorisées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        QA Reviewer
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vérifie le code, les tests, les régressions et la sécurité.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de répartition :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Architect : identifie les fichiers impliqués et la cause probable.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Developer : prépare la correction après validation.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>QA Reviewer : examine les changements et vérifie les tests.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il ne faut pas supposer que tous les IDE permettent de créer, gérer ou coordonner plusieurs agents de la même manière. Certaines fonctionnalités dépendent du produit, de sa version et de son mode de travail.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          10. TP — Utiliser un agent IDE pour diagnostiquer une anomalie
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travaux pratiques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte : vous disposez d&apos;une application avec cette architecture :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`mon-projet/
-├── frontend/
-│   └── src/
-│       ├── pages/
-│       │   └── Login.tsx
-│       └── services/
-│           └── authService.ts
-│
-├── backend/
-│   └── src/
-│       ├── routes/
-│       │   └── auth.routes.ts
-│       ├── controllers/
-│       │   └── auth.controller.ts
-│       └── services/
-│           └── auth.service.ts
-│
-└── package.json`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;utilisateur remplit le formulaire, mais l&apos;API retourne HTTP 400.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans le frontend :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`await axios.post("/api/auth/login", {
-email,
-password
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans le contrôleur :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function login(req, res) {
-const { email, passwordUser } = req.body;
-
-if (!email || !passwordUser) {
-return res.status(400).json({
-message: "Données manquantes"
-});
+interface AgentStep {
+  step: number;
+  type: 'thought' | 'tool_call' | 'tool_output' | 'reflection';
+  label: string;
+  detail: string;
+  codeSnippet?: string;
+  badgeColor: string;
 }
 
-// Suite du traitement...
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ouvrez le projet dans votre IDE.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ouvrez l&apos;interface de l&apos;agent IA.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Demandez-lui d&apos;examiner le parcours de connexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Interdisez toute modification de fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Demandez-lui d&apos;identifier les différences entre les données envoyées et celles attendues.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifiez son diagnostic.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne l&apos;autorisez pas encore à corriger le code.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé
-      </p>
-      </section>
+const AGENT_WORKFLOW_STEPS: AgentStep[] = [
+  {
+    step: 1,
+    type: 'thought',
+    label: 'Raisonnement & Analyse du symptôme',
+    detail: "L'utilisateur signale une erreur HTTP 400 Bad Request lors de la connexion (/api/auth/login). Je dois d'abord identifier le schéma de validation backend et la requête frontend correspondante.",
+    badgeColor: 'bg-purple-100 text-purple-800 border-purple-200'
+  },
+  {
+    step: 2,
+    type: 'tool_call',
+    label: 'Outil 1 : search_codebase("auth/login")',
+    detail: "L'agent scanne le workspace et localise le contrôleur backend ainsi que le hook d'authentification frontend.",
+    codeSnippet: `// Appel d'outil émis par l'agent :
+search_codebase({
+  query: "/api/auth/login",
+  filePatterns: ["src/**/*.ts", "src/**/*.tsx"]
+})`,
+    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200'
+  },
+  {
+    step: 3,
+    type: 'tool_output',
+    label: 'Sortie d\'outil : 2 fichiers identifiés',
+    detail: 'Résultats trouvés : "src/backend/controllers/auth.controller.ts" et "src/frontend/hooks/useAuth.ts".',
+    badgeColor: 'bg-slate-100 text-slate-800 border-slate-200'
+  },
+  {
+    step: 4,
+    type: 'tool_call',
+    label: 'Outil 2 : read_file("src/backend/controllers/auth.controller.ts")',
+    detail: "L'agent inspecte le contrôleur backend pour analyser le destructuré du corps de requête (req.body).",
+    codeSnippet: `// Code lu dans auth.controller.ts :
+export async function loginHandler(req: Request, res: Response) {
+  const { email, passwordUser } = req.body;
+  if (!email || !passwordUser) {
+    return res.status(400).json({ error: "Champs obligatoires manquants" });
+  }
+  // ...
+}`,
+    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200'
+  },
+  {
+    step: 5,
+    type: 'tool_call',
+    label: 'Outil 3 : read_file("src/frontend/hooks/useAuth.ts")',
+    detail: "L'agent inspecte la fonction d'envoi frontend pour comparer le payload JSON envoyé.",
+    codeSnippet: `// Code lu dans useAuth.ts :
+export async function submitLogin(email: string, password: string) {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }) // ⚠️ Propriété 'password' envoyée au lieu de 'passwordUser'
+  });
+  return response.json();
+}`,
+    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200'
+  },
+  {
+    step: 6,
+    type: 'reflection',
+    label: 'Synthèse d\'écart (Schema Mismatch)',
+    detail: "L'incohérence est identifiée : le backend attend 'passwordUser' alors que le frontend transmet 'password'. Selon la convention de nommage du projet, c'est le contrôleur backend qui comporte une anomalie de nommage non standard. Je vais proposer un patch ciblé avec test de validation.",
+    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+  }
+];
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Symptôme
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La requête de connexion retourne HTTP 400.
-      </p>
-      </section>
+export const Chapitre9Content: React.FC = () => {
+  const [activeStep, setActiveStep] = useState<number>(1);
+  const [executionMode, setExecutionMode] = useState<'chatbot' | 'agent'>('agent');
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Observation
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le frontend envoie :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+  return (
+    <div className="space-y-12 text-slate-900 leading-relaxed font-sans pb-16">
+      {/* Header Title Card */}
+      <div className="rounded-3xl border-2 border-indigo-200 bg-linear-to-r from-indigo-50 via-sky-50 to-indigo-100/60 p-6 sm:p-8 shadow-xs">
+        <div className="flex items-center gap-2 text-indigo-900 font-extrabold text-xs uppercase tracking-wider mb-2">
+          <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+          <span>Module 6 — Diagnostic assisté par IA & Agents Autonomes • Section 6.9</span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`{
-email,
-password
-}`}</code></pre>
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          Exploiter les Agents IA Intégrés aux IDE (Google Antigravity, Copilot, Cursor)
+        </h1>
+        <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">
+          Un chatbot passif attend vos copier-coller de code ; un <strong>agent IA d&apos;IDE</strong> explore activement votre arborescence, interroge le Language Server Protocol (LSP), exécute vos suites de tests et applique des correctifs précis sous votre supervision. Maîtrisez le cycle agentique pour décupler votre efficacité d&apos;enquête.
+        </p>
       </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le backend récupère :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+
+      {/* Section 1: Chatbot vs Agent d'IDE */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Rupture Technologique</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            1. De la complétion passive à l&apos;action agentique : Chatbot vs Agent d&apos;IDE
+          </h2>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const { email, passwordUser } = req.body;`}</code></pre>
-      </div>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Cause probable
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les noms des propriétés ne correspondent pas.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          L&apos;intégration des modèles de langage au cœur des environnements de développement a franchi trois générations successives :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 my-6">
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div>
+              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-black">Génération 1</span>
+              <h3 className="text-base font-bold text-slate-900 mt-2 mb-1">Inline Autocomplete</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Complétion de la ligne suivante (Ghost text) basée uniquement sur les 50 lignes précédentes du fichier actif.
+              </p>
+            </div>
+            <div className="mt-3 text-xs font-mono text-slate-500 bg-slate-50 p-2 rounded-lg">Portée : 1 ligne</div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div>
+              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-black">Génération 2</span>
+              <h3 className="text-base font-bold text-slate-900 mt-2 mb-1">Chatbot Sidecar</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Fenêtre latérale de discussion. L&apos;ingénieur doit copier-coller manuellement le code, les logs et la stack trace pour obtenir une réponse textuelle.
+              </p>
+            </div>
+            <div className="mt-3 text-xs font-mono text-amber-800 bg-amber-50 p-2 rounded-lg">Portée : Copier-coller manuel</div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-indigo-200 shadow-xs flex flex-col justify-between ring-2 ring-indigo-500/20">
+            <div>
+              <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-xs font-black">Génération 3 (Moderne)</span>
+              <h3 className="text-base font-bold text-slate-900 mt-2 mb-1">Agent Autonome à Outils (ReAct)</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                L&apos;agent reçoit un objectif haut niveau, explore le repository, lit les fichiers nécessaires, lance les commandes terminal et vérifie les résultats par lui-même.
+              </p>
+            </div>
+            <div className="mt-3 text-xs font-mono text-indigo-700 bg-indigo-50 p-2 rounded-lg font-bold">Portée : Tout le workspace + Terminal</div>
+          </div>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Le frontend transmet password, alors que le backend attend passwordUser.
-Par conséquent, passwordUser vaut undefined si aucune transformation intermédiaire ne modifie le corps de la requête.`}</code></pre>
-      </div>
-      </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Correction envisageable après validation
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        On peut harmoniser les noms :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
+        {/* Tableau comparatif d'ingénierie */}
+        <div className="overflow-x-auto my-6">
+          <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+              <tr>
+                <th className="px-4 py-3">Critère d&apos;ingénierie</th>
+                <th className="px-4 py-3 text-amber-900 bg-amber-50/50">Chatbot Traditionnel (Web / Panel simple)</th>
+                <th className="px-4 py-3 text-indigo-900 bg-indigo-50/50">Agent d&apos;IDE (Google Antigravity, Cursor, etc.)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-bold">Accès au système de fichiers</td>
+                <td className="px-4 py-3 text-rose-700 font-medium">❌ Aucun (limité à ce que vous collez)</td>
+                <td className="px-4 py-3 text-emerald-700 font-bold"> Lecture/écriture native via outils d&apos;environnement</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-bold">Compréhension de l&apos;architecture</td>
+                <td className="px-4 py-3 text-amber-700 font-medium">⚠️ Fragmentaire et myope</td>
+                <td className="px-4 py-3 text-emerald-700 font-bold"> Indexation sémantique (Embeddings) + graphe AST</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-bold">Exécution de tests et diagnostics</td>
+                <td className="px-4 py-3 text-rose-700 font-medium">❌ Impossible (environnement fermé)</td>
+                <td className="px-4 py-3 text-emerald-700 font-bold"> Exécute Vitest / Jest / npx tsc et lit le retour d&apos;erreur</td>
+              </tr>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-bold">Application des patchs</td>
+                <td className="px-4 py-3 text-slate-600 font-medium">L&apos;humain doit copier et remplacer les blocs</td>
+                <td className="px-4 py-3 text-emerald-700 font-bold"> Diff interactif intégré directement dans l&apos;éditeur</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const { email, password } = req.body;`}</code></pre>
-      </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Vérifications complémentaires
-        </h2>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier la route réellement appelée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner le corps de la requête dans l&apos;onglet Network de Chrome DevTools.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les données reçues dans Express.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Tester une connexion valide et une connexion avec des données manquantes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce TP montre l&apos;intérêt d&apos;un agent IDE : il peut suivre une anomalie à travers plusieurs fichiers et repérer une incohérence entre deux couches de l&apos;application.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Rectification : les logos des IDE présentés plus haut constituent le support visuel de ce chapitre.
-      </p>
+      {/* Section 2: La boucle ReAct & L'Arsenal d'Outils */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Architecture Interne</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            2. La boucle ReAct (Reasoning + Acting) et le manifeste des outils
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Un agent ne devine pas votre code : il dialogue avec l&apos;IDE à travers un protocole standardisé d&apos;appels d&apos;outils (Tool Calling). Chaque cycle itératif suit le schéma <strong>Thought $\rightarrow$ Action $\rightarrow$ Observation</strong> :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-6">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="text-xs font-mono font-bold text-indigo-700 mb-1">1. READ_FILE</div>
+            <p className="text-xs text-slate-600">
+              Permet à l&apos;agent de charger des tranches de code spécifiques sans saturer la fenêtre de contexte.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="text-xs font-mono font-bold text-indigo-700 mb-1">2. SEARCH_CODEBASE</div>
+            <p className="text-xs text-slate-600">
+              Recherche combinée par regex, symboles syntaxiques et recherche vectorielle dense.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="text-xs font-mono font-bold text-indigo-700 mb-1">3. EDIT_FILE / PATCH</div>
+            <p className="text-xs text-slate-600">
+              Remplacement ciblé ligne par ligne (Target/Replacement) préservant l&apos;intégrité du fichier.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="text-xs font-mono font-bold text-indigo-700 mb-1">4. RUN_COMMAND</div>
+            <p className="text-xs text-slate-600">
+              Exécution de commandes shell sous sandbox (linter, suite de tests, compilateur).
+            </p>
+          </div>
+        </div>
+
+        <Callout type="info" title="Pourquoi les agents d'IDE échouent rarement sur les imports de fichiers">
+          À la différence d&apos;une IA sur navigateur web qui invente souvent les chemins de répertoires, l&apos;agent d&apos;IDE utilise <code className="text-xs bg-slate-100 px-1 py-0.5 rounded font-mono">search_codebase</code> pour découvrir les vrais chemins sur votre disque. Il élimine ainsi 95% des erreurs d&apos;importation fantômes.
+        </Callout>
       </section>
 
+      {/* Section 3: Simulateur interactif de diagnostic agentique */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Laboratoire Pratique</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            3. Simulateur Interactif : Observer un Agent d&apos;IDE Résoudre un Bug Multicouche
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Comparez la résolution d&apos;un désalignement d&apos;API entre un <strong>Chatbot classique</strong> et un <strong>Agent d&apos;IDE autonome</strong> doté de la boucle Tool-Use.
+        </p>
+
+        {/* Sélecteur de mode */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => setExecutionMode('chatbot')}
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+              executionMode === 'chatbot'
+                ? 'bg-amber-600 text-white shadow-md'
+                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+            }`}
+          >
+            Approche Chatbot Classique (Copier-coller)
+          </button>
+          <button
+            onClick={() => setExecutionMode('agent')}
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+              executionMode === 'agent'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+            }`}
+          >
+            Approche Agent d&apos;IDE (Google Antigravity / Cursor)
+          </button>
+        </div>
+
+        {/* Affichage du mode sélectionné */}
+        {executionMode === 'chatbot' ? (
+          <div className="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 space-y-4">
+            <div className="font-extrabold text-sm text-amber-900 flex items-center gap-2">
+              <span>⚠️ Limitation du modèle isolé de l&apos;environnement :</span>
+            </div>
+            <p className="text-xs sm:text-sm leading-relaxed">
+              Vous soumettez le message : <em>&laquo; Mon login me renvoie HTTP 400 Bad Request, aide-moi &raquo;</em>.
+            </p>
+            <div className="p-4 bg-white rounded-xl border border-amber-200 text-xs font-mono text-slate-800 space-y-2">
+              <div className="text-slate-500 font-bold">{`// Réponse typique d'un chatbot sans accès projet :`}</div>
+              <p>&laquo; Une erreur 400 peut avoir plusieurs causes :</p>
+              <p>1. Vérifiez que votre serveur Express a configuré express.json().</p>
+              <p>2. Vérifiez que vos identifiants ne sont pas vides.</p>
+              <p>3. Affichez console.log(req.body) pour voir ce qui arrive... &raquo;</p>
+            </div>
+            <p className="text-xs sm:text-sm font-semibold text-rose-800">
+              Résultat : 20 minutes perdues en devinettes manuelles parce que l&apos;IA n&apos;a pas pu inspecter le code réel de votre projet.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-2xl bg-white border border-slate-300 shadow-sm overflow-hidden">
+            <div className="bg-slate-900 text-white p-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-mono text-emerald-400 font-bold uppercase">Fil d&apos;exécution ReAct</span>
+                <h4 className="text-sm font-bold text-slate-200">Investigation automatique du crash HTTP 400</h4>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {AGENT_WORKFLOW_STEPS.map((s) => (
+                  <button
+                    key={s.step}
+                    onClick={() => setActiveStep(s.step)}
+                    className={`w-7 h-7 rounded-lg text-xs font-black transition-all ${
+                      activeStep === s.step
+                        ? 'bg-indigo-600 text-white shadow-xs'
+                        : 'bg-slate-800 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {s.step}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Contenu de l'étape active */}
+            {(() => {
+              const current = AGENT_WORKFLOW_STEPS.find((s) => s.step === activeStep) || AGENT_WORKFLOW_STEPS[0];
+              return (
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold border ${current.badgeColor}`}>
+                      Étape {current.step} / {AGENT_WORKFLOW_STEPS.length} : {current.label}
+                    </span>
+                    <span className="text-xs text-slate-500 font-mono">Status: SUCCESS</span>
+                  </div>
+
+                  <p className="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed">
+                    {current.detail}
+                  </p>
+
+                  {current.codeSnippet && (
+                    <div className="mt-2">
+                      <CodeBlock language="typescript">{current.codeSnippet}</CodeBlock>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center pt-4 border-t border-slate-200">
+                    <button
+                      disabled={activeStep === 1}
+                      onClick={() => setActiveStep((prev) => Math.max(1, prev - 1))}
+                      className="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-700 disabled:opacity-40"
+                    >
+                      ← Étape précédente
+                    </button>
+                    <button
+                      disabled={activeStep === AGENT_WORKFLOW_STEPS.length}
+                      onClick={() => setActiveStep((prev) => Math.min(AGENT_WORKFLOW_STEPS.length, prev + 1))}
+                      className="px-3 py-1.5 rounded-lg bg-indigo-600 text-xs font-bold text-white hover:bg-indigo-700 disabled:opacity-40"
+                    >
+                      Étape suivante →
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+      </section>
+
+      {/* Section 4: Bonnes pratiques de pilotage d'un agent */}
+      <section className="space-y-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Méthodologie Opérationnelle</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            4. Comment piloter efficacement un agent d&apos;IDE sans dérapage
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Déléguer du travail à un agent autonome nécessite de respecter trois règles cardinales de contrôle :
+        </p>
+
+        <div className="space-y-4">
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs">1</span>
+              Le Cadrage de Départ (Scoping)
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+              Ne lancez jamais un agent avec une consigne vague comme <em>&laquo; Répare le projet &raquo;</em>. Spécifiez toujours le fichier suspect initial ou la route concernée (ex: <em>&laquo; Commence par examiner src/auth/login.ts et exécute vitest run test/auth &raquo;</em>).
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs">2</span>
+              La Règle du Plan Préalable (/plan)
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+              Exigez de l&apos;agent qu&apos;il formule son diagnostic et soumette un plan d&apos;action en 3 points <strong>avant d&apos;effectuer la moindre modification de fichier</strong>. Cela évite qu&apos;il ne réécrive prématurément 12 composants.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs">3</span>
+              Le Droit de Veto Terminal
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+              Conservez toujours l&apos;approbation manuelle active pour les commandes de terminal à fort impact (migrations de base de données, <code className="text-xs bg-slate-100 px-1 py-0.5 rounded font-mono">git reset</code>, installation de paquets système ou commandes réseau).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5: Quiz d'évaluation de 6 questions */}
+      <section className="space-y-6 pt-6">
+        <div className="border-b-2 border-slate-200 pb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Validation des Compétences</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+            5. Quiz : Maîtrise des agents IA intégrés aux environnements de développement
+          </h2>
+        </div>
+
+        <QuickQuiz
+          title="Quiz 6.9 — Agents d'IDE, Tool Use et Diagnostic Autonome"
+          questions={[
+            {
+              id: 1,
+              question: "Quelle est la différence fondamentale entre un chatbot IA classique et un agent IA d'IDE ?",
+              options: [
+                "Le chatbot ne fonctionne que la nuit alors que l'agent fonctionne le jour.",
+                "L'agent d'IDE dispose d'outils lui permettant d'interagir directement avec le workspace (lire des fichiers, exécuter des commandes, chercher dans l'AST, modifier du code) dans une boucle autonome de raisonnement (ReAct).",
+                "Le chatbot est écrit en C++ et l'agent est écrit en HTML.",
+                "L'agent d'IDE est uniquement capable de traduire des textes en espagnol."
+              ],
+              correctIndex: 1,
+              explanation: "Un agent d'IDE n'est pas un simple générateur de texte : il possède des capacités d'action (Tool-Use) qui lui permettent de lire, chercher, tester et éditer des fichiers directement sur votre machine sous votre contrôle."
+            },
+            {
+              id: 2,
+              question: "Dans le pattern ReAct utilisé par les agents de développement, à quoi correspondent les trois étapes fondamentales ?",
+              options: [
+                "Reboot, Annule, Confirme.",
+                "Thought (Raisonnement / Hypothèse), Action (Appel d'outil comme lire ou chercher), Observation (Analyse du résultat retourné par l'outil).",
+                "React, Angular, Vue.",
+                "Recharge, Attends, Coupe."
+              ],
+              correctIndex: 1,
+              explanation: "Le cycle ReAct structure la progression de l'agent : il formule d'abord une réflexion (Thought), choisit et exécute un outil adéquat (Action), puis analyse la réponse du système (Observation) pour décider de la suite."
+            },
+            {
+              id: 3,
+              question: "Comment un agent d'IDE moderne localise-t-il les fichiers pertinents sans être submergé par la taille colossale d'un projet ?",
+              options: [
+                "En copiant l'intégralité du disque dur sur un serveur distant.",
+                "En combinant la recherche sémantique vectorielle (Embeddings du code), la recherche lexicale par expressions régulières et l'analyse de l'arbre syntaxique (AST / LSP).",
+                "En supprimant tous les fichiers qui n'ont pas été modifiés depuis 2 jours.",
+                "En demandant au système d'exploitation de masquer les dossiers non utilisés."
+              ],
+              correctIndex: 1,
+              explanation: "Pour respecter la limite de contexte du modèle, l'agent utilise des index vectoriels et des requêtes ciblées de recherche de symboles au lieu d'ingérer l'intégralité du repository."
+            },
+            {
+              id: 4,
+              question: "Pourquoi est-il crucial d'activer la confirmation humaine (human-in-the-loop) sur les outils de terminal d'un agent ?",
+              options: [
+                "Pour faire patienter le modèle de langage.",
+                "Pour éviter que l'agent n'exécute accidentellement des commandes destructrices (ex: git reset --hard, suppression de volumes Docker, migration SQL destructive).",
+                "Parce que le terminal Linux refuse d'exécuter des requêtes envoyées par des programmes tiers.",
+                "Pour permettre à l'IDE de recharger ses polices de caractères."
+              ],
+              correctIndex: 1,
+              explanation: "L'ingénieur reste le garant de la sécurité de son poste et de son infrastructure. La validation explicite des commandes shell à risque prévient tout dérapage irréversible."
+            },
+            {
+              id: 5,
+              question: "Quel est l'intérêt de demander à un agent d'établir un plan (/plan) avant toute modification de code ?",
+              options: [
+                "Cela permet de vérifier sa compréhension du problème et d'approuver sa stratégie avant qu'il ne modifie des fichiers de façon désordonnée.",
+                "Cela permet d'imprimer le code sur papier avant de l'exécuter.",
+                "Cela oblige l'agent à traduire le projet en TypeScript strict.",
+                "Cela accélère la vitesse de téléchargement de l'IDE."
+              ],
+              correctIndex: 0,
+              explanation: "Exiger un plan force l'agent à synthétiser sa compréhension et permet à l'ingénieur de corriger une mauvaise hypothèse avant que le moindre fichier source ne soit altéré."
+            },
+            {
+              id: 6,
+              question: "Face à une anomalie complexe entre frontend et backend, quel est l'avantage décisif d'un agent par rapport à une inspection manuelle isolée ?",
+              options: [
+                "L'agent peut lire simultanément les contrats d'interface côté client (fetch / hooks) et côté serveur (contrôleurs / validation Zod) pour repérer immédiatement les divergences de typage.",
+                "L'agent peut forcer le navigateur client à ignorer les protocoles HTTP.",
+                "L'agent remplace automatiquement la base de données PostgreSQL par un fichier texte.",
+                "L'agent supprime les pare-feu de l'entreprise pour simplifier les tests."
+              ],
+              correctIndex: 0,
+              explanation: "L'agent d'IDE excelle dans l'analyse multicouche : en quelques secondes, il compare le schéma attendu par l'API backend et l'objet JSON envoyé par le client frontend, détectant les désalignements de contrat."
+            }
+          ]}
+        />
+      </section>
     </div>
   );
 };
