@@ -80,4 +80,3 @@ export default async function DebuggingModule7ChapterDetailPage({ params }: Chap
     </CourseChapterLayout>
   );
 }
-

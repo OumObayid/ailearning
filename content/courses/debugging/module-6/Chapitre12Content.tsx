@@ -1,8 +1,6 @@
 ﻿'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Callout } from '@/components/courses/Callout';
 import { Icon } from '@/components/common/Icon';
 
@@ -16,1390 +14,1358 @@ export const Chapitre12Content: React.FC = () => {
           <span>Ingénierie du Débogage</span>
         </div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 12 — Mettre en place une stratégie de surveillance et de prévention
+          Chapitre 12 — Faire corriger un bug par un agent IA et contrôler les modifications
         </h1>
       </div>
 
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 6.12 — Mettre en place une stratégie de surveillance et de prévention
+        Chapitre 12 — 6.12. Faire corriger un bug par un agent IA et contrôler les modifications.
       </p>
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs du chapitre
+          1. Objectifs pédagogiques
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous devez être capable de :
+        À la fin de ce chapitre, vous serez capable de :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre la différence entre surveillance, détection et prévention.</span>
+            <span>Confier la correction d&apos;un bug à un agent IA intégré à un IDE.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Surveiller les performances et la disponibilité d&apos;une application.</span>
+            <span>Transformer un diagnostic validé en plan de correction.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Centraliser les métriques et les logs.</span>
+            <span>Autoriser des modifications ciblées.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Configurer des alertes en cas d&apos;anomalie.</span>
+            <span>Contrôler les fichiers modifiés par l&apos;agent.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Détecter les incidents avant qu&apos;ils ne deviennent critiques.</span>
+            <span>Examiner les différences avec Git.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Mettre en place une stratégie de surveillance pour un backend Node.js / Express.</span>
+            <span>Détecter les modifications inutiles ou incorrectes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier que la correction résout réellement le problème.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Accepter ou refuser les modifications proposées.</span>
           </li>
         </ul>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Comprendre la surveillance d&apos;une application
+          2. Du diagnostic à la correction
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La surveillance (Monitoring) consiste à observer continuellement l&apos;état d&apos;une application pour détecter les anomalies et anticiper les incidents.
+        Dans les chapitres précédents, nous avons appris à demander à un agent de diagnostiquer un bug sans modifier le code.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elle repose sur trois éléments complémentaires :
+        Maintenant, nous allons passer à l&apos;étape suivante : lui permettre de corriger le problème, mais sous contrôle.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Monitoring
+        Il faut distinguer deux phases.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mesurer
+        Phase 1 — Diagnostic
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Alerting
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Alerter
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prevention
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Protéger
+        Analyse
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Monitoring : observer les métriques et les événements.</span>
+            <span>Examiner les logs.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Alerting : signaler les situations anormales.</span>
+            <span>Analyser le code.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Prevention : réduire les risques et éviter les incidents.</span>
+            <span>Identifier la cause racine.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Proposer une solution.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Présenter les preuves.</span>
           </li>
         </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Phase 2 — Correction
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Intervention contrôlée
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Valider le diagnostic.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Définir les fichiers autorisés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Demander un plan de correction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Autoriser les modifications.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Contrôler le résultat.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Principe fondamental : ne demandez pas à l&apos;agent de corriger un bug tant que vous ne comprenez pas suffisamment son diagnostic.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          3. Préparer la correction avant de modifier le code
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Avant toute intervention, il faut établir un état de référence du projet.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.1. Vérifier l&apos;état Git
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exécutez :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git status`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette commande permet de connaître les fichiers déjà modifiés.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`On branch main
+
+Changes not staged for commit:
+modified: frontend/src/Login.tsx
+
+Untracked files:
+notes.txt`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cela signifie que des modifications existaient déjà avant l&apos;intervention de l&apos;agent.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il faut les prendre en compte pour ne pas les confondre avec les changements qu&apos;il réalisera.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.2. Créer un point de restauration
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Si le projet est propre et que les changements précédents sont enregistrés, vous pouvez créer une branche dédiée :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git switch -c fix/login-bug`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette branche permet de travailler indépendamment de la branche principale.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Si vous avez déjà des modifications non enregistrées, ne changez pas de branche sans vérifier comment Git va les conserver.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.3. Définir le périmètre de correction
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Fichier autorisé :
+backend/src/controllers/authController.ts
+
+Fichiers consultables :
+frontend/src/Login.tsx
+backend/src/services/authService.ts
+
+Fichiers interdits :
+.env
+package.json
+database/`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;objectif est d&apos;éviter que l&apos;agent modifie des fichiers sans rapport avec le problème.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          4. Demander un plan de correction
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une erreur fréquente consiste à demander directement :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Corrige le bug.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette instruction est trop vague.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un agent peut modifier plusieurs fichiers, réorganiser le code ou introduire des changements qui dépassent le besoin initial.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il vaut mieux demander un plan avant de lui accorder l&apos;autorisation de modifier.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple de prompt
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        PLAN DE CORRECTION
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le diagnostic du bug a été examiné.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Avant de modifier le code, prépare un plan de correction.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        TÂCHES
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Rappelle brièvement la cause racine identifiée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifie les fichiers nécessaires à la correction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Explique les modifications prévues dans chaque fichier.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Présente le code ou la logique à modifier.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Indique les risques et les effets secondaires possibles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Précise les tests nécessaires après correction.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        CONTRAINTES
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne modifie aucun fichier pour le moment.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne crée aucun nouveau fichier.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne supprime aucun fichier.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne modifie pas l&apos;architecture.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne change pas les dépendances.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>N&apos;interviens pas en dehors du périmètre du bug.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Présente uniquement le plan de correction et attends ma validation.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pourquoi cette étape est-elle importante ?
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Elle permet de vérifier que l&apos;agent :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>A bien compris la cause racine.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne propose pas une correction disproportionnée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>A identifié les bons fichiers.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>N&apos;a pas prévu de modifications inutiles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>A anticipé les tests nécessaires.</span>
+          </li>
+        </ul>
+      <Callout type="tip" title="À retenir ">
+        <p className="text-xs sm:text-sm">le plan de correction doit être validé avant l&apos;exécution des modifications.</p>
+      </Callout>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          5. Autoriser les modifications de manière précise
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Après avoir examiné le plan, vous pouvez donner une autorisation limitée.
+      </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         Exemple :
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un backend reçoit soudainement trop de requêtes.
+        AUTORISATION DE CORRECTION
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Je valide ton plan de correction.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Tu es autorisé à modifier uniquement :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        backend/src/controllers/authController.ts
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        RÈGLES
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Le monitoring détecte une augmentation du nombre de requêtes.</span>
+            <span>Applique uniquement la correction validée.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Le système d&apos;alertes signale une saturation possible.</span>
+            <span>Ne modifie aucun autre fichier.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Les mécanismes de prévention limitent le trafic et protègent les ressources.</span>
+            <span>Ne change pas l&apos;architecture.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne modifie pas les variables d&apos;environnement.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne supprime aucune fonctionnalité existante.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne modifie pas les dépendances.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne réalise aucune amélioration supplémentaire non demandée.</span>
           </li>
         </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Après la correction :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Présente les modifications effectuées.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Explique chaque changement.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Indique les fichiers modifiés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Présente les tests à exécuter.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Signale tout problème rencontré.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Si une modification supplémentaire devient nécessaire, arrête-toi et demande mon autorisation.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;autorisation est limitée à la mission et au fichier indiqués.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une autorisation de modifier un contrôleur ne signifie pas que l&apos;agent peut également modifier le service, le modèle ou la configuration.
+      </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Les indicateurs à surveiller
+          6. Exemple pratique : corriger une erreur dans une API Express
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une stratégie efficace ne consiste pas à surveiller toutes les données disponibles. Il faut choisir les indicateurs qui permettent de détecter les problèmes importants.
+        Prenons une application Node.js avec Express et MySQL.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.1. Métriques de performance
+        6.1. Code initial
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Repository :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findById(id: number) {
+const [rows] = await db.execute(
+"SELECT id, email FROM users WHERE id = ?",
+[id]
+);
+
+return (rows as any[])[0];
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Contrôleur :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
+const user = await userRepository.findById(
+Number(req.params.id)
+);
+
+return res.json({
+id: user.id,
+email: user.email
+});
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        6.2. Problème identifié
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Lorsqu&apos;un utilisateur n&apos;existe pas :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`rows[0] === undefined`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le contrôleur tente ensuite :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`user.id`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cela provoque une erreur.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La cause racine est l&apos;absence de gestion du cas où le repository ne trouve aucun utilisateur.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        6.3. Correction proposée
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
+const user = await userRepository.findById(
+Number(req.params.id)
+);
+
+if (!user) {
+return res.status(404).json({
+message: "Utilisateur introuvable"
+});
+}
+
+return res.status(200).json(user);
+}
+La correction introduit une vérification avant l'accès aux propriétés de user.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Elle permet de distinguer deux situations :
       </p>
       <div className="overflow-x-auto my-6">
         <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
             <tr>
-              <th className="px-4 py-3">Indicateur</th>
-              <th className="px-4 py-3">Ce qu&apos;il permet de surveiller</th>
+              <th className="px-4 py-3">Situation</th>
+              <th className="px-4 py-3">Réponse HTTP</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">CPU Usage</td>
-              <td className="px-4 py-2.5 font-medium">Utilisation du processeur.</td>
+              <td className="px-4 py-2.5 font-medium">Utilisateur trouvé</td>
+              <td className="px-4 py-2.5 font-medium">200 OK</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Memory Usage</td>
-              <td className="px-4 py-2.5 font-medium">Consommation mémoire.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Response Time</td>
-              <td className="px-4 py-2.5 font-medium">Durée des réponses HTTP.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">P95 / P99</td>
-              <td className="px-4 py-2.5 font-medium">Temps de réponse des requêtes les plus lentes.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Throughput</td>
-              <td className="px-4 py-2.5 font-medium">Nombre de requêtes traitées par seconde.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Error Rate</td>
-              <td className="px-4 py-2.5 font-medium">Pourcentage de requêtes en erreur.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Event Loop Delay</td>
-              <td className="px-4 py-2.5 font-medium">Retard de traitement de la boucle événementielle.</td>
+              <td className="px-4 py-2.5 font-medium">Utilisateur inexistant</td>
+              <td className="px-4 py-2.5 font-medium">404 Not Found</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.2. Métriques de disponibilité
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Disponibilité du serveur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>État de la base de données.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>État des services externes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Nombre d&apos;échecs de connexion.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>État des files de traitement.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Deux notions sont importantes :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Liveness : le processus fonctionne-t-il encore ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Readiness : l&apos;application est-elle prête à recevoir du trafic ?</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un serveur peut être vivant, mais indisponible parce que sa base de données ne répond plus.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.3. Métriques de sécurité
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Nombre d&apos;échecs d&apos;authentification.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Nombre de refus d&apos;accès 403.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Nombre de requêtes suspectes.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Modifications de permissions.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Erreurs de validation répétées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Activités inhabituelles sur les comptes administrateurs.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut interpréter ces indicateurs dans leur contexte : une augmentation des erreurs 403 n&apos;indique pas automatiquement une attaque.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Les trois piliers de l&apos;observabilité
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;observabilité (Observability) permet de comprendre l&apos;état interne d&apos;un système à partir des informations qu&apos;il expose.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elle repose principalement sur trois piliers.
-      </p>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image18.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Metrics — Métriques
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mesures numériques : CPU, RAM, latence, taux d&apos;erreurs.
-      </p>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image16.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Logs — Journaux
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Événements détaillés : erreurs SQL, connexions, refus d&apos;accès.
-      </p>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image19.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Traces — Traçabilité
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Suivi d&apos;une requête à travers plusieurs services.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : une requête /api/orders prend quatre secondes.
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La métrique indique une augmentation de la latence.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le log révèle une erreur ou une requête SQL lente.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La trace montre que trois secondes sont consommées par l&apos;appel à MySQL.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les trois informations permettent d&apos;identifier plus précisément la cause racine.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Les outils de surveillance
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici les principaux outils à connaître pour un environnement Node.js.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Outil</th>
-              <th className="px-4 py-3">Fonction principale</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Prometheus</td>
-              <td className="px-4 py-2.5 font-medium">Collecter et stocker les métriques.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Grafana</td>
-              <td className="px-4 py-2.5 font-medium">Créer des tableaux de bord.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">OpenTelemetry</td>
-              <td className="px-4 py-2.5 font-medium">Instrumenter les applications.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Sentry</td>
-              <td className="px-4 py-2.5 font-medium">Détecter et analyser les erreurs.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Uptime Kuma</td>
-              <td className="px-4 py-2.5 font-medium">Vérifier la disponibilité des services.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">OWASP ZAP</td>
-              <td className="px-4 py-2.5 font-medium">Tester la sécurité des applications.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image20.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image21.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image22.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il n&apos;est pas nécessaire d&apos;installer tous ces outils. Le choix dépend de la taille du projet et des besoins de surveillance.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Mettre en place la surveillance dans Node.js / Express
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Nous allons ajouter trois mécanismes à un backend :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Mesurer les performances.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier la disponibilité.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Enregistrer les événements importants.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.1. Collecter les métriques avec Prometheus
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Installer la bibliothèque :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm install prom-client
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créer metrics.js :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import client from &quot;prom-client&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const register = new client.Registry();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        client.collectDefaultMetrics(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        register
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Mesurer la durée des requêtes HTTP
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const httpDuration = new client.Histogram(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        name: &quot;http_request_duration_seconds&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        help: &quot;Durée des requêtes HTTP&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        labelNames: [&quot;method&quot;, &quot;route&quot;, &quot;status&quot;],
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        buckets: [0.05, 0.1, 0.3, 0.5, 1, 2, 5]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        register.registerMetric(httpDuration);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        export &#123; register, httpDuration &#125;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les métriques par défaut comprennent notamment des informations sur la mémoire et le processus Node.js.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans server.js :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import express from &quot;express&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import &#123; register, httpDuration &#125; from &quot;./metrics.js&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const app = express();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use((req, res, next) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const end = httpDuration.startTimer();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.on(&quot;finish&quot;, () =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        end(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        method: req.method,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        route: req.route?.path || &quot;unmatched&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        status: String(res.statusCode)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        next();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Endpoint réservé à la collecte des métriques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/metrics&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.set(&quot;Content-Type&quot;, register.contentType);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.end(await register.metrics());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/api/products&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json([&#123; id: 1, name: &quot;Clavier&quot; &#125;]);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.listen(3000);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tester dans le navigateur :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        http://localhost:3000/metrics
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous obtiendrez des mesures que Prometheus pourra collecter.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Remarque : en production, l&apos;endpoint /metrics doit être protégé ou rendu accessible uniquement au réseau de monitoring. Évitez également les labels contenant des identifiants utilisateurs ou des URL dynamiques : ils peuvent produire un nombre excessif de séries temporelles.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.2. Mettre en place des Health Checks
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un Health Check permet de vérifier si une application ou un service fonctionne correctement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Liveness :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vérifie que le processus Node.js est vivant.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/health/live&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(200).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        status: &quot;alive&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Readiness :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vérifie si l&apos;application peut réellement traiter des requêtes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple avec MySQL :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/health/ready&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        try &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        await db.query(&quot;SELECT 1&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(200).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        status: &quot;ready&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        database: &quot;connected&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125; catch (error) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(503).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        status: &quot;not_ready&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Endpoint</th>
-              <th className="px-4 py-3">Vérification</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">/ health /live</td>
-              <td className="px-4 py-2.5 font-medium">Le processus fonctionne.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">/ health / ready</td>
-              <td className="px-4 py-2.5 font-medium">L&apos;application est prête à recevoir du trafic.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans un environnement avec orchestrateur, ces deux vérifications peuvent servir à redémarrer un processus défaillant ou à le retirer temporairement du trafic.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Configurer les alertes
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le monitoring devient réellement utile lorsqu&apos;il peut signaler une anomalie.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une alerte peut être déclenchée lorsque :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le CPU dépasse un seuil.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La mémoire augmente anormalement.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le taux d&apos;erreurs HTTP devient élevé.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le temps de réponse P95 devient trop important.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>La base de données devient indisponible.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les échecs d&apos;authentification se multiplient.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        7.1. Exemple de règle Prometheus
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créer un fichier alerts.yml :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        groups:
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        - name: application-alerts
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        rules:
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        - alert: HighHttpErrorRate
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        expr: |
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        sum(rate(http_requests_total&#123;status=~&quot;5..&quot;&#125;[5m]))
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        /
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        clamp_min(sum(rate(http_requests_total[5m])), 0.001)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &amp;gt; 0.05
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        for: 2m
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        labels:
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        severity: warning
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        annotations:
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        summary: &quot;Taux d&apos;erreurs HTTP élevé&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette règle déclenche une alerte si plus de 5 % des requêtes HTTP échouent en erreur serveur pendant deux minutes.
-      </p>
       <Callout type="warning" title="Attention ">
-        <p className="text-xs sm:text-sm">cette règle suppose que la métrique http_requests_total est effectivement exposée avec les labels indiqués. Il faut adapter son nom à l&apos;instrumentation utilisée.</p>
+        <p className="text-xs sm:text-sm">cet exemple suppose que les erreurs inattendues du repository sont déjà prises en charge par la gestion des erreurs de l&apos;application.</p>
       </Callout>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        7.2. Comprendre les seuils
+        6.4. Vérifier la portée de la correction
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les seuils doivent être adaptés à l&apos;application. Voici des exemples pédagogiques, et non des valeurs universelles :
+        L&apos;agent ne doit pas profiter de cette correction pour :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Réécrire le repository.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Changer la structure des réponses API.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Modifier les routes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Installer une bibliothèque.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Réorganiser les dossiers.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une correction doit rester proportionnée à la cause du bug.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          7. Contrôler les modifications avec Git
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une fois l&apos;agent intervenu, vous devez examiner son travail.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        7.1. Identifier les fichiers modifiés
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git status`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Changes not staged for commit:
+modified: backend/src/controllers/authController.ts`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Si d&apos;autres fichiers apparaissent, vérifiez s&apos;ils étaient déjà modifiés avant la mission.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        7.2. Examiner les changements
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git diff`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
+const user = await userRepository.findById(
+Number(req.params.id)
+);
+
++  if (!user) {
++    return res.status(404).json({
++      message: "Utilisateur introuvable"
++    });
++  }
++
+return res.json({
+id: user.id,
+email: user.email
+});
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les signes utilisés dans un diff :
       </p>
       <div className="overflow-x-auto my-6">
         <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
             <tr>
-              <th className="px-4 py-3">Indicateur</th>
-              <th className="px-4 py-3">Exemple de seuil d&apos;alerte</th>
+              <th className="px-4 py-3">Symbole</th>
+              <th className="px-4 py-3">Signification</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">CPU</td>
-              <td className="px-4 py-2.5 font-medium">Supérieur à 85 % pendant 5 minutes.</td>
+              <td className="px-4 py-2.5 font-medium">+</td>
+              <td className="px-4 py-2.5 font-medium">Ligne ajoutée</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Mémoire</td>
-              <td className="px-4 py-2.5 font-medium">Hausse continue ou utilisation supérieure à 85 %.</td>
+              <td className="px-4 py-2.5 font-medium">-</td>
+              <td className="px-4 py-2.5 font-medium">Ligne supprimée</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Erreurs HTTP 5xx</td>
-              <td className="px-4 py-2.5 font-medium">Supérieures à 5 % pendant 2 minutes.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Latence P95</td>
-              <td className="px-4 py-2.5 font-medium">Supérieure à 1 seconde.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Base de données</td>
-              <td className="px-4 py-2.5 font-medium">Échec répété du Health Check.</td>
+              <td className="px-4 py-2.5 font-medium">Espace</td>
+              <td className="px-4 py-2.5 font-medium">Ligne inchangée</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un seuil isolé peut générer de fausses alertes. Il faut tenir compte de la durée, du trafic habituel et de l&apos;impact sur les utilisateurs.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Mettre en place une stratégie de prévention
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Surveiller les incidents ne suffit pas : il faut aussi réduire leur probabilité et leur impact.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici les principales protections à intégrer dans un backend Node.js.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        8.1. Limiter le nombre de requêtes
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le Rate Limiting permet de limiter le nombre de requêtes envoyées par un client pendant une période donnée.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Installation :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm install express-rate-limit
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Configuration :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import rateLimit from &quot;express-rate-limit&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const limiter = rateLimit(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        windowMs: 15 * 60 * 1000,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        limit: 100,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &quot;Trop de requêtes&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(&quot;/api/&quot;, limiter);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette configuration limite les requêtes à 100 par fenêtre de 15 minutes par client, selon l&apos;identification utilisée par le middleware.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour une application distribuée sur plusieurs instances, un stockage partagé est nécessaire pour appliquer correctement les limites entre les serveurs.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        8.2. Protéger les headers HTTP
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Installer Helmet :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm install helmet
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import helmet from &quot;helmet&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(helmet());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Helmet configure plusieurs headers HTTP qui contribuent à réduire certains risques liés au navigateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        8.3. Sécuriser les données et les accès
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser des requêtes SQL préparées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Valider les entrées avec Zod.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les permissions côté serveur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Stocker les secrets dans des variables d&apos;environnement.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser HTTPS.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Mettre à jour les dépendances.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Effectuer des sauvegardes régulières.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Limiter les privilèges des comptes système et SQL.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        8.4. Prévoir une stratégie de sauvegarde
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une sauvegarde permet de récupérer les données après une erreur, une suppression accidentelle ou un incident de sécurité.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut prévoir :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des sauvegardes régulières.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une copie isolée du serveur principal.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une durée de conservation adaptée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des tests de restauration.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une sauvegarde qui n&apos;a jamais été testée ne garantit pas que les données pourront être récupérées.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Construire une stratégie complète de surveillance
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici une architecture simplifiée pour un backend Node.js avec MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Utilisateurs / Frontend React
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Requêtes HTTP
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Backend Node.js / Express
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Sécurité
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation, auth, rate limiting
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Monitoring
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CPU, RAM, latence, erreurs
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Logs
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Winston, événements
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Health Checks
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Disponibilité des services
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MySQL
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Données et transactions
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Plateforme de surveillance
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prometheus
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Collecte des métriques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Grafana
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tableaux de bord
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Loki
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Recherche des logs
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Alerting
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Notifications et incidents
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;objectif est de pouvoir répondre rapidement à quatre questions :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>L&apos;application fonctionne-t-elle ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ses performances sont-elles normales ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Y a-t-il une activité suspecte ?</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Quelle est la cause de l&apos;incident ?</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          10. TP pratique — Mettre en place une surveillance minimale d&apos;une API Express
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TP pratique
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Difficulté : intermédiaire
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Objectif : construire une petite API qui expose ses métriques, vérifie son état et limite les requêtes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 1 — Préparer le projet
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        mkdir monitoring-api
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        cd monitoring-api
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm init -y
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm install express prom-client helmet express-rate-limit
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans package.json, ajouter :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;type&quot;: &quot;module&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 2 — Créer le serveur
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créer server.js :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import express from &quot;express&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import helmet from &quot;helmet&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import rateLimit from &quot;express-rate-limit&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        import client from &quot;prom-client&quot;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const app = express();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(express.json());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(helmet());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Limitation des requêtes
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(&quot;/api/&quot;, rateLimit(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        windowMs: 15 * 60 * 1000,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        limit: 100
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;));
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Métriques Prometheus
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const register = new client.Registry();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        client.collectDefaultMetrics(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        register
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const requests = new client.Counter(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        name: &quot;api_requests_total&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        help: &quot;Nombre de requêtes API&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        labelNames: [&quot;method&quot;, &quot;status&quot;]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        register.registerMetric(requests);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Middleware de mesure
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use((req, res, next) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.on(&quot;finish&quot;, () =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        requests.inc(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        method: req.method,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        status: String(res.statusCode)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        next();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Liveness
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/health/live&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; status: &quot;alive&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Route API
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/api/products&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json([
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#123; id: 1, name: &quot;Clavier&quot; &#125;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#123; id: 2, name: &quot;Souris&quot; &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ]);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Métriques
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/metrics&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.set(&quot;Content-Type&quot;, register.contentType);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.end(await register.metrics());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.listen(3000, () =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        console.log(&quot;API démarrée sur le port 3000&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 3 — Tester les endpoints
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Démarrer :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        node server.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tester les trois adresses :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">URL</th>
-              <th className="px-4 py-3">Résultat attendu</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">http://localhost:3000/health/live</td>
-              <td className="px-4 py-2.5 font-medium">État du serveur.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">http://localhost:3000/api/products</td>
-              <td className="px-4 py-2.5 font-medium">Liste des produits.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">http://localhost:3000/metrics</td>
-              <td className="px-4 py-2.5 font-medium">Métriques Prometheus .</td>
-            </tr>
-          </tbody>
-        </table>
+        Vous pouvez aussi examiner un fichier particulier :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git diff -- backend/src/controllers/authController.ts`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 4 — Simuler une charge
+        7.3. Vérifier les changements inattendus
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans PowerShell, exécuter plusieurs requêtes :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        1..150 | ForEach-Object &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Invoke-WebRequest http://localhost:3000/api/products
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Selon la configuration et la durée d&apos;exécution, certaines requêtes seront limitées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous pourrez ensuite consulter :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        http://localhost:3000/metrics
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Rechercher la métrique :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        api_requests_total
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elle permet de compter les requêtes traitées par code HTTP.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 5 — Analyser les résultats
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Répondre aux questions suivantes :
+        Posez-vous ces questions :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Le serveur est-il toujours vivant après les tests ?</span>
+            <span>L&apos;agent a-t-il modifié uniquement les fichiers autorisés ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Combien de requêtes ont été traitées ?</span>
+            <span>A-t-il supprimé du code utile ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Les requêtes ont-elles été limitées ?</span>
+            <span>A-t-il changé des paramètres de fonctions ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Quel code HTTP est retourné lorsque la limite est dépassée ?</span>
+            <span>A-t-il modifié le comportement d&apos;autres routes ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Comment ajouter un Health Check qui vérifie aussi MySQL ?</span>
+            <span>A-t-il ajouté des dépendances ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>La correction correspond-elle au diagnostic validé ?</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé attendu
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le serveur reste disponible tant que son processus fonctionne.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>api_requests_total permet d&apos;observer les requêtes enregistrées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Le Rate Limiting limite le trafic selon sa configuration.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Les requêtes refusées par le middleware reçoivent généralement 429 Too Many Requests.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Pour vérifier MySQL, ajouter un endpoint Readiness qui exécute une requête simple comme SELECT 1.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Limite du TP : il s&apos;agit d&apos;une instrumentation minimale. Pour un véritable monitoring, il faudra connecter Prometheus, créer des tableaux de bord Grafana et configurer les alertes.
+        Ne validez jamais un diff uniquement parce que le code semble fonctionner.
       </p>
       </section>
 
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
-        <QuickQuiz
-          title="Quiz de révision — Chapitre 6.12"
-          questions={[
-            {
-              id: 1,
-              question: "Quel est le rôle du monitoring ?",
-              options: ["Supprimer automatiquement toutes les erreurs.", "Observer l'état et les performances d'une application.", "Remplacer le backend."],
-              correctIndex: 1,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 2,
-              question: "Quels sont les trois piliers principaux de l'observabilité ?",
-              options: ["Metrics, Logs, Traces.", "HTML,"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 3,
-              question: "Quelle différence existe entre Liveness et Readiness ?",
-              options: ["Liveness vérifie que le processus fonctionne ; Readiness vérifie qu'il peut recevoir du trafic.", "Les deux sont identiques.", "Readiness vérifie uniquement la mémoire."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 4,
-              question: "Quel outil collecte les métriques dans l'architecture étudiée ?",
-              options: ["Prometheus.", "React.", "MySQL Workbench."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 5,
-              question: "Quel est le rôle du Rate Limiting ?",
-              options: ["Limiter le nombre de requêtes envoyées par un client.", "Supprimer les logs."],
-              correctIndex: 1,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 6,
-              question: "Pourquoi tester régulièrement les sauvegardes ?",
-              options: ["Pour vérifier que les données peuvent réellement être restaurées.", "Pour réduire le nombre de requêtes HTTP.", "Pour désactiver les permissions."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 7,
-              question: "Une application peut-elle être vivante mais non prête ?",
-              options: ["Non.", "Oui, par exemple lorsque sa base de données est indisponible.", "Uniquement si React est arrêté."],
-              correctIndex: 1,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-          ]}
-        />
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          8. Vérifier la correction avec des tests
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une correction n&apos;est pas considérée comme fiable tant qu&apos;elle n&apos;a pas été vérifiée.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour notre exemple, il faut tester deux scénarios.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        8.1. Cas positif : utilisateur existant
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Requête :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /users/15`}</code></pre>
       </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat attendu :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`{
+"id": 15,
+"email": "user@example.com"
+}
+Code HTTP attendu : 200.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        8.2. Cas négatif : utilisateur inexistant
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Requête :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /users/99999`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat attendu :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`{
+"message": "Utilisateur introuvable"
+}
+Code HTTP attendu : 404.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        8.3. Exemple de test avec Supertest
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import request from "supertest";
+import app from "../app";
+
+describe("GET /users/:id", () =&gt; {
+it("retourne un utilisateur existant", async () =&gt; {
+const response = await request(app)
+.get("/users/15");
+
+expect(response.status).toBe(200);
+expect(response.body.id).toBe(15);
+});
+
+it("retourne 404 si l'utilisateur n'existe pas", async () =&gt; {
+const response = await request(app)
+.get("/users/99999");
+
+expect(response.status).toBe(404);
+expect(response.body.message)
+.toBe("Utilisateur introuvable");
+});
+});
+Cet exemple suppose que la base de test contient l'utilisateur 15 et que l'identifiant 99999 est absent.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les tests doivent utiliser un environnement de test isolé, et non une base de production.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        8.4. Exécuter les vérifications
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Selon les scripts disponibles dans le projet :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm run test
+npm run lint
+npm run build`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent doit présenter les résultats réels :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tests réussis.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tests échoués.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Erreurs de compilation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifications non exécutées.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il ne doit jamais prétendre qu&apos;un test a réussi s&apos;il ne l&apos;a pas exécuté.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          9. Accepter ou refuser les modifications
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Après l&apos;examen du diff et des tests, trois situations sont possibles.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Acceptation
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La correction est satisfaisante
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le diagnostic est juste, les modifications sont limitées et les tests réussissent.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Révision
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La correction est partiellement correcte
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent a identifié la cause, mais sa solution nécessite des ajustements.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Refus
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La correction est incorrecte
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La modification introduit des régressions ou ne résout pas la cause racine.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        9.1. Accepter une correction
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Si tout est correct :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git add backend/src/controllers/authController.ts
+git commit -m "fix: handle missing user in getUser"`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        9.2. Refuser une correction
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Si vous souhaitez revenir sur les changements effectués par l&apos;agent, ne restaurez pas aveuglément un fichier qui contenait déjà des modifications personnelles.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Vous pouvez examiner précisément les changements et les annuler de manière ciblée.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour une correction isolée et non encore validée, Git peut notamment utiliser :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git restore -p backend/src/controllers/authController.ts`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette commande permet de sélectionner les modifications à annuler, morceau par morceau.
+      </p>
+      <Callout type="warning" title="Attention ">
+        <p className="text-xs sm:text-sm">ne l&apos;utilisez pas sans comprendre les changements présents dans le fichier.</p>
+      </Callout>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          10. Construire un cycle professionnel de correction avec un agent
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Voici le processus complet à appliquer dans votre IDE :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`1. Reproduire le bug
+|
+v
+2. Demander un diagnostic à l'agent
+|
+v
+3. Vérifier la cause racine
+|
+v
+4. Demander un plan de correction
+|
+v
+5. Valider le plan
+|
+v
+6. Autoriser les fichiers concernés
+|
+v
+7. Laisser l'agent corriger
+|
+v
+8. Examiner le diff Git
+|
+v
+9. Exécuter les tests
+|
+v
+10. Accepter ou refuser`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ce cycle est particulièrement utile avec Google Antigravity, Cursor ou les agents de programmation intégrés à VS Code.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le nom des commandes et les mécanismes de validation peuvent varier selon l&apos;IDE.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          11. TP — Corriger un bug avec un agent IA sous contrôle
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Travaux pratiques
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Objectif : utiliser votre agent debugging-specialist pour corriger un bug tout en contrôlant ses modifications.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 1 — Préparer le code
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Créez un contrôleur de test :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getOrder(req, res) {
+const order = await orderRepository.findById(
+Number(req.params.id)
+);
+
+return res.json({
+id: order.id,
+total: order.total
+});
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le repository :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findById(id: number) {
+const [rows] = await db.execute(
+"SELECT id, total FROM orders WHERE id = ?",
+[id]
+);
+
+return (rows as any[])[0];
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Bug : une commande inexistante provoque une erreur HTTP 500.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 2 — Demander le diagnostic
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Transmettez cette mission à votre agent :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Analyse le problème de la route GET /orders/:id.
+
+Identifie la cause racine.
+Ne modifie aucun fichier.
+
+Présente :
+- Le symptôme.
+- La cause immédiate.
+- La cause racine.
+- Les fichiers concernés.
+- La correction recommandée.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 3 — Demander un plan
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Prépare un plan de correction.
+
+Indique les fichiers concernés,
+les changements prévus et les tests nécessaires.
+
+Ne modifie encore aucun fichier.
+Attends ma validation.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 4 — Autoriser la correction
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Après avoir examiné le plan :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Je valide la correction.
+
+Tu es autorisé à modifier uniquement :
+backend/src/controllers/orderController.ts
+
+Ne modifie aucun autre fichier.
+
+Après la correction, présente le diff
+et indique les tests nécessaires.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 5 — Contrôler les changements
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exécutez :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git status
+git diff`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Vérifiez que le contrôleur est le seul fichier modifié par cette mission.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 6 — Tester
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Vérifiez deux scénarios :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une commande existante doit retourner HTTP 200.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une commande inexistante doit retourner HTTP 404.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exécutez les tests disponibles dans le projet.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          12. Corrigé du TP
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La cause racine est identique à celle de l&apos;exemple précédent :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>La requête SQL ne retourne aucune commande.</span>
+          </li>
+        </ul>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`rows[0] vaut undefined.
+Le contrôleur accède à order.id.`}</code></pre>
+      </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une erreur est déclenchée.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Correction attendue :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getOrder(req, res) {
+const order = await orderRepository.findById(
+Number(req.params.id)
+);
+
+if (!order) {
+return res.status(404).json({
+message: "Commande introuvable"
+});
+}
+
+return res.status(200).json(order);
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent doit effectuer cette modification uniquement après autorisation.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le travail est considéré comme correctement réalisé lorsque :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>La cause racine est identifiée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>La correction correspond au diagnostic.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Seul le fichier autorisé est modifié.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les deux scénarios sont testés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Aucun effet secondaire n&apos;est introduit.</span>
+          </li>
+        </ul>
+      </section>
+
     </div>
   );
 };

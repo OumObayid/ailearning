@@ -3,25 +3,25 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { CourseSidebar } from '@/components/courses/CourseSidebar';
 import { ChapterCard } from '@/components/courses/ChapterCard';
 import { ModuleIllustration } from '@/components/courses/ModuleIllustration';
-import { DEBUGGING_MODULE_8_CHAPTERS } from '@/content/courses/debugging/module-8/data';
+import { DEBUGGING_MODULE_5_CHAPTERS } from '@/content/courses/debugging/module-5/data';
 
 export const metadata = {
-  title: 'Module 8 : Projet final : Audit, diagnostic et correction d\'une application complète • Ingénierie du Débogage',
-  description: "Projet final d'ingénierie du débogage : audit complet d'une application React, Express, MySQL et IA, analyse des causes racines, remédiation progressive et validation Vitest.",
+  title: 'Module 5 : Débogage avancé, performances et sécurité • Ingénierie du Débogage',
+  description: "Optimisation et sécurisation avancées : diagnostic des fuites mémoire, analyse CPU, requêtes SQL lentes, gestion de la concurrence, prévention OWASP et observabilité Prometheus.",
 };
 
-export default function DebuggingModule8Page() {
+export default function DebuggingModule5Page() {
   return (
     <div className="space-y-10">
       <PageHeader
         size="large"
-        title="Module 8 — Projet Final : Audit et Correctifs"
-        description="Projet final de synthèse en ingénierie du débogage : prenez en charge une application full-stack complète (React, Express, MySQL, IA) affectée d'anomalies critiques réelles. Appliquez l'ensemble du protocole d'investigation méthodique, isolez chaque cause racine, corrigez les défaillances et produisez un rapport d'audit d'incident."
+        title="Module 5 — Diagnostic Mémoire et CPU"
+        description="Optimisez la stabilité et la rapidité de vos systèmes logiciels : détectez et éliminez les fuites de mémoire (Memory Leaks) grâce aux snapshots de tas (Heap Profiling). Identifiez les goulots d'étranglement CPU, auditez les requêtes de base de données lentes avec EXPLAIN et renforcez la résilience globale de vos applications."
         breadcrumbs={[
           { label: 'Accueil', href: '/' },
           { label: 'Cours', href: '/cours' },
           { label: 'Ingénierie du Débogage', href: '/cours/debugging' },
-          { label: 'Module 8' },
+          { label: 'Module 5' },
         ]}
       />
 
@@ -29,16 +29,16 @@ export default function DebuggingModule8Page() {
         {/* Main Column */}
         <div className="lg:col-span-2 space-y-8">
           {/* Module Illustration */}
-          <ModuleIllustration moduleId="debugging-module-8" />
+          <ModuleIllustration moduleId="debugging-module-5" />
 
           {/* Chapters List */}
           <div className="space-y-4">
-            {DEBUGGING_MODULE_8_CHAPTERS.map((chapter) => (
+            {DEBUGGING_MODULE_5_CHAPTERS.map((chapter) => (
               <ChapterCard
                 key={chapter.slug}
                 number={chapter.number}
                 title={chapter.title}
-                href={`/cours/debugging/module-8/${chapter.slug}`}
+                href={`/cours/debugging/module-5/${chapter.slug}`}
                 duration={chapter.duration}
                 description={chapter.description}
                 theme="lime"
@@ -50,8 +50,8 @@ export default function DebuggingModule8Page() {
         {/* Sidebar */}
         <aside className="lg:sticky lg:top-24 space-y-6">
           <CourseSidebar
-            moduleId="debugging-module-8"
-            baseHref="/cours/debugging/module-8"
+            moduleId="debugging-module-5"
+            baseHref="/cours/debugging/module-5"
             theme="lime"
           />
         </aside>
@@ -59,4 +59,3 @@ export default function DebuggingModule8Page() {
     </div>
   );
 }
-

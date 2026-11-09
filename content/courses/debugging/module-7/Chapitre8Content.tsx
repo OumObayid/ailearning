@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import React from 'react';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Callout } from '@/components/courses/Callout';
 import { Icon } from '@/components/common/Icon';
 
@@ -14,12 +15,12 @@ export const Chapitre8Content: React.FC = () => {
           <span>Ingénierie du Débogage</span>
         </div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 8 — Détecter les hallucinations et les corrections incorrectes proposées par l&apos;IA
+          Chapitre 8 — Tests unitaires et tests d&apos;intégration
         </h1>
       </div>
 
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 8 — 7.8. Détecter les hallucinations et les corrections incorrectes proposées par l&apos;IA.
+        Chapitre 8 — 7.8. Tests unitaires et tests d&apos;intégration
       </p>
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
@@ -31,67 +32,103 @@ export const Chapitre8Content: React.FC = () => {
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre ce qu&apos;est une hallucination produite par une IA.</span>
+            <span>Comprendre la différence entre tests unitaires et tests d&apos;intégration.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Repérer les informations techniques inventées ou incorrectes.</span>
+            <span>Tester les fonctions indépendamment.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Détecter les mauvaises interprétations du code.</span>
+            <span>Tester les interactions entre frontend, backend et base de données.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier la pertinence d&apos;une correction proposée par un modèle.</span>
+            <span>Tester les API REST avec Supertest.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Contrôler les modifications réalisées par un agent IA dans un IDE.</span>
+            <span>Tester les composants et services avec Vitest.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier les erreurs révélées par les tests.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier qu&apos;une correction respecte le comportement attendu.</span>
           </li>
         </ul>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Comprendre les hallucinations de l&apos;IA
+          2. Pourquoi tester après une correction ?
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une hallucination est une information présentée par un modèle IA comme vraie alors qu&apos;elle est fausse, inventée ou insuffisamment justifiée.
+        Une modification du code ne garantit pas que le problème est résolu.
       </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        En programmation, une IA peut notamment :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Inventer une fonction qui n&apos;existe pas dans une bibliothèque.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser une méthode incompatible avec la version installée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier incorrectement la cause d&apos;une erreur.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Inventer un fichier ou une variable dans le projet.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposer une correction qui ne respecte pas l&apos;architecture existante.</span>
-          </li>
-        </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         Exemple :
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous demandez à Gemini d&apos;expliquer une erreur dans une application Node.js.
+        Vous corrigez le contrôleur de commandes pour retourner HTTP 404 lorsqu&apos;une commande n&apos;existe pas.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;IA répond :
+        Vous devez vérifier au minimum :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Commande existante : HTTP 200.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Commande inexistante : HTTP 404.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Erreur de base de données : HTTP 500 ou gestion d&apos;erreur adaptée.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Sans ces tests, vous ne savez pas si la correction fonctionne dans tous les scénarios importants.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          3. Les tests unitaires
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un test unitaire vérifie une petite unité de code indépendamment du reste de l&apos;application.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemples :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une fonction de validation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une fonction de calcul.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une fonction de transformation de données.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une fonction de service métier.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple avec TypeScript et Vitest
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Installation :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -102,80 +139,281 @@ export const Chapitre8Content: React.FC = () => {
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await User.findById(id);
-
-const profile = await user.getProfile();
-Elle affirme que getProfile() est une méthode disponible dans votre modèle User.`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm install -D vitest`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mais si cette méthode n&apos;existe pas dans votre projet, la réponse est incorrecte.
+        Fonction :
       </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export function calculateTotal(
+price: number,
+quantity: number
+): number {
+return price * quantity;
+}`}</code></pre>
+      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le code peut sembler professionnel et cohérent, mais cela ne garantit pas sa validité.
+        Fichier de test :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import { describe, it, expect } from "vitest";
+import { calculateTotal } from "./calculateTotal";
+
+describe("calculateTotal", () =&gt; {
+it("calcule correctement le total", () =&gt; {
+expect(calculateTotal(100, 3)).toBe(300);
+});
+
+it("retourne zéro si la quantité est zéro", () =&gt; {
+expect(calculateTotal(100, 0)).toBe(0);
+});
+});`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exécution :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npx vitest run`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat attendu :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`✓ calculateTotal
+✓ calcule correctement le total
+✓ retourne zéro si la quantité est zéro
+
+Test Files  1 passed
+Tests       2 passed`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ce test vérifie le comportement de la fonction sans appeler MySQL ni une API externe.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Les principales formes d&apos;hallucinations en développement
+          4. Les tests d&apos;intégration
         </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un test d&apos;intégration vérifie la collaboration entre plusieurs éléments du système.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemples :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Route Express + contrôleur.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Contrôleur + service.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Service + repository.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>API + base de données de test.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Authentification + middleware + route protégée.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Contrairement au test unitaire, le test d&apos;intégration vérifie plusieurs composants ensemble.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple avec Supertest
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Installation :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm install -D supertest @types/supertest
+Supposons que l'application Express soit exportée depuis app.ts :
+import express from "express";
+
+const app = express();
+
+app.use(express.json());
+
+app.get("/api/health", (req, res) =&gt; {
+return res.status(200).json({
+status: "ok"
+});
+});
+
+export default app;`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Test :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import request from "supertest";
+import { describe, it, expect } from "vitest";
+import app from "./app";
+
+describe("GET /api/health", () =&gt; {
+it("retourne HTTP 200", async () =&gt; {
+const response = await request(app)
+.get("/api/health");
+
+expect(response.status).toBe(200);
+
+expect(response.body).toEqual({
+status: "ok"
+});
+});
+});`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exécution :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npx vitest run`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ce test vérifie réellement le traitement HTTP par Express, sans démarrer nécessairement un serveur sur un port réseau.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          5. Tester les corrections de l&apos;application
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Reprenons les trois anomalies.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        BUG-001 — Connexion
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Comportements à tester :
+      </p>
       <div className="overflow-x-auto my-6">
         <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
             <tr>
-              <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Exemple</th>
+              <th className="px-4 py-3">Scénario</th>
+              <th className="px-4 py-3">Résultat attendu</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fonction inventée</td>
-              <td className="px-4 py-2.5 font-medium">Utiliser une méthode inexistante</td>
+              <td className="px-4 py-2.5 font-medium">Identifiants valides</td>
+              <td className="px-4 py-2.5 font-medium">Connexion réussie</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">API incorrecte</td>
-              <td className="px-4 py-2.5 font-medium">Employer une méthode non prise en charge</td>
+              <td className="px-4 py-2.5 font-medium">Mot de passe incorrect</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 401</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Mauvaise version</td>
-              <td className="px-4 py-2.5 font-medium">Utiliser une syntaxe incompatible avec la version installée</td>
+              <td className="px-4 py-2.5 font-medium">Email absent</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 400</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fausse cause</td>
-              <td className="px-4 py-2.5 font-medium">Accuser MySQL alors que le problème vient du contrôleur</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fichier inexistant</td>
-              <td className="px-4 py-2.5 font-medium">Référencer un fichier absent du projet</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fausse configuration</td>
-              <td className="px-4 py-2.5 font-medium">Proposer une variable d&apos;environnement qui n&apos;est jamais utilisée</td>
+              <td className="px-4 py-2.5 font-medium">Données mal formées</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 400</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : méthode inexistante
+        Le test doit également vérifier que le frontend envoie le bon nom de champ.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;IA propose :
+        BUG-002 — Commande inexistante
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const result = await db.findUserById(25);
-Mais dans votre projet, vous utilisez mysql2/promise avec une connexion SQL classique.
-La méthode findUserById() n'existe pas sur votre objet db.`}</code></pre>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Scénario</th>
+              <th className="px-4 py-3">Résultat attendu</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Commande existante</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 200</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Commande inexistante</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 404</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Identifiant invalide</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 400</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Erreur SQL</td>
+              <td className="px-4 py-2.5 font-medium">Erreur serveur gérée</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une utilisation cohérente avec cette bibliothèque pourrait être :
+        Exemple de test d&apos;intégration :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -186,25 +424,52 @@ La méthode findUserById() n'existe pas sur votre objet db.`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const [rows] = await db.execute(
-"SELECT * FROM users WHERE id = ?",
-[25]
-);`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`it("retourne 404 si la commande n'existe pas", async () =&gt; {
+const response = await request(app)
+.get("/api/orders/999999");
+
+expect(response.status).toBe(404);
+});`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La règle est simple : ne jamais considérer une fonction proposée par l&apos;IA comme existante sans vérifier sa définition et la documentation correspondante.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Détecter une mauvaise interprétation du code
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une IA peut également lire correctement le code, mais en tirer une conclusion incorrecte.
+        Ce test suppose que l&apos;environnement de test contient un jeu de données maîtrisé dans lequel cette commande est absente.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Considérons :
+        BUG-003 — Service Gemini
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il faut éviter d&apos;appeler réellement le fournisseur IA dans les tests unitaires ordinaires.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        On simule le service externe.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Scénarios :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Réponse IA réussie.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Timeout.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Erreur API.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Réponse invalide.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Erreur de configuration.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple conceptuel avec une fonction isolée :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -215,23 +480,15 @@ La méthode findUserById() n'existe pas sur votre objet db.`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findUser(id: number) {
-const [rows] = await db.execute(
-"SELECT * FROM users WHERE id = ?",
-[id]
-);
-
-return (rows as any[])[0];
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function analyzeDocument(
+generate: (prompt: string) =&gt; Promise&lt;string&gt;,
+prompt: string
+): Promise&lt;string&gt; {
+return generate(prompt);
 }`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;IA affirme :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La fonction retourne toujours un objet utilisateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette affirmation est incorrecte.
+        Test :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -242,253 +499,198 @@ return (rows as any[])[0];
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Si aucune ligne ne correspond à l'identifiant, rows[0] peut être undefined.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut donc distinguer :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ce que le code fait réellement.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ce que l&apos;IA affirme qu&apos;il fait.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ce que les tests permettent de confirmer.</span>
-          </li>
-        </ul>
-      <Callout type="tip" title="Bonne pratique ">
-        <p className="text-xs sm:text-sm">demander à l&apos;IA de citer les instructions précises du code qui justifient ses conclusions.</p>
-      </Callout>
-      </section>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import { describe, it, expect, vi } from "vitest";
+import { analyzeDocument } from "./analyzeDocument";
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Détecter les corrections incorrectes
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une correction peut supprimer un message d&apos;erreur sans résoudre le véritable problème.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple initial :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await findUser(id);
+describe("analyzeDocument", () =&gt; {
+it("retourne le résultat du service IA", async () =&gt; {
+const generate = vi.fn()
+.mockResolvedValue("Analyse terminée");
 
-return res.json({
-email: user.email
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;IA propose :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await findUser(id);
+const result = await analyzeDocument(
+generate,
+"Analyse ce document"
+);
 
-return res.json({
-email: user?.email
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette correction utilise l&apos;optional chaining.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Elle empêche l'exception liée à l'accès à email lorsque user vaut undefined.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mais elle ne traite pas nécessairement le problème métier : que doit retourner l&apos;API lorsque l&apos;utilisateur n&apos;existe pas ?
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une meilleure gestion pourrait être :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await findUser(id);
-
-if (!user) {
-return res.status(404).json({
-message: "Utilisateur introuvable"
+expect(result).toBe("Analyse terminée");
+expect(generate).toHaveBeenCalledOnce();
 });
-}
 
-return res.json({
-email: user.email
+it("propage une erreur du service IA", async () =&gt; {
+const generate = vi.fn()
+.mockRejectedValue(new Error("API indisponible"));
+
+await expect(
+analyzeDocument(generate, "Analyse")
+).rejects.toThrow("API indisponible");
+});
 });`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La correction doit donc être évaluée selon le comportement attendu, pas seulement selon la disparition de l&apos;erreur.
+        Le traitement du timeout doit également être testé au niveau du service qui configure et contrôle le délai d&apos;attente.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Les cinq vérifications avant d&apos;accepter une réponse IA
+          6. Tests unitaires et intégration : comparaison
         </h2>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier le code existant</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La fonction, la variable ou le fichier mentionné existe-t-il réellement ?
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les versions</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La syntaxe proposée est-elle compatible avec les versions installées ?
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier la logique</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La correction traite-t-elle la cause racine ou seulement le symptôme ?
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les effets secondaires</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La modification risque-t-elle de casser une autre fonctionnalité ?
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Exécuter les tests</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les tests confirment-ils que le comportement attendu est respecté ?
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Quelques commandes utiles :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm list`}</code></pre>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Critère</th>
+              <th className="px-4 py-3">Test unitaire</th>
+              <th className="px-4 py-3">Test d&apos;intégration</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Périmètre</td>
+              <td className="px-4 py-2.5 font-medium">Une unité</td>
+              <td className="px-4 py-2.5 font-medium">Plusieurs composants</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Vitesse</td>
+              <td className="px-4 py-2.5 font-medium">Généralement rapide</td>
+              <td className="px-4 py-2.5 font-medium">Généralement plus lent</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Dépendances</td>
+              <td className="px-4 py-2.5 font-medium">Simulées ou isolées</td>
+              <td className="px-4 py-2.5 font-medium">Certaines réelles</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Exemple</td>
+              <td className="px-4 py-2.5 font-medium">Fonction TypeScript</td>
+              <td className="px-4 py-2.5 font-medium">Route Express + service</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Objectif</td>
+              <td className="px-4 py-2.5 font-medium">Vérifier une logique</td>
+              <td className="px-4 py-2.5 font-medium">Vérifier une collaboration</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour examiner les dépendances installées.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm test`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour exécuter les tests du projet.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npx tsc --noEmit`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour vérifier les erreurs de typage TypeScript, si le projet est configuré pour cela.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git diff`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour examiner les modifications proposées par l&apos;agent.
+        Les deux types de tests sont complémentaires.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Utiliser l&apos;IA pour contrôler ses propres réponses
+          7. Organiser les tests dans le projet
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il est possible de demander au modèle de réaliser une seconde analyse critique de son diagnostic.
+        Exemple d&apos;organisation :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`backend/
+│
+├── src/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── routes/
+│   └── middlewares/
+│
+└── tests/
+├── unit/
+│   ├── calculateTotal.test.ts
+│   └── analyzeDocument.test.ts
+│
+└── integration/
+├── auth.test.ts
+├── orders.test.ts
+└── health.test.ts`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette organisation est indicative. Il faut respecter les conventions déjà adoptées dans le projet.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          8. Tests et base de données MySQL
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les tests impliquant MySQL doivent utiliser un environnement de test isolé.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici un prompt professionnel :
+        Exemple :
       </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Production :
+application_db
+
+Développement :
+application_dev
+
+Tests :
+application_test`}</code></pre>
+      </div>
+      <Callout type="tip" title="Bonnes pratiques ">
+        <p className="text-xs sm:text-sm"></p>
+      </Callout>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne jamais exécuter des tests destructifs sur la base de production.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Préparer des données de test reproductibles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Nettoyer les données après les tests.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier les migrations dans un environnement adapté.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Simuler les erreurs SQL lorsque le test porte uniquement sur la logique métier.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          9. Prompt professionnel pour l&apos;agent IA
+        </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        PROMPT — AUDIT D&apos;UNE ANALYSE ET D&apos;UNE CORRECTION IA
+        MISSION — TESTS UNITAIRES ET D&apos;INTÉGRATION
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         ROLE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur logiciel senior spécialisé dans l&apos;audit de code, la qualité logicielle et la détection des erreurs techniques.
+        Tu es un ingénieur QA spécialisé en TypeScript, Vitest, Supertest, React, Node.js et Express.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         OBJECTIVE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vérifier la fiabilité de l&apos;analyse et de la correction proposées par une IA.
+        Vérifier les corrections apportées à l&apos;application en créant et exécutant des tests adaptés.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         TASKS
@@ -496,35 +698,72 @@ email: user.email
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner le diagnostic initial.</span>
+            <span>Examiner les tests existants.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier chaque affirmation à partir du code fourni.</span>
+            <span>Identifier les fonctionnalités modifiées.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les fonctions, méthodes ou fichiers qui pourraient être inventés ou inexistants.</span>
+            <span>Déterminer les tests unitaires nécessaires.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier la compatibilité avec les versions des dépendances.</span>
+            <span>Déterminer les tests d&apos;intégration nécessaires.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les erreurs de raisonnement.</span>
+            <span>Vérifier les cas normaux et les cas d&apos;erreur.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les effets secondaires possibles de la correction.</span>
+            <span>Ajouter les tests manquants dans le périmètre autorisé.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Indiquer si la correction traite la cause racine ou uniquement le symptôme.</span>
+            <span>Exécuter les tests.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposer des tests permettant de valider la solution.</span>
+            <span>Analyser les échecs.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Produire un rapport de validation.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        TESTS À COUVRIR
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Authentification et validation des données.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Consultation des commandes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Gestion des commandes inexistantes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Gestion des erreurs MySQL.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Gestion des erreurs et timeouts du service IA.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Protection des routes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Contrôle des autorisations.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
@@ -533,193 +772,120 @@ email: user.email
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne considère aucune affirmation de l&apos;IA comme automatiquement vraie.</span>
+            <span>Respecter les outils et conventions du projet.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>N&apos;invente aucune information manquante.</span>
+            <span>Ne pas appeler un véritable service IA lorsque sa simulation suffit.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Signale clairement les éléments impossibles à vérifier.</span>
+            <span>Ne jamais utiliser la base de production.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifie aucun fichier.</span>
+            <span>Ne pas modifier les données réelles.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne déclare pas une correction valide sans justification technique.</span>
+            <span>Ne pas modifier les dépendances sans autorisation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas supprimer les tests existants.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas masquer un test échoué.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Signaler les tests non exécutés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Demander une autorisation avant toute modification hors périmètre.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT FORMAT
+        OUTPUT
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présente ton audit sous cette forme :
+        Présenter :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Affirmations correctes.</span>
+            <span>Les tests existants examinés.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Affirmations incorrectes.</span>
+            <span>Les tests ajoutés ou modifiés.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Hallucinations potentielles.</span>
+            <span>Les commandes exécutées.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Erreurs de raisonnement.</span>
+            <span>Le nombre de tests réussis et échoués.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Risques de la correction.</span>
+            <span>Les erreurs rencontrées.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Tests nécessaires.</span>
+            <span>Les anomalies restantes.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Verdict : acceptable, à revoir ou incorrect.</span>
+            <span>Les risques non couverts.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce prompt peut être utilisé avec Gemini, Claude ou un autre modèle. Une seconde IA peut apporter un regard complémentaire, mais elle peut elle aussi se tromper.
+        Ne jamais déclarer une fonctionnalité validée sur la seule base d&apos;une analyse statique du code.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. TP — Auditer une correction proposée par une IA
+          10. TP — Tester les corrections
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travaux pratiques
+        Mission : écrire et exécuter les tests correspondant aux trois anomalies corrigées.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte : une API Express doit retourner le profil d&apos;un utilisateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Code initial :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
-const user = await userService.findById(
-Number(req.params.id)
-);
-
-return res.json({
-id: user.id,
-email: user.email
-});
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Erreur :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`TypeError: Cannot read properties of undefined
-(reading 'id')`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;IA propose cette correction :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
-const user = await userService.findById(
-Number(req.params.id)
-);
-
-return res.json({
-id: user?.id,
-email: user?.email
-});
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé
+        Travail demandé :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiez ce que cette correction améliore.</span>
+            <span>Tester la connexion avec des identifiants valides et invalides.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiez ce qu&apos;elle ne résout pas.</span>
+            <span>Tester une commande existante et une commande inexistante.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Déterminez si elle respecte le comportement métier attendu.</span>
+            <span>Simuler une réponse IA réussie et une erreur du service IA.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Proposez une correction plus appropriée.</span>
+            <span>Vérifier les codes HTTP.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Indiquez les tests à effectuer.</span>
+            <span>Analyser les échecs.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Produire un rapport de tests.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Ce que la correction améliore
-        </h2>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Elle évite l'accès direct à id et email lorsque user vaut undefined.`}</code></pre>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Ce qu&apos;elle ne résout pas
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elle ne traite pas explicitement le cas d&apos;un utilisateur inexistant.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;API peut retourner :
+        Corrigé : rapport attendu
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -730,110 +896,110 @@ email: user?.email
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`{
-"id": null,
-"email": null
-}`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`RAPPORT DE TESTS
+
+BUG-001 — Authentification
+Tests unitaires : réussis
+Tests d'intégration : réussis
+
+BUG-002 — Commandes
+Tests unitaires : réussis
+Tests d'intégration : réussis
+
+BUG-003 — Service IA
+Tests unitaires : réussis
+Tests timeout : à vérifier
+Tests d'intégration : réussis
+
+Conclusion :
+Toutes les corrections ne peuvent être déclarées
+validées que lorsque les tests restants sont exécutés.`}</code></pre>
       </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce résultat n&apos;est pas nécessairement conforme au contrat de l&apos;API.
-      </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Correction plus appropriée
+          11. Bonnes pratiques
         </h2>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
-const user = await userService.findById(
-Number(req.params.id)
-);
-
-if (!user) {
-return res.status(404).json({
-message: "Utilisateur introuvable"
-});
-}
-
-return res.json({
-id: user.id,
-email: user.email
-});
-}`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans une application réelle, il faudra également prévoir la gestion des erreurs de base de données et valider l&apos;identifiant reçu.
-      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Écrire des tests qui vérifient le comportement attendu, pas seulement l&apos;existence du code.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tester les cas normaux, limites et erreurs.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Isoler les services externes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Utiliser une base de test distincte.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Exécuter les tests après chaque correction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne jamais masquer les tests échoués.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Conserver les tests de non-régression.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Documenter les scénarios non couverts.</span>
+          </li>
+        </ul>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Tests nécessaires
-        </h2>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Cas</th>
-              <th className="px-4 py-3">Résultat attendu</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Utilisateur existant</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 200</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Utilisateur inexistant</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 404</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Identifiant invalide</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 400</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Erreur de base de données</td>
-              <td className="px-4 py-2.5 font-medium">HTTP 500</td>
-            </tr>
-          </tbody>
-        </table>
+      {/* Quiz de révision */}
+      <div className="pt-6 border-t-2 border-slate-200">
+        <QuickQuiz
+          title="Quiz de révision — Chapitre 7.8"
+          questions={[
+            {
+              id: 1,
+              question: "Quel est l'objectif d'un test unitaire ?",
+              options: ["Tester toute l'application.", "Vérifier une unité de code indépendamment.", "Tester uniquement la base de données."],
+              correctIndex: 1,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 2,
+              question: "Quel outil permet de tester une API Express avec Supertest ?",
+              options: ["request(app).get(...)", "git diff", "console.log"],
+              correctIndex: 0,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 3,
+              question: "Pourquoi simuler le service Gemini dans un test unitaire ?",
+              options: ["Pour éviter les dépendances à un service externe.", "Pour supprimer l'", "Pour accélérer la connexion MySQL."],
+              correctIndex: 0,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 4,
+              question: "Quelle base de données utiliser pour les tests ?",
+              options: ["La base de production.", "Une base de test isolée.", "La base d'un autre projet."],
+              correctIndex: 1,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 5,
+              question: "Un test échoué doit-il être ignoré pour obtenir un résultat positif ?",
+              options: ["Oui.", "Non."],
+              correctIndex: 1,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+          ]}
+        />
       </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de test avec Supertest :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`it("retourne 404 si l'utilisateur est absent", async () =&gt; {
-jest.spyOn(userService, "findById")
-.mockResolvedValue(undefined);
-
-const response = await request(app)
-.get("/api/users/9999");
-
-expect(response.status).toBe(404);
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cet exemple suppose que Jest et Supertest sont configurés dans le projet et que le service est correctement mocké.
-      </p>
-      </section>
-
     </div>
   );
 };

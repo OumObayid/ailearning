@@ -1,7 +1,6 @@
 ﻿'use client';
 
 import React from 'react';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Callout } from '@/components/courses/Callout';
 import { Icon } from '@/components/common/Icon';
 
@@ -15,62 +14,528 @@ export const Chapitre9Content: React.FC = () => {
           <span>Ingénierie du Débogage</span>
         </div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 9 — Détecter les problèmes d&apos;injection SQL
+          Chapitre 9 — Utiliser les agents IA intégrés aux IDE
         </h1>
       </div>
 
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 6.9 — Détecter les problèmes d&apos;injection SQL
+        Chapitre 9 — 6.9. Utiliser les agents IA intégrés aux IDE.
       </p>
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs du chapitre
+          1. Objectifs pédagogiques
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous devez être capable de :
+        À la fin de ce chapitre, vous serez capable de :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre le fonctionnement d&apos;une injection SQL.</span>
+            <span>Comprendre ce qu&apos;est un agent IA intégré à un IDE.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les requêtes SQL vulnérables dans un backend Node.js.</span>
+            <span>Distinguer un chatbot IA d&apos;un agent de développement.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Reconnaître les symptômes d&apos;une injection SQL.</span>
+            <span>Comprendre comment un agent analyse un projet et ses fichiers.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Utiliser les requêtes préparées pour sécuriser une application.</span>
+            <span>Utiliser un agent pour diagnostiquer et résoudre un bug.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Diagnostiquer et corriger une vulnérabilité SQL dans Express et MySQL.</span>
+            <span>Contrôler ses outils, ses permissions et ses modifications.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Travailler avec un agent dans Google Antigravity et d&apos;autres IDE.</span>
           </li>
         </ul>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Comprendre l&apos;injection SQL
+          2. Qu&apos;est-ce qu&apos;un agent IA intégré à un IDE ?
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une injection SQL (SQL Injection) est une vulnérabilité qui apparaît lorsqu&apos;une application intègre directement des données fournies par un utilisateur dans une requête SQL.
+        Un agent IA intégré à un environnement de développement (IDE) est un assistant capable d&apos;interagir avec un projet logiciel pour accomplir des tâches de développement.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;attaquant peut alors modifier la structure ou le comportement de la requête.
+        Contrairement à un simple chatbot, il peut, selon les fonctionnalités de l&apos;IDE et les permissions accordées :
       </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Explorer l&apos;arborescence du projet.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Lire plusieurs fichiers.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Comprendre les relations entre les composants.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Rechercher une fonction ou une variable.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Exécuter des commandes dans le terminal.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Lancer des tests.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Proposer ou appliquer des modifications.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner les résultats de ses propres actions.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Par exemple, vous pouvez lui demander :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Analyse pourquoi la page de connexion React affiche une erreur après l&apos;envoi du formulaire. Examine le frontend et le backend, mais ne modifie aucun fichier.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent peut alors rechercher le formulaire, examiner l&apos;appel Axios ou Fetch, suivre la route Express et consulter les logs disponibles.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Point essentiel : un agent ne comprend pas automatiquement tout le projet. Il doit collecter le contexte nécessaire et ses conclusions doivent être vérifiées.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          3. Chatbot IA et agent IA : quelle différence ?
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Chatbot IA
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Répond principalement
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Vous fournissez du code ou une erreur dans une conversation.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple : vous copiez une Stack Trace et demandez son explication.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Agent IA intégré à l&apos;IDE
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Peut agir sur le projet
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il peut rechercher les fichiers, analyser le code et utiliser les outils autorisés.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple : il recherche la route concernée, examine le service associé et lance un test.
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Capacité</th>
+              <th className="px-4 py-3">Chatbot classique</th>
+              <th className="px-4 py-3">Agent IDE</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Répondre à une question</td>
+              <td className="px-4 py-2.5 font-medium">Oui</td>
+              <td className="px-4 py-2.5 font-medium">Oui</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Analyser du code fourni</td>
+              <td className="px-4 py-2.5 font-medium">Oui</td>
+              <td className="px-4 py-2.5 font-medium">Oui</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Explorer le projet</td>
+              <td className="px-4 py-2.5 font-medium">Selon le contexte fourni</td>
+              <td className="px-4 py-2.5 font-medium">Oui, selon les permissions</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Lire plusieurs fichiers</td>
+              <td className="px-4 py-2.5 font-medium">Si on les transmet</td>
+              <td className="px-4 py-2.5 font-medium">Peut les rechercher</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Utiliser le terminal</td>
+              <td className="px-4 py-2.5 font-medium">Généralement non</td>
+              <td className="px-4 py-2.5 font-medium">Selon les autorisations</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Modifier les fichiers</td>
+              <td className="px-4 py-2.5 font-medium">Non directement</td>
+              <td className="px-4 py-2.5 font-medium">Selon les autorisations</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Exécuter les tests</td>
+              <td className="px-4 py-2.5 font-medium">Non directement</td>
+              <td className="px-4 py-2.5 font-medium">Selon les outils disponibles</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un chatbot peut fournir une excellente analyse. La différence principale réside dans la capacité de l&apos;agent à interagir avec l&apos;environnement de développement.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          4. Comment fonctionne un agent dans un IDE ?
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un agent utilise généralement plusieurs éléments complémentaires.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          1. Instruction de l&apos;utilisateur
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple : diagnostiquer une erreur de connexion.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          2. Modèle IA
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Interprète la demande et planifie les étapes.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          3. Outils de l&apos;IDE
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Recherche, lecture de fichiers, terminal, tests.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          4. Résultat
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Diagnostic, preuves, propositions ou modifications autorisées.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le fonctionnement peut être itératif : l&apos;agent analyse un résultat, décide de l&apos;étape suivante, utilise un autre outil puis vérifie le résultat.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple de cycle d&apos;un agent
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Il recherche login.controller.ts.`}</code></pre>
+      </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Il examine la fonction de connexion.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Il recherche le service appelé.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Il consulte les logs ou exécute un test autorisé.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Il compare le résultat avec le comportement attendu.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Il présente son diagnostic.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent ne se limite donc pas à générer du code : il peut effectuer une succession d&apos;actions pour atteindre un objectif.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          5. Les principaux agents intégrés aux IDE
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Voici quelques environnements connus :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Google Antigravity Logo PNG &amp;amp; SVG Vector
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Google Antigravity
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Environnement de développement orienté agents. Il permet de travailler avec des agents capables d&apos;explorer un projet, d&apos;utiliser des outils et de réaliser des tâches de développement.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Particulièrement pertinent pour apprendre le travail avec des agents spécialisés.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        File:Visual Studio Code 1.35 icon.svg - Wikimedia Commons
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Visual Studio Code
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Éditeur extensible avec des fonctionnalités d&apos;IA et des extensions permettant d&apos;utiliser des agents de développement.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cursor AI Code Editor | Paul Stamatiou
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cursor
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Éditeur basé sur l&apos;écosystème VS Code, proposant des fonctionnalités d&apos;IA pour comprendre et modifier un projet.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Windsurf Editor: IDE com IA para desenvolvimento ágil
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Windsurf
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Environnement de développement intégrant des fonctions agentiques pour accompagner les tâches de programmation.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les interfaces, les noms des fonctionnalités et les permissions varient selon les produits et leurs versions.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          6. Utiliser un agent IA pour diagnostiquer un bug
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Prenons un exemple concret dans une application React + Node.js + Express.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Situation : le formulaire de connexion affiche « Erreur serveur » après l&apos;envoi des identifiants.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;objectif est de demander à l&apos;agent d&apos;examiner le parcours complet :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Frontend React
+↓
+authService.ts
+↓
+POST /api/auth/login
+↓
+auth.controller.ts
+↓
+auth.service.ts
+↓
+MySQL`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple de demande à l&apos;agent
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        DIAGNOSTIC D&apos;UNE ERREUR DE CONNEXION
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        ROLE
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Tu es un ingénieur logiciel spécialisé en React, Node.js, Express et MySQL.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        OBJECTIVE
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Identifier l&apos;origine de l&apos;erreur rencontrée lors de la connexion d&apos;un utilisateur.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        TASKS
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Repérer le formulaire de connexion dans le frontend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier le service qui envoie la requête HTTP.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner la route et le contrôleur Express.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner le service métier et la requête SQL concernés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Comparer les données envoyées par le frontend avec celles attendues par le backend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner les logs et les erreurs disponibles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Présenter les causes probables avec leurs preuves.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        CONSTRAINTS
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne modifie aucun fichier.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>N&apos;exécute aucune commande destructive.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne modifie pas la base de données.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne révèle aucune clé API ni aucun secret.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Demande mon autorisation avant toute modification.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        OUTPUT FORMAT
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Présente :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les fichiers examinés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le parcours de la requête.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les faits constatés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les hypothèses.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les preuves.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les tests nécessaires.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le diagnostic provisoire.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;intérêt de cette demande est que l&apos;agent peut suivre le parcours de la requête entre plusieurs fichiers, au lieu d&apos;analyser uniquement le message d&apos;erreur.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          7. Les outils qu&apos;un agent peut utiliser dans un IDE
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un agent dispose potentiellement de plusieurs catégories d&apos;outils.
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Outil</th>
+              <th className="px-4 py-3">Utilisation dans le débogage</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Explorateur de fichiers</td>
+              <td className="px-4 py-2.5 font-medium">Découvrir l&apos;organisation du projet</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Recherche dans le code</td>
+              <td className="px-4 py-2.5 font-medium">Trouver une fonction ou une variable</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Lecteur de fichiers</td>
+              <td className="px-4 py-2.5 font-medium">Examiner le code source</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Terminal</td>
+              <td className="px-4 py-2.5 font-medium">Exécuter des commandes autorisées</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Tests</td>
+              <td className="px-4 py-2.5 font-medium">Vérifier le comportement</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Git</td>
+              <td className="px-4 py-2.5 font-medium">Examiner les changements et l&apos;historique</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Navigateur intégré</td>
+              <td className="px-4 py-2.5 font-medium">Consulter une application ou une documentation, selon l&apos;IDE</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         Exemple :
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une application permet de rechercher un utilisateur par son email.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Code vulnérable :
+        L&apos;agent peut rechercher toutes les utilisations de :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -81,168 +546,199 @@ export const Chapitre9Content: React.FC = () => {
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const email = req.query.email;
-
-const sql = \`
-SELECT * FROM users
-WHERE email = '\${email}'
-\`;`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`findUserById`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Si l&apos;utilisateur envoie une valeur contenant du code SQL, celui-ci peut être interprété comme une partie de la requête.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le problème n&apos;est pas MySQL lui-même : c&apos;est la manière dont l&apos;application construit sa requête.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Comment fonctionne une injection SQL ?
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Imaginons cette requête :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`SELECT * FROM users
-WHERE email = 'alice@test.com';`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le backend construit la requête en concaténant directement la valeur reçue.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un attaquant peut fournir une valeur spécialement conçue pour modifier la condition SQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Par exemple, dans un environnement de test :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`' OR '1'='1' --`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La requête construite pourrait devenir :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`SELECT * FROM users
-WHERE email = '' OR '1'='1' -- ';
-La condition '1'='1' est toujours vraie. Les caractères -- commentent la fin de la requête dans ce contexte MySQL.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Faille
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La requête peut alors retourner plusieurs utilisateurs au lieu de celui recherché.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Conséquences possibles :
+        Il peut ainsi identifier :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Consultation de données non autorisées.</span>
+            <span>Sa déclaration dans le repository.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Contournement de certains mécanismes de connexion.</span>
+            <span>Son utilisation dans le service.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Modification ou suppression de données.</span>
+            <span>Son appel depuis le contrôleur.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Exposition d&apos;informations sensibles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Dans certaines configurations, compromission plus importante du système.</span>
+            <span>Ses éventuels tests.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;impact dépend des privilèges du compte SQL utilisé et des possibilités offertes par le serveur.
+        Cette exploration permet de mieux comprendre les dépendances entre les différentes parties du projet.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Les principales formes d&apos;injection SQL
+          8. Comprendre les permissions de l&apos;agent
         </h2>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Fonctionnement</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">In-band SQLi</td>
-              <td className="px-4 py-2.5 font-medium">Les résultats de l&apos;injection apparaissent directement dans la réponse.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Error-based SQLi</td>
-              <td className="px-4 py-2.5 font-medium">Les erreurs SQL révèlent des informations sur la base.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Union- based SQLi</td>
-              <td className="px-4 py-2.5 font-medium">L&apos;attaquant tente de combiner les résultats de plusieurs requêtes avec UNION .</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Blind SQLi</td>
-              <td className="px-4 py-2.5 font-medium">L&apos;attaquant déduit des informations à partir des réponses ou des différences de comportement.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Time- based SQLi</td>
-              <td className="px-4 py-2.5 font-medium">L&apos;attaquant utilise des délais de réponse pour déduire des informations.</td>
-            </tr>
-          </tbody>
-        </table>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un agent puissant doit être encadré.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il faut distinguer plusieurs niveaux d&apos;autorisation :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Lecture : consulter les fichiers et comprendre le projet.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Recherche : rechercher des symboles, fonctions et références.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Exécution : lancer des commandes et des tests autorisés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Modification : ajouter, supprimer ou modifier du code.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Actions sensibles : modifier des configurations, installer des dépendances ou effectuer des opérations sur des données.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour une mission de diagnostic, on peut autoriser la lecture et certaines vérifications, tout en interdisant les modifications.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple de règle à ajouter aux instructions principales de l&apos;agent :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        PERMISSIONS ET LIMITES
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu peux lire et analyser les fichiers du projet.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu peux rechercher des fonctions et leurs références.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu peux consulter les logs.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu peux exécuter les tests non destructifs autorisés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu ne peux pas modifier, supprimer ou créer des fichiers sans autorisation explicite.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu ne peux pas installer de dépendances sans autorisation.</span>
+          </li>
+        </ul>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Tu ne peux pas modifier les fichiers .env.`}</code></pre>
       </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu ne peux pas exécuter de commande destructive.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu dois présenter les modifications envisagées avant de demander leur autorisation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tu dois attendre mon accord explicite avant toute modification.</span>
+          </li>
+        </ul>
+      <Callout type="warning" title="Attention ">
+        <p className="text-xs sm:text-sm">écrire ces règles dans un prompt ne remplace pas les paramètres de permissions de l&apos;IDE. Il faut également configurer les autorisations disponibles dans l&apos;environnement.</p>
+      </Callout>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          9. Travailler avec plusieurs agents spécialisés
+        </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple de Blind SQL Injection :
+        Dans un projet important, il est possible de répartir les responsabilités entre plusieurs agents.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;application ne retourne aucune donnée SQL directement, mais son comportement change selon que la condition envoyée est vraie ou fausse.
+        Voici un exemple d&apos;organisation :
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;attaquant peut exploiter ces différences pour obtenir progressivement des informations.
+        Coordination
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Agent principal / Orchestrateur
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Comprend la demande et répartit les tâches.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Architect
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Analyse l&apos;architecture et les dépendances.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Developer
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Prépare et réalise les corrections autorisées.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        QA Reviewer
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Vérifie le code, les tests, les régressions et la sécurité.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple de répartition :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Architect : identifie les fichiers impliqués et la cause probable.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Developer : prépare la correction après validation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>QA Reviewer : examine les changements et vérifie les tests.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il ne faut pas supposer que tous les IDE permettent de créer, gérer ou coordonner plusieurs agents de la même manière. Certaines fonctionnalités dépendent du produit, de sa version et de son mode de travail.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Identifier une requête SQL vulnérable
+          10. TP — Utiliser un agent IDE pour diagnostiquer une anomalie
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        5.1. Concaténation de chaînes
+        Travaux pratiques
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple vulnérable :
+        Contexte : vous disposez d&apos;une application avec cette architecture :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -253,22 +749,47 @@ La condition '1'='1' est toujours vraie. Les caractères -- commentent la fin de
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`app.get("/api/users", async (req, res) =&gt; {
-const email = req.query.email;
-
-const sql = \`
-SELECT id, name, email
-FROM users
-WHERE email = '\${email}'
-\`;
-
-const [rows] = await db.query(sql);
-
-res.json(rows);
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`mon-projet/
+├── frontend/
+│   └── src/
+│       ├── pages/
+│       │   └── Login.tsx
+│       └── services/
+│           └── authService.ts
+│
+├── backend/
+│   └── src/
+│       ├── routes/
+│       │   └── auth.routes.ts
+│       ├── controllers/
+│       │   └── auth.controller.ts
+│       └── services/
+│           └── auth.service.ts
+│
+└── package.json`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;utilisateur remplit le formulaire, mais l&apos;API retourne HTTP 400.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Dans le frontend :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`await axios.post("/api/auth/login", {
+email,
+password
 });`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pourquoi est-ce dangereux ?
+        Dans le contrôleur :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -279,683 +800,173 @@ res.json(rows);
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`La valeur email est intégrée directement dans la commande SQL. L'utilisateur peut donc influencer la structure de la requête.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Autres pratiques à surveiller :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`// Dangereux
-const sql = "SELECT * FROM products WHERE id = " + req.params.id;
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function login(req, res) {
+const { email, passwordUser } = req.body;
 
-// Dangereux
-const sql = \`DELETE FROM users WHERE id = \${req.body.id}\`;`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        5.2. Détecter les symptômes
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Lors du débogage, certains signes doivent attirer votre attention :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des résultats inattendus dans une recherche.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Une authentification contournée.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des erreurs SQL visibles dans les réponses HTTP.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des requêtes anormalement longues.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des modifications ou suppressions non prévues.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Des paramètres utilisateurs directement intégrés dans les requêtes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une erreur SQL seule ne prouve pas une injection. Il faut examiner le code qui construit la requête et vérifier si les données peuvent modifier sa structure.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Corriger une injection SQL avec les requêtes préparées
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La protection principale consiste à utiliser des requêtes paramétrées (Prepared Statements).
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les paramètres sont transmis séparément de la structure SQL. MySQL les traite comme des valeurs et non comme du code SQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.1. Correction avec mysql2
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Installation :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm install mysql2`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Code vulnérable :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const email = req.query.email;
-
-const sql = \`
-SELECT * FROM users
-WHERE email = '\${email}'
-\`;
-
-const [rows] = await db.query(sql);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Code corrigé :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const email = req.query.email;
-
-const sql = \`
-SELECT id, name, email
-FROM users
-WHERE email = ?
-\`;
-
-const [rows] = await db.execute(sql, [email]);
-Le caractère ? représente un paramètre.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La valeur est transmise séparément :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`db.execute(sql, [email]);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Même si l&apos;utilisateur fournit du texte contenant des instructions SQL, celui-ci sera traité comme une valeur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.2. Comparaison
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Requête vulnérable</th>
-              <th className="px-4 py-3">Requête sécurisée</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Concaténation de chaînes</td>
-              <td className="px-4 py-2.5 font-medium">Paramètres séparés</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">db.query ( sql ) avec SQL construit</td>
-              <td className="px-4 py-2.5 font-medium">db.execute ( sql , [value])</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Risque d&apos;injection</td>
-              <td className="px-4 py-2.5 font-medium">Protection contre l&apos;injection par les valeurs paramétrées</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <Callout type="warning" title="Attention ">
-        <p className="text-xs sm:text-sm">les requêtes préparées ne protègent pas automatiquement les noms de tables, de colonnes ou les mots-clés SQL. Pour ces éléments, utilisez une liste blanche de valeurs autorisées.</p>
-      </Callout>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.3. Exemple avec un tri dynamique
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ce code est dangereux :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const sql = \`
-SELECT * FROM products
-ORDER BY \${req.query.sort}
-\`;
-On ne peut pas remplacer directement un nom de colonne par ?.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut utiliser une liste blanche :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const allowedColumns = ["name", "price", "created_at"];
-
-const sort = allowedColumns.includes(req.query.sort)
-? req.query.sort
-: "name";
-
-const sql = \`
-SELECT id, name, price
-FROM products
-ORDER BY \${sort}
-\`;
-
-const [rows] = await db.execute(sql);
-La valeur utilisée dans ORDER BY est choisie parmi les colonnes autorisées.`}</code></pre>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Autres bonnes pratiques de sécurité SQL
-        </h2>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Appliquer une validation des données
-        </h2>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import { z } from "zod";
-
-const idSchema = z.coerce.number().int().positive();
-
-const result = idSchema.safeParse(req.params.id);
-
-if (!result.success) {
+if (!email || !passwordUser) {
 return res.status(400).json({
-message: "Identifiant invalide"
+message: "Données manquantes"
 });
+}
+
+// Suite du traitement...
 }`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La validation complète les requêtes préparées, mais ne les remplace pas.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Limiter les permissions SQL
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le compte MySQL utilisé par l&apos;application doit disposer uniquement des droits nécessaires.
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Par exemple, une application de consultation n'a pas besoin du droit DROP sur les tables.`}</code></pre>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Ne pas exposer les erreurs SQL
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À éviter :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`res.status(500).json({
-error: error.message
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Préférer :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`console.error("Erreur base de données :", error);
-
-res.status(500).json({
-message: "Une erreur interne est survenue"
-});`}</code></pre>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Surveiller les requêtes
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Analyser les logs pour repérer :
+        Travail demandé
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Des erreurs SQL répétées.</span>
+            <span>Ouvrez le projet dans votre IDE.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Des requêtes anormalement longues.</span>
+            <span>Ouvrez l&apos;interface de l&apos;agent IA.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Des paramètres inhabituels.</span>
+            <span>Demandez-lui d&apos;examiner le parcours de connexion.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Des comportements de recherche anormaux.</span>
+            <span>Interdisez toute modification de fichier.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Demandez-lui d&apos;identifier les différences entre les données envoyées et celles attendues.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifiez son diagnostic.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne l&apos;autorisez pas encore à corriger le code.</span>
           </li>
         </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Corrigé
+      </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Utiliser des outils de sécurité
+          1. Symptôme
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La requête de connexion retourne HTTP 400.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          2. Observation
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le frontend envoie :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`{
+email,
+password
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le backend récupère :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const { email, passwordUser } = req.body;`}</code></pre>
+      </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          3. Cause probable
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les noms des propriétés ne correspondent pas.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Le frontend transmet password, alors que le backend attend passwordUser.
+Par conséquent, passwordUser vaut undefined si aucune transformation intermédiaire ne modifie le corps de la requête.`}</code></pre>
+      </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          4. Correction envisageable après validation
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        On peut harmoniser les noms :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const { email, password } = req.body;`}</code></pre>
+      </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          5. Vérifications complémentaires
         </h2>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>OWASP ZAP : analyse dynamique des applications Web.</span>
+            <span>Vérifier la route réellement appelée.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Burp Suite : inspection et modification des requêtes HTTP.</span>
+            <span>Examiner le corps de la requête dans l&apos;onglet Network de Chrome DevTools.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>MySQL Slow Query Log : identification des requêtes lentes.</span>
+            <span>Vérifier les données reçues dans Express.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Logs Express : suivi des erreurs backend.</span>
+            <span>Tester une connexion valide et une connexion avec des données manquantes.</span>
           </li>
         </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ce TP montre l&apos;intérêt d&apos;un agent IDE : il peut suivre une anomalie à travers plusieurs fichiers et repérer une incohérence entre deux couches de l&apos;application.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Rectification : les logos des IDE présentés plus haut constituent le support visuel de ce chapitre.
+      </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. TP pratique — Détecter et corriger une injection SQL
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TP pratique
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Difficulté : intermédiaire
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Objectif : créer une API Express avec une requête SQL vulnérable, observer le problème, puis la sécuriser avec une requête préparée.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 1 — Préparer la base MySQL
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créer une base de données :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`CREATE DATABASE debug_sql;
-
-USE debug_sql;
-
-CREATE TABLE users (
-id INT AUTO_INCREMENT PRIMARY KEY,
-name VARCHAR(100),
-email VARCHAR(150),
-password VARCHAR(255)
-);
-
-INSERT INTO users (name, email, password)
-VALUES
-('Alice', 'alice@test.com', 'hash_alice'),
-('Bob', 'bob@test.com', 'hash_bob'),
-('Charlie', 'charlie@test.com', 'hash_charlie');`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 2 — Créer le backend
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Installer les dépendances :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm init -y
-npm install express mysql2 dotenv
-Ajouter "type": "module" dans package.json.
-Créer .env :
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=debug_sql
-Créer server.js :
-import express from "express";
-import mysql from "mysql2/promise";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const app = express();
-
-const db = await mysql.createConnection({
-host: process.env.DB_HOST,
-user: process.env.DB_USER,
-password: process.env.DB_PASSWORD,
-database: process.env.DB_NAME
-});
-
-// Route vulnérable
-app.get("/api/users/vulnerable", async (req, res) =&gt; {
-try {
-const email = req.query.email;
-
-const sql = \`
-SELECT id, name, email
-FROM users
-WHERE email = '\${email}'
-\`;
-
-const [rows] = await db.query(sql);
-
-res.json(rows);
-
-} catch (error) {
-console.error(error);
-
-res.status(500).json({
-message: "Erreur serveur"
-});
-}
-});
-
-// Route sécurisée
-app.get("/api/users/secure", async (req, res) =&gt; {
-try {
-const email = req.query.email;
-
-const sql = \`
-SELECT id, name, email
-FROM users
-WHERE email = ?
-\`;
-
-const [rows] = await db.execute(sql, [email]);
-
-res.json(rows);
-
-} catch (error) {
-console.error(error);
-
-res.status(500).json({
-message: "Erreur serveur"
-});
-}
-});
-
-app.listen(3000, () =&gt; {
-console.log("Serveur démarré sur le port 3000");
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 3 — Tester les routes
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Démarrer le serveur :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`node server.js`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans Postman, tester les deux requêtes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Test normal :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET http://localhost:3000/api/users/vulnerable?email=alice@test.com`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultat attendu : Alice.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Test de sécurité :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans cet environnement local de TP, utiliser comme valeur du paramètre :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`' OR '1'='1' --`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Sur la route vulnérable, cette valeur modifie la condition SQL et peut retourner tous les utilisateurs.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Sur la route sécurisée, elle est interprétée comme une simple valeur de recherche. Aucun utilisateur ne doit correspondre à cette adresse.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultats attendus
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Test</th>
-              <th className="px-4 py-3">Route vulnérable</th>
-              <th className="px-4 py-3">Route sécurisée</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Email Alice</td>
-              <td className="px-4 py-2.5 font-medium">Alice</td>
-              <td className="px-4 py-2.5 font-medium">Alice</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Valeur d&apos;injection</td>
-              <td className="px-4 py-2.5 font-medium">Plusieurs utilisateurs</td>
-              <td className="px-4 py-2.5 font-medium">Aucun résultat</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction validée
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La route sécurisée conserve la structure SQL et traite l&apos;entrée comme une valeur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 4 — Corrigé et améliorations
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La correction principale est :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const sql = "SELECT id, name, email FROM users WHERE email = ?";
-
-const [rows] = await db.execute(sql, [email]);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour aller plus loin, ajouter une validation Zod de l&apos;adresse email et un contrôle des permissions d&apos;accès aux données.
-      </p>
-      <Callout type="warning" title="Important ">
-        <p className="text-xs sm:text-sm">ce TP illustre une injection SQL dans un environnement local contrôlé. Ne réalisez pas ces tests sur un site ou une base de données sans autorisation.</p>
-      </Callout>
-      </section>
-
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
-        <QuickQuiz
-          title="Quiz de révision — Chapitre 6.9"
-          questions={[
-            {
-              id: 1,
-              question: "Qu'est-ce qu'une injection SQL ?",
-              options: ["Une erreur de syntaxe JavaScript.", "Une manipulation de requête SQL à travers des données utilisateur.", "Une fuite mémoire."],
-              correctIndex: 1,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 2,
-              question: "Quelle pratique favorise une injection SQL ?",
-              options: ["Utiliser des requêtes préparées.", "Valider les données."],
-              correctIndex: 2,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 3,
-              question: "Quel est le rôle du caractère ? dans une requête préparée avec mysql2 ?",
-              options: ["Représenter un paramètre.", "Supprimer une table.", "Exécuter une procédure stockée."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 4,
-              question: "Les requêtes préparées remplacent-elles la validation des entrées ?",
-              options: ["Oui.", "Non, elles sont complémentaires.", "Uniquement dans MySQL."],
-              correctIndex: 1,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 5,
-              question: "Pourquoi utiliser une liste blanche pour un tri SQL dynamique ?",
-              options: ["Pour autoriser uniquement les noms de colonnes prévus.", "Pour augmenter la mémoire disponible.", "Pour désactiver les erreurs SQL."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 6,
-              question: "Pourquoi ne faut-il pas afficher les erreurs SQL détaillées au client ?",
-              options: ["Elles peuvent révéler des informations internes.", "Elles empêchent les requêtes préparées.", "Elles désactivent Express."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-          ]}
-        />
-      </div>
     </div>
   );
 };

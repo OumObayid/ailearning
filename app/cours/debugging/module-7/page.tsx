@@ -6,8 +6,8 @@ import { ModuleIllustration } from '@/components/courses/ModuleIllustration';
 import { DEBUGGING_MODULE_7_CHAPTERS } from '@/content/courses/debugging/module-7/data';
 
 export const metadata = {
-  title: 'Module 7 : Ingénierie du débogage assistée par IA • Ingénierie du Débogage',
-  description: "Ingénierie du débogage assistée par IA : prompts structurés, analyse de logs, détection d'hallucinations, agents IDE sous Antigravity et validation par tests Vitest et Supertest.",
+  title: 'Module 7 : Projet final : Audit, diagnostic et correction d\'une application complète • Ingénierie du Débogage',
+  description: "Projet final d'ingénierie du débogage : audit complet d'une application React, Express, MySQL et IA, analyse des causes racines, remédiation progressive et validation Vitest.",
 };
 
 export default function DebuggingModule7Page() {
@@ -15,8 +15,8 @@ export default function DebuggingModule7Page() {
     <div className="space-y-10">
       <PageHeader
         size="large"
-        title="Module 7 — Diagnostic assisté par IA"
-        description="Adoptez une méthodologie d'investigation assistée par l'intelligence artificielle : formulez des prompts de diagnostic structurés et analysez de volumineux journaux d'erreurs (logs). Identifiez avec un regard critique les risques d'hallucinations techniques et validez chaque correctif par des tests de non-régression ciblés."
+        title="Module 7 — Projet Final : Audit et Correctifs"
+        description="Projet final de synthèse en ingénierie du débogage : prenez en charge une application full-stack complète (React, Express, MySQL, IA) affectée d'anomalies critiques réelles. Appliquez l'ensemble du protocole d'investigation méthodique, isolez chaque cause racine, corrigez les défaillances et produisez un rapport d'audit d'incident."
         breadcrumbs={[
           { label: 'Accueil', href: '/' },
           { label: 'Cours', href: '/cours' },
@@ -59,4 +59,3 @@ export default function DebuggingModule7Page() {
     </div>
   );
 }
-

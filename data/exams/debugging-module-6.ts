@@ -2,7 +2,7 @@ import { ExamMetadata, ExamQuestion } from './types';
 
 export const DEBUGGING_MODULE_6_EXAM_METADATA: ExamMetadata = {
   moduleId: 'debugging-module-6',
-  title: "Examen de Certification — Module 6 : Débogage avancé, performances et sécurité",
+  title: "Examen de Certification — Module 6 : Ingénierie du débogage assistée par IA",
   durationMinutes: 45,
   passingScorePercent: 80, // Seuil de réussite à 80% (16/20)
   totalQuestions: 20,
@@ -10,279 +10,283 @@ export const DEBUGGING_MODULE_6_EXAM_METADATA: ExamMetadata = {
 
 export const DEBUGGING_MODULE_6_QUESTIONS: ExamQuestion[] = [
   // -------------------------------------------------------------
-  // SECTION 1 : Métriques de Performance & DevTools (Q1 - Q3)
+  // SECTION 1 : Rôle de l'IA & Fondamentaux du Diagnostic (Q1 - Q2)
   // -------------------------------------------------------------
   {
     id: 1,
-    question: "Que mesure exactement le TTFB (Time To First Byte) et quelle cause principale explique un TTFB anormalement élevé (> 1500 ms) avec un temps de transfert réseau court ?",
+    question: "Quelle est la définition la plus rigoureuse du rôle d'un modèle d'IA générative dans un processus d'investigation logicielle ?",
     options: [
-      { letter: 'A', text: "Le temps de rendu du DOM dans Chrome ; causé par un script React bloquant." },
-      { letter: 'B', text: "Le délai entre l'émission de la requête et la réception du premier octet de réponse ; causé par des traitements serveur ou requêtes SQL lentes côté backend." },
-      { letter: 'C', text: "La vitesse de téléchargement des images statiques depuis un CDN." },
-      { letter: 'D', text: "Le temps nécessaire pour compiler le code TypeScript côté client." },
+      { letter: 'A', text: "Un substitut autonome au développeur garantissant mathématiquement l'absence de bugs." },
+      { letter: 'B', text: "Un assistant d'investigation capable d'analyser des anomalies et de proposer des hypothèses de travail, qui doivent impérativement être vérifiées par le développeur avec des preuves techniques." },
+      { letter: 'C', text: "Un compilateur statique qui supprime automatiquement les exceptions à l'exécution." },
+      { letter: 'D', text: "Un serveur de secours prenant le relais lors d'une panne de base de données." },
     ],
     correctAnswers: ['B'],
-    explanation: "Le TTFB englobe la latence réseau aller, le temps de traitement sur le serveur (logique métier + requêtes de base de données), et le début de l'envoi de la réponse. Si le réseau est stable, un TTFB élevé pointe directement vers le serveur backend.",
+    explanation: "L'IA est un puissant accélérateur d'analyse et de corrélation, mais une réponse plausible n'est jamais une preuve. Le développeur conserve la responsabilité finale de vérifier la cause racine par des logs, des breakpoints et des tests.",
   },
   {
     id: 2,
-    question: "Pourquoi les percentiles (P95, P99) sont-ils beaucoup plus révélateurs que la simple moyenne arithmétique pour évaluer la latence d'une API en production ?",
+    question: "Face à une erreur 'TypeError: Cannot read properties of null (reading \"id\")' dans un service backend, que représente cette erreur ?",
     options: [
-      { letter: 'A', text: "Parce que la moyenne arithmétique est toujours fausse en JavaScript." },
-      { letter: 'B', text: "Parce que la moyenne masque les requêtes aberrantes ou dégradées subies par les utilisateurs les plus malchanceux, alors que le P99 indique le temps en dessous duquel 99 % des requêtes sont traitées." },
-      { letter: 'C', text: "Parce que les percentiles ne prennent en compte que les requêtes ayant échoué avec une erreur 500." },
-      { letter: 'D', text: "Parce que Chrome DevTools ne supporte que les calculs de percentiles." },
+      { letter: 'A', text: "La cause racine définitive de l'incident." },
+      { letter: 'B', text: "Le symptôme et la cause immédiate de l'exception, mais pas nécessairement la cause racine qui peut résider dans l'absence de gestion d'un résultat SQL vide." },
+      { letter: 'C', text: "Une défaillance matérielle de la mémoire vive du serveur." },
+      { letter: 'D', text: "Une incompatibilité entre le navigateur client et le protocole HTTP/2." },
     ],
     correctAnswers: ['B'],
-    explanation: "Dans un système distribué, 90 % des requêtes peuvent répondre en 20 ms, mais 5 % mettent 5 secondes. La moyenne donne l'illusion d'une application rapide (~250 ms), alors qu'un utilisateur sur vingt subit un ralentissement inacceptable. Le P95 et le P99 mesurent cette réalité.",
-  },
-  {
-    id: 3,
-    question: "Dans l'onglet Performance de Chrome DevTools, quelle indication visuelle signale une 'Long Task' bloquant le thread principal du navigateur pendant plus de 50 ms ?",
-    options: [
-      { letter: 'A', text: "Une ligne verte continue sous l'onglet Network." },
-      { letter: 'B', text: "Un triangle rouge dans le coin supérieur de la tâche dans la timeline Main et des hachures rouges." },
-      { letter: 'C', text: "Une notification modale demandant le rechargement de la page." },
-      { letter: 'D', text: "L'affichage du logo V8 dans la console." },
-    ],
-    correctAnswers: ['B'],
-    explanation: "Chrome DevTools signale les tâches dépassant 50 ms par un coin supérieur rouge vif et des bandes diagonales rouges. Elles indiquent que l'Event Loop UI est gelée, empêchant le navigateur de répondre aux clics ou de maintenir 60 FPS.",
+    explanation: "La cause immédiate est l'accès à une propriété sur une valeur null. La cause racine est la raison fondamentale pour laquelle cette variable vaut null (ex: requête SQL ne trouvant aucun enregistrement et non protégée par un contrôle d'existence).",
   },
 
   // -------------------------------------------------------------
-  // SECTION 2 : Fuites Mémoire & Heap Snapshots (Q4 - Q6)
+  // SECTION 2 : Débogage Traditionnel vs Assisté par IA (Q3 - Q4)
   // -------------------------------------------------------------
   {
-    id: 4,
-    question: "Dans le moteur Google V8, quelle est la cause fondamentale d'une fuite de mémoire (Memory Leak) ?",
+    id: 3,
+    question: "Dans quelle situation le débogage traditionnel (breakpoints, inspection de la call stack dans VS Code) reste-t-il indispensable face à une analyse IA ?",
     options: [
-      { letter: 'A', text: "Une allocation de variables primitives (nombres, booléens) sur la Call Stack." },
-      { letter: 'B', text: "Des objets devenus inutiles dans le Heap qui restent référencés depuis une racine active (GC Root) comme l'objet global, des closures ou des écouteurs d'événements persistants." },
-      { letter: 'C', text: "L'utilisation de const au lieu de let." },
-      { letter: 'D', text: "Une surcharge de requêtes HTTP refusées par le pare-feu." },
+      { letter: 'A', text: "Uniquement pour les applications écrites en HTML pur." },
+      { letter: 'B', text: "Pour confirmer avec certitude l'état réel des variables, l'évaluation pas à pas et le flux d'exécution dynamique en mémoire au moment exact de l'incident." },
+      { letter: 'C', text: "Jamais, car un agent IA peut deviner l'état exact de la RAM à distance." },
+      { letter: 'D', text: "Uniquement lorsque l'accès à Internet est payant." },
     ],
     correctAnswers: ['B'],
-    explanation: "Le Garbage Collector de V8 utilise un algorithme de marquage et balayage (Mark-and-Sweep). Tout objet accessible depuis une racine active (GC Root) est considéré comme vivant et ne peut jamais être collecté, même si le reste de l'application ne s'en sert plus.",
+    explanation: "L'IA raisonne sur du code statique et des descriptions textuelles. Seuls les outils de débogage dynamique (debugger VS Code, Chrome DevTools) permettent d'observer l'état exact des objets et de valider les hypothèses en cours d'exécution.",
   },
   {
-    id: 5,
-    question: "Quelle méthode Node.js native permet de surveiller programmatiquement l'évolution de la mémoire consommée par le processus ?",
+    id: 4,
+    question: "Quelle combinaison méthodologique est recommandée pour investiguer une anomalie complexe distribuée entre un frontend React et une API Node.js ?",
     options: [
-      { letter: 'A', text: "console.memory()" },
-      { letter: 'B', text: "process.memoryUsage(), qui renvoie rss, heapTotal, heapUsed et external." },
-      { letter: 'C', text: "os.freememPercentage()" },
-      { letter: 'D', text: "v8.cleanGarbageNow()" },
+      { letter: 'A', text: "Faire réécrire tout le projet par l'IA sans consulter les logs." },
+      { letter: 'B', text: "Combiner l'analyse réseau (Chrome DevTools Network), l'examen des logs Express, l'assistance d'un agent pour corréler les fichiers et la validation par des tests automatisés." },
+      { letter: 'C', text: "Désactiver les erreurs dans le fichier package.json." },
+      { letter: 'D', text: "Redémarrer le serveur MySQL à chaque requête." },
     ],
     correctAnswers: ['B'],
-    explanation: "process.memoryUsage() fournit des métriques exactes en octets : heapUsed (mémoire réellement occupée par les objets V8), heapTotal (mémoire allouée par V8), et RSS (Resident Set Size, empreinte totale dans la RAM physique).",
+    explanation: "L'ingénierie moderne du débogage associe l'observation outillée (DevTools, logs), la rapidité d'analyse transversale de l'agent IA et la rigueur de vérification des tests unitaires et d'intégration.",
+  },
+
+  // -------------------------------------------------------------
+  // SECTION 3 : Les 7 Composants du Prompt Professionnel (Q5 - Q6)
+  // -------------------------------------------------------------
+  {
+    id: 5,
+    question: "Quels sont les 7 composants d'un prompt d'ingénierie de diagnostic structuré et professionnel ?",
+    options: [
+      { letter: 'A', text: "HTML, CSS, JS, SQL, Git, Docker, Kubernetes." },
+      { letter: 'B', text: "ROLE, OBJECTIVE, CONTEXT, DATA, TASKS, CONSTRAINTS et OUTPUT FORMAT." },
+      { letter: 'C', text: "START, PAUSE, RESUME, STOP, LOG, DEBUG, CLEAN." },
+      { letter: 'D', text: "Nom, Prénom, Email, Mot de passe, Adresse, Téléphone, Société." },
+    ],
+    correctAnswers: ['B'],
+    explanation: "Cette structure en 7 piliers garantit que le modèle comprend son rôle d'expert, son objectif sans ambiguïté, l'écosystème technique, les logs réels, le plan de travail, les limites de sécurité et la présentation attendue du rapport.",
   },
   {
     id: 6,
-    question: "Pour comparer deux Heap Snapshots dans Chrome DevTools afin de repérer les objets qui s'accumulent anormalement, quelle vue doit être sélectionnée ?",
+    question: "Pourquoi est-il crucial d'inclure explicitement la section 'CONSTRAINTS' interdisant toute modification de fichier dans un prompt de diagnostic ?",
     options: [
-      { letter: 'A', text: "La vue 'Containment' triée par ID." },
-      { letter: 'B', text: "La vue 'Comparison' en examinant la colonne '# Delta' (différence d'allocations positives) et 'Alloc. Size'." },
-      { letter: 'C', text: "La vue 'Statistics' en camembert." },
-      { letter: 'D', text: "La vue 'Dominators'." },
+      { letter: 'A', text: "Parce que les modèles de langage refusent d'analyser le code si on ne leur interdit pas d'écrire." },
+      { letter: 'B', text: "Pour contraindre l'IA à se focaliser sur l'analyse de cause racine et l'administration de preuves techniques avant d'autoriser la moindre modification dans le code source." },
+      { letter: 'C', text: "Pour réduire les coûts de bande passante réseau du terminal." },
+      { letter: 'D', text: "Parce qu'Express interdit les modifications de fichiers en environnement de développement." },
     ],
     correctAnswers: ['B'],
-    explanation: "La vue Comparison compare le Snapshot 2 au Snapshot 1. La colonne '# Delta' montre la variation du nombre d'instances créées et non collectées. Un delta positif continu sur des closures ou des objets métier indique une fuite active.",
+    explanation: "Sans contrainte explicite, un agent IA a tendance à proposer un patch hâtif ou à modifier le code immédiatement, risquant de traiter le symptôme plutôt que l'origine fondamentale du dysfonctionnement.",
   },
 
   // -------------------------------------------------------------
-  // SECTION 3 : CPU & Event Loop Node.js (Q7 - Q8)
+  // SECTION 4 : Logs & Stack Traces (Q7 - Q8)
   // -------------------------------------------------------------
   {
     id: 7,
-    question: "Quel est l'impact immédiat sur un serveur Node.js si une route exécute une boucle synchrone de calcul de 5 secondes (ex: for (let i=0; i < 1e10; i++)) ?",
+    question: "Dans une Stack Trace, quelle ligne indique généralement l'instruction précise ayant provoqué l'exception et comment doit-elle être interprétée ?",
     options: [
-      { letter: 'A', text: "Seul le client ayant envoyé la requête attend 5 secondes ; les autres clients sont servis normalement sur d'autres threads." },
-      { letter: 'B', text: "L'Event Loop monocœur de Node.js est totalement bloquée : toutes les requêtes des autres clients sont suspendues pendant 5 secondes, provoquant des timeouts en cascade." },
-      { letter: 'C', text: "Node.js lance automatiquement un sous-processus sans impacter les performances." },
-      { letter: 'D', text: "Le serveur renvoie immédiatement une erreur 404." },
+      { letter: 'A', text: "La dernière ligne de node_modules ; elle accuse toujours une dépendance externe." },
+      { letter: 'B', text: "La première ligne suivant le type d'erreur ; elle donne le nom de la fonction, le fichier et la ligne/colonne de l'apparition de l'erreur, tandis que les lignes suivantes remontent la chaîne des fonctions appelantes." },
+      { letter: 'C', text: "La date et l'heure système situées en bas du terminal." },
+      { letter: 'D', text: "Le numéro de version de TypeScript." },
     ],
     correctAnswers: ['B'],
-    explanation: "Node.js traite le code JavaScript sur un unique thread d'Event Loop. Tout calcul CPU lourd synchrone monopolise ce thread. Aucune requête I/O, aucun callback ni aucun timer ne peut s'exécuter tant que le calcul n'est pas terminé.",
+    explanation: "La ligne supérieure de la trace (top of stack) localise l'instruction précise où l'exception s'est matérialisée. Les lignes suivantes représentent la pile d'appels (call stack) permettant de remonter la trajectoire de l'erreur jusqu'au contrôleur ou gestionnaire d'événement.",
   },
   {
     id: 8,
-    question: "Quelle est la solution architecturale recommandée sous Node.js pour exécuter un traitement CPU intensif (ex: compression d'image ou hachage lourd) sans bloquer l'Event Loop ?",
+    question: "Avant de transmettre des logs ou des extraits de configuration à un modèle IA externe, quelle mesure de sécurité est obligatoire ?",
     options: [
-      { letter: 'A', text: "Déporter le calcul vers un Worker Thread (module 'worker_threads') ou vers une file de tâches asynchrone dédiée." },
-      { letter: 'B', text: "Augmenter la taille du Heap avec l'option --max-old-space-size." },
-      { letter: 'C', text: "Remplacer let par var dans les boucles de calcul." },
-      { letter: 'D', text: "Ajouter un middleware express.json() supplémentaire." },
+      { letter: 'A', text: "Compiler le code en assembleur x86." },
+      { letter: 'B', text: "Anonymiser et masquer impérativement les secrets, clés API, mots de passe, tokens JWT et données personnelles (RGPD)." },
+      { letter: 'C', text: "Ajouter le mot-clé 'private' devant chaque ligne de log." },
+      { letter: 'D', text: "Convertir tous les caractères en majuscules." },
     ],
-    correctAnswers: ['A'],
-    explanation: "Le module worker_threads permet d'exécuter du JavaScript en parallèle sur des threads séparés du système d'exploitation, laissant l'Event Loop principale totalement fluide pour servir les requêtes entrantes.",
+    correctAnswers: ['B'],
+    explanation: "L'exfiltration de secrets (.env, tokens d'authentification Bearer, identifiants de bases de données) dans un prompt constitue une violation critique de sécurité. Seuls des logs assainis et anonymisés doivent être soumis.",
   },
 
   // -------------------------------------------------------------
-  // SECTION 4 : Requêtes SQL Lentes & EXPLAIN (Q9 - Q10)
+  // SECTION 5 : Contexte Technique (Q9 - Q10)
   // -------------------------------------------------------------
   {
     id: 9,
-    question: "Dans le résultat d'une commande 'EXPLAIN' ou 'EXPLAIN ANALYZE' sous MySQL, quelle valeur dans la colonne 'type' indique le pire scénario de performance nécessitant un index ?",
+    question: "Pourquoi la précision des versions majeures des dépendances (ex: Express 5 vs Express 4, React 19 vs React 18) est-elle déterminante pour un diagnostic IA fiable ?",
     options: [
-      { letter: 'A', text: "const" },
-      { letter: 'B', text: "eq_ref" },
-      { letter: 'C', text: "ALL (Full Table Scan), signifiant que le moteur lit l'intégralité de la table ligne par ligne." },
-      { letter: 'D', text: "range" },
+      { letter: 'A', text: "Parce que l'IA refuse de répondre si les versions ne sont pas fournies." },
+      { letter: 'B', text: "Parce que les signatures d'API, la gestion des promesses asynchrones et les middlewares changent entre les versions majeures, évitant à l'IA de proposer des corrections obsolètes ou incompatibles." },
+      { letter: 'C', text: "Parce que React 19 ne supporte plus le langage JavaScript." },
+      { letter: 'D', text: "Parce que MySQL 8 n'utilise plus de requêtes SQL." },
     ],
-    correctAnswers: ['C'],
-    explanation: "Le type ALL (Full Table Scan) signifie qu'aucun index n'a pu être exploité. MySQL doit parcourir chaque enregistrement sur le disque. Sur des tables volumineuses (> 100 000 lignes), cela fait chuter le débit et bloque les ressources du serveur.",
+    correctAnswers: ['B'],
+    explanation: "Par exemple, Express 5 gère nativement le rejet des fonctions asynchrones (async/await) sans middleware tiers, alors qu'Express 4 exigeait un catch explicite ou un wrapper. Fournir les versions évite les erreurs de prescription.",
   },
   {
     id: 10,
-    question: "Comment activer le Slow Query Log dans MySQL pour journaliser automatiquement toutes les requêtes durant plus de 2 secondes ?",
+    question: "En quoi la commande 'git log -5 --oneline' ou 'git diff HEAD~1' peut-elle éclairer un diagnostic de bug assisté par IA ?",
     options: [
-      { letter: 'A', text: "SET GLOBAL slow_query_log = 'ON'; SET GLOBAL long_query_time = 2;" },
-      { letter: 'B', text: "ALTER TABLE queries ADD SLOW LOG;" },
-      { letter: 'C', text: "CREATE TRIGGER slow_log AFTER 2 SECONDS;" },
-      { letter: 'D', text: "npm install mysql-slow-log" },
+      { letter: 'A', text: "Elle supprime automatiquement les conflits de fusion." },
+      { letter: 'B', text: "Elle permet d'isoler l'historique récent des modifications (schéma, nouvelle dépendance, modification de contrat d'API) ayant introduit la régression." },
+      { letter: 'C', text: "Elle crypte le code source pour protéger les secrets." },
+      { letter: 'D', text: "Elle sert à réinitialiser le serveur de production." },
     ],
-    correctAnswers: ['A'],
-    explanation: "En configurant slow_query_log = 'ON' et long_query_time = 2, le serveur MySQL enregistre dans un fichier dédié l'empreinte SQL exacte, le temps d'exécution et le nombre de lignes scannées pour toute requête dépassant 2 secondes.",
+    correctAnswers: ['B'],
+    explanation: "Un bug émerge fréquemment à la suite d'une modification récente. Connaître le diff du dernier commit permet à l'agent de cibler immédiatement le périmètre exact de la régression.",
   },
 
   // -------------------------------------------------------------
-  // SECTION 5 : Concurrence & Race Conditions (Q11 - Q12)
+  // SECTION 6 : Séparation Diagnostic vs Remédiation (Q11 - Q12)
   // -------------------------------------------------------------
   {
     id: 11,
-    question: "Dans une application e-commerce, deux clients achètent le même dernier article simultanément. Le code backend lit le stock (stock = 1), valide les deux achats, puis décrémente deux fois. Comment qualifie-t-on ce bug et quelle est sa cause ?",
+    question: "Quel danger technique majeur court-on en demandant à un agent IA 'Corrige immédiatement ce bug' dès l'apparition d'une erreur 500 ?",
     options: [
-      { letter: 'A', text: "Une fuite mémoire causée par le cache Redis." },
-      { letter: 'B', text: "Une condition de concurrence (Race Condition de type Read-Modify-Write) due à l'absence de transaction avec verrou ou d'opération atomique en base." },
-      { letter: 'C', text: "Une erreur de syntaxe SQL dans la clause WHERE." },
-      { letter: 'D', text: "Un dépassement de pile (Stack Overflow)." },
+      { letter: 'A', text: "Le terminal risque de bloquer la mémoire cache du processeur." },
+      { letter: 'B', text: "L'agent risque d'appliquer un correctif superficiel masquant le symptôme (ex: optional chaining ou try/catch silencieux) tout en laissant la cause racine intacte." },
+      { letter: 'C', text: "Le compilateur TypeScript supprimera toutes les interfaces du projet." },
+      { letter: 'D', text: "L'application sera automatiquement convertie en Python." },
     ],
     correctAnswers: ['B'],
-    explanation: "La séquence entrelacée (Client A lit stock=1, Client B lit stock=1, Client A met à jour stock=0, Client B met à jour stock=-1) produit une survente (oversell). Pour la prévenir, la vérification et la décrémentation doivent être atomiques ou protégées par un verrou transactionnel.",
+    explanation: "Sans phase de diagnostic préalable, l'IA cherche la voie de moindre résistance pour faire taire l'exception visible (ex: optional chaining), ce qui crée des bugs silencieux en cascade dans les couches applicatives.",
   },
   {
     id: 12,
-    question: "Quelle requête SQL permet de garantir une décrémentation atomique de stock sous MySQL sans risquer de survente ni de solde négatif ?",
+    question: "Quelle est la séquence rigoureuse d'un cycle de débogage professionnel assisté par IA ?",
     options: [
-      { letter: 'A', text: "UPDATE products SET stock = stock - 1 WHERE id = ? AND stock >= 1;" },
-      { letter: 'B', text: "SELECT * FROM products WHERE id = ?; UPDATE products SET stock = 0;" },
-      { letter: 'C', text: "DELETE FROM products WHERE stock <= 0;" },
-      { letter: 'D', text: "SET stock = stock - 1;" },
+      { letter: 'A', text: "Corriger le code → Supprimer les logs → Redémarrer le serveur." },
+      { letter: 'B', text: "Observer → Diagnostiquer (sans modifier) → Confirmer la cause racine avec des preuves → Valider un plan de correction → Autoriser les modifications ciblées → Tester automatiquement." },
+      { letter: 'C', text: "Accepter la première proposition de l'IA → Déployer en production." },
+      { letter: 'D', text: "Créer 10 nouveaux fichiers → Exécuter git reset --hard." },
     ],
-    correctAnswers: ['A'],
-    explanation: "La clause 'WHERE id = ? AND stock >= 1' s'exécute avec le verrou de ligne exclusif d'InnoDB. Si deux requêtes s'exécutent en même temps, la première met à jour la ligne (affectedRows = 1) et la seconde trouve stock = 0, retournant affectedRows = 0, signalant l'épuisement du stock sans conflit.",
+    correctAnswers: ['B'],
+    explanation: "Ce cycle méthodique garantit que chaque étape repose sur des faits techniques vérifiables, prévenant les dérives et les modifications intempestives sur le projet.",
   },
 
   // -------------------------------------------------------------
-  // SECTION 6 : Charge & Saturation Serveur (Q13 - Q14)
+  // SECTION 7 : Causes Probables & Méthode des 5 Pourquoi (Q13 - Q14)
   // -------------------------------------------------------------
   {
     id: 13,
-    question: "Quel outil CLI basé sur Node.js est réputé pour réaliser des tests de charge HTTP à très haute vitesse (capable de simuler des milliers de requêtes par seconde) ?",
+    question: "Dans le cadre de l'analyse des causes racines (RCA), à quoi sert la méthode des '5 Pourquoi' ?",
     options: [
-      { letter: 'A', text: "Autocannon (ou k6 / wrk)" },
-      { letter: 'B', text: "Nodemon" },
-      { letter: 'C', text: "Prettier" },
-      { letter: 'D', text: "Webpack" },
+      { letter: 'A', text: "À compter le nombre d'erreurs dans le fichier de logs." },
+      { letter: 'B', text: "À remonter itérativement la chaîne causale d'un problème observable jusqu'au défaut de conception ou à l'absence de règle métier sous-jacente." },
+      { letter: 'C', text: "À poser obligatoirement cinq questions distinctes à cinq modèles d'IA différents." },
+      { letter: 'D', text: "À redémarrer cinq fois le conteneur Docker." },
     ],
-    correctAnswers: ['A'],
-    explanation: "Autocannon est un benchmark HTTP écrit en Node.js ultra-rapide, capable de mesurer le Throughput (req/s), la distribution de latence (P50/P99) et les erreurs HTTP sous forte concurrence.",
+    correctAnswers: ['B'],
+    explanation: "La méthode des 5 Pourquoi permet de passer du symptôme (l'API répond 500) à l'erreur immédiate (accès à une propriété d'undefined) puis à la cause racine (le repository ne gère pas le retour d'une requête vide).",
   },
   {
     id: 14,
-    question: "Pour traiter des tâches asynchrones lourdes (génération de factures PDF, envoi de 10 000 emails) sans surcharger le serveur web, quelle architecture est la plus robuste ?",
+    question: "Quand une cause racine formulée par une IA peut-elle être considérée comme techniquement confirmée ?",
     options: [
-      { letter: 'A', text: "Exécuter les fonctions dans le middleware Express en bloquant la réponse client." },
-      { letter: 'B', text: "Utiliser une file de messages (Message Queue comme BullMQ avec Redis ou RabbitMQ) et des processus Workers d'arrière-plan indépendants." },
-      { letter: 'C', text: "Enregistrer les tâches dans des variables globales en mémoire du serveur." },
-      { letter: 'D', text: "Demander au client d'envoyer 10 000 requêtes consécutives." },
+      { letter: 'A', text: "Dès que l'IA affirme son diagnostic avec un niveau de confiance de 99 %." },
+      { letter: 'B', text: "Uniquement lorsqu'elle est étayée par des éléments concrets (résultat de requête reproduit, inspection de variable, logs horodatés) et vérifiée par un test unitaire ou d'intégration." },
+      { letter: 'C', text: "Dès que le message d'erreur est supprimé du terminal." },
+      { letter: 'D', text: "Dès que le code est écrit en TypeScript strict." },
     ],
     correctAnswers: ['B'],
-    explanation: "Le patron producteur/consommateur avec file de messages (BullMQ + Redis) garantit que le serveur web répond en 20 ms (accusé de réception), tandis que des workers dédiés consomment les tâches à leur propre rythme avec retry automatique et reprise sur panne.",
+    explanation: "Le sentiment d'assurance d'un modèle de langage ne vaut pas preuve technique. Une cause racine est confirmée par la confrontation aux données dynamiques et par la reproductibilité contrôlée du phénomène.",
   },
 
   // -------------------------------------------------------------
-  // SECTION 7 : Pool de Connexions BDD (Q15 - Q16)
+  // SECTION 8 : Détection des Hallucinations (Q15 - Q16)
   // -------------------------------------------------------------
   {
     id: 15,
-    question: "Que se passe-t-il si une application backend ouvre une nouvelle connexion MySQL par requête HTTP (createConnection) au lieu d'utiliser un Connection Pool ?",
+    question: "Dans un projet utilisant 'mysql2/promise', l'IA propose le code 'await db.findUserById(25)'. De quel type d'erreur s'agit-il ?",
     options: [
-      { letter: 'A', text: "L'application fonctionne beaucoup plus vite car les connexions sont dédiées." },
-      { letter: 'B', text: "Sous forte charge, le serveur MySQL sature son quota de descripteurs de sockets, rejette les connexions avec 'Too many connections' ou ECONNREFUSED, et la latence s'effondre en raison du coût de la poignée de main TCP/TLS." },
-      { letter: 'C', text: "MySQL passe automatiquement en mode cluster multi-maître." },
-      { letter: 'D', text: "Toutes les requêtes sont automatiquement converties en requêtes SQLite locales." },
+      { letter: 'A', text: "Une optimisation de requête SQL moderne." },
+      { letter: 'B', text: "Une hallucination d'API (méthode inventée n'existant pas sur l'objet Pool de mysql2/promise, qui requiert db.execute() avec SQL natif)." },
+      { letter: 'C', text: "Une commande réservée aux systèmes Linux." },
+      { letter: 'D', text: "Une erreur de syntaxe TypeScript dans la déclaration du type number." },
     ],
     correctAnswers: ['B'],
-    explanation: "Établir une connexion TCP avec authentification MySQL coûte plusieurs millisecondes et consomme de la mémoire serveur. Un Connection Pool (ex: pool.getConnection()) maintient un nombre contrôlé de connexions réutilisables, protégeant la base de données.",
+    explanation: "L'IA confond ici le pilote SQL bas niveau (mysql2) avec les conventions d'un ORM de type Prisma ou TypeORM. Cette méthode fictive provoquera un crash 'db.findUserById is not a function'.",
   },
   {
     id: 16,
-    question: "Quelle erreur critique de programmation provoque l'épuisement silencieux d'un Connection Pool (Pool Leak) ?",
+    question: "Pour résoudre une exception sur 'user.email' quand 'user' est null, l'IA propose de remplacer par 'user?.email'. Pourquoi cette proposition peut-elle être trompeuse ?",
     options: [
-      { letter: 'A', text: "Oublier de libérer la connexion avec connection.release() dans un bloc finally après une requête ou en cas d'erreur." },
-      { letter: 'B', text: "Utiliser des requêtes préparées avec pool.execute()." },
-      { letter: 'C', text: "Définir waitForConnections: true." },
-      { letter: 'D', text: "Configurer un mot de passe fort pour l'utilisateur MySQL." },
+      { letter: 'A', text: "Parce que l'optional chaining est interdit dans tous les projets Node.js." },
+      { letter: 'B', text: "Parce qu'elle empêche le crash mais retourne HTTP 200 avec { email: undefined }, violant le contrat d'API REST qui exige de renvoyer une réponse HTTP 404 Not Found." },
+      { letter: 'C', text: "Parce que cela supprime automatiquement le mot de passe de l'utilisateur." },
+      { letter: 'D', text: "Parce que l'opérateur '?.' consomme deux fois plus de mémoire vive." },
     ],
-    correctAnswers: ['A'],
-    explanation: "Si une connexion empruntée au pool n'est pas libérée par connection.release() (notamment si une exception est levée avant le release), elle reste bloquée indéfiniment. Dès que le poolLimit est atteint, toutes les futures requêtes restent suspendues et tombent en timeout.",
+    correctAnswers: ['B'],
+    explanation: "C'est l'archétype du patch cosmétique. L'application cesse de crasher immédiatement, mais répond un code 200 succès vide pour une ressource introuvable, trompant le client frontend.",
   },
 
   // -------------------------------------------------------------
-  // SECTION 8 : OWASP, IDOR & Injection SQL (Q17 - Q18)
+  // SECTION 9 : Agents Intégrés aux IDE (Q17 - Q18)
   // -------------------------------------------------------------
   {
     id: 17,
-    question: "Une route Express 'GET /api/orders/:id' retourne la commande sans vérifier que req.user.id correspond à order.user_id. De quelle faille de sécurité s'agit-il selon l'OWASP Top 10 ?",
+    question: "Quelle est la caractéristique fondamentale différenciant un agent IA intégré à un IDE (ex: Google Antigravity) d'un simple chatbot dans un navigateur ?",
     options: [
-      { letter: 'A', text: "Cross-Site Scripting (XSS)" },
-      { letter: 'B', text: "IDOR / BOLA (Insecure Direct Object Reference / Broken Object Level Authorization)." },
-      { letter: 'C', text: "Server-Side Request Forgery (SSRF)" },
-      { letter: 'D', text: "Déni de service distribué (DDoS)" },
+      { letter: 'A', text: "L'agent intégré ne dispose d'aucun modèle de langage." },
+      { letter: 'B', text: "L'agent intégré s'insère dans une boucle opérationnelle autonome : il peut explorer l'arborescence du projet, lire des fichiers, exécuter des commandes autorisées et inspecter ses propres résultats." },
+      { letter: 'C', text: "L'agent intégré ne fonctionne que pour les projets écrits en C++." },
+      { letter: 'D', text: "Le chatbot dans le navigateur peut modifier les fichiers du disque dur sans autorisation." },
     ],
     correctAnswers: ['B'],
-    explanation: "L'IDOR/BOLA survient lorsqu'une application permet à un utilisateur authentifié d'accéder aux données d'un autre utilisateur en modifiant simplement l'identifiant dans l'URL. Le serveur doit systématiquement valider la propriété de la ressource ou les droits d'accès.",
+    explanation: "Un agent IDE dispose d'outils (File Search, File Reader, Command Runner, Git Inspection). Il peut parcourir les relations entre composants et exécuter des tâches en chaîne sous supervision.",
   },
   {
     id: 18,
-    question: "Pourquoi la concaténation de variables utilisateurs dans une chaîne SQL ('SELECT * FROM users WHERE email = \"' + email + '\"') est-elle vulnérable aux injections SQL, et comment y remédier définitivement ?",
+    question: "Dans une équipe multi-agents dédiée au débogage, quelle est la responsabilité assignée au rôle 'QA Reviewer' ?",
     options: [
-      { letter: 'A', text: "Parce que MySQL n'accepte pas les chaînes de plus de 50 caractères ; il faut encoder en Base64." },
-      { letter: 'B', text: "Parce qu'un attaquant peut injecter des caractères de contrôle SQL (\") pour modifier la syntaxe logique de la commande ; le remède fondamental est l'utilisation stricte de requêtes préparées avec paramètres de liaison (Prepared Statements, pool.execute(sql, [params]))." },
-      { letter: 'C', text: "Parce que Node.js ne supporte pas les guillemets simples." },
-      { letter: 'D', text: "Il faut supprimer la base de données et utiliser des fichiers texte." },
+      { letter: 'A', text: "Écrire l'architecture initiale de la base de données." },
+      { letter: 'B', text: "Auditer de manière critique le patch proposé, vérifier qu'aucun fichier hors périmètre n'a été touché et s'assurer que les tests de non-régression valident bien la correction." },
+      { letter: 'C', text: "Supprimer les fichiers .env avant la mise en production." },
+      { letter: 'D', text: "Installer toutes les dépendances recommandées par npm audit." },
     ],
     correctAnswers: ['B'],
-    explanation: "Avec les Prepared Statements, le moteur de base de données compile d'abord la structure syntaxique de la requête SQL. Les variables sont ensuite envoyées séparément comme de simples valeurs scalaires. Même si la variable contient \"' OR 1=1 --\", elle est traitée comme une chaîne littérale inoffensive.",
+    explanation: "Le QA Reviewer agit en contre-pouvoir indépendant de l'agent Developer. Il s'assure que le patch est minimal, sans effets secondaires et formellement prouvé par des assertions de test.",
   },
 
   // -------------------------------------------------------------
-  // SECTION 9 : Sécurité des Fichiers & Observabilité (Q19 - Q20)
+  // SECTION 10 : Permissions & Validation par Tests (Q19 - Q20)
   // -------------------------------------------------------------
   {
     id: 19,
-    question: "Un endpoint permet de télécharger des documents via 'path.join(__dirname, 'uploads', req.query.file)'. Quel payload d'attaque exploite une faille de Path Traversal pour exfiltrer des fichiers système ?",
+    question: "En vertu du principe du moindre privilège (Least Privilege), quelles permissions doivent être appliquées à un agent lors d'une mission de diagnostic ?",
     options: [
-      { letter: 'A', text: "../../etc/passwd (ou ..\\..\\Windows\\win.ini)" },
-      { letter: 'B', text: "SELECT * FROM passwords" },
-      { letter: 'C', text: "<script>alert(1)</script>" },
-      { letter: 'D', text: "DROP TABLE users;" },
+      { letter: 'A', text: "Permissions totales en écriture et suppression (WRITE + DELETE) sur tous les disques." },
+      { letter: 'B', text: "Lecture (READ) et recherche (SEARCH) limitées au code source et aux logs, avec interdiction stricte de modification (WRITE), d'accès aux fichiers secrets (.env) et de commandes destructives." },
+      { letter: 'C', text: "Accès exclusif en écriture sans autorisation de lecture." },
+      { letter: 'D', text: "Aucune permission de lecture ; l'agent doit deviner le code par télépathie." },
     ],
-    correctAnswers: ['A'],
-    explanation: "La séquence '../' permet de remonter l'arborescence des dossiers et de s'échapper du répertoire restreint 'uploads'. Pour la neutraliser, il faut valider avec path.resolve() et vérifier que le chemin cible commence strictement par le répertoire racine autorisé (rootPath).",
+    correctAnswers: ['B'],
+    explanation: "Pendant l'analyse, l'agent doit avoir les yeux grands ouverts (READ/SEARCH) mais les mains liées (pas de WRITE/DELETE). Les secrets (.env) doivent demeurer inaccessibles pour prévenir toute fuite ou altération.",
   },
   {
     id: 20,
-    question: "Dans le cadre de l'observabilité moderne, quels sont les 'Trois Piliers' indispensables et comment se complètent-ils pour diagnostiquer un incident en production ?",
+    question: "Comment appliquer la démarche 'Red - Green - Refactor' pour vérifier formellement la correction d'un bug dans une route Express avec Vitest et Supertest ?",
     options: [
-      { letter: 'A', text: "HTML, CSS et JavaScript pour le rendu visuel." },
-      { letter: 'B', text: "Metrics (signaux agrégés quantitatifs : CPU, taux d'erreurs), Logs (journalisation structurée d'événements contextuels horodatés) et Traces (suivi temporel du parcours d'une requête à travers les microservices)." },
-      { letter: 'C', text: "Backup, Restore et Snapshot." },
-      { letter: 'D', text: "Docker, Kubernetes et GitHub." },
+      { letter: 'A', text: "Écrire le test après avoir déployé le code sur les serveurs de production." },
+      { letter: 'B', text: "1. Écrire un test automatisé reproduisant le cas fautif et constater qu'il échoue (RED) avec l'ancien code. 2. Appliquer la correction ciblée et constater que le test réussit (GREEN). 3. Vérifier la non-régression sur l'ensemble de la suite." },
+      { letter: 'C', text: "Désactiver les assertions avec expect(true).toBe(true)." },
+      { letter: 'D', text: "Remplacer Vitest par une simple boucle console.log." },
     ],
     correctAnswers: ['B'],
-    explanation: "Les Métriques (Prometheus/Grafana) alertent qu'une anomalie se produit (ex: pic d'erreurs 500 ou latence P99 à 4s). Les Traces (OpenTelemetry/Jaeger) localisent exactement quel microservice ou requête SQL est en cause. Les Logs (Winston/Loki/Elastic) fournissent la stacktrace et le contexte détaillés pour corriger le bug.",
+    explanation: "La phase RED prouve scientifiquement que le test est sensible au bug et ne valide pas des faux positifs. La phase GREEN prouve que la correction traite bien le scénario attendu sans régressions.",
   },
 ];
 

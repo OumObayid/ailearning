@@ -1,6 +1,8 @@
 ﻿'use client';
 
 import React from 'react';
+import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { Callout } from '@/components/courses/Callout';
 import { Icon } from '@/components/common/Icon';
 
 export const Chapitre3Content: React.FC = () => {
@@ -13,12 +15,12 @@ export const Chapitre3Content: React.FC = () => {
           <span>Ingénierie du Débogage</span>
         </div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 3 — Construire un prompt professionnel de diagnostic
+          Chapitre 3 — Reproduction des bugs
         </h1>
       </div>
 
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 3 — 7.3. Construire un prompt professionnel de diagnostic
+        Chapitre 3 — 7.3. Reproduction des bugs
       </p>
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
@@ -30,451 +32,203 @@ export const Chapitre3Content: React.FC = () => {
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Construire un prompt structuré pour diagnostiquer un bug.</span>
+            <span>Reproduire un dysfonctionnement dans des conditions contrôlées.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Fournir les informations techniques pertinentes.</span>
+            <span>Transformer un signalement utilisateur en scénario de reproduction.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Définir précisément le rôle et la mission de l&apos;IA.</span>
+            <span>Identifier les préconditions nécessaires à l&apos;apparition d&apos;un bug.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Demander une analyse sans autoriser de modification du code.</span>
+            <span>Utiliser les outils de développement pour observer les erreurs.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Obtenir un rapport de diagnostic exploitable.</span>
+            <span>Reproduire des anomalies frontend, backend, MySQL et API.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Demander à un agent IA de reproduire un bug sans modifier le code.</span>
           </li>
         </ul>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Pourquoi construire un prompt professionnel ?
+          2. Pourquoi reproduire un bug avant de le corriger ?
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un modèle IA ne peut pas identifier correctement un problème s&apos;il reçoit une demande imprécise.
+        Identifier une anomalie ne suffit pas. Il faut être capable de la reproduire.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comparez ces deux prompts :
+        La reproduction permet de vérifier que le problème existe réellement et de comprendre dans quelles conditions il apparaît.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prompt imprécis :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Mon API ne fonctionne pas. Trouve le problème.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Prompt professionnel :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Tu es un ingénieur backend spécialisé en Node.js,
-Express et TypeScript.
-
-Mon API GET /users/:id retourne une erreur HTTP 500
-lorsqu'un utilisateur existe.
-
-Analyse le code de la route et du service associé.
-
-Identifie :
-1. Le symptôme.
-2. Les causes possibles.
-3. La cause racine probable.
-4. Les preuves techniques.
-5. Les vérifications nécessaires.
-
-Ne modifie aucun fichier.
-Ne propose pas de correction avant d'avoir terminé
-le diagnostic.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le deuxième prompt fournit une mission, un contexte, des données et des contraintes.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Les 7 composants d&apos;un prompt professionnel
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un prompt de diagnostic efficace peut être construit avec sept composants.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. ROLE
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Rôle
+        Exemple :
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Définir l&apos;expertise attendue de l&apos;IA.
+        Un utilisateur signale :
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : ingénieur backend spécialisé en Node.js et Express.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. OBJECTIVE
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Objectif
+        « Lorsque je consulte mes commandes, l&apos;application affiche une erreur. »
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Définir le résultat recherché.
+        Cette description est insuffisante pour commencer une correction.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : identifier la cause racine d&apos;une erreur HTTP 500.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. CONTEXT
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présenter l&apos;environnement technique.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : Node.js, Express, TypeScript, MySQL.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. DATA**
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Données
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Transmettre les éléments nécessaires à l&apos;analyse.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : logs, Stack Trace, code source et requête HTTP.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. TASKS
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tâches
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Décomposer le travail demandé.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : examiner la route, suivre l&apos;appel du service et identifier l&apos;incohérence.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. CONSTRAINTS
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contraintes
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Définir les limites et les interdictions.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : ne modifier aucun fichier et ne pas ajouter de dépendances.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. OUTPUT FORMAT
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Format de sortie
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Préciser la présentation attendue.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple : rapport avec symptôme, causes possibles, preuves et conclusion.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Exemple complet d&apos;un prompt professionnel
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Situation : une route Express retourne une erreur lorsqu&apos;un utilisateur consulte son profil.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Code concerné :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`router.get("/users/:id", async (req, res) =&gt; {
-const user = await userService.findById(req.params.userId);
-
-if (!user) {
-return res.status(404).json({
-message: "User not found"
-});
-}
-
-return res.json(user);
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici un prompt structuré avec les sept composants :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MISSION — DIAGNOSTIC D&apos;UNE ERREUR API
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ROLE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur logiciel spécialisé en Node.js,Express, TypeScript et MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OBJECTIVE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Identifier la cause racine d&apos;une anomalie dans une APIde gestion des utilisateurs.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONTEXT
+        Il faut déterminer :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Backend : Node.js</span>
+            <span>L&apos;utilisateur est-il connecté ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Framework : Express</span>
+            <span>La commande existe-t-elle ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Langage : TypeScript</span>
+            <span>L&apos;identifiant transmis est-il valide ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Base de données : MySQL</span>
+            <span>L&apos;erreur apparaît-elle pour toutes les commandes ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Architecture : Routes, Controllers et Services.</span>
+            <span>L&apos;erreur apparaît-elle uniquement pour un utilisateur particulier ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le problème est-il reproductible à chaque tentative ?</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DATA
+        La reproduction transforme un signalement imprécis en un problème technique observable.
       </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici le code concerné :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`router.get("/users/:id", async (req, res) =&gt; {
-const user = await userService.findById(req.params.userId);
-
-if (!user) {
-return res.status(404).json({
-message: "User not found"
-});
-}
-
-return res.json(user);
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comportement observé :L&apos;API ne retourne pas les informations attendues.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comportement attendu :L&apos;API doit retourner l&apos;utilisateur correspondant à son identifiant.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TASKS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner le code.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les incohérences.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Rechercher les causes possibles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier la cause racine probable.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Présenter les preuves techniques.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CONSTRAINTS
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne modifier aucun fichier.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas ajouter de dépendances.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas inventer de comportement non vérifié.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Distinguer les faits des hypothèses.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Signaler les informations manquantes.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OUTPUT FORMAT
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présenter un rapport contenant :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Symptôme.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Causes possibles.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Cause racine.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Preuves techniques.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifications complémentaires.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Niveau de confiance et ses justifications.</span>
-          </li>
-        </ul>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Comment améliorer la précision du prompt ?
+          3. Les éléments nécessaires à la reproduction
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un prompt professionnel doit éviter les ambiguïtés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Quelques bonnes pratiques :
+        Un scénario de reproduction doit contenir plusieurs informations.
       </p>
       <div className="overflow-x-auto my-6">
         <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
             <tr>
-              <th className="px-4 py-3">À éviter</th>
-              <th className="px-4 py-3">À privilégier</th>
+              <th className="px-4 py-3">Élément</th>
+              <th className="px-4 py-3">Description</th>
+              <th className="px-4 py-3">Exemple</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">« Mon code est cassé »</td>
-              <td className="px-4 py-2.5 font-medium">Décrire le comportement observé</td>
+              <td className="px-4 py-2.5 font-medium">Préconditions</td>
+              <td className="px-4 py-2.5 font-medium">État nécessaire avant le test</td>
+              <td className="px-4 py-2.5 font-medium">Utilisateur connecté</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">« Trouve une solution »</td>
-              <td className="px-4 py-2.5 font-medium">Demander un diagnostic précis</td>
+              <td className="px-4 py-2.5 font-medium">Données</td>
+              <td className="px-4 py-2.5 font-medium">Données utilisées</td>
+              <td className="px-4 py-2.5 font-medium">ID commande = 125</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Transmettre uniquement une ligne</td>
-              <td className="px-4 py-2.5 font-medium">Fournir le contexte des fonctions appelées</td>
+              <td className="px-4 py-2.5 font-medium">Actions</td>
+              <td className="px-4 py-2.5 font-medium">Manipulations effectuées</td>
+              <td className="px-4 py-2.5 font-medium">Cliquer sur « Mes commandes »</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">« Corrige tout »</td>
-              <td className="px-4 py-2.5 font-medium">Définir le périmètre exact</td>
+              <td className="px-4 py-2.5 font-medium">Résultat attendu</td>
+              <td className="px-4 py-2.5 font-medium">Comportement normal</td>
+              <td className="px-4 py-2.5 font-medium">Affichage de la commande</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Accepter la première hypothèse</td>
-              <td className="px-4 py-2.5 font-medium">Demander des preuves techniques</td>
+              <td className="px-4 py-2.5 font-medium">Résultat observé</td>
+              <td className="px-4 py-2.5 font-medium">Comportement réel</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 500</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Fréquence</td>
+              <td className="px-4 py-2.5 font-medium">Régularité du problème</td>
+              <td className="px-4 py-2.5 font-medium">Systématique ou intermittent</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Environnement</td>
+              <td className="px-4 py-2.5 font-medium">Conditions techniques</td>
+              <td className="px-4 py-2.5 font-medium">Chrome, Node.js, environnement de test</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Conseil : si une information manque, demandez à l&apos;IA de la signaler plutôt que de la laisser inventer une explication.
+        Exemple de scénario documenté
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        BUG-002 — Erreur lors de la consultation d&apos;une commande
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Gravité élevée — exemple pédagogique
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Préconditions
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Utilisateur authentifié.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Commande inexistante avec ID 125.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Actions
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ouvrir la page des commandes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Demander la consultation de la commande 125.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat attendu
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        HTTP 404 — Commande introuvable.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat observé
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        HTTP 500 — Erreur interne du serveur.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ce scénario est suffisamment précis pour commencer une investigation.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Travaux pratiques — Construire votre propre prompt
+          4. Reproduire les bugs selon leur origine
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Contexte :
+        4.1. Reproduction d&apos;un bug frontend React
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous développez une API Express qui permet de consulter les commandes d&apos;un client.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La route suivante présente une anomalie :
+        Prenons un formulaire de connexion.
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -485,119 +239,436 @@ return res.json(user);
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`router.get("/orders/:id", async (req, res) =&gt; {
-const order = await orderService.findById(req.params.orderId);
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`function LoginForm() {
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
 
-if (!order) {
-return res.status(404).json({
-message: "Order not found"
+async function login() {
+await axios.post("/api/login", {
+email,
+passwordUser: password
 });
 }
 
-return res.json(order);
-});`}</code></pre>
+return (
+&lt;button onClick={login}&gt;
+Se connecter
+&lt;/button&gt;
+);
+}
+Supposons que le backend attende un champ password et non passwordUser.`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;API ne retourne pas correctement la commande demandée.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Votre mission :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Construire un prompt professionnel avec les sept composants :
+        Pour reproduire le problème :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>ROLE</span>
+            <span>Ouvrir la page de connexion.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>OBJECTIVE</span>
+            <span>Saisir un email et un mot de passe valides.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>CONTEXT</span>
+            <span>Cliquer sur « Se connecter ».</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>DATA</span>
+            <span>Ouvrir Chrome DevTools.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>TASKS</span>
+            <span>Consulter l&apos;onglet Network.</span>
           </li>
+        </ul>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Examiner la requête POST /api/login.`}</code></pre>
+      </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>CONSTRAINTS</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>OUTPUT FORMAT</span>
+            <span>Vérifier le corps JSON transmis.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ne demandez pas à l&apos;IA de corriger le code. Vous devez uniquement obtenir un diagnostic.
+        On peut alors constater que le frontend transmet un nom de champ différent de celui attendu.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé du TP
+        4.2. Reproduction d&apos;un bug backend Express
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un prompt satisfaisant pourrait être :
+        Examinons ce contrôleur :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getOrder(req, res) {
+const order = await orderRepository.findById(
+Number(req.params.id)
+);
+
+return res.json({
+id: order.id,
+total: order.total
+});
+}
+Si la commande n'existe pas, findById() peut retourner undefined.
+L'accès à order.id provoquera une exception.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour reproduire le problème :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/orders/999999
+Authorization: Bearer TOKEN_VALID`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat possible :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`HTTP/1.1 500 Internal Server Error`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La reproduction confirme le comportement, mais ne suffit pas encore à démontrer toutes les causes possibles.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DIAGNOSTIC — API DE GESTION DES COMMANDES
+        4.3. Reproduction d&apos;un bug MySQL
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une requête peut retourner un résultat inattendu.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`SELECT *
+FROM orders
+WHERE user_id = 15;`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour examiner les données :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`SELECT id, user_id, total, status
+FROM orders
+WHERE user_id = 15;`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        On peut comparer les résultats avec les attentes métier.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Autres éléments à examiner :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Absence d&apos;enregistrements.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Mauvaise relation entre tables.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifiant incorrect.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Valeur NULL inattendue.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Requête qui retourne plusieurs lignes au lieu d&apos;une seule.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        4.4. Reproduction d&apos;un bug dans le service IA
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Supposons que le backend transmette un document à Gemini.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le problème signalé : « L&apos;analyse IA ne fonctionne pas. »
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il faut vérifier :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le document est-il correctement reçu ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Son contenu est-il exploitable ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>La clé API est-elle correctement configurée ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>La requête atteint-elle le service IA ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le service retourne-t-il une erreur ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le backend traite-t-il correctement la réponse ?</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il faut distinguer une erreur de transmission du document, une erreur d&apos;authentification API et une erreur provenant du service IA.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          5. Utiliser les outils pour reproduire les anomalies
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les outils de développement permettent d&apos;observer le comportement réel.
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Outil</th>
+              <th className="px-4 py-3">Utilisation</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Chrome DevTools — Console</td>
+              <td className="px-4 py-2.5 font-medium">Observer les erreurs JavaScript</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Chrome DevTools — Network</td>
+              <td className="px-4 py-2.5 font-medium">Examiner les requêtes HTTP</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">VS Code Debugger</td>
+              <td className="px-4 py-2.5 font-medium">Examiner l&apos;exécution du code</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Terminal Node.js</td>
+              <td className="px-4 py-2.5 font-medium">Observer les erreurs backend</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Postman</td>
+              <td className="px-4 py-2.5 font-medium">Reproduire les appels API</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">MySQL Workbench</td>
+              <td className="px-4 py-2.5 font-medium">Examiner les données SQL</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Git</td>
+              <td className="px-4 py-2.5 font-medium">Comparer les versions du code</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple avec Postman
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour reproduire une erreur sur une route Express :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Configuration de la requête
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        GET
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`http://localhost:3000/api/orders/999999`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Headers
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Authorization: Bearer TOKEN_VALID`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat à observer
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Code HTTP.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Temps de réponse.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Corps de la réponse.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Éventuels messages d&apos;erreur.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;avantage de Postman est de tester le backend indépendamment de React. Si l&apos;erreur apparaît également dans Postman, le problème ne dépend probablement pas de l&apos;interface frontend.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          6. Distinguer un bug systématique d&apos;un bug intermittent
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Tous les bugs ne se reproduisent pas de la même manière.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Bug systématique :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il apparaît chaque fois que les mêmes conditions sont réunies.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple : un utilisateur inexistant provoque toujours HTTP 500.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Bug intermittent :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il apparaît uniquement dans certaines circonstances.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemples :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une requête échoue occasionnellement.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Un téléchargement échoue avec un fichier volumineux.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Un appel IA dépasse parfois le délai d&apos;attente.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Deux opérations simultanées provoquent une incohérence.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour un bug intermittent, il faut noter les conditions, les horaires, la fréquence et les éventuelles dépendances externes.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ne pas conclure qu&apos;un problème est résolu simplement parce qu&apos;il ne s&apos;est pas reproduit lors d&apos;une seule tentative.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          7. Demander à un agent IA de reproduire un bug
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un agent IA peut aider à préparer les scénarios et à examiner les conditions nécessaires.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cependant, il faut lui demander de reproduire le problème sans modifier le projet.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        MISSION — REPRODUCTION D&apos;UNE ANOMALIE LOGICIELLE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         ROLE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Tu es un ingénieur backend spécialisé en Node.js et Express.
+        Tu es un ingénieur QA spécialisé dans les applications React, Node.js, Express et MySQL.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         OBJECTIVE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Identifier la cause racine du dysfonctionnement dela route GET /orders/.
+        Reproduire une anomalie signalée et confirmer les conditions dans lesquelles elle apparaît.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         CONTEXT
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Application Node.js avec Express et TypeScript.Architecture organisée en routes et services.
+        L&apos;application comprend un frontend React, un backend Express, une API REST et une base MySQL.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DATA
+        BUG SIGNALÉ
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Code concerné :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`router.get("/orders/:id", async (req, res) =&gt; {
-const order = await orderService.findById(req.params.orderId);
-
-if (!order) {
-return res.status(404).json({
-message: "Order not found"
-});
-}
-
-return res.json(order);
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comportement attendu :Retourner la commande correspondant à l&apos;identifiant demandé.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comportement observé :La route ne retourne pas correctement la commande.
+        La consultation d&apos;une commande inexistante provoque une erreur HTTP 500 au lieu d&apos;une réponse HTTP 404.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         TASKS
@@ -605,23 +676,39 @@ return res.json(order);
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner la déclaration de la route.</span>
+            <span>Examiner le code concerné.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifier les paramètres utilisés.</span>
+            <span>Identifier les préconditions nécessaires.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les incohérences.</span>
+            <span>Définir les données de test.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Déterminer la cause racine probable.</span>
+            <span>Construire un scénario de reproduction précis.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Présenter les preuves.</span>
+            <span>Identifier les requêtes HTTP nécessaires.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Déterminer les résultats attendus et observés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Rechercher les logs utiles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Déterminer si le problème est systématique ou intermittent.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Indiquer les preuves disponibles et les informations manquantes.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
@@ -634,56 +721,356 @@ return res.json(order);
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas ajouter de dépendances.</span>
+            <span>Ne supprimer aucune donnée.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ne pas proposer de correction non justifiée.</span>
+            <span>Ne pas exécuter de migration SQL.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Distinguer les faits des hypothèses.</span>
+            <span>Ne pas utiliser la base de production.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas exposer les secrets.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas présenter une reproduction théorique comme une reproduction réellement exécutée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Demander une autorisation avant toute action destructive ou modification.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         OUTPUT FORMAT
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Présenter le symptôme, les causes possibles,la cause racine, les preuves et les vérifications nécessaires.
+        Présenter :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Description du bug.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Préconditions.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Données de test.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Étapes de reproduction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Requête HTTP.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Résultat attendu.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Résultat observé.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Logs et preuves.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Conclusion : reproduit, non reproduit ou reproduction impossible.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Informations complémentaires nécessaires.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Aucune correction ne doit être effectuée.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultat du diagnostic :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`La route déclare le paramètre :id, mais le service utilise req.params.orderId.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La propriété attendue est donc :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`req.params.id`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La cause racine est une incohérence entre le nom du paramètre de route et son utilisation dans le code.
+        Point essentiel : un agent peut proposer un scénario de reproduction sans l&apos;avoir réellement exécuté. Il doit clairement indiquer la différence entre une hypothèse, une simulation et un test effectivement réalisé.
       </p>
       </section>
 
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          8. TP — Reproduire une anomalie dans une application complète
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Travaux pratiques
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Contexte : votre application de gestion documentaire possède un endpoint permettant de récupérer les informations d&apos;une commande.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le repository :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findById(id: number) {
+const [rows] = await db.execute(
+"SELECT * FROM orders WHERE id = ?",
+[id]
+);
+
+return rows[0];
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le contrôleur :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getOrder(req, res) {
+const order = await findById(
+Number(req.params.id)
+);
+
+return res.json({
+id: order.id,
+total: order.total
+});
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Travail demandé
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 1 — Préparer les conditions
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Démarrer MySQL.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Démarrer le backend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier que la route fonctionne avec une commande existante.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Préparer un identifiant qui n&apos;existe pas dans la base de test.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 2 — Tester avec Postman
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Effectuer deux requêtes :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`GET /api/orders/1
+GET /api/orders/999999`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Adapter le premier identifiant à une commande réellement présente dans votre base de test.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 3 — Observer les résultats
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Relever :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le code HTTP.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le corps de la réponse.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les logs backend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le comportement de la route pour les deux identifiants.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 4 — Documenter
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Créer une fiche de reproduction :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`BUG-006
+
+Fonctionnalité :
+Consultation d'une commande.
+
+Préconditions :
+Backend démarré.
+Base de test accessible.
+Utilisateur authentifié si nécessaire.
+
+Action :
+GET /api/orders/999999
+
+Résultat attendu :
+HTTP 404.
+
+Résultat observé :
+HTTP 500.
+
+Fréquence :
+À vérifier par plusieurs exécutions.
+
+Conclusion :
+Anomalie reproduite si le résultat est confirmé.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Corrigé attendu
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour une commande existante, le contrôleur doit retourner les informations de la commande.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Pour une commande inexistante, le code actuel peut provoquer une exception lors de l'accès à order.id.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La reproduction permet donc de confirmer une anomalie dans le traitement des résultats absents.
+      </p>
+      <Callout type="warning" title="Attention ">
+        <p className="text-xs sm:text-sm">à ce stade, ne corrigez pas encore le code. La correction sera étudiée dans les étapes suivantes du projet.</p>
+      </Callout>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          9. Bonnes pratiques professionnelles
+        </h2>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Reproduire le bug avant de proposer une correction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Utiliser des données de test contrôlées.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Enregistrer les étapes exactes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Comparer les résultats attendus et observés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tester le backend indépendamment du frontend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne jamais expérimenter sur une base de production.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Conserver les logs et les preuves.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas confondre une reproduction simulée et une reproduction réelle.</span>
+          </li>
+        </ul>
+      </section>
+
+      {/* Quiz de révision */}
+      <div className="pt-6 border-t-2 border-slate-200">
+        <QuickQuiz
+          title="Quiz de révision — Chapitre 7.3"
+          questions={[
+            {
+              id: 1,
+              question: "Quel est l'objectif principal de la reproduction d'un bug ?",
+              options: ["Modifier directement le code.", "Supprimer les logs."],
+              correctIndex: 1,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 2,
+              question: "Quel outil permet de tester une API indépendamment de React ?",
+              options: ["Postman.", "Photoshop.", "Figma."],
+              correctIndex: 0,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 3,
+              question: "Que faut-il documenter dans un scénario de reproduction ?",
+              options: ["Uniquement le nom du développeur.", "Les préconditions, les actions et les résultats.", "Uniquement le fichier concerné."],
+              correctIndex: 1,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 4,
+              question: "Un bug intermittent apparaît-il systématiquement ?",
+              options: ["Oui.", "Non."],
+              correctIndex: 1,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+            {
+              id: 5,
+              question: "Un agent IA peut-il déclarer qu'un bug a été reproduit sans avoir exécuté le test ?",
+              options: ["Oui, sans précision.", "Non, il doit distinguer scénario proposé et reproduction réellement exécutée."],
+              correctIndex: 1,
+              explanation: "Vérifiez la démarche d'audit et les principes exposés dans ce chapitre.",
+            },
+          ]}
+        />
+      </div>
     </div>
   );
 };

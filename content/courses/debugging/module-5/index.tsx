@@ -11,12 +11,15 @@ import { Chapitre7Content } from './Chapitre7Content';
 import { Chapitre8Content } from './Chapitre8Content';
 import { Chapitre9Content } from './Chapitre9Content';
 import { Chapitre10Content } from './Chapitre10Content';
+import { Chapitre11Content } from './Chapitre11Content';
+import { Chapitre12Content } from './Chapitre12Content';
+import { Chapitre13Content } from './Chapitre13Content';
 
-interface DebuggingModule8RendererProps {
+interface DebuggingModule5RendererProps {
   chapterSlug: string;
 }
 
-export const DebuggingModule8Renderer: React.FC<DebuggingModule8RendererProps> = ({ chapterSlug }) => {
+export const DebuggingModule5Renderer: React.FC<DebuggingModule5RendererProps> = ({ chapterSlug }) => {
   switch (chapterSlug) {
     case 'chapitre-1':
       return <Chapitre1Content />;
@@ -38,14 +41,13 @@ export const DebuggingModule8Renderer: React.FC<DebuggingModule8RendererProps> =
       return <Chapitre9Content />;
     case 'chapitre-10':
       return <Chapitre10Content />;
+    case 'chapitre-11':
+      return <Chapitre11Content />;
+    case 'chapitre-12':
+      return <Chapitre12Content />;
+    case 'chapitre-13':
+      return <Chapitre13Content />;
     default:
-      return (
-        <div className="p-8 text-center text-slate-400">
-          Chapitre introuvable ou en cours de rédaction.
-        </div>
-      );
+      return <div>Chapitre non trouvé</div>;
   }
 };
-
-export default DebuggingModule8Renderer;
-

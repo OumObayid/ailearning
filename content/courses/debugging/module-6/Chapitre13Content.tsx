@@ -1,9 +1,8 @@
 ﻿'use client';
 
 import React from 'react';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Icon } from '@/components/common/Icon';
-import { PerformanceSecurityAuditLab } from '@/components/interactive/PerformanceSecurityAuditLab';
+import { AiAssistedDebuggingLab } from '@/components/interactive/AiAssistedDebuggingLab';
 
 export const Chapitre13Content: React.FC = () => {
   return (
@@ -15,419 +14,747 @@ export const Chapitre13Content: React.FC = () => {
           <span>Ingénierie du Débogage</span>
         </div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 13 — TP Final — Audit et diagnostic d&apos;une application e-commerce (ShopDebug)
+          Chapitre 13 — Vérifier automatiquement les corrections avec des tests
         </h1>
       </div>
 
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TP final du Module 6 — Audit et diagnostic d&apos;une application
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Projet de synthèse
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Niveau intermédiaire à avancé
+        Chapitre 13 — 6.13. Vérifier automatiquement les corrections avec des tests.
       </p>
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectif du TP
+          1. Objectifs pédagogiques
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous allez intervenir comme un ingénieur chargé d&apos;auditer une application e-commerce développée avec Node.js, Express et MySQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;application fonctionne, mais plusieurs anomalies ont été signalées :
+        À la fin de ce chapitre, vous serez capable de :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Le serveur ralentit après plusieurs requêtes.</span>
+            <span>Comprendre pourquoi une correction doit être vérifiée automatiquement.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>La mémoire consommée augmente progressivement.</span>
+            <span>Distinguer les tests unitaires, d&apos;intégration et de non-régression.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Certaines routes deviennent très lentes.</span>
+            <span>Utiliser Vitest pour tester des fonctions et des services.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Deux clients peuvent acheter le dernier article en stock.</span>
+            <span>Utiliser Supertest pour tester des API Express.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Un utilisateur peut consulter les données d&apos;un autre compte.</span>
+            <span>Demander à un agent IA de créer des tests pertinents.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Certaines requêtes SQL sont vulnérables.</span>
+            <span>Vérifier que les tests détectent réellement le bug initial.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Des erreurs d&apos;accès aux fichiers apparaissent.</span>
+            <span>Identifier les régressions introduites par une correction.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Les logs ne permettent pas de comprendre les incidents.</span>
+            <span>Intégrer les tests dans un processus de validation avant livraison.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          2. Pourquoi tester automatiquement une correction ?
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un agent IA peut proposer une correction qui semble correcte, mais qui ne résout pas réellement le problème.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il peut également corriger un bug tout en introduisant une autre anomalie.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une API Express retourne une erreur HTTP 500 lorsqu&apos;un utilisateur n&apos;existe pas.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent ajoute cette vérification :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`if (!user) {
+return res.status(404).json({
+message: "Utilisateur introuvable"
+});
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le code paraît correct.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Mais plusieurs questions restent à vérifier :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>L&apos;utilisateur existant retourne-t-il toujours une réponse HTTP 200 ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Aucune surveillance ni alerte n&apos;est configurée.</span>
+            <span>L&apos;utilisateur inexistant retourne-t-il bien HTTP 404 ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les autres fonctionnalités de la route fonctionnent-elles toujours ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les erreurs inattendues de la base de données sont-elles correctement traitées ?</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Votre mission est de détecter, expliquer, corriger et vérifier ces problèmes.
+        C&apos;est précisément le rôle des tests automatisés.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;objectif n&apos;est pas simplement de modifier le code : vous devez suivre une véritable démarche professionnelle d&apos;audit.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Contexte de l&apos;application
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        L&apos;application s&apos;appelle ShopDebug. Elle permet aux clients de consulter des produits, de gérer leur compte et de passer des commandes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Architecture technique
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Frontend
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        React — Interface utilisateur
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Backend
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Node.js — Express — API REST
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Base de données
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MySQL — Produits, utilisateurs, commandes
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Outils d&apos;audit
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chrome DevTools
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Node Inspector
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        MySQL EXPLAIN
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Autocannon
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Postman
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        OWASP ZAP
+        Une correction n&apos;est pas validée simplement parce que le code a été modifié. Elle doit produire les résultats attendus.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Préparation du projet
+          3. Les trois catégories de tests à connaître
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.1. Arborescence
+        3.1. Tests unitaires (Unit Tests)
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créez le projet suivant :
+        Ils vérifient une petite unité de code indépendamment du reste de l&apos;application.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        shopdebug/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ├── backend/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   ├── server.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   ├── db.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   ├── routes/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   │   ├── products.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   │   ├── users.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   │   ├── orders.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   │   └── files.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   ├── middleware/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   │   └── auth.js
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   ├── logs/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   └── uploads/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ├── frontend/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │   └── (application React)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        │
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        └── database/
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        └── shopdebug.sql
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.2. Installation du backend
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans le dossier backend :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm init -y
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm install express mysql2 dotenv cors helmet zod
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm install express-rate-limit winston prom-client
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm install --save-dev nodemon autocannon
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans package.json, ajoutez :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;scripts&quot;: &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;dev&quot;: &quot;nodemon server.js&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;start&quot;: &quot;node server.js&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.3. Base de données
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créez database/shopdebug.sql :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CREATE DATABASE shopdebug;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        USE shopdebug;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CREATE TABLE users (
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        id INT AUTO_INCREMENT PRIMARY KEY,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        name VARCHAR(100),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        email VARCHAR(150) UNIQUE,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        password VARCHAR(255),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        role VARCHAR(30) DEFAULT &apos;customer&apos;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CREATE TABLE products (
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        id INT AUTO_INCREMENT PRIMARY KEY,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        name VARCHAR(150),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        price DECIMAL(10,2),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        stock INT DEFAULT 0
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        CREATE TABLE orders (
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        id INT AUTO_INCREMENT PRIMARY KEY,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        user_id INT,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        product_id INT,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        quantity INT,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        INSERT INTO users (name, email, password, role) VALUES
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        (&apos;Alice&apos;, &apos;alice@example.com&apos;, &apos;hash_alice&apos;, &apos;customer&apos;),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        (&apos;Bob&apos;, &apos;bob@example.com&apos;, &apos;hash_bob&apos;, &apos;customer&apos;),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        (&apos;Admin&apos;, &apos;admin@example.com&apos;, &apos;hash_admin&apos;, &apos;admin&apos;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        INSERT INTO products (name, price, stock) VALUES
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        (&apos;Laptop&apos;, 850.00, 10),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        (&apos;Keyboard&apos;, 45.00, 5),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        (&apos;Mouse&apos;, 20.00, 1),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        (&apos;Monitor&apos;, 220.00, 20);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les valeurs de mot de passe ci-dessus sont des données fictives pour le TP. Dans une vraie application, utilisez des mots de passe hachés avec Argon2id ou bcrypt.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        3.4. Connexion MySQL
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créez backend/.env :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        PORT=3000
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DB_HOST=localhost
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DB_USER=root
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DB_PASSWORD=VOTRE_MOT_DE_PASSE
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        DB_NAME=shopdebug
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créez backend/db.js :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const mysql = require(&quot;mysql2/promise&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        require(&quot;dotenv&quot;).config();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const pool = mysql.createPool(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        host: process.env.DB_HOST,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        user: process.env.DB_USER,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        password: process.env.DB_PASSWORD,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        database: process.env.DB_NAME,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        waitForConnections: true,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        connectionLimit: 5
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        module.exports = pool;
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Les missions d&apos;audit
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vous allez travailler sur neuf missions. Pour chacune, suivez cette démarche :
+        Exemples :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Reproduire le problème.</span>
+            <span>Une fonction de calcul.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Observer le symptôme.</span>
+            <span>Une fonction de validation.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Formuler une hypothèse.</span>
+            <span>Une méthode de service.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier la cause racine.</span>
+            <span>Une fonction de transformation de données.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export function calculateTotal(price: number, quantity: number) {
+return price * quantity;
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Test :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import { describe, it, expect } from "vitest";
+import { calculateTotal } from "./calculateTotal";
+
+describe("calculateTotal", () =&gt; {
+it("calcule le montant total", () =&gt; {
+expect(calculateTotal(20, 3)).toBe(60);
+});
+});
+Le test vérifie que la fonction retourne 60 lorsque le prix est 20 et la quantité 3.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.2. Tests d&apos;intégration (Integration Tests)
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ils vérifient que plusieurs composants fonctionnent correctement ensemble.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemples :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Un contrôleur et un service.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Un service et un repository.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Une API Express et une base de données de test.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Dans une application Node.js, un test d&apos;intégration peut vérifier qu&apos;une route reçoit une requête, appelle le bon service et retourne une réponse HTTP correcte.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.3. Tests de non-régression (Regression Tests)
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ils vérifient qu&apos;une correction ne casse pas une fonctionnalité qui fonctionnait auparavant.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Vous corrigez le cas où un utilisateur n&apos;existe pas.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il faut vérifier deux situations :
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Scénario</th>
+              <th className="px-4 py-3">Résultat attendu</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Utilisateur existant</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 200</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Utilisateur inexistant</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 404</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le deuxième test vérifie la correction du bug. Le premier protège le comportement qui fonctionnait déjà.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        À retenir
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Test unitaire : vérifie une unité de code.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Test d&apos;intégration : vérifie la collaboration entre plusieurs composants.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Test de non-régression : vérifie qu&apos;une ancienne fonctionnalité reste opérationnelle.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          4. Comprendre les assertions
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une assertion est une vérification qui compare un résultat obtenu avec un résultat attendu.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Avec Vitest :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`expect(result).toBe(10);
+Cela signifie que result doit être égal à 10.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Quelques assertions utiles :
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Assertion</th>
+              <th className="px-4 py-3">Fonction</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">toBe()</td>
+              <td className="px-4 py-2.5 font-medium">Vérifie une égalité stricte</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">toEqual()</td>
+              <td className="px-4 py-2.5 font-medium">Compare des valeurs ou objets</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">toBeDefined()</td>
+              <td className="px-4 py-2.5 font-medium">Vérifie qu&apos;une valeur existe</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">toBeUndefined()</td>
+              <td className="px-4 py-2.5 font-medium">Vérifie qu&apos;une valeur est undefined</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">toBeNull()</td>
+              <td className="px-4 py-2.5 font-medium">Vérifie une valeur null</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">toThrow()</td>
+              <td className="px-4 py-2.5 font-medium">Vérifie qu&apos;une fonction déclenche une exception</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">toHaveBeenCalled()</td>
+              <td className="px-4 py-2.5 font-medium">Vérifie qu&apos;une fonction mockée a été appelée</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`expect(user).toBeDefined();
+expect(response.status).toBe(200);
+expect(response.body.email).toBe("user@example.com");`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une assertion incorrecte peut donner une fausse impression de sécurité. Il faut donc vérifier que chaque test contrôle réellement le comportement attendu.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          5. Utiliser Vitest pour automatiser les tests
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        5.1. Installer et configurer Vitest
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Dans un projet Node.js avec TypeScript :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm install -D vitest
+Dans package.json, ajoutez un script :
+{
+"scripts": {
+"test": "vitest run",
+"test:watch": "vitest"
+}
+}
+npm run test : exécute les tests une fois.
+npm run test:watch : surveille les fichiers et relance les tests concernés.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        5.2. Organiser les fichiers
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`backend/
+├── src/
+│   ├── controllers/
+│   │   └── userController.ts
+│   ├── repositories/
+│   │   └── userRepository.ts
+│   └── app.ts
+│
+└── tests/
+└── userController.test.ts`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        5.3. Tester une fonction simple
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Fonction :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export function isValidAge(age: number): boolean {
+return age &gt;= 18;
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Test :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import { describe, it, expect } from "vitest";
+import { isValidAge } from "./isValidAge";
+
+describe("isValidAge", () =&gt; {
+it("accepte un âge supérieur ou égal à 18", () =&gt; {
+expect(isValidAge(25)).toBe(true);
+expect(isValidAge(18)).toBe(true);
+});
+
+it("refuse un âge inférieur à 18", () =&gt; {
+expect(isValidAge(16)).toBe(false);
+});
+});`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;intérêt est de vérifier automatiquement plusieurs situations, y compris les cas limites.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          6. Tester une API Express avec Supertest
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour vérifier une route HTTP, nous pouvons utiliser Supertest.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Supertest permet d&apos;envoyer des requêtes à une application Express sans démarrer manuellement un serveur sur un port réseau.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        6.1. Installer Supertest
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm install -D supertest
+npm install -D @types/supertest`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        6.2. Préparer le contrôleur
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Voici une version corrigée de notre contrôleur :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import { Request, Response, NextFunction } from "express";
+import * as userRepository from "../repositories/userRepository";
+
+export async function getUser(
+req: Request,
+res: Response,
+next: NextFunction
+) {
+try {
+const user = await userRepository.findById(
+Number(req.params.id)
+);
+
+if (!user) {
+return res.status(404).json({
+message: "Utilisateur introuvable"
+});
+}
+
+return res.status(200).json(user);
+} catch (error) {
+next(error);
+}
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        6.3. Préparer l&apos;application Express
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Fichier app.ts :
+import express from "express";
+import { getUser } from "./controllers/userController";
+
+const app = express();
+
+app.use(express.json());
+
+app.get("/users/:id", getUser);
+
+app.use((error, req, res, next) =&gt; {
+res.status(500).json({
+message: "Erreur interne du serveur"
+});
+});
+
+export default app;`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette application expose la route à tester et transmet les erreurs inattendues au middleware de gestion.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        6.4. Écrire les tests avec Supertest
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Fichier userController.test.ts :
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import request from "supertest";
+import app from "../src/app";
+import * as userRepository from "../src/repositories/userRepository";
+
+vi.mock("../src/repositories/userRepository", () =&gt; ({
+findById: vi.fn()
+}));
+
+describe("GET /users/:id", () =&gt; {
+beforeEach(() =&gt; {
+vi.clearAllMocks();
+});
+
+it("retourne un utilisateur existant", async () =&gt; {
+vi.mocked(userRepository.findById).mockResolvedValue({
+id: 15,
+email: "user@example.com"
+});
+
+const response = await request(app).get("/users/15");
+
+expect(response.status).toBe(200);
+expect(response.body).toEqual({
+id: 15,
+email: "user@example.com"
+});
+});
+
+it("retourne 404 si l'utilisateur est absent", async () =&gt; {
+vi.mocked(userRepository.findById).mockResolvedValue(null);
+
+const response = await request(app).get("/users/99999");
+
+expect(response.status).toBe(404);
+expect(response.body.message).toBe("Utilisateur introuvable");
+});
+
+it("retourne 500 si le repository échoue", async () =&gt; {
+vi.mocked(userRepository.findById).mockRejectedValue(
+new Error("Database unavailable")
+);
+
+const response = await request(app).get("/users/15");
+
+expect(response.status).toBe(500);
+});
+});
+L'exemple suppose que findById retourne un utilisateur ou null, et que son type TypeScript est correctement déclaré. Le repository est simulé avec un mock : ces tests vérifient la route et le contrôleur, pas la connexion réelle à MySQL.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        6.5. Exécuter les tests
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm run test`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat attendu :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`✓ retourne un utilisateur existant
+✓ retourne 404 si l'utilisateur est absent
+✓ retourne 500 si le repository échoue
+
+Test Files  1 passed
+Tests       3 passed`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Tests réussis
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le résultat indique que les trois scénarios se comportent comme prévu.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          7. Vérifier qu&apos;un test détecte réellement le bug
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un point essentiel est souvent oublié : un test peut réussir sans vérifier correctement le problème.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour éviter cela, il faut vérifier qu&apos;il aurait échoué avant la correction.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        7.1. Le code avant correction
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const user = await userRepository.findById(
+Number(req.params.id)
+);
+
+return res.json({
+id: user.id,
+email: user.email
+});
+Si user vaut null, l'accès à user.id provoque une exception.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le middleware retourne alors HTTP 500.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        7.2. Le test de non-régression
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`it("retourne 404 si l'utilisateur est absent", async () =&gt; {
+vi.mocked(userRepository.findById).mockResolvedValue(null);
+
+const response = await request(app).get("/users/99999");
+
+expect(response.status).toBe(404);
+});`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Avec l&apos;ancien code, ce test échoue : il reçoit HTTP 500 au lieu de HTTP 404.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Après la correction, il réussit.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        C&apos;est exactement le comportement recherché : le test démontre qu&apos;il détecte l&apos;anomalie initiale.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        7.3. La méthode à appliquer
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Reproduire le bug.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Écrire un test qui représente le comportement incorrect.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier que le test échoue avant la correction.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
@@ -435,1592 +762,744 @@ export const Chapitre13Content: React.FC = () => {
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Refaire le test pour vérifier la correction.</span>
+            <span>Relancer le même test.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier qu&apos;il réussit.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Exécuter les autres tests pour détecter les régressions.</span>
           </li>
         </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Mission 1 — Détecter une fuite mémoire
-        </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : après plusieurs appels à l&apos;API, la consommation mémoire augmente progressivement.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans backend/routes/products.js, ajoutez temporairement cette route défectueuse :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const express = require(&quot;express&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const router = express.Router();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        let cache = [];
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/memory&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        for (let i = 0; i &amp;lt; 10000; i++) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        cache.push(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        id: i,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        data: &quot;Donnée conservée inutilement&quot;.repeat(20)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        cacheSize: cache.length,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        memory: process.memoryUsage()
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        module.exports = router;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
+        Cette démarche est proche du principe Red – Green – Refactor :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Appelez plusieurs fois GET /api/products/memory.</span>
+            <span>Red : le test échoue.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Observez heapUsed et rss.</span>
+            <span>Green : la correction fait réussir le test.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Expliquez pourquoi les objets restent en mémoire.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Corrigez la fuite.</span>
+            <span>Refactor : améliorer le code sans changer le comportement validé.</span>
           </li>
         </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction attendue :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/memory&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const temporaryData = [];
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        for (let i = 0; i &amp;lt; 10000; i++) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        temporaryData.push(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        id: i,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        data: &quot;Donnée temporaire&quot;.repeat(20)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        count: temporaryData.length,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        memory: process.memoryUsage()
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ici, les données ne sont plus conservées dans une variable globale. Elles pourront être récupérées par le Garbage Collector lorsqu&apos;elles ne seront plus référencées.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : répétez les appels et observez la mémoire sur plusieurs cycles. Une hausse ponctuelle ne suffit pas à conclure à une fuite.
-      </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Mission 2 — Détecter un blocage de l&apos;Event Loop
+          8. Faire vérifier les corrections par un agent IA
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : une route de calcul ralentit toutes les autres routes.
+        L&apos;agent peut participer à la création et à l&apos;exécution des tests, mais il ne doit pas être le seul juge de la qualité de sa propre correction.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ajoutez :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/cpu&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        let result = 0;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        for (let i = 0; i &amp;lt; 500000000; i++) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        result += Math.sqrt(i);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; result &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/fast&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; message: &quot;Réponse rapide&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
+        Il faut lui demander de vérifier plusieurs éléments :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Lancez /api/products/cpu.</span>
+            <span>Le test couvre-t-il le bug initial ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Pendant le calcul, appelez /api/products/fast.</span>
+            <span>Le test aurait-il échoué avant la correction ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Mesurez le temps de réponse.</span>
+            <span>Les scénarios normaux fonctionnent-ils toujours ?</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Expliquez pourquoi la route rapide est également ralentie.</span>
+            <span>Les cas limites sont-ils couverts ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les tests existants passent-ils encore ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les tests utilisent-ils un environnement sécurisé ?</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cause racine : la boucle CPU synchrone monopolise le thread principal de Node.js et bloque l&apos;Event Loop.
+        8.1. Prompt professionnel de validation
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction attendue : déplacer le calcul intensif dans un Worker Thread, puis transmettre le résultat au thread principal.
+        MISSION — VALIDATION AUTOMATIQUE D&apos;UNE CORRECTION
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple simplifié du fichier backend/worker.js :
+        ROLE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const &#123; parentPort &#125; = require(&quot;node:worker_threads&quot;);
+        Agis comme un ingénieur QA spécialisé dans les tests automatisés d&apos;applications React, Node.js, Express et TypeScript.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        let result = 0;
+        OBJECTIVE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        for (let i = 0; i &amp;lt; 500000000; i++) &#123;
+        Vérifier que la correction récemment apportée résout le bug initial sans introduire de régression.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        result += Math.sqrt(i);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        parentPort.postMessage(result);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans la route Express :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const &#123; Worker &#125; = require(&quot;node:worker_threads&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const path = require(&quot;path&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/cpu-fixed&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const worker = new Worker(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        path.join(__dirname, &quot;../worker.js&quot;)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        worker.once(&quot;message&quot;, result =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; result &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        worker.once(&quot;error&quot;, error =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(500).json(&#123; error: &quot;Erreur de calcul&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour une application réelle, utilisez un pool de workers plutôt que de créer un nouveau worker à chaque requête. Prévoyez aussi la gestion des sorties et des délais d&apos;exécution.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : pendant le calcul, /fast doit rester réactive.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Mission 3 — Identifier une requête SQL lente
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : la consultation des produits prend plusieurs secondes lorsque la table contient beaucoup de données.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Route initiale :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/slow&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [rows] = await db.query(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;SELECT * FROM products&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(rows);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
+        TÂCHES
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Analysez la requête avec EXPLAIN.</span>
+            <span>Examiner le code modifié.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiez les données inutiles récupérées.</span>
+            <span>Identifier le comportement qui posait problème.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ajoutez une pagination.</span>
+            <span>Vérifier si un test couvre précisément ce comportement.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Comparez les résultats.</span>
+            <span>Vérifier que ce test aurait échoué avant la correction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier les scénarios positifs et négatifs à tester.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner les tests unitaires et d&apos;intégration existants.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Exécuter les tests autorisés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Analyser les erreurs éventuelles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Présenter les résultats et les risques restants.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction attendue :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        try &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const page = Math.max(1, Number(req.query.page) || 1);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const limit = 20;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const offset = (page - 1) * limit;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [products] = await db.execute(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        `SELECT id, name, price, stock
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        FROM products
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ORDER BY id
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        LIMIT ? OFFSET ?`,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        [limit, offset]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; page, limit, products &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125; catch (error) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(500).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &quot;Erreur lors du chargement des produits&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : comparez les durées, le volume de données retournées et le plan d&apos;exécution. Pour cette petite table, la différence de temps peut être faible : le test devient réellement significatif avec un volume important de données.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Mission 4 — Détecter une condition de concurrence
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : deux clients achètent simultanément le dernier produit disponible.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Route vulnérable :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.post(&quot;/buy&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const &#123; productId, quantity &#125; = req.body;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [products] = await db.execute(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;SELECT stock FROM products WHERE id = ?&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        [productId]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (products[0].stock &amp;gt;= quantity) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        await db.execute(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;UPDATE products SET stock = stock - ? WHERE id = ?&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        [quantity, productId]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.json(&#123; message: &quot;Achat accepté&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(400).json(&#123; message: &quot;Stock insuffisant&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
+        CONTRAINTES
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Repérez le moment où les deux requêtes peuvent lire le même stock.</span>
+            <span>Ne pas modifier le code de production.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Simulez deux achats simultanés du produit Mouse, dont le stock est de 1.</span>
+            <span>Ne pas supprimer les tests existants.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Corrigez le problème.</span>
+            <span>Ne pas modifier la configuration du projet sans autorisation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas utiliser la base de données de production.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas inventer des résultats de tests.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Signaler les tests qui n&apos;ont pas été exécutés.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction attendue :
+        FORMAT DE SORTIE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.post(&quot;/buy&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const &#123; productId, quantity &#125; = req.body;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        !Number.isInteger(productId) ||
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        !Number.isInteger(quantity) ||
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        quantity &amp;lt;= 0
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.status(400).json(&#123; message: &quot;Données invalides&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        try &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [result] = await db.execute(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        `UPDATE products
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        SET stock = stock - ?
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        WHERE id = ? AND stock &amp;gt;= ?`,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        [quantity, productId, quantity]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (result.affectedRows === 0) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.status(409).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &quot;Stock insuffisant ou produit inexistant&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; message: &quot;Achat accepté&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125; catch (error) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(500).json(&#123; message: &quot;Erreur serveur&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        La vérification et la modification sont réalisées dans une seule instruction SQL atomique.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : envoyez deux requêtes simultanées pour acheter le dernier article. Une seule doit réussir.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. Mission 5 — Détecter une vulnérabilité IDOR
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : un utilisateur peut consulter le compte d&apos;un autre utilisateur en modifiant simplement l&apos;identifiant dans l&apos;URL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Route vulnérable :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/:id&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [users] = await db.execute(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;SELECT id, name, email FROM users WHERE id = ?&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        [req.params.id]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(users[0]);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
+        Présente :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Connectez-vous avec un compte utilisateur.</span>
+            <span>Bug initial.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Consultez /api/users/1.</span>
+            <span>Correction examinée.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Essayez /api/users/2.</span>
+            <span>Tests existants.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifiez si le serveur contrôle les droits d&apos;accès.</span>
+            <span>Tests manquants.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Résultats d&apos;exécution.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Régressions éventuelles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Verdict : validé, partiellement validé ou non validé.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction attendue :
+        Ce prompt transforme l&apos;agent en contrôleur qualité de la correction, plutôt qu&apos;en simple générateur de code.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le middleware d&apos;authentification doit identifier l&apos;utilisateur à partir d&apos;une session ou d&apos;un jeton vérifié. Il ne faut jamais faire confiance à un identifiant d&apos;utilisateur fourni librement par le client.
+        8.2. Séparer les rôles des agents
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/:id&quot;, auth, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const requestedId = Number(req.params.id);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (!Number.isInteger(requestedId)) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.status(400).json(&#123; message: &quot;Identifiant invalide&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        req.user.role !== &quot;admin&quot; &amp;amp;&amp;amp;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        req.user.id !== requestedId
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.status(403).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &quot;Accès interdit&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [users] = await db.execute(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;SELECT id, name, email FROM users WHERE id = ?&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        [requestedId]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (!users.length) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.status(404).json(&#123; message: &quot;Utilisateur introuvable&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(users[0]);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : un client ne peut accéder qu&apos;à ses propres données ; un administrateur autorisé peut consulter les autres comptes.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          10. Mission 6 — Détecter une injection SQL
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : une requête de recherche ou d&apos;authentification accepte des entrées qui modifient la structure de la requête SQL.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Route vulnérable :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/search&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const name = req.query.name;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const sql =
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        `SELECT * FROM products WHERE name = &apos;$&#123;name&#125;&apos;`;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [rows] = await db.query(sql);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(rows);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiez le risque lié à la concaténation SQL.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Testez la route uniquement sur votre environnement local.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Remplacez la requête par une requête paramétrée.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction attendue :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/search&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        try &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const name = String(req.query.name || &quot;&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const [rows] = await db.execute(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;SELECT id, name, price FROM products WHERE name LIKE ?&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        [`%$&#123;name&#125;%`]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(rows);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125; catch (error) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(500).json(&#123; message: &quot;Erreur serveur&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : les caractères spéciaux fournis par l&apos;utilisateur sont traités comme des données et non comme du code SQL.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          11. Mission 7 — Détecter un problème de permissions et de Path Traversal
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : une route de téléchargement permet de demander des fichiers qui ne devraient pas être accessibles.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Route vulnérable :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const fs = require(&quot;fs&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const path = require(&quot;path&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/download&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const filename = req.query.file;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const filePath = path.join(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        __dirname,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;../uploads&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        filename
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.sendFile(filePath);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiez les risques liés au paramètre file.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifiez les chemins utilisés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Contrôlez l&apos;accès aux fichiers.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Testez la correction.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction attendue :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une approche plus sûre consiste à utiliser un identifiant de fichier associé à un chemin connu côté serveur, plutôt que d&apos;accepter directement un chemin utilisateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const files = &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;guide&quot;: &quot;guide.pdf&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;catalog&quot;: &quot;catalog.pdf&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.get(&quot;/download/:id&quot;, auth, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const filename = files[req.params.id];
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (!filename) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.status(404).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &quot;Fichier introuvable&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const filePath = path.join(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        __dirname,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &quot;../uploads&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        filename
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        );
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.sendFile(filePath, error =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (error &amp;amp;&amp;amp; !res.headersSent) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.status(404).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &quot;Impossible de télécharger le fichier&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Il faut également vérifier les permissions du dossier uploads et s&apos;assurer que seuls les utilisateurs autorisés peuvent télécharger les fichiers concernés.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : un identifiant inconnu ne permet pas de récupérer un fichier arbitraire.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          12. Mission 8 — Améliorer les logs de sécurité
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : l&apos;équipe ne parvient pas à comprendre pourquoi certains utilisateurs échouent à se connecter.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ajoutez une journalisation structurée avec Winston.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const winston = require(&quot;winston&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const logger = winston.createLogger(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        level: &quot;info&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        format: winston.format.combine(
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        winston.format.timestamp(),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        winston.format.json()
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ),
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        transports: [
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        new winston.transports.File(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        filename: &quot;logs/security.log&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        ]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        module.exports = logger;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple dans une route de connexion :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const logger = require(&quot;../logger&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        router.post(&quot;/login&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const &#123; email &#125; = req.body;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        {"//"} Exemple pédagogique : remplacer par la vraie vérification.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const authenticated = false;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        if (!authenticated) &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        logger.warn(&quot;Échec authentification&quot;, &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        email,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        event: &quot;LOGIN_FAILED&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        return res.status(401).json(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        message: &quot;Identifiants incorrects&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        logger.info(&quot;Authentification réussie&quot;, &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        event: &quot;LOGIN_SUCCESS&quot;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; message: &quot;Connexion réussie&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Enregistrez les connexions réussies et échouées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ajoutez un identifiant de requête pour faciliter la corrélation.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifiez les tentatives répétées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Vérifiez que les mots de passe, tokens et clés API ne figurent jamais dans les logs.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Validation : consultez logs/security.log et vérifiez que les événements sont exploitables sans exposer de données sensibles.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          13. Mission 9 — Mettre en place la surveillance
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Symptôme : les incidents ne sont détectés qu&apos;après les plaintes des utilisateurs.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Installez un suivi simple des requêtes HTTP avec prom-client.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans server.js :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const express = require(&quot;express&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const helmet = require(&quot;helmet&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const rateLimit = require(&quot;express-rate-limit&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const client = require(&quot;prom-client&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const app = express();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(helmet());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(express.json());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const register = new client.Registry();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        client.collectDefaultMetrics(&#123; register &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const requestDuration = new client.Histogram(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        name: &quot;http_request_duration_seconds&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        help: &quot;Durée des requêtes HTTP&quot;,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        labelNames: [&quot;method&quot;, &quot;route&quot;, &quot;status&quot;],
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        registers: [register]
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use((req, res, next) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const end = requestDuration.startTimer();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.on(&quot;finish&quot;, () =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        end(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        method: req.method,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        route: req.route?.path || req.path,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        status: String(res.statusCode)
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        next();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/health/live&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; status: &quot;alive&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/metrics&quot;, async (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.set(&quot;Content-Type&quot;, register.contentType);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.end(await register.metrics());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(rateLimit(&#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        windowMs: 15 * 60 * 1000,
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        limit: 100
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;));
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.listen(3000, () =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        console.log(&quot;Serveur démarré sur le port 3000&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Travail demandé :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Consultez /health/live.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Consultez /metrics.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Envoyez plusieurs requêtes à l&apos;application.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Observez les métriques de durée et de consommation du processus.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Expliquez comment Prometheus et Grafana pourraient exploiter ces informations.</span>
-          </li>
-        </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Correction et précautions :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>En production, protégez /metrics contre les accès non autorisés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Ajoutez un contrôle de disponibilité de MySQL dans un endpoint /health/ready.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Configurez des seuils d&apos;alerte adaptés.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Utilisez un stockage partagé pour le Rate Limiting si plusieurs instances du serveur sont déployées.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Évitez les labels contenant des identifiants utilisateur ou des valeurs uniques : ils peuvent provoquer une cardinalité excessive.</span>
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          14. Intégration et lancement du projet
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Dans backend/server.js, montez les routes :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const express = require(&quot;express&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const cors = require(&quot;cors&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        require(&quot;dotenv&quot;).config();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        const app = express();
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(cors());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(express.json());
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(&quot;/api/products&quot;, require(&quot;./routes/products&quot;));
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(&quot;/api/users&quot;, require(&quot;./routes/users&quot;));
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(&quot;/api/orders&quot;, require(&quot;./routes/orders&quot;));
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.use(&quot;/api/files&quot;, require(&quot;./routes/files&quot;));
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.get(&quot;/&quot;, (req, res) =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        res.json(&#123; message: &quot;ShopDebug API opérationnelle&quot; &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        app.listen(process.env.PORT || 3000, () =&amp;gt; &#123;
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        console.log(&quot;Serveur démarré&quot;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        &#125;);
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créez les dossiers logs et uploads, vérifiez la configuration MySQL, puis lancez :
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npm run dev
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les extraits précédents sont des éléments de travail à intégrer : ajoutez les imports nécessaires dans chaque fichier, configurez le middleware auth avec une véritable authentification et vérifiez les chemins relatifs avant de lancer le projet.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          15. Campagne de tests finale
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Voici les tests à effectuer après les corrections.
+        Dans un environnement multi-agents, il est possible de répartir le travail :
       </p>
       <div className="overflow-x-auto my-6">
         <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
             <tr>
-              <th className="px-4 py-3">Test</th>
-              <th className="px-4 py-3">Outil</th>
+              <th className="px-4 py-3">Agent</th>
+              <th className="px-4 py-3">Responsabilité</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Developer</td>
+              <td className="px-4 py-2.5 font-medium">Corrige le bug</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">QA Reviewer</td>
+              <td className="px-4 py-2.5 font-medium">Vérifie le code et les tests</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Debugging Specialist</td>
+              <td className="px-4 py-2.5 font-medium">Analyse les anomalies et leurs causes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le développeur ne doit pas considérer son propre travail comme validé simplement parce que ses tests passent.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le QA Reviewer doit examiner indépendamment les résultats et signaler les éventuelles lacunes.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          9. Comprendre les limites des tests automatisés
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un projet peut avoir 100 % de couverture de code et contenir malgré tout des bugs.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        9.1. La couverture de code (Code Coverage)
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La couverture mesure les parties du code exécutées pendant les tests.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`File                 | % Stmts | % Branch
+---------------------|---------|----------
+userController.ts    | 95%     | 70%
+userService.ts       | 90%     | 85%
+userRepository.ts    | 80%     | 60%`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Deux mesures importantes :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Statement Coverage : proportion des instructions exécutées.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Branch Coverage : proportion des branches conditionnelles testées.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`if (user) {
+return "Utilisateur trouvé";
+}
+
+return "Utilisateur absent";
+Si les tests vérifient uniquement le cas où user existe, ils ne couvrent pas les deux branches.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        9.2. Pourquoi 100 % de couverture ne garantit pas l&apos;absence de bugs ?
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Parce qu&apos;un test peut exécuter une ligne sans vérifier correctement son résultat.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const total = price * quantity;
+
+expect(total).toBeDefined();`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette assertion peut réussir même si le calcul est incorrect.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une assertion plus pertinente serait :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`expect(total).toBe(60);`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La qualité des assertions est donc aussi importante que la quantité de code exécutée.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        9.3. Les tests ne remplacent pas les autres contrôles
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Vérification</th>
+              <th className="px-4 py-3">Ce qu&apos;elle apporte</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Tests unitaires</td>
+              <td className="px-4 py-2.5 font-medium">Vérification des fonctions</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Tests d&apos;intégration</td>
+              <td className="px-4 py-2.5 font-medium">Vérification des interactions</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Tests de non-régression</td>
+              <td className="px-4 py-2.5 font-medium">Protection des fonctionnalités existantes</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Tests manuels</td>
+              <td className="px-4 py-2.5 font-medium">Vérification de scénarios réels</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Revue de code</td>
+              <td className="px-4 py-2.5 font-medium">Vérification de la qualité et de la logique</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Analyse de sécurité</td>
+              <td className="px-4 py-2.5 font-medium">Recherche de vulnérabilités</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour une application importante, ces contrôles sont complémentaires.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          10. Intégrer les tests dans le cycle de développement
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les tests ne doivent pas être exécutés uniquement à la fin d&apos;un projet.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ils doivent intervenir régulièrement.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        10.1. Cycle de validation après une correction
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Modification du code
+|
+v
+Tests unitaires
+|
+v
+Tests d'intégration
+|
+v
+Tests de non-régression
+|
+v
+Lint et compilation
+|
+v
+Revue des résultats
+|
+v
+Validation de la correction`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        10.2. Exemple de commandes
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Dans un projet Node.js :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm run test
+npm run lint
+npm run build`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Chaque commande vérifie un aspect différent :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`test : exécution des tests automatisés.
+lint : détection de problèmes de qualité et de style.
+build : vérification de la compilation et de la construction du projet.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Une compilation réussie ne signifie pas que les fonctionnalités sont correctes. De même, des tests réussis ne garantissent pas qu&apos;il n&apos;existe aucune vulnérabilité.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        10.3. Automatiser avec une CI/CD
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La CI/CD permet d&apos;exécuter automatiquement les contrôles lorsqu&apos;un développeur pousse son code ou crée une Pull Request.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple simplifié avec GitHub Actions :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`name: Tests
+
+on:
+push:
+branches: [main]
+pull_request:
+branches: [main]
+
+jobs:
+test:
+runs-on: ubuntu-latest
+
+steps:
+- name: Récupérer le code
+uses: actions/checkout@v4
+
+- name: Installer Node.js
+uses: actions/setup-node@v4
+with:
+node-version: 22
+
+- name: Installer les dépendances
+run: npm ci
+
+- name: Exécuter les tests
+run: npm run test
+
+- name: Vérifier le code
+run: npm run lint
+
+- name: Construire le projet
+run: npm run build
+Cet exemple suppose que les scripts test, lint et build existent dans package.json.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La CI/CD permet de détecter automatiquement certains problèmes avant l&apos;intégration du code dans la branche principale.
+      </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          11. TP — Vérifier automatiquement une correction avec Vitest et Supertest
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Travaux pratiques
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Objectif : créer des tests de non-régression pour vérifier une correction réalisée par un agent IA.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 1 — Préparer le bug
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Utilisez ce contrôleur volontairement incorrect :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getProduct(req, res) {
+const product = await productRepository.findById(
+Number(req.params.id)
+);
+
+return res.json({
+id: product.id,
+name: product.name
+});
+}
+Le repository peut retourner undefined lorsque le produit n'existe pas.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 2 — Identifier les scénarios
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Préparez trois scénarios :
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Scénario</th>
               <th className="px-4 py-3">Résultat attendu</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fuite mémoire</td>
-              <td className="px-4 py-2.5 font-medium">Node Inspector</td>
-              <td className="px-4 py-2.5 font-medium">Pas de croissance persistante injustifiée</td>
+              <td className="px-4 py-2.5 font-medium">Produit existant</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 200</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Blocage CPU</td>
-              <td className="px-4 py-2.5 font-medium">Chrome / Autocannon</td>
-              <td className="px-4 py-2.5 font-medium">Route rapide toujours réactive</td>
+              <td className="px-4 py-2.5 font-medium">Produit inexistant</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 404</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">SQL lent</td>
-              <td className="px-4 py-2.5 font-medium">MySQL EXPLAIN</td>
-              <td className="px-4 py-2.5 font-medium">Plan d&apos;exécution analysé</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Concurrence</td>
-              <td className="px-4 py-2.5 font-medium">Requêtes simultanées</td>
-              <td className="px-4 py-2.5 font-medium">Une seule vente du dernier article</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">IDOR</td>
-              <td className="px-4 py-2.5 font-medium">Postman</td>
-              <td className="px-4 py-2.5 font-medium">Accès interdit aux données d&apos;autrui</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Injection SQL</td>
-              <td className="px-4 py-2.5 font-medium">Postman / ZAP</td>
-              <td className="px-4 py-2.5 font-medium">Entrées traitées comme des données</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Path Traversal</td>
-              <td className="px-4 py-2.5 font-medium">Postman</td>
-              <td className="px-4 py-2.5 font-medium">Aucun accès arbitraire</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Logs</td>
-              <td className="px-4 py-2.5 font-medium">Fichier security.log</td>
-              <td className="px-4 py-2.5 font-medium">Événements exploitables</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Monitoring</td>
-              <td className="px-4 py-2.5 font-medium">Endpoint / metrics</td>
-              <td className="px-4 py-2.5 font-medium">Métriques disponibles</td>
+              <td className="px-4 py-2.5 font-medium">Erreur du repository</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 500</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour tester la charge du serveur :
+        Étape 3 — Demander les tests à l&apos;agent
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        npx autocannon -c 50 -d 30 http://localhost:3000/
+        Transmettez-lui cette mission :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Crée des tests automatisés pour GET /products/:id.
+
+Utilise Vitest et Supertest.
+
+Couvre les trois scénarios :
+- Produit existant.
+- Produit inexistant.
+- Erreur du repository.
+
+Vérifie les codes HTTP et le contenu des réponses.
+
+Ne modifie pas le code de production.
+
+Indique comment vérifier que les tests détectent
+le bug initial.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 4 — Vérifier les tests avant correction
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exécutez :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm run test`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le test du produit inexistant doit échouer avec l&apos;ancien contrôleur, car celui-ci provoque une erreur au lieu de retourner HTTP 404.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 5 — Demander la correction
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Après avoir vérifié le diagnostic et autorisé la modification du contrôleur, demandez à l&apos;agent d&apos;ajouter la gestion du produit absent.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Correction attendue :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getProduct(req, res, next) {
+try {
+const product = await productRepository.findById(
+Number(req.params.id)
+);
+
+if (!product) {
+return res.status(404).json({
+message: "Produit introuvable"
+});
+}
+
+return res.status(200).json(product);
+} catch (error) {
+next(error);
+}
+}`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 6 — Relancer tous les contrôles
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`npm run test
+npm run lint
+npm run build`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Examinez également :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`git status
+git diff`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Résultat attendu
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>-c 50 : 50 connexions concurrentes.</span>
+            <span>Le test du produit existant réussit.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>-d 30 : test pendant 30 secondes.</span>
+            <span>Le test du produit inexistant retourne HTTP 404.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le test d&apos;erreur du repository retourne HTTP 500.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les tests ne dépendent pas d&apos;une base de production.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Aucun fichier non autorisé n&apos;a été modifié.</span>
           </li>
         </ul>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Comparez les résultats avant et après correction : latence, débit, taux d&apos;erreur et comportement du serveur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Effectuez les tests de sécurité et de charge uniquement sur votre environnement local ou sur une infrastructure pour laquelle vous avez une autorisation.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          16. Corrigé global — Causes racines et solutions
-        </h2>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">N°</th>
-              <th className="px-4 py-3">Problème</th>
-              <th className="px-4 py-3">Cause racine</th>
-              <th className="px-4 py-3">Solution</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">1</td>
-              <td className="px-4 py-2.5 font-medium">Memory Leak</td>
-              <td className="px-4 py-2.5 font-medium">Référence globale conservée</td>
-              <td className="px-4 py-2.5 font-medium">Supprimer les références inutiles, borner les caches</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">2</td>
-              <td className="px-4 py-2.5 font-medium">Event Loop bloquée</td>
-              <td className="px-4 py-2.5 font-medium">Calcul CPU synchrone</td>
-              <td className="px-4 py-2.5 font-medium">Worker Threads</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">3</td>
-              <td className="px-4 py-2.5 font-medium">SQL lent</td>
-              <td className="px-4 py-2.5 font-medium">Requête non optimisée</td>
-              <td className="px-4 py-2.5 font-medium">Pagination, index adaptés, EXPLAIN</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">4</td>
-              <td className="px-4 py-2.5 font-medium">Race Condition</td>
-              <td className="px-4 py-2.5 font-medium">Lecture puis modification non atomique</td>
-              <td className="px-4 py-2.5 font-medium">UPDATE conditionnel ou transaction avec verrou</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">5</td>
-              <td className="px-4 py-2.5 font-medium">IDOR</td>
-              <td className="px-4 py-2.5 font-medium">Absence de contrôle d&apos;autorisation</td>
-              <td className="px-4 py-2.5 font-medium">Vérifier l&apos;identité et les droits côté serveur</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">6</td>
-              <td className="px-4 py-2.5 font-medium">SQL Injection</td>
-              <td className="px-4 py-2.5 font-medium">Concaténation SQL</td>
-              <td className="px-4 py-2.5 font-medium">Requêtes paramétrées</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">7</td>
-              <td className="px-4 py-2.5 font-medium">Path Traversal</td>
-              <td className="px-4 py-2.5 font-medium">Chemin contrôlé par le client</td>
-              <td className="px-4 py-2.5 font-medium">Identifiants de fichiers et contrôle d&apos;accès</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">8</td>
-              <td className="px-4 py-2.5 font-medium">Logs insuffisants</td>
-              <td className="px-4 py-2.5 font-medium">Absence de journalisation structurée</td>
-              <td className="px-4 py-2.5 font-medium">Winston et corrélation</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">9</td>
-              <td className="px-4 py-2.5 font-medium">Absence de monitoring</td>
-              <td className="px-4 py-2.5 font-medium">Pas de métriques ni d&apos;alertes</td>
-              <td className="px-4 py-2.5 font-medium">Prometheus , Grafana et alerting</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          17. Grille d&apos;évaluation
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Barème sur 100 points
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Compétence évaluée</th>
-              <th className="px-4 py-3">Points</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Diagnostic mémoire et CPU</td>
-              <td className="px-4 py-2.5 font-medium">15</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Analyse des requêtes SQL</td>
-              <td className="px-4 py-2.5 font-medium">10</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Résolution des problèmes de concurrence</td>
-              <td className="px-4 py-2.5 font-medium">10</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Correction des vulnérabilités</td>
-              <td className="px-4 py-2.5 font-medium">20</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Gestion des permissions fichiers</td>
-              <td className="px-4 py-2.5 font-medium">10</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Logs et traçabilité</td>
-              <td className="px-4 py-2.5 font-medium">10</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Monitoring et prévention</td>
-              <td className="px-4 py-2.5 font-medium">15</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Tests de non-régression et documentation</td>
-              <td className="px-4 py-2.5 font-medium">10</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Total</td>
-              <td className="px-4 py-2.5 font-medium">100</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
       </section>
 
       {/* Laboratoire Interactif */}
       <div className="my-8">
         <h2 className="text-[19px] font-bold text-slate-900 mb-2.5 flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-700" />
-          <span>Laboratoire interactif ShopDebug : Audit &amp; Remédiation</span>
+          <span>Laboratoire interactif : Atelier d&apos;ingénierie du débogage IA</span>
         </h2>
-        <PerformanceSecurityAuditLab />
+        <AiAssistedDebuggingLab />
       </div>
 
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
-        <QuickQuiz
-          title="Quiz de révision — Chapitre 6.13"
-          questions={[
-            {
-              id: 1,
-              question: "Quel outil permet d'analyser les objets conservés dans le Heap de Node.js ?",
-              options: ["Postman", "Heap Snapshot", "MySQL Workbench"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 2,
-              question: "Quelle est la cause principale d'un blocage de l'Event Loop ?",
-              options: ["Une boucle", "Une requête HTTP asynchrone", "Un fichier"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 3,
-              question: "Quel outil permet d'examiner le plan d'exécution d'une requête MySQL ?",
-              options: ["npm audit", "EXPL", "process.memoryUsage()"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 4,
-              question: "Comment éviter une vente en double du dernier article ?",
-              options: ["Utiliser un UP", "Rafraîchir la page"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 5,
-              question: "Quelle vulnérabilité permet à un utilisateur d'accéder aux données d'un autre en modifiant un identifiant ?",
-              options: ["I", "XSS", "Memory Leak"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 6,
-              question: "Pourquoi faut-il éviter d'enregistrer les tokens dans les logs ?",
-              options: ["Ils ralentissent React", "Ils peuvent exposer des informations permettant un accès non autorisé", "Ils empêchent MySQL de fonctionner"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-          ]}
-        />
-      </div>
     </div>
   );
 };

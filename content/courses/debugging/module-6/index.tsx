@@ -48,13 +48,6 @@ export const DebuggingModule6Renderer: React.FC<DebuggingModule6RendererProps> =
     case 'chapitre-13':
       return <Chapitre13Content />;
     default:
-      return (
-        <div className="p-8 text-center text-slate-400">
-          Chapitre introuvable ou en cours de rédaction.
-        </div>
-      );
+      return <div>Chapitre non trouvé</div>;
   }
 };
-
-export default DebuggingModule6Renderer;
-

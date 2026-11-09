@@ -29,9 +29,9 @@ import { DEBUGGING_MODULE_1_QUESTIONS, DEBUGGING_MODULE_1_EXAM_METADATA } from '
 import { DEBUGGING_MODULE_2_QUESTIONS, DEBUGGING_MODULE_2_EXAM_METADATA } from './debugging-module-2';
 import { DEBUGGING_MODULE_3_QUESTIONS, DEBUGGING_MODULE_3_EXAM_METADATA } from './debugging-module-3';
 import { DEBUGGING_MODULE_4_QUESTIONS, DEBUGGING_MODULE_4_EXAM_METADATA } from './debugging-module-4';
+import { DEBUGGING_MODULE_5_QUESTIONS, DEBUGGING_MODULE_5_EXAM_METADATA } from './debugging-module-5';
 import { DEBUGGING_MODULE_6_QUESTIONS, DEBUGGING_MODULE_6_EXAM_METADATA } from './debugging-module-6';
 import { DEBUGGING_MODULE_7_QUESTIONS, DEBUGGING_MODULE_7_EXAM_METADATA } from './debugging-module-7';
-import { DEBUGGING_MODULE_8_QUESTIONS, DEBUGGING_MODULE_8_EXAM_METADATA } from './debugging-module-8';
 
 export interface ModuleExamBundle {
   metadata: ExamMetadata;
@@ -154,6 +154,10 @@ export const EXAMS_REGISTRY: Record<string, ModuleExamBundle> = {
     metadata: DEBUGGING_MODULE_4_EXAM_METADATA,
     questions: DEBUGGING_MODULE_4_QUESTIONS,
   },
+  'debugging-module-5': {
+    metadata: DEBUGGING_MODULE_5_EXAM_METADATA,
+    questions: DEBUGGING_MODULE_5_QUESTIONS,
+  },
   'debugging-module-6': {
     metadata: DEBUGGING_MODULE_6_EXAM_METADATA,
     questions: DEBUGGING_MODULE_6_QUESTIONS,
@@ -161,10 +165,6 @@ export const EXAMS_REGISTRY: Record<string, ModuleExamBundle> = {
   'debugging-module-7': {
     metadata: DEBUGGING_MODULE_7_EXAM_METADATA,
     questions: DEBUGGING_MODULE_7_QUESTIONS,
-  },
-  'debugging-module-8': {
-    metadata: DEBUGGING_MODULE_8_EXAM_METADATA,
-    questions: DEBUGGING_MODULE_8_QUESTIONS,
   },
 };
 

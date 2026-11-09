@@ -1,112 +1,263 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
+
+interface IncidentCase {
+  id: number;
+  title: string;
+  situation: string;
+  codeSnippet?: string;
+  options: string[];
+  correct: string;
+  explanation: string;
+}
 
 export const Chapitre4Content: React.FC = () => {
   const [labAnswers, setLabAnswers] = useState<Record<number, string>>({});
   const [showLabResults, setShowLabResults] = useState(false);
+
+  const incidentCases: IncidentCase[] = [
+    {
+      id: 1,
+      title: 'Incident 1 : L\'appel fantôme',
+      situation: 'Votre frontend React essaie de récupérer les données sur http://localhost:5000/api, mais votre serveur Node.js a démarré sur le port 3000.',
+      codeSnippet: `// Console du navigateur :
+GET http://localhost:5000/api/users net::ERR_CONNECTION_REFUSED`,
+      options: ['Erreur Réseau', 'Erreur de Sécurité', 'Erreur Logique'],
+      correct: 'Erreur Réseau',
+      explanation: 'Le port 5000 n\'écoute personne. Le paquet réseau heurte une porte fermée, ce qui provoque un refus de connexion HTTP.',
+    },
+    {
+      id: 2,
+      title: 'Incident 2 : Le quiproquo des prénoms',
+      situation: 'Le composant React envoie { userEmail: "claire@demo.fr" }, mais le serveur Express attend { email: string } et rejette la requête.',
+      codeSnippet: `// Réponse API :
+HTTP 400 Bad Request: "Missing required property: email"`,
+      options: ['Erreur de Performance', 'Erreur d\'Intégration', 'Erreur d\'Infrastructure'],
+      correct: 'Erreur d\'Intégration',
+      explanation: 'Chaque bloc fonctionne parfaitement de son côté, mais le contrat de communication (l\'interface JSON) n\'est pas synchronisé entre les deux équipes.',
+    },
+    {
+      id: 3,
+      title: 'Incident 3 : Le colis introuvable',
+      situation: 'Un développeur clone le projet sur son nouvel ordinateur et tape "npm start". Le terminal affiche immédiatement une erreur rouge.',
+      codeSnippet: `// Terminal Node.js :
+Error: Cannot find module 'axios'
+Require stack: - /app/services/api.js`,
+      options: ['Erreur de Dépendance', 'Erreur SQL', 'Erreur Logique'],
+      correct: 'Erreur de Dépendance',
+      explanation: 'Le package tiers "axios" n\'a pas été installé dans le dossier node_modules. Un simple "npm install" résout le problème !',
+    },
+    {
+      id: 4,
+      title: 'Incident 4 : La table invisible',
+      situation: 'Lors d\'une recherche d\'articles, le serveur crash avec le message : ER_NO_SUCH_TABLE: Table \'boutique.produits\' doesn\'t exist.',
+      codeSnippet: `// Log serveur MySQL :
+SELECT * FROM produits WHERE categorie = 'informatique';
+--> ER_NO_SUCH_TABLE (table manquante)`,
+      options: ['Erreur Réseau', 'Erreur de Configuration', 'Erreur de Base de Données'],
+      correct: 'Erreur de Base de Données',
+      explanation: 'C\'est une anomalie au niveau du schéma relationnel : la table n\'a pas été créée ou la migration SQL n\'a pas été jouée.',
+    },
+    {
+      id: 5,
+      title: 'Incident 5 : La porte grande ouverte',
+      situation: 'Un utilisateur change l\'URL de son profil de /facture/101 vers /facture/102 et visualise la facture et les coordonnées bancaires de son voisin.',
+      codeSnippet: `// Route non sécurisée dans Express :
+app.get('/facture/:id', async (req, res) => {
+  // Aucune vérification pour savoir si req.params.id appartient au client connecté !
+  const facture = await getFacture(req.params.id);
+  res.json(facture);
+});`,
+      options: ['Erreur de Sécurité', 'Erreur de Performance', 'Erreur de Syntaxe'],
+      correct: 'Erreur de Sécurité',
+      explanation: 'C\'est une faille critique d\'autorisation (IDOR) : le serveur transmet des données sensibles sans contrôler les droits du demandeur.',
+    },
+    {
+      id: 6,
+      title: 'Incident 6 : Le serveur qui étouffe',
+      situation: 'L\'application tourne bien pendant 3 jours, puis le serveur devient de plus en plus lent jusqu\'à s\'éteindre brutalement par manque de RAM.',
+      codeSnippet: `// Monitoring serveur :
+RAM: 2 Go (Jour 1) -> 8 Go (Jour 2) -> 16 Go (Jour 3) -> CRASH OOM (Out Of Memory)`,
+      options: ['Erreur d\'Intégration', 'Erreur de Performance', 'Erreur de Données'],
+      correct: 'Erreur de Performance',
+      explanation: 'C\'est une fuite de mémoire (Memory Leak) : des objets continuent d\'être stockés sans jamais être libérés, saturant la mémoire vive.',
+    },
+  ];
 
   const handleSelect = (casId: number, val: string) => {
     setLabAnswers((prev) => ({ ...prev, [casId]: val }));
   };
 
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
-      {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+    <div className="space-y-12 text-slate-900 leading-relaxed max-w-none">
+      {/* =========================================================================
+          EN-TÊTE DU CHAPITRE
+         ========================================================================= */}
+      <div className="rounded-3xl border-2 border-lime-200 bg-gradient-to-br from-lime-50/90 via-emerald-50/40 to-white p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider bg-lime-100/80 px-3 py-1 rounded-full border border-lime-300">
+            <Icon name="bug" className="w-4 h-4 text-lime-800" />
+            <span>Ingénierie du Débogage • Module 1</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-white/80 px-2.5 py-1 rounded-lg border border-slate-200">
+            <Icon name="clock" className="w-3.5 h-3.5 text-slate-500" />
+            <span>Lecture accessible : ~12 min</span>
+          </div>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight mb-3">
           Chapitre 4 — Les différentes catégories d&apos;erreurs logicielles
         </h1>
+        <p className="text-base sm:text-lg text-slate-700 font-medium">
+          Pourquoi 90% des pannes en production ne proviennent pas d&apos;une faute dans votre code, mais d&apos;un élément de son écosystème (réseau, base de données, configuration, sécurité).
+        </p>
+
+        {/* Objectifs du chapitre */}
+        <div className="mt-6 pt-5 border-t border-lime-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-semibold text-slate-800">
+          <div className="flex items-center gap-2">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Ne plus accuser son code par défaut</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Démystifier CORS, .env et les ports</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Diagnostiquer les pannes réelles</span>
+          </div>
+        </div>
       </div>
 
-      {/* 1. Introduction */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Au-delà du simple code source
-        </h2>
-        <p className="text-base text-slate-800 font-medium">
-          Dans une architecture logicielle moderne, le code écrit par le développeur ne représente qu&apos;une fraction du système global. Une anomalie peut émaner de la configuration, des protocoles réseau, de la modélisation des données, des librairies tierces ou de l&apos;infrastructure d&apos;hébergement.
+      {/* =========================================================================
+          SECTION 1 : LE PIÈGE DU DÉBUTANT (TOUT N'EST PAS DU CODE !)
+         ========================================================================= */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">1</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Le Piège du débutant : « Ça plante, donc mon code est faux ! »
+          </h2>
+        </div>
+
+        <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed">
+          Le premier réflexe d&apos;un développeur novice quand une page affiche une erreur est d&apos;ouvrir son fichier JavaScript ou React et de commencer à réécrire ses fonctions dans tous les sens.
         </p>
-        <p className="text-base text-slate-800 font-medium">
-          L&apos;objectif de ce chapitre est d&apos;apprendre à <strong>classifier immédiatement une erreur selon son domaine technique réel</strong> afin d&apos;orienter les investigations avec précision.
-        </p>
+
+        <div className="p-5 sm:p-6 rounded-2xl bg-amber-50/70 border-2 border-amber-200/80 space-y-3">
+          <div className="flex items-center gap-2 text-amber-950 font-black text-base">
+            <Icon name="sparkles" className="w-5 h-5 text-amber-700" />
+            <span>L&apos;analogie de la voiture en panne d&apos;essence</span>
+          </div>
+          <p className="text-sm sm:text-base text-slate-800 font-medium leading-relaxed">
+            Si votre voiture refuse de démarrer le matin, est-ce que vous démontez immédiatement les pistons et la boîte de vitesse ? <strong>Bien sûr que non !</strong> Vous vérifiez d&apos;abord si le réservoir contient du carburant, si la batterie a du courant, ou si vous avez inséré la bonne clé.
+          </p>
+          <div className="p-3.5 rounded-xl bg-white/90 border border-amber-300 text-xs sm:text-sm text-slate-800 font-medium">
+            En informatique, c&apos;est exactement pareil : votre code source n&apos;est qu&apos;une petite pièce d&apos;un grand puzzle qui comprend les <strong>variables d&apos;environnement</strong>, le <strong>réseau</strong>, la <strong>base de données</strong> et les <strong>serveurs</strong>.
+          </div>
+        </div>
       </section>
 
-      {/* 2. Catégories détaillées */}
+      {/* =========================================================================
+          SECTION 2 : LE TOUR D'HORIZON DES 6 FAMILLES MAJEURES D'ERREURS
+         ========================================================================= */}
       <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Panorama des grandes catégories d&apos;erreurs
-        </h2>
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">2</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Panorama des grandes catégories d&apos;erreurs
+          </h2>
+        </div>
 
         {/* 2.1 Programmation */}
-        <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">A. Erreurs de Programmation (Programming Errors)</h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-black text-slate-700 border">Code source</span>
+        <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-base font-bold text-slate-950 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-slate-900 text-white font-bold text-xs flex items-center justify-center">A</span>
+              <span>Erreurs de Programmation (Le Code Source)</span>
+            </h3>
+            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-bold text-slate-700 border">Algorithme &amp; Logique</span>
           </div>
-          <p className="text-sm font-medium text-slate-700">
-            Défauts directs d&apos;algorithme, mauvaise gestion des types ou cas limites non pris en compte (par exemple diviser par la taille d&apos;un tableau vide produisant <code>NaN</code>).
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            Défauts directs dans la logique ou oubli d&apos;un cas limite (par exemple diviser par zéro ou tenter de calculer la moyenne d&apos;une liste vide produisant <code>NaN</code>).
           </p>
-          <pre className="font-mono text-xs bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-900">
-{`function calculerMoyenne(notes) {
-  if (notes.length === 0) return null; // Prise en compte du cas limite
-  return notes.reduce((sum, n) => sum + n, 0) / notes.length;
+          <CodeBlock
+            language="typescript"
+            filename="calculMoyenne.ts"
+            code={`function calculerMoyenne(notes: number[]): number | null {
+  // ✅ Protection du cas limite : liste vide
+  if (notes.length === 0) return null;
+  
+  const total = notes.reduce((sum, n) => sum + n, 0);
+  return total / notes.length;
 }`}
-          </pre>
+          />
         </div>
 
         {/* 2.2 Configuration */}
-        <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">B. Erreurs de Configuration (Configuration Errors)</h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-black text-slate-700 border">Environnement</span>
+        <div className="p-5 rounded-2xl bg-white border-2 border-amber-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-base font-bold text-amber-950 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-amber-500 text-white font-bold text-xs flex items-center justify-center">B</span>
+              <span>Erreurs de Configuration (Le fichier .env &amp; l&apos;Environnement)</span>
+            </h3>
+            <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-xs font-bold text-amber-900 border border-amber-300">Variables &amp; Secrets</span>
           </div>
-          <p className="text-sm font-medium text-slate-700">
-            Le code est parfait, mais les paramètres d&apos;exécution sont erronés ou absents : fichier <code>.env</code> non chargé, port serveur occupé, ou mauvaises règles CORS.
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            Le code est parfait, mais les paramètres d&apos;exécution sont introuvables : variable <code>DATABASE_URL</code> absente, clé d&apos;API Stripe non configurée, ou mauvais port serveur.
           </p>
-          <Callout type="warning" title="Distinction fondamentale">
-            Une erreur de configuration n&apos;est pas une erreur de code. Modifier le code source pour &quot;compenser&quot; une variable d&apos;environnement manquante est une faute grave d&apos;ingénierie.
+          <Callout type="warning" title="Règle d'or absolue">
+            Ne modifiez jamais votre code source pour &quot;compenser&quot; une variable d&apos;environnement manquante (comme écrire le mot de passe en dur dans le fichier) ! C&apos;est une très mauvaise pratique et une grave faille de sécurité.
           </Callout>
         </div>
 
-        {/* 2.3 Données & Validation */}
-        <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">C. Erreurs de Données &amp; Validation</h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-black text-slate-700 border">Schéma &amp; Format</span>
+        {/* 2.3 Données et Validation */}
+        <div className="p-5 rounded-2xl bg-white border-2 border-blue-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-base font-bold text-blue-950 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center">C</span>
+              <span>Erreurs de Données &amp; Validation (Le Schéma)</span>
+            </h3>
+            <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-xs font-bold text-blue-900 border border-blue-300">Formats &amp; Types</span>
           </div>
-          <p className="text-sm font-medium text-slate-700">
-            Données reçues non conformes au contrat attendu (chaîne reçue là où un entier est exigé, champ requis manquant).
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            L&apos;application attend un entier positif pour l&apos;âge, mais reçoit la chaîne <code>&quot;vingt-cinq&quot;</code> ou un champ manquant. L&apos;utilisation d&apos;un outil de validation comme <strong>Zod</strong> permet d&apos;arrêter l&apos;erreur immédiatement à la frontière :
           </p>
-          <pre className="font-mono text-xs bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-900">
-{`import { z } from 'zod';
+          <CodeBlock
+            language="typescript"
+            filename="validationUser.ts"
+            code={`import { z } from 'zod';
 
+// Définition du contrat strict attendu
 const UserSchema = z.object({
-  name: z.string().min(2),
-  age: z.number().int().positive()
+  name: z.string().min(2, "Le nom doit comporter au moins 2 lettres"),
+  age: z.number().int().positive("L'âge doit être un nombre positif")
 });
 
-const validation = UserSchema.safeParse({ name: 'Ahmed', age: 'vingt-cinq' });
-// validation.success === false -> Détection précoce dès la frontière de l'API`}
-          </pre>
+const resultat = UserSchema.safeParse({ name: 'Ahmed', age: 'vingt-cinq' });
+// resultat.success === false --> L'erreur est bloquée proprement avec un message clair !`}
+          />
         </div>
 
-        {/* 2.4 Réseau avec Image 3 */}
-        <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">D. Erreurs Réseau (Network Errors)</h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-black text-slate-700 border">HTTP / TLS / CORS</span>
+        {/* 2.4 Réseau avec Image 3 (CORS) */}
+        <div className="p-5 rounded-2xl bg-white border-2 border-purple-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-base font-bold text-purple-950 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-purple-600 text-white font-bold text-xs flex items-center justify-center">D</span>
+              <span>Erreurs Réseau (HTTP, Ports &amp; Erreurs CORS)</span>
+            </h3>
+            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-xs font-bold text-purple-900 border border-purple-300">Communication</span>
           </div>
-          <p className="text-sm font-medium text-slate-700">
-            Rupture de communication entre deux systèmes : port inaccessible, certificat HTTPS expiré, latence excessive ou blocage des en-têtes CORS entre deux domaines.
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            Rupture de communication : le serveur ne répond pas, le port est fermé, ou la douane du navigateur bloque la requête car le serveur n&apos;a pas autorisé les appels depuis votre nom de domaine (la fameuse erreur <strong>CORS</strong>) :
           </p>
+
           {/* Image 3 from Word Doc */}
           <div className="relative overflow-hidden rounded-2xl border-2 border-slate-200 shadow-md">
             <Image
@@ -122,53 +273,42 @@ const validation = UserSchema.safeParse({ name: 'Ahmed', age: 'vingt-cinq' });
           </div>
         </div>
 
-        {/* 2.5 Base de données */}
-        <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">E. Erreurs de Base de Données (Database Errors)</h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-black text-slate-700 border">SQL &amp; MySQL</span>
-          </div>
-          <p className="text-sm font-medium text-slate-700">
-            Requêtes syntaxiquement invalides, noms de colonnes mal orthographiés, violation de contraintes d&apos;unicité ou deadlocks en concurrence.
-          </p>
-        </div>
-
-        {/* 2.6 Intégration */}
-        <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">F. Erreurs d&apos;Intégration (Integration Errors)</h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-black text-slate-700 border">Contrats d&apos;API</span>
-          </div>
-          <p className="text-sm font-medium text-slate-700">
-            Chaque composant fonctionne isolément, mais la communication inter-systèmes échoue à cause d&apos;une rupture de contrat (ex: le frontend envoie <code>username</code> alors que le backend attend <code>name</code>).
-          </p>
-        </div>
-
-        {/* 2.7 Dépendances & Sécurité */}
+        {/* 2.5 Base de données & Intégration */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-white border-2 border-slate-200 space-y-2">
-            <h4 className="font-black text-base text-slate-950">G. Erreurs de Dépendances</h4>
+          <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 space-y-2">
+            <h4 className="font-bold text-base text-slate-950 flex items-center gap-2">
+              <Icon name="database" className="w-4 h-4 text-emerald-700" />
+              <span>E. Base de Données (SQL)</span>
+            </h4>
             <p className="text-xs text-slate-700 font-medium">
-              Versions incompatibles entre packages npm, suppression d&apos;une méthode dans une mise à jour majeure ou modules manquants.
+              Nom de colonne inexistant, table non créée, contrainte d&apos;unicité violée (ex: tenter d&apos;enregistrer deux fois le même email) ou blocage concurrent (deadlock).
             </p>
           </div>
-          <div className="p-4 rounded-2xl bg-white border-2 border-slate-200 space-y-2">
-            <h4 className="font-black text-base text-slate-950">H. Erreurs de Sécurité</h4>
+
+          <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 space-y-2">
+            <h4 className="font-bold text-base text-slate-950 flex items-center gap-2">
+              <Icon name="server" className="w-4 h-4 text-indigo-700" />
+              <span>F. Intégration (Contrats d&apos;API)</span>
+            </h4>
             <p className="text-xs text-slate-700 font-medium">
-              Failles d&apos;autorisation (IDOR), absence de contrôle d&apos;accès, clés API exposées côté client ou injection SQL.
+              Le frontend envoie <code>username</code> mais le backend attend <code>name</code>. Chaque équipe travaille bien de son côté, mais elles ne parlent pas le même langage JSON !
             </p>
           </div>
         </div>
 
-        {/* 2.8 Performance avec Image 4 */}
+        {/* 2.6 Performance avec Image 4 */}
         <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">I. Erreurs de Performance (Performance Errors)</h3>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-black text-slate-700 border">Profiling &amp; Profilage</span>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-base font-bold text-slate-950 flex items-center gap-2">
+              <Icon name="chart-bar" className="w-5 h-5 text-emerald-700" />
+              <span>G. Erreurs de Performance &amp; Profilage</span>
+            </h3>
+            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-bold text-slate-700 border">RAM &amp; CPU</span>
           </div>
-          <p className="text-sm font-medium text-slate-700">
-            Le code fonctionne fonctionnellement, mais consomme excessivement de mémoire RAM, sature le CPU ou met plusieurs secondes à répondre.
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            Le code fonctionne parfaitement, mais il met 12 secondes à répondre ou consomme toute la mémoire RAM du serveur jusqu&apos;à faire planter la machine :
           </p>
+
           {/* Image 4 from Word Doc */}
           <div className="relative overflow-hidden rounded-2xl border-2 border-slate-200 shadow-md">
             <Image
@@ -185,256 +325,188 @@ const validation = UserSchema.safeParse({ name: 'Ahmed', age: 'vingt-cinq' });
         </div>
       </section>
 
-      {/* 3. Tableau comparatif */}
+      {/* =========================================================================
+          SECTION 3 : TABLEAU COMPARATIF DES 10 FAMILLES
+         ========================================================================= */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Synthèse des 10 familles d&apos;erreurs
-        </h2>
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">3</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Tableau synthétique des 10 familles d&apos;erreurs
+          </h2>
+        </div>
+
         <div className="overflow-x-auto rounded-2xl border-2 border-slate-200">
           <table className="w-full text-left border-collapse text-xs sm:text-sm">
             <thead className="bg-slate-100 text-slate-950 border-b-2 border-slate-200 font-black">
               <tr>
                 <th className="p-3">Catégorie</th>
-                <th className="p-3">Origine technique</th>
+                <th className="p-3">Origine réelle</th>
                 <th className="p-3">Exemple typique</th>
-                <th className="p-3">Outil clé</th>
+                <th className="p-3">Outil recommandé</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 font-medium text-slate-800">
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Programmation</td>
                 <td className="p-3">Logique du code source</td>
-                <td className="p-3">Mauvaise formule ou boucle infinie</td>
+                <td className="p-3">Division par zéro ou boucle infinie</td>
                 <td className="p-3">VS Code Debugger</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Configuration</td>
-                <td className="p-3">Variables et paramètres</td>
-                <td className="p-3">Port serveur indisponible ou .env manquant</td>
+                <td className="p-3">Environnement &amp; variables</td>
+                <td className="p-3">Port serveur occupé ou .env absent</td>
                 <td className="p-3">Fichiers .env, Terminal</td>
               </tr>
               <tr>
-                <td className="p-3 font-bold text-emerald-900">Données</td>
-                <td className="p-3">Format et types de données</td>
-                <td className="p-3">Chaîne au lieu d&apos;un nombre</td>
-                <td className="p-3">Zod, Postman</td>
+                <td className="p-3 font-bold text-emerald-900">Données &amp; Types</td>
+                <td className="p-3">Structure non conforme</td>
+                <td className="p-3">Texte au lieu d&apos;un nombre</td>
+                <td className="p-3">Zod, TypeScript</td>
               </tr>
               <tr>
-                <td className="p-3 font-bold text-emerald-900">Réseau</td>
-                <td className="p-3">Communication inter-systèmes</td>
-                <td className="p-3">Erreur CORS, timeout, DNS</td>
+                <td className="p-3 font-bold text-emerald-900">Réseau &amp; CORS</td>
+                <td className="p-3">Transport de paquets HTTP</td>
+                <td className="p-3">Blocage CORS, timeout, port fermé</td>
                 <td className="p-3">Chrome DevTools Network</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Base de données</td>
-                <td className="p-3">Moteur SQL</td>
-                <td className="p-3">Colonne inconnue, violation de contrainte</td>
-                <td className="p-3">MySQL Workbench, EXPLAIN</td>
+                <td className="p-3">Moteur relationnel SQL</td>
+                <td className="p-3">Table inconnue, doublon d&apos;email unique</td>
+                <td className="p-3">MySQL Workbench, Prisma Studio</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Intégration</td>
-                <td className="p-3">Interaction frontend/backend</td>
-                <td className="p-3">Propriété JSON désynchronisée</td>
+                <td className="p-3">Contrats entre front et back</td>
+                <td className="p-3">Propriété JSON mal orthographiée</td>
                 <td className="p-3">Postman, Swagger/OpenAPI</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Dépendances</td>
-                <td className="p-3">Packages tiers</td>
-                <td className="p-3">Package npm manquant ou incompatible</td>
-                <td className="p-3">package.json, npm audit</td>
+                <td className="p-3">Packages tiers npm</td>
+                <td className="p-3">Module non installé (Cannot find module)</td>
+                <td className="p-3">package.json, npm install</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Sécurité</td>
-                <td className="p-3">Contrôle d&apos;accès et validation</td>
-                <td className="p-3">Absence de contrôle d&apos;autorisation</td>
-                <td className="p-3">Tests d&apos;intrusion, OWASP ZAP</td>
+                <td className="p-3">Contrôle d&apos;accès</td>
+                <td className="p-3">Accès aux données d&apos;un autre client (IDOR)</td>
+                <td className="p-3">Middleware Auth, OWASP</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Performance</td>
-                <td className="p-3">Ressources machine</td>
-                <td className="p-3">Requête SQL sans index, fuite mémoire</td>
-                <td className="p-3">Chrome Performance / Memory</td>
+                <td className="p-3">Mémoire RAM et CPU</td>
+                <td className="p-3">Requête SQL lente, fuite mémoire</td>
+                <td className="p-3">Chrome Performance, htop</td>
               </tr>
               <tr>
                 <td className="p-3 font-bold text-emerald-900">Infrastructure</td>
-                <td className="p-3">Système et OS</td>
-                <td className="p-3">Disque plein, permissions serveur</td>
-                <td className="p-3">SSH, htop, df -h</td>
+                <td className="p-3">Serveur et Système OS</td>
+                <td className="p-3">Disque dur saturé, droits de fichiers</td>
+                <td className="p-3">SSH, df -h, logs système</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      {/* 4. Laboratoire interactif */}
+      {/* =========================================================================
+          SECTION 4 : LABORATOIRE PRATIQUE INTERACTIF (6 CAS RÉELS)
+         ========================================================================= */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Laboratoire pratique : Identifier la catégorie dominante
-        </h2>
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-6">
-          <p className="text-sm font-semibold text-slate-800">
-            Sélectionnez la catégorie technique exacte pour chacun des 6 cas d&apos;incident réels :
-          </p>
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">4</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Laboratoire Interactif : Testez votre flair d&apos;enquêteur
+          </h2>
+        </div>
 
-          <div className="space-y-4 text-sm font-medium">
-            {/* Cas 1 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span className="font-bold text-slate-950">Cas 1 : Une application React appelle une API sur le port 5000 alors que le serveur écoute sur le port 3000.</span>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {['Erreur réseau', 'Erreur de sécurité', 'Erreur logique'].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleSelect(1, opt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                      labAnswers[1] === opt ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-300 text-slate-800'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              {showLabResults && (
-                <div className="text-xs font-bold text-emerald-700 mt-1">
-                  ✓ Réponse : Erreur réseau (le port cible n&apos;est pas accessible par le client HTTP).
-                </div>
-              )}
-            </div>
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Face à ces 6 situations réelles vécues en entreprise, choisissez la catégorie technique exacte :
+        </p>
 
-            {/* Cas 2 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span className="font-bold text-slate-950">Cas 2 : Le backend attend une propriété <code>email</code>, mais le frontend transmet <code>userEmail</code>.</span>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {['Erreur de performance', 'Erreur d\'intégration', 'Erreur d\'infrastructure'].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleSelect(2, opt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                      labAnswers[2] === opt ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-300 text-slate-800'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              {showLabResults && (
-                <div className="text-xs font-bold text-emerald-700 mt-1">
-                  ✓ Réponse : Erreur d&apos;intégration (rupture de contrat entre deux composants autonomes).
-                </div>
-              )}
-            </div>
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-5 sm:p-6 shadow-sm space-y-6">
+          <div className="space-y-4">
+            {incidentCases.map((cas) => {
+              const selected = labAnswers[cas.id];
+              const isCorrect = selected === cas.correct;
 
-            {/* Cas 3 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span className="font-bold text-slate-950">Cas 3 : Node.js affiche <code>Error: Cannot find module &apos;axios&apos;</code>.</span>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {['Erreur de dépendance', 'Erreur SQL', 'Erreur logique'].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleSelect(3, opt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                      labAnswers[3] === opt ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-300 text-slate-800'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              {showLabResults && (
-                <div className="text-xs font-bold text-emerald-700 mt-1">
-                  ✓ Réponse : Erreur de dépendance (package npm non installé dans node_modules).
-                </div>
-              )}
-            </div>
+              return (
+                <div key={cas.id} className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-bold text-sm sm:text-base text-slate-950">{cas.title}</span>
+                    {showLabResults && selected && (
+                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                        isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                      }`}>
+                        {isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                      </span>
+                    )}
+                  </div>
 
-            {/* Cas 4 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span className="font-bold text-slate-950">Cas 4 : Une requête MySQL échoue car la table <code>produits</code> n&apos;existe pas.</span>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {['Erreur réseau', 'Erreur de configuration', 'Erreur de base de données'].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleSelect(4, opt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                      labAnswers[4] === opt ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-300 text-slate-800'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              {showLabResults && (
-                <div className="text-xs font-bold text-emerald-700 mt-1">
-                  ✓ Réponse : Erreur de base de données (entité manquante dans le schéma relationnel).
-                </div>
-              )}
-            </div>
+                  <p className="text-xs sm:text-sm text-slate-700 font-medium">
+                    {cas.situation}
+                  </p>
 
-            {/* Cas 5 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span className="font-bold text-slate-950">Cas 5 : Une API renvoie les données personnelles d&apos;un profil sans vérifier les permissions du token.</span>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {['Erreur de sécurité', 'Erreur de performance', 'Erreur de syntaxe'].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleSelect(5, opt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                      labAnswers[5] === opt ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-300 text-slate-800'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              {showLabResults && (
-                <div className="text-xs font-bold text-emerald-700 mt-1">
-                  ✓ Réponse : Erreur de sécurité (défaut critique d&apos;autorisation côté serveur).
-                </div>
-              )}
-            </div>
+                  {cas.codeSnippet && (
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs text-lime-300 overflow-x-auto whitespace-pre">
+                      {cas.codeSnippet}
+                    </div>
+                  )}
 
-            {/* Cas 6 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span className="font-bold text-slate-950">Cas 6 : Une application consomme progressivement toute la mémoire RAM du serveur jusqu&apos;au crash.</span>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {['Erreur d\'intégration', 'Erreur de performance', 'Erreur de données'].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleSelect(6, opt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                      labAnswers[6] === opt ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-300 text-slate-800'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              {showLabResults && (
-                <div className="text-xs font-bold text-emerald-700 mt-1">
-                  ✓ Réponse : Erreur de performance (fuite de mémoire / memory leak non nettoyée).
+                  {/* Options Buttons */}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {cas.options.map((opt) => (
+                      <button
+                        key={opt}
+                        onClick={() => handleSelect(cas.id, opt)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                          selected === opt
+                            ? 'bg-emerald-600 text-white shadow-sm'
+                            : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Feedback Explanation */}
+                  {showLabResults && (
+                    <div className={`p-3 rounded-xl text-xs font-medium ${
+                      isCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-amber-50 text-amber-900 border border-amber-200'
+                    }`}>
+                      <strong>Réponse attendue : {cas.correct}</strong> — {cas.explanation}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })}
           </div>
 
           <div className="pt-2">
             <button
               onClick={() => setShowLabResults(!showLabResults)}
-              className="px-5 py-2.5 rounded-xl bg-slate-950 text-white font-black text-sm hover:bg-slate-800 transition"
+              className="px-6 py-3 rounded-xl bg-slate-950 text-white font-black text-sm hover:bg-slate-800 transition shadow-md"
             >
-              {showLabResults ? 'Masquer la correction' : 'Vérifier mes réponses'}
+              {showLabResults ? 'Masquer les explications' : 'Vérifier mes 6 diagnostics'}
             </button>
           </div>
         </div>
       </section>
 
-      {/* 5. Synthèse & Quiz */}
+      {/* =========================================================================
+          SECTION 5 : QUIZ D'AUTO-ÉVALUATION
+         ========================================================================= */}
       <section className="space-y-4 pt-4">
         <QuickQuiz
-          title="Quiz d'auto-évaluation — Les Catégories d'Erreurs"
+          title="Auto-évaluation — Classifier les pannes logicielles"
           questions={[
             {
               id: 1,
-              question: "Une variable d'environnement DB_HOST est absente dans le fichier .env. Quelle catégorie correspond le mieux ?",
+              question: "Une variable d'environnement DATABASE_URL est absente dans le fichier .env. Quelle catégorie correspond le mieux ?",
               options: [
                 "Une erreur de configuration.",
                 "Une erreur de performance.",
@@ -442,55 +514,55 @@ const validation = UserSchema.safeParse({ name: 'Ahmed', age: 'vingt-cinq' });
                 "Une erreur de sécurité.",
               ],
               correctIndex: 0,
-              explanation: "C'est une erreur de configuration d'environnement nécessaire à l'initialisation du service.",
+              explanation: "Exact ! C'est une erreur de configuration d'environnement indispensable à l'initialisation du service.",
             },
             {
               id: 2,
-              question: "Le frontend envoie 'username' alors que le backend attend 'name'. Il s'agit principalement de :",
+              question: "Le frontend envoie la propriété 'username' alors que le backend attend 'name'. Il s'agit de :",
               options: [
-                "Une erreur de réseau.",
-                "Une erreur d'intégration.",
-                "Une erreur d'infrastructure.",
+                "Une erreur réseau physique.",
+                "Une erreur d'intégration (désynchronisation du contrat JSON).",
+                "Une coupure de fibre optique.",
                 "Une erreur de performance.",
               ],
               correctIndex: 1,
-              explanation: "Chaque système fonctionne isolément, mais leur interfaçage échoue par désynchronisation du contrat.",
+              explanation: "Parfait ! Chaque bloc tourne isolément sans bug interne, mais ils ne parlent pas le même langage JSON d'interfaçage.",
             },
             {
               id: 3,
-              question: "Une application ne trouve pas le package Express. De quelle catégorie s'agit-il ?",
+              question: "Votre terminal affiche : Error: Cannot find module 'express'. Quelle est la solution appropriée ?",
               options: [
-                "Erreur de données.",
-                "Erreur de dépendance.",
-                "Erreur SQL.",
-                "Erreur de sécurité.",
+                "Réécrire le serveur en Python.",
+                "Exécuter 'npm install express' pour installer la dépendance manquante.",
+                "Supprimer le fichier de base de données.",
+                "Changer d'écran d'ordinateur.",
               ],
               correctIndex: 1,
-              explanation: "Il manque un module tiers dans les dépendances du projet (node_modules).",
+              explanation: "Bien joué ! Il s'agit d'une erreur de dépendance : le package n'est pas présent dans node_modules.",
             },
             {
               id: 4,
-              question: "Une requête SQL prend 15 secondes pour retourner 10 lignes sur une table de 2 millions d'entrées. Quelle catégorie investiguer ?",
+              question: "Une requête SQL prend 18 secondes pour retourner 5 lignes sur une table de 2 millions de clients. Quelle catégorie investiguer ?",
               options: [
-                "Erreur de syntaxe uniquement.",
-                "Erreur de performance (absence d'index SQL adapté).",
-                "Erreur de dépendance.",
-                "Erreur CSS.",
+                "Erreur de syntaxe dans le HTML.",
+                "Erreur de performance (manque d'un index SQL sur la colonne recherchée).",
+                "Erreur de couleur CSS.",
+                "Erreur de clavier.",
               ],
               correctIndex: 1,
-              explanation: "La requête effectue un scan complet de table : c'est un problème d'indexation et de performance SQL.",
+              explanation: "Exactement ! Le moteur SQL parcourt les 2 millions de lignes une par une (Full Table Scan) faute d'index adapté.",
             },
             {
               id: 5,
-              question: "Une API permet à n'importe quel utilisateur de supprimer les profils d'autres membres sans vérifier son rôle. C'est :",
+              question: "Une API permet à n'importe qui de modifier le profil d'un autre utilisateur sans vérifier les droits. C'est :",
               options: [
-                "Une erreur de sécurité.",
-                "Une erreur de configuration uniquement.",
-                "Une erreur réseau.",
-                "Une erreur de syntaxe.",
+                "Une faille critique de sécurité (défaut d'autorisation).",
+                "Une simple erreur de syntaxe.",
+                "Un problème de câble réseau.",
+                "Une fonctionnalité normale.",
               ],
               correctIndex: 0,
-              explanation: "C'est une faille de contrôle d'accès et d'autorisation critique (IDOR / Broken Access Control).",
+              explanation: "Tout à fait ! C'est une faille de contrôle d'accès (Broken Access Control / IDOR) qui menace l'intégrité des données.",
             },
           ]}
         />
@@ -498,4 +570,3 @@ const validation = UserSchema.safeParse({ name: 'Ahmed', age: 'vingt-cinq' });
     </div>
   );
 };
-

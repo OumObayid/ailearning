@@ -6,8 +6,8 @@ import { ModuleIllustration } from '@/components/courses/ModuleIllustration';
 import { DEBUGGING_MODULE_6_CHAPTERS } from '@/content/courses/debugging/module-6/data';
 
 export const metadata = {
-  title: 'Module 6 : Débogage avancé, performances et sécurité • Ingénierie du Débogage',
-  description: "Optimisation et sécurisation avancées : diagnostic des fuites mémoire, analyse CPU, requêtes SQL lentes, gestion de la concurrence, prévention OWASP et observabilité Prometheus.",
+  title: 'Module 6 : Ingénierie du débogage assistée par IA • Ingénierie du Débogage',
+  description: "Ingénierie du débogage assistée par IA : prompts structurés, analyse de logs, détection d'hallucinations, agents IDE sous Antigravity et validation par tests Vitest et Supertest.",
 };
 
 export default function DebuggingModule6Page() {
@@ -15,8 +15,8 @@ export default function DebuggingModule6Page() {
     <div className="space-y-10">
       <PageHeader
         size="large"
-        title="Module 6 — Diagnostic Mémoire et CPU"
-        description="Optimisez la stabilité et la rapidité de vos systèmes logiciels : détectez et éliminez les fuites de mémoire (Memory Leaks) grâce aux snapshots de tas (Heap Profiling). Identifiez les goulots d'étranglement CPU, auditez les requêtes de base de données lentes avec EXPLAIN et renforcez la résilience globale de vos applications."
+        title="Module 6 — Diagnostic assisté par IA"
+        description="Adoptez une méthodologie d'investigation assistée par l'intelligence artificielle : formulez des prompts de diagnostic structurés et analysez de volumineux journaux d'erreurs (logs). Identifiez avec un regard critique les risques d'hallucinations techniques et validez chaque correctif par des tests de non-régression ciblés."
         breadcrumbs={[
           { label: 'Accueil', href: '/' },
           { label: 'Cours', href: '/cours' },
@@ -59,4 +59,3 @@ export default function DebuggingModule6Page() {
     </div>
   );
 }
-

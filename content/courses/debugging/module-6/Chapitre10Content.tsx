@@ -1,8 +1,7 @@
 ﻿'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { Callout } from '@/components/courses/Callout';
 import { Icon } from '@/components/common/Icon';
 
 export const Chapitre10Content: React.FC = () => {
@@ -15,158 +14,94 @@ export const Chapitre10Content: React.FC = () => {
           <span>Ingénierie du Débogage</span>
         </div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 10 — Diagnostiquer les problèmes de permissions et d&apos;accès aux fichiers
+          Chapitre 10 — Définir les instructions principales d&apos;un agent spécialisé en débogage
         </h1>
       </div>
 
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Chapitre 6.10 — Diagnostiquer les problèmes de permissions et d&apos;accès aux fichiers
+        Chapitre 10 — 6.10. Définir les instructions principales d&apos;un agent spécialisé en débogage.
       </p>
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Objectifs du chapitre
+          1. Objectifs pédagogiques
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        À la fin de ce chapitre, vous devez être capable de :
+        À la fin de ce chapitre, vous serez capable de :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre les permissions des fichiers et dossiers sous Windows et Linux.</span>
+            <span>Concevoir les instructions permanentes d&apos;un agent spécialisé en débogage.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Diagnostiquer les erreurs d&apos;accès dans une application Node.js.</span>
+            <span>Distinguer les instructions principales des prompts ponctuels.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Identifier les problèmes de lecture, d&apos;écriture et de suppression.</span>
+            <span>Organiser les différentes sections d&apos;un fichier d&apos;agent.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Comprendre les risques liés au Path Traversal.</span>
+            <span>Définir une méthode de diagnostic reproductible.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Corriger les problèmes de permissions sans compromettre la sécurité.</span>
+            <span>Encadrer le comportement de l&apos;agent pour éviter les modifications non autorisées.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tester un agent spécialisé dans un IDE comme Google Antigravity.</span>
           </li>
         </ul>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Comprendre les permissions des fichiers
+          2. Instructions permanentes et prompts ponctuels
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Un système d&apos;exploitation contrôle les utilisateurs et les processus qui peuvent accéder aux fichiers et dossiers.
+        Un agent spécialisé en débogage utilise deux catégories d&apos;instructions.
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Les principales opérations sont :
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Permission</th>
-              <th className="px-4 py-3">Signification</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Read (r)</td>
-              <td className="px-4 py-2.5 font-medium">Lire un fichier.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Write (w)</td>
-              <td className="px-4 py-2.5 font-medium">Modifier ou écrire dans un fichier.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Execute (x)</td>
-              <td className="px-4 py-2.5 font-medium">Exécuter un fichier ou traverser un dossier sous Linux.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple concret :
+        2.1. Les instructions permanentes
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une application Node.js doit enregistrer une image dans :
+        Ce sont les règles générales que l&apos;agent doit respecter pendant toutes ses missions.
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`project/
-├── server.js
-└── uploads/
-Si le processus Node.js ne dispose pas du droit d'écriture sur uploads/, l'enregistrement échoue.`}</code></pre>
-      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le code peut être correct : le problème vient des permissions du système.
+        Elles définissent notamment :
       </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Comprendre les erreurs d&apos;accès dans Node.js
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Node.js fournit plusieurs codes d&apos;erreurs utiles pour diagnostiquer les problèmes de fichiers.
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Code</th>
-              <th className="px-4 py-3">Signification</th>
-              <th className="px-4 py-3">Cause possible</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">EACCES</td>
-              <td className="px-4 py-2.5 font-medium">Permission refusée</td>
-              <td className="px-4 py-2.5 font-medium">Droits insuffisants.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">EPERM</td>
-              <td className="px-4 py-2.5 font-medium">Opération non autorisée</td>
-              <td className="px-4 py-2.5 font-medium">Restriction du système.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">ENOENT</td>
-              <td className="px-4 py-2.5 font-medium">Fichier ou dossier introuvable</td>
-              <td className="px-4 py-2.5 font-medium">Chemin incorrect ou fichier absent.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">EEXIST</td>
-              <td className="px-4 py-2.5 font-medium">Élément déjà existant</td>
-              <td className="px-4 py-2.5 font-medium">Création d&apos;un fichier ou dossier existant.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">EISDIR</td>
-              <td className="px-4 py-2.5 font-medium">Le chemin correspond à un dossier</td>
-              <td className="px-4 py-2.5 font-medium">Opération incompatible.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">ENOTDIR</td>
-              <td className="px-4 py-2.5 font-medium">Un élément du chemin n&apos;est pas un dossier</td>
-              <td className="px-4 py-2.5 font-medium">Chemin incorrect.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">EMFILE</td>
-              <td className="px-4 py-2.5 font-medium">Trop de fichiers ouverts par le processus</td>
-              <td className="px-4 py-2.5 font-medium">Limite de descripteurs atteinte.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Son identité et son rôle.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ses responsabilités.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Sa méthode de travail.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les règles de diagnostic.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ses limites.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les conditions dans lesquelles il peut modifier le code.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Le format de ses rapports.</span>
+          </li>
+        </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         Exemple :
       </p>
@@ -179,168 +114,39 @@ Si le processus Node.js ne dispose pas du droit d'écriture sur uploads/, l'enre
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import fs from "node:fs/promises";
-
-try {
-await fs.writeFile("./uploads/test.txt", "Bonjour");
-} catch (error) {
-console.error("Code :", error.code);
-console.error("Message :", error.message);
-}
-Si le dossier uploads n'existe pas, Node.js peut retourner ENOENT.
-S'il existe mais que l'application ne peut pas y écrire, elle peut retourner EACCES ou EPERM.
-Méthode de diagnostic : examiner d'abord error.code, puis vérifier le chemin et les permissions.`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Un agent nommé debugging-specialist doit toujours :`}</code></pre>
       </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Diagnostiquer les permissions sous Windows
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Sous Windows, les permissions reposent principalement sur les ACL (Access Control Lists).
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elles définissent les droits accordés aux utilisateurs et groupes.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        4.1. Vérifier les permissions graphiquement
-      </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ouvrir l&apos;Explorateur de fichiers.</span>
+            <span>Examiner les erreurs avant de proposer une correction.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Faire un clic droit sur le dossier concerné.</span>
+            <span>Identifier les causes probables.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Sélectionner Propriétés.</span>
+            <span>Vérifier les hypothèses à partir du code disponible.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Ouvrir l&apos;onglet Sécurité.</span>
+            <span>Ne pas inventer de fonctions ou de fichiers.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Sélectionner l&apos;utilisateur ou le groupe.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Examiner les permissions : lecture, écriture, modification, contrôle total.</span>
-          </li>
-        </ul>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image13.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ne donnez pas automatiquement le contrôle total à tout le monde pour corriger une erreur. Accordez uniquement les droits nécessaires au compte qui exécute l&apos;application.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        4.2. Vérifier les permissions avec PowerShell
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Afficher les permissions :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Get-Acl .\\uploads | Format-List`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Afficher les informations d&apos;un processus Node.js :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Get-Process node`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vérifier l&apos;utilisateur courant :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`whoami`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ces commandes permettent de mieux comprendre quel utilisateur exécute les opérations et quelles permissions sont configurées.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Diagnostiquer les permissions sous Linux
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Linux utilise généralement les permissions suivantes :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`r : lecture.
-w : écriture.
-x : exécution ou traversée du dossier.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ces permissions sont définies pour trois catégories :
-      </p>
-        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>User : propriétaire.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Group : groupe.</span>
-          </li>
-          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
-            <span className="text-emerald-700 font-black">✓</span>
-            <span>Others : autres utilisateurs.</span>
+            <span>Ne pas modifier le code sans autorisation explicite.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        5.1. Lire les permissions
+        Ces règles restent applicables d&apos;un bug à l&apos;autre.
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`ls -l`}</code></pre>
-      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        2.2. Les prompts ponctuels
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un prompt ponctuel décrit une mission précise confiée à l&apos;agent.
+      </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
         Exemple :
       </p>
@@ -353,11 +159,277 @@ x : exécution ou traversée du dossier.`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`-rw-r--r--  user  group  config.json
-drwxr-xr-x  user  group  uploads`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Analyse le problème de connexion dans mon application React et Node.js. Le frontend envoie le champ password, mais le backend semble attendre passwordUser. Identifie la cause de l'erreur sans modifier les fichiers.`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Interprétation :
+        Ce prompt contient les informations propres au problème actuel.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        2.3. Comparaison
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Instructions permanentes</th>
+              <th className="px-4 py-3">Prompt ponctuel</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Définissent le comportement de l&apos;agent</td>
+              <td className="px-4 py-2.5 font-medium">Définissent la mission</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Réutilisées à chaque intervention</td>
+              <td className="px-4 py-2.5 font-medium">Changent selon le problème</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Décrivent les règles et les limites</td>
+              <td className="px-4 py-2.5 font-medium">Fournissent le contexte du bug</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">Définissent la méthode de travail</td>
+              <td className="px-4 py-2.5 font-medium">Précisent le résultat attendu</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <Callout type="tip" title="À retenir ">
+        <p className="text-xs sm:text-sm">les instructions principales définissent comment l&apos;agent doit travailler. Le prompt ponctuel lui indique sur quoi il doit travailler.</p>
+      </Callout>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          3. Architecture d&apos;un fichier d&apos;agent spécialisé
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Un fichier d&apos;agent peut être organisé en plusieurs sections.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Voici une architecture professionnelle :
+      </p>
+      <div className="overflow-x-auto my-6">
+        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3">Section</th>
+              <th className="px-4 py-3">Fonction</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">YAML Frontmatter</td>
+              <td className="px-4 py-2.5 font-medium">Identifie l&apos;agent</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">ROLE</td>
+              <td className="px-4 py-2.5 font-medium">Définit son identité</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">OBJECTIVE</td>
+              <td className="px-4 py-2.5 font-medium">Définit sa mission générale</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">RESPONSIBILITIES</td>
+              <td className="px-4 py-2.5 font-medium">Précise ses responsabilités</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">WORKFLOW</td>
+              <td className="px-4 py-2.5 font-medium">Organise ses étapes de travail</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">DIAGNOSTIC METHOD</td>
+              <td className="px-4 py-2.5 font-medium">Définit sa méthode d&apos;analyse</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">CONSTRAINTS</td>
+              <td className="px-4 py-2.5 font-medium">Définit les interdictions et limites</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">PERMISSIONS</td>
+              <td className="px-4 py-2.5 font-medium">Décrit les actions autorisées</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">OUTPUT FORMAT</td>
+              <td className="px-4 py-2.5 font-medium">Définit la structure des réponses</td>
+            </tr>
+            <tr className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-2.5 font-medium">VALIDATION</td>
+              <td className="px-4 py-2.5 font-medium">Définit comment vérifier les conclusions</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Nous allons examiner les sections importantes.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.1. YAML Frontmatter
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le Frontmatter est un en-tête contenant les métadonnées de l&apos;agent.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Il doit être placé au début du fichier lorsque le format de l&apos;IDE utilise cette convention.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`---
+name: debugging-specialist
+description: Diagnose software defects without modifying project files unless explicitly authorized.
+---
+name : identifiant de l'agent.
+description : description de son rôle et de sa spécialité.`}</code></pre>
+      </div>
+      <Callout type="warning" title="Attention ">
+        <p className="text-xs sm:text-sm">la structure et les champs acceptés dépendent de l&apos;IDE et de son format d&apos;agent.</p>
+      </Callout>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.2. ROLE
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section définit l&apos;identité professionnelle de l&apos;agent.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## ROLE
+
+Tu es un ingénieur logiciel spécialisé dans le
+diagnostic, l'analyse et la résolution des bugs.
+
+Tu maîtrises :
+- React et TypeScript.
+- Node.js et Express.
+- MySQL.
+- Les API REST.
+- Les tests avec Vitest et Supertest.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le rôle doit être suffisamment précis pour orienter les analyses de l&apos;agent.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.3. OBJECTIVE
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section définit la finalité générale de l&apos;agent.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## OBJECTIVE
+
+Identifier les anomalies logicielles, rechercher leurs
+causes racines et proposer des solutions fiables.
+
+Privilégier toujours un diagnostic fondé sur des preuves
+plutôt qu'une correction rapide du symptôme.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La différence est importante :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>ROLE : qui est l&apos;agent ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>OBJECTIVE : quel résultat général doit-il rechercher ?</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.4. RESPONSIBILITIES
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section définit les responsabilités permanentes.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## RESPONSIBILITIES
+
+- Examiner les messages d'erreur et les Stack Traces.
+- Analyser les fichiers pertinents du projet.
+- Identifier les fonctions responsables.
+- Examiner les échanges entre frontend et backend.
+- Vérifier les contrats des API.
+- Analyser les requêtes SQL concernées.
+- Identifier les causes probables et les causes racines.
+- Proposer des corrections adaptées.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les responsabilités décrivent ce que l&apos;agent doit prendre en charge, sans lui imposer encore une procédure détaillée.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.5. WORKFLOW
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le workflow définit l&apos;ordre des opérations.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## WORKFLOW
+
+1. Comprendre le comportement attendu.
+2. Identifier le comportement réellement observé.
+3. Examiner les logs et les Stack Traces.
+4. Localiser les fichiers et fonctions concernés.
+5. Formuler plusieurs hypothèses.
+6. Vérifier les hypothèses à partir des preuves.
+7. Identifier la cause racine.
+8. Présenter le diagnostic.
+9. Proposer une correction.
+10. Attendre une autorisation avant toute modification.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section évite que l&apos;agent passe directement de l&apos;erreur à la modification du code.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.6. DIAGNOSTIC METHOD
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section précise la méthode de raisonnement technique.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent doit distinguer quatre éléments :
       </p>
       <div className="overflow-x-auto my-6">
         <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
@@ -365,34 +437,35 @@ drwxr-xr-x  user  group  uploads`}</code></pre>
             <tr>
               <th className="px-4 py-3">Élément</th>
               <th className="px-4 py-3">Signification</th>
+              <th className="px-4 py-3">Exemple</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">-</td>
-              <td className="px-4 py-2.5 font-medium">Fichier ordinaire.</td>
+              <td className="px-4 py-2.5 font-medium">Symptôme</td>
+              <td className="px-4 py-2.5 font-medium">Ce que l&apos;on observe</td>
+              <td className="px-4 py-2.5 font-medium">HTTP 500</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">d</td>
-              <td className="px-4 py-2.5 font-medium">Dossier.</td>
+              <td className="px-4 py-2.5 font-medium">Hypothèse</td>
+              <td className="px-4 py-2.5 font-medium">Explication possible</td>
+              <td className="px-4 py-2.5 font-medium">user est undefined</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">rw -</td>
-              <td className="px-4 py-2.5 font-medium">Propriétaire : lecture et écriture.</td>
+              <td className="px-4 py-2.5 font-medium">Cause immédiate</td>
+              <td className="px-4 py-2.5 font-medium">Erreur directement responsable</td>
+              <td className="px-4 py-2.5 font-medium">Accès à user.id</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">r --</td>
-              <td className="px-4 py-2.5 font-medium">Groupe : lecture seule.</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">r -x</td>
-              <td className="px-4 py-2.5 font-medium">Lecture et traversée du dossier.</td>
+              <td className="px-4 py-2.5 font-medium">Cause racine</td>
+              <td className="px-4 py-2.5 font-medium">Origine réelle du problème</td>
+              <td className="px-4 py-2.5 font-medium">La requête SQL ne retourne aucun utilisateur</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        5.2. Vérifier le propriétaire
+        Instructions :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -403,14 +476,24 @@ drwxr-xr-x  user  group  uploads`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`whoami
-ls -ld uploads`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## DIAGNOSTIC METHOD
+
+Pour chaque anomalie :
+
+- Distinguer les faits des hypothèses.
+- Identifier les preuves disponibles.
+- Examiner les causes possibles.
+- Ne pas confondre symptôme et cause racine.
+- Classer les hypothèses selon leur probabilité.
+- Indiquer les informations manquantes.
+- Ne jamais présenter une hypothèse comme une certitude
+sans preuve suffisante.`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        5.3. Modifier les permissions
+        3.7. CONSTRAINTS
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
+        Cette section définit les interdictions et les limites de comportement.
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -421,83 +504,510 @@ ls -ld uploads`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`chmod 755 uploads`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## CONSTRAINTS
+
+- Ne pas inventer de fichiers, fonctions ou méthodes.
+- Ne pas supposer qu'une API existe sans la vérifier.
+- Ne pas supprimer du code pour masquer une erreur.
+- Ne pas modifier le comportement métier sans justification.
+- Ne pas remplacer une vraie correction par un simple
+contournement.
+- Ne pas exposer les clés API, mots de passe ou secrets.
+- Ne pas modifier les fichiers sans autorisation explicite.`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cela donne :
+        Différence importante :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`RESPONSIBILITIES : ce que l'agent doit faire.
+CONSTRAINTS : ce qu'il ne doit pas faire.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.8. PERMISSIONS
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section décrit les actions autorisées par les instructions.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## PERMISSIONS
+
+Par défaut :
+
+- Autorisé : lire les fichiers du projet.
+- Autorisé : rechercher du code.
+- Autorisé : analyser les logs.
+- Autorisé : consulter les tests.
+- Autorisé : proposer des corrections.
+- Non autorisé : modifier les fichiers.
+- Non autorisé : supprimer des fichiers.
+- Non autorisé : installer des dépendances.
+
+Toute modification nécessite une autorisation
+explicite de l'utilisateur.`}</code></pre>
+      </div>
+      <Callout type="warning" title="Attention ">
+        <p className="text-xs sm:text-sm">écrire ces règles dans le fichier d&apos;agent ne suffit pas à bloquer techniquement une action.</p>
+      </Callout>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les permissions réelles des outils et de l&apos;IDE doivent également être configurées. Ce point sera approfondi dans le chapitre 11.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.9. OUTPUT FORMAT
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section impose une structure aux rapports.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## OUTPUT FORMAT
+
+Chaque diagnostic doit contenir :
+
+1. Résumé du problème.
+2. Symptômes observés.
+3. Fichiers et fonctions concernés.
+4. Hypothèses identifiées.
+5. Preuves disponibles.
+6. Cause racine probable.
+7. Correction recommandée.
+8. Tests à effectuer.
+9. Risques éventuels.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cela permet d&apos;obtenir des réponses organisées et faciles à vérifier.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        3.10. VALIDATION
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Cette section définit les exigences de vérification.
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`## VALIDATION
+
+Avant de conclure :
+
+- Vérifier que le diagnostic correspond au code existant.
+- Vérifier les contrats entre les composants.
+- Examiner les tests concernés.
+- Signaler les tests qui n'ont pas été exécutés.
+- Ne jamais déclarer un bug corrigé sans vérification.`}</code></pre>
+      </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          4. Exemple complet : agent Debugging Specialist
+        </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Nous allons maintenant assembler les sections précédentes dans un seul fichier.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ce fichier constitue un modèle générique à adapter au format reconnu par votre IDE.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        AGENT: DEBUGGING SPECIALIST
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        ROLE
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Tu es un ingénieur logiciel senior spécialisé dans le diagnostic, l&apos;analyse et la résolution des anomalies logicielles.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Tu maîtrises :
       </p>
         <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Propriétaire : lecture, écriture, exécution.</span>
+            <span>React et TypeScript.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Groupe : lecture et exécution.</span>
+            <span>Node.js et Express.</span>
           </li>
           <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
             <span className="text-emerald-700 font-black">✓</span>
-            <span>Autres : lecture et exécution.</span>
+            <span>MySQL.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Les API REST.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vitest et Supertest.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>L&apos;analyse des logs et des Stack Traces.</span>
           </li>
         </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour autoriser l&apos;écriture au propriétaire :
+        OBJECTIVE
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`chmod 755 uploads`}</code></pre>
-      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le propriétaire dispose déjà du droit d&apos;écriture avec cette configuration.
+        Identifier les bugs, rechercher leurs causes racines et proposer des corrections fiables, maintenables et conformes à l&apos;architecture existante.
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Attention : éviter chmod 777 comme solution automatique. Cela accorde des droits très larges à tous les utilisateurs.`}</code></pre>
-      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour changer le propriétaire, une commande comme celle-ci peut être utilisée :
+        La priorité est de comprendre le problème avant de chercher à le corriger.
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`sudo chown appuser:appgroup uploads`}</code></pre>
-      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elle doit être adaptée au véritable utilisateur qui exécute le backend.
+        RESPONSIBILITIES
       </p>
-      <div className="my-6 rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="relative w-full h-72 sm:h-96">
-          <Image src="/images/cours/debugging/module-6/image14.jpeg" alt="Illustration technique" fill className="object-contain" />
-        </div>
-      </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Analyser les erreurs frontend et backend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner les fichiers pertinents.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier les fonctions responsables.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier les échanges entre frontend et backend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner les contrats des API.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Analyser les requêtes SQL concernées.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier les causes probables et les causes racines.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Proposer des solutions adaptées.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Recommander des tests de validation.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        WORKFLOW
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Comprendre le comportement attendu.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier le comportement observé.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner les logs et les Stack Traces.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Rechercher les fichiers concernés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Analyser le code et ses dépendances.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Formuler des hypothèses.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier les hypothèses avec des preuves.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier la cause racine.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Présenter le diagnostic.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Proposer une correction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Attendre une autorisation explicite avant toute modification.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        DIAGNOSTIC METHOD
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Pour chaque bug :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Distinguer les faits des hypothèses.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier le symptôme.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Rechercher la cause immédiate.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier la cause racine.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Classer les hypothèses selon leur probabilité.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Justifier chaque conclusion avec des éléments techniques.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Signaler les informations manquantes.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne jamais inventer une explication technique.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        CONSTRAINTS
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas inventer de fichiers ou de fonctions.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas inventer des méthodes ou des API.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas modifier l&apos;architecture sans justification.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas masquer une erreur avec un contournement superficiel.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas supprimer du code pour faire disparaître un symptôme.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne pas exposer de secrets ou de données sensibles.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne jamais modifier les fichiers sans autorisation explicite.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        PERMISSIONS
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Par défaut :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Lecture des fichiers : autorisée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Recherche dans le projet : autorisée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Analyse des logs : autorisée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Analyse des tests : autorisée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Proposition de corrections : autorisée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Modification des fichiers : interdite sans autorisation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Suppression de fichiers : interdite sans autorisation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Installation de dépendances : interdite sans autorisation.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Les permissions techniques configurées dans l&apos;IDE doivent respecter ces limites.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        OUTPUT FORMAT
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Présenter chaque diagnostic selon cette structure :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Résumé du problème.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Symptômes observés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Fichiers et fonctions concernés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Hypothèses identifiées.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Preuves techniques.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Cause racine.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Correction recommandée.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Tests de validation.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Risques éventuels.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        VALIDATION
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier les conclusions à partir du code existant.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier les contrats frontend/backend.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Vérifier les tests concernés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Signaler les tests non exécutés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ne jamais déclarer une correction validée sans preuve.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Attendre l&apos;autorisation avant de modifier le projet.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Remarque : les instructions constituent le comportement attendu de l&apos;agent. Leur présence dans le fichier ne garantit pas à elle seule que l&apos;IDE empêchera une action interdite.
+      </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Diagnostiquer les problèmes de chemins de fichiers dans Node.js
+          5. Utiliser l&apos;agent avec un prompt ponctuel
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une erreur fréquente consiste à utiliser un chemin relatif en supposant qu&apos;il est toujours calculé depuis le dossier du fichier JavaScript.
+        Une fois l&apos;agent configuré, il peut recevoir différentes missions sans qu&apos;il soit nécessaire de répéter toutes ses instructions principales.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Exemple de mission :
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        MISSION — Diagnostic d&apos;une erreur de connexion
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Analyse le problème de connexion de mon application.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        CONTEXTE
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Frontend : React + TypeScript.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Backend : Node.js + Express.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Base de données : MySQL.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        SYMPTÔME
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La connexion échoue alors que les identifiants semblent corrects.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le frontend envoie :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -508,10 +1018,13 @@ ls -ld uploads`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`En réalité, ./ est généralement interprété depuis le répertoire courant du processus (process.cwd()).`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`{
+"email": "user@example.com",
+"password": "123456"
+}`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple :
+        Le backend semble récupérer :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -522,69 +1035,64 @@ ls -ld uploads`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`await fs.writeFile("./uploads/image.txt", "Contenu");`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const { email, passwordUser } = req.body;`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Si le serveur est lancé depuis un autre répertoire, Node.js peut chercher le dossier au mauvais endroit.
+        TÂCHES
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner le formulaire React.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner la requête HTTP.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Examiner le contrôleur Express.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Comparer les noms des propriétés.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Identifier la cause racine.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Proposer une correction.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Indiquer les tests nécessaires.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        CONTRAINTE PARTICULIÈRE
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        6.1. Vérifier le répertoire courant
+        Effectue uniquement le diagnostic.
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`console.log(process.cwd());
-6.2. Construire un chemin fiable avec import.meta.url
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadDir = path.join(__dirname, "uploads");`}</code></pre>
-      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créer le dossier s&apos;il n&apos;existe pas :
+        Ne modifie aucun fichier et n&apos;exécute aucune correction.
       </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import fs from "node:fs/promises";
-
-await fs.mkdir(uploadDir, { recursive: true });`}</code></pre>
-      </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette approche permet de construire un chemin indépendant du répertoire depuis lequel le serveur a été lancé.
+        Présente les preuves qui justifient ton diagnostic.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        L&apos;agent applique automatiquement ses instructions permanentes, puis exécute la mission demandée.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Comprendre le Path Traversal
+          6. TP — Construire et tester un agent spécialisé
         </h2>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Vulnérabilité de sécurité
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le Path Traversal est une vulnérabilité qui permet à un utilisateur de tenter d&apos;accéder à des fichiers situés en dehors du répertoire prévu par l&apos;application.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Elle apparaît souvent lorsqu&apos;un serveur utilise directement un nom de fichier fourni par l&apos;utilisateur.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Exemple vulnérable :
+        Travaux pratiques
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -595,23 +1103,72 @@ await fs.mkdir(uploadDir, { recursive: true });`}</code></pre>
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`app.get("/api/files/:filename", async (req, res) =&gt; {
-const filename = req.params.filename;
-
-const filePath = path.join(
-process.cwd(),
-"uploads",
-filename
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Objectif : créer un agent debugging-specialist et vérifier qu'il respecte sa mission de diagnostic sans modifier le code.`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 1 — Créer l&apos;agent
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Dans votre IDE :
+      </p>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Accédez au mécanisme de création d&apos;agents personnalisés.</span>
+          </li>
+        </ul>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Créez un agent nommé debugging-specialist.`}</code></pre>
+      </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Ajoutez le fichier d&apos;instructions complet présenté dans ce chapitre.</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>Enregistrez-le dans l&apos;emplacement reconnu par votre version de l&apos;IDE.</span>
+          </li>
+        </ul>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Ne supposez pas que tous les IDE utilisent le même chemin ou le même format de fichier.
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Étape 2 — Préparer un bug fictif
+      </p>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Dans un exemple de backend Express, utilisez ce contrôleur :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
+const user = await userRepository.findById(
+Number(req.params.id)
 );
 
-const content = await fs.readFile(filePath);
-
-res.send(content);
+return res.json({
+id: user.id,
+email: user.email
 });
-Le développeur pense que l'utilisateur demandera uniquement des fichiers du dossier uploads.`}</code></pre>
+}`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Mais un attaquant peut tenter de manipuler le chemin avec des séquences comme :
+        Le repository :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -622,13 +1179,21 @@ Le développeur pense que l'utilisateur demandera uniquement des fichiers du dos
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`../`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function findById(id: number) {
+const [rows] = await db.execute(
+"SELECT id, email FROM users WHERE id = ?",
+[id]
+);
+
+return (rows as any[])[0];
+}
+Anomalie : si aucun utilisateur ne correspond à l'identifiant, rows[0] vaut undefined. Le contrôleur tente alors d'accéder à user.id.`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ces séquences permettent de remonter dans l&apos;arborescence des dossiers.
+        Étape 3 — Demander le diagnostic
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Par exemple :
+        Sélectionnez votre agent et transmettez-lui cette mission :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -639,16 +1204,24 @@ Le développeur pense que l'utilisateur demandera uniquement des fichiers du dos
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`uploads/../../config/.env`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Analyse l'erreur de la route GET /users/:id.
+
+Identifie :
+- Le symptôme.
+- Les fichiers concernés.
+- La cause immédiate.
+- La cause racine.
+- La correction recommandée.
+
+Ne modifie aucun fichier.
+Ne lance aucune correction.
+Présente les preuves techniques.`}</code></pre>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Si aucune protection n&apos;est appliquée, le serveur risque de lire un fichier sensible.
+        Étape 4 — Vérifier son comportement
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        7.1. Corriger le Path Traversal
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Une première protection consiste à vérifier que le chemin final reste à l&apos;intérieur du répertoire autorisé.
+        Contrôlez les points suivants :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -659,101 +1232,102 @@ Le développeur pense que l'utilisateur demandera uniquement des fichiers du dos
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import path from "node:path";
-import fs from "node:fs/promises";
-
-const uploadDir = path.resolve("uploads");
-
-app.get("/api/files/:filename", async (req, res) =&gt; {
-const filename = req.params.filename;
-
-const filePath = path.resolve(uploadDir, filename);
-
-if (
-filePath === uploadDir ||
-!filePath.startsWith(uploadDir + path.sep)
-) {
-return res.status(403).json({
-message: "Accès interdit"
-});
-}
-
-try {
-const content = await fs.readFile(filePath);
-res.send(content);
-
-} catch (error) {
-if (error.code === "ENOENT") {
-return res.status(404).json({
-message: "Fichier introuvable"
-});
-}
-
-console.error(error);
-
-res.status(500).json({
-message: "Erreur interne"
-});
-}
-});`}</code></pre>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`L'agent a-t-il identifié rows[0] ?
+A-t-il compris que le repository peut retourner undefined ?
+A-t-il relié ce résultat à l'accès user.id ?`}</code></pre>
       </div>
+        <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-900 my-3">
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>A-t-il proposé de gérer l&apos;absence d&apos;utilisateur ?</span>
+          </li>
+          <li className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-200">
+            <span className="text-emerald-700 font-black">✓</span>
+            <span>A-t-il respecté l&apos;interdiction de modifier les fichiers ?</span>
+          </li>
+        </ul>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette vérification empêche les chemins qui sortent du dossier autorisé.
+        Résultat attendu
       </p>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour les applications sensibles, il faut également prendre en compte les liens symboliques et les éventuelles différences de casse sous Windows. Une stratégie encore plus sûre consiste à ne jamais accepter un chemin fourni par l&apos;utilisateur : utilisez un identifiant de fichier stocké en base de données et retrouvez le chemin réel côté serveur.
+        L&apos;agent doit identifier cette chaîne :
+      </p>
+      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
+        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span className="ml-2 text-slate-400">code</span>
+          </span>
+        </div>
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Utilisateur inexistant
+|
+v
+La requête SQL ne retourne aucune ligne
+|
+v
+rows[0] vaut undefined
+|
+v
+user vaut undefined
+|
+v
+Accès à user.id
+|
+v
+Erreur TypeError`}</code></pre>
+      </div>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        La correction recommandée doit notamment prévoir une réponse HTTP 404 lorsque l&apos;utilisateur n&apos;existe pas.
       </p>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Autres causes fréquentes de problèmes d&apos;accès aux fichiers
+          7. Corrigé du TP
         </h2>
+      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+        Le diagnostic attendu est le suivant :
+      </p>
       <div className="overflow-x-auto my-6">
         <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
             <tr>
-              <th className="px-4 py-3">Problème</th>
-              <th className="px-4 py-3">Diagnostic</th>
-              <th className="px-4 py-3">Solution</th>
+              <th className="px-4 py-3">Élément</th>
+              <th className="px-4 py-3">Résultat</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Dossier inexistant</td>
-              <td className="px-4 py-2.5 font-medium">ENOENT</td>
-              <td className="px-4 py-2.5 font-medium">Créer le dossier.</td>
+              <td className="px-4 py-2.5 font-medium">Symptôme</td>
+              <td className="px-4 py-2.5 font-medium">Erreur TypeError et HTTP 500</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Permissions insuffisantes</td>
-              <td className="px-4 py-2.5 font-medium">EACCES</td>
-              <td className="px-4 py-2.5 font-medium">Corriger les ACL ou permissions.</td>
+              <td className="px-4 py-2.5 font-medium">Cause immédiate</td>
+              <td className="px-4 py-2.5 font-medium">Accès à user.id alors que user est undefined</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fichier utilisé par un autre processus</td>
-              <td className="px-4 py-2.5 font-medium">Particulièrement fréquent sous Windows</td>
-              <td className="px-4 py-2.5 font-medium">Identifier le processus qui bloque le fichier.</td>
+              <td className="px-4 py-2.5 font-medium">Cause racine</td>
+              <td className="px-4 py-2.5 font-medium">Absence de gestion du résultat vide du repository</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Chemin relatif incorrect</td>
-              <td className="px-4 py-2.5 font-medium">Vérifier process.cwd ( )</td>
-              <td className="px-4 py-2.5 font-medium">Utiliser un chemin absolu.</td>
+              <td className="px-4 py-2.5 font-medium">Fichier concerné</td>
+              <td className="px-4 py-2.5 font-medium">Repository et contrôleur</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Fichier trop volumineux</td>
-              <td className="px-4 py-2.5 font-medium">Erreur mémoire ou limite applicative</td>
-              <td className="px-4 py-2.5 font-medium">Utiliser des streams et limiter la taille.</td>
+              <td className="px-4 py-2.5 font-medium">Correction</td>
+              <td className="px-4 py-2.5 font-medium">Vérifier l&apos;existence de l&apos;utilisateur avant de lire ses propriétés</td>
             </tr>
             <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Trop de fichiers ouverts</td>
-              <td className="px-4 py-2.5 font-medium">EMFILE</td>
-              <td className="px-4 py-2.5 font-medium">Fermer correctement les fichiers et limiter les ouvertures simultanées.</td>
+              <td className="px-4 py-2.5 font-medium">Validation</td>
+              <td className="px-4 py-2.5 font-medium">Tester un identifiant existant et un identifiant inexistant</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Pour éviter de charger entièrement les fichiers volumineux en mémoire, utiliser des streams :
+        Exemple de correction proposée :
       </p>
       <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
@@ -764,311 +1338,25 @@ message: "Erreur interne"
             <span className="ml-2 text-slate-400">code</span>
           </span>
         </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`import fs from "node:fs";
-
-const stream = fs.createReadStream("./uploads/video.mp4");
-
-stream.pipe(res);`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Cette méthode transmet progressivement le contenu au client.
-      </p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          9. TP pratique — Diagnostiquer et sécuriser un accès aux fichiers
-        </h2>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        TP pratique
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Difficulté : intermédiaire
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Objectif : créer une API qui permet de consulter les fichiers d'un dossier uploads, identifier une vulnérabilité Path Traversal et la corriger.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 1 — Préparer le projet
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`mkdir debug-files
-cd debug-files
-npm init -y
-npm install express
-Dans package.json, ajouter :
-"type": "module"`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Créer cette structure :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`debug-files/
-├── server.js
-├── uploads/
-│   └── document.txt
-└── private/
-└── secret.txt
-Contenu de document.txt :
-Document public.
-Contenu de secret.txt :
-Informations confidentielles.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 2 — Créer une route vulnérable
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Dans server.js :
-import express from "express";
-import path from "node:path";
-import fs from "node:fs/promises";
-
-const app = express();
-
-app.get("/api/files/:filename", async (req, res) =&gt; {
-try {
-const filePath = path.join(
-process.cwd(),
-"uploads",
-req.params.filename
+        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`export async function getUser(req, res) {
+const user = await userRepository.findById(
+Number(req.params.id)
 );
 
-const content = await fs.readFile(filePath, "utf8");
-
-res.send(content);
-
-} catch (error) {
-console.error("Erreur :", error.code);
-
-res.status(500).json({
-message: "Erreur de lecture"
-});
-}
-});
-
-app.listen(3000, () =&gt; {
-console.log("Serveur sur le port 3000");
-});`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 3 — Tester le fonctionnement normal
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Démarrer :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`node server.js`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Ouvrir :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`http://localhost:3000/api/files/document.txt`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Résultat attendu :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Document public.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 4 — Identifier la vulnérabilité
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`Dans un environnement local de test, essayer de demander le fichier secret.txt en manipulant le chemin avec ../.
-Selon le système d'exploitation et la normalisation du chemin, le serveur vulnérable peut accéder au fichier situé hors de uploads.`}</code></pre>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Le résultat attendu de ce test est de constater que le serveur ne limite pas correctement son accès au dossier public.
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 5 — Corriger la route
-      </p>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Remplacer la route précédente par :
-      </p>
-      <div className="my-4 rounded-2xl overflow-hidden border border-slate-800 shadow-md">
-        <div className="bg-slate-800 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-300">
-          <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span className="ml-2 text-slate-400">code</span>
-          </span>
-        </div>
-        <pre className="bg-slate-900 text-slate-100 p-4 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"><code>{`const uploadDir = path.resolve("uploads");
-
-app.get("/api/files/:filename", async (req, res) =&gt; {
-try {
-const filePath = path.resolve(
-uploadDir,
-req.params.filename
-);
-
-if (!filePath.startsWith(uploadDir + path.sep)) {
-return res.status(403).json({
-message: "Accès interdit"
-});
-}
-
-const content = await fs.readFile(filePath, "utf8");
-
-res.send(content);
-
-} catch (error) {
-if (error.code === "ENOENT") {
+if (!user) {
 return res.status(404).json({
-message: "Fichier introuvable"
+message: "Utilisateur introuvable"
 });
 }
 
-console.error("Erreur de lecture :", error.code);
-
-res.status(500).json({
-message: "Erreur interne"
-});
-}
-});`}</code></pre>
+return res.json(user);
+}`}</code></pre>
       </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Étape 6 — Vérifier la correction
-      </p>
-      <div className="overflow-x-auto my-6">
-        <table className="w-full text-left text-xs sm:text-sm border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <thead className="bg-slate-100 text-slate-900 font-extrabold border-b border-slate-200">
-            <tr>
-              <th className="px-4 py-3">Test</th>
-              <th className="px-4 py-3">Résultat attendu</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-white text-slate-800">
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Accéder à document.txt</td>
-              <td className="px-4 py-2.5 font-medium">200 — Lecture autorisée</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Accéder à un fichier inexistant</td>
-              <td className="px-4 py-2.5 font-medium">404 — Introuvable</td>
-            </tr>
-            <tr className="hover:bg-slate-50 transition-colors">
-              <td className="px-4 py-2.5 font-medium">Tenter de sortir de uploads</td>
-              <td className="px-4 py-2.5 font-medium">403 — Accès interdit</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-        Corrigé : la cause racine était l&apos;utilisation directe d&apos;une donnée utilisateur dans la construction du chemin. La correction vérifie que le chemin final reste dans le répertoire autorisé.
-      </p>
+      <Callout type="warning" title="Attention ">
+        <p className="text-xs sm:text-sm">cette correction doit être proposée dans le rapport, mais l&apos;agent ne doit pas l&apos;appliquer pendant ce TP.</p>
+      </Callout>
       </section>
 
-      {/* Quiz de révision */}
-      <div className="pt-6 border-t-2 border-slate-200">
-        <QuickQuiz
-          title="Quiz de révision — Chapitre 6.10"
-          questions={[
-            {
-              id: 1,
-              question: "Que signifie EACCES dans Node.js ?",
-              options: ["Fichier inexistant.", "Permission refusée.", "Erreur de syntaxe."],
-              correctIndex: 1,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 2,
-              question: "Quelle commande Linux permet d'afficher les permissions d'un fichier ?",
-              options: ["ls -l", "npm audit", "node --inspect"],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 3,
-              question: "Que signifie chmod 755 ?",
-              options: ["Tous les utilisateurs disposent de tous les droits.", "Le propriétaire dispose de lecture, écriture et exécution ; les autres disposent de lecture et exécution.", "Le fichier est supprimé."],
-              correctIndex: 1,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 4,
-              question: "Que représente le Path Traversal ?",
-              options: ["Une tentative d'accéder à des fichiers en dehors du répertoire autorisé.", "Une erreur de connexion MySQL.", "Une fuite mémoire."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-            {
-              id: 5,
-              question: "Pourquoi utiliser path.resolve() ?",
-              options: ["Pour calculer un chemin absolu normalisé.", "Pour supprimer les fichiers.", "Pour accorder les permissions."],
-              correctIndex: 0,
-              explanation: "Vérifiez la logique et les principes exposés dans ce chapitre.",
-            },
-          ]}
-        />
-      </div>
     </div>
   );
 };

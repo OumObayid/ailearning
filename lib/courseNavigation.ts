@@ -11,9 +11,9 @@ import { DEBUGGING_MODULE_1_CHAPTERS } from '@/content/courses/debugging/module-
 import { DEBUGGING_MODULE_2_CHAPTERS } from '@/content/courses/debugging/module-2/data';
 import { DEBUGGING_MODULE_3_CHAPTERS } from '@/content/courses/debugging/module-3/data';
 import { DEBUGGING_MODULE_4_CHAPTERS } from '@/content/courses/debugging/module-4/data';
+import { DEBUGGING_MODULE_5_CHAPTERS } from '@/content/courses/debugging/module-5/data';
 import { DEBUGGING_MODULE_6_CHAPTERS } from '@/content/courses/debugging/module-6/data';
 import { DEBUGGING_MODULE_7_CHAPTERS } from '@/content/courses/debugging/module-7/data';
-import { DEBUGGING_MODULE_8_CHAPTERS } from '@/content/courses/debugging/module-8/data';
 
 export interface FlatChapter {
   slug: string;
@@ -923,11 +923,20 @@ export function getChaptersForModule(moduleId: string): FlatChapter[] {
         duration: ch.duration,
         description: ch.description,
       }));
+    case 'debugging-module-5':
+      return DEBUGGING_MODULE_5_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 5 • Débogage avancé, performances et sécurité',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
     case 'debugging-module-6':
       return DEBUGGING_MODULE_6_CHAPTERS.map((ch) => ({
         slug: ch.slug,
         title: ch.title,
-        part: 'Module 6 • Débogage avancé, performances et sécurité',
+        part: 'Module 6 • Ingénierie du débogage assistée par IA',
         number: ch.number,
         duration: ch.duration,
         description: ch.description,
@@ -936,16 +945,7 @@ export function getChaptersForModule(moduleId: string): FlatChapter[] {
       return DEBUGGING_MODULE_7_CHAPTERS.map((ch) => ({
         slug: ch.slug,
         title: ch.title,
-        part: 'Module 7 • Ingénierie du débogage assistée par IA',
-        number: ch.number,
-        duration: ch.duration,
-        description: ch.description,
-      }));
-    case 'debugging-module-8':
-      return DEBUGGING_MODULE_8_CHAPTERS.map((ch) => ({
-        slug: ch.slug,
-        title: ch.title,
-        part: 'Module 8 • Projet final : Audit et remédiation',
+        part: 'Module 7 • Projet final : Audit et remédiation',
         number: ch.number,
         duration: ch.duration,
         description: ch.description,
@@ -1144,6 +1144,15 @@ export function getChapterNavigationForModule(moduleId: string, slug: string) {
         next: idx < chapters.length - 1 ? chapters[idx + 1] : null,
       };
     }
+    case 'debugging-module-5': {
+      const chapters = getChaptersForModule('debugging-module-5');
+      const idx = chapters.findIndex((c) => c.slug === slug);
+      if (idx === -1) return { prev: null, next: null };
+      return {
+        prev: idx > 0 ? chapters[idx - 1] : null,
+        next: idx < chapters.length - 1 ? chapters[idx + 1] : null,
+      };
+    }
     case 'debugging-module-6': {
       const chapters = getChaptersForModule('debugging-module-6');
       const idx = chapters.findIndex((c) => c.slug === slug);
@@ -1155,15 +1164,6 @@ export function getChapterNavigationForModule(moduleId: string, slug: string) {
     }
     case 'debugging-module-7': {
       const chapters = getChaptersForModule('debugging-module-7');
-      const idx = chapters.findIndex((c) => c.slug === slug);
-      if (idx === -1) return { prev: null, next: null };
-      return {
-        prev: idx > 0 ? chapters[idx - 1] : null,
-        next: idx < chapters.length - 1 ? chapters[idx + 1] : null,
-      };
-    }
-    case 'debugging-module-8': {
-      const chapters = getChaptersForModule('debugging-module-8');
       const idx = chapters.findIndex((c) => c.slug === slug);
       if (idx === -1) return { prev: null, next: null };
       return {

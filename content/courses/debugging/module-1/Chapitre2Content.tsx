@@ -1,302 +1,656 @@
-﻿'use client';
+'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre2Content: React.FC = () => {
+  // État pour la cascade causale interactive (L'effet domino)
+  const [activeDomino, setActiveDomino] = useState<number>(1);
+
+  const dominoSteps = [
+    {
+      id: 1,
+      tag: 'Le Bug (La Racine)',
+      badgeColor: 'bg-rose-100 text-rose-800 border-rose-300',
+      title: 'Défaut dans le code source',
+      description: 'Le développeur a écrit "mail" au lieu de "email" dans la clause SQL.',
+      code: `// Fichier : authRepository.ts
+const sql = "SELECT * FROM users WHERE mail = ?"; // ❌ Erreur : La colonne s'appelle 'email' !`,
+      detail: 'Le bug est tapi dans le fichier. Même si personne ne se connecte la nuit, ce bug existe déjà.',
+    },
+    {
+      id: 2,
+      tag: 'L\'Erreur interne',
+      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
+      title: 'Crash du moteur de base de données',
+      description: 'MySQL refuse d\'exécuter la requête et déclenche une exception SQL.',
+      code: `// Console du serveur Node.js / MySQL :
+Error: ER_BAD_FIELD_ERROR: Unknown column 'mail' in 'where clause'`,
+      detail: 'C\'est l\'événement technique : le système de base de données heurte un mur et lève une exception.',
+    },
+    {
+      id: 3,
+      tag: 'L\'Erreur réseau',
+      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
+      title: 'Échec de transmission HTTP',
+      description: 'Le serveur Express ne sachant que faire renvoie un code 500 au navigateur.',
+      code: `// Inspecteur Réseau (DevTools) :
+POST https://monsite.com/api/login -> Status: 500 Internal Server Error`,
+      detail: 'Le serveur prévient le client web : "Désolé, une panique imprévue s\'est produite de mon côté".',
+    },
+    {
+      id: 4,
+      tag: 'L\'Anomalie d\'affichage',
+      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
+      title: 'Écart visuel par rapport à la maquette',
+      description: 'Le bouton "Se connecter" affiche un spinner qui tourne sans fin au lieu d\'un message clair.',
+      code: `// Écran de l'utilisateur :
+[ 🔄 Connexion en cours... ] (Le bouton reste bloqué pour toujours)`,
+      detail: 'L\'anomalie est l\'écart entre le comportement attendu (redirection ou message d\'erreur) et l\'état figé.',
+    },
+    {
+      id: 5,
+      tag: 'Le Dysfonctionnement métier',
+      badgeColor: 'bg-red-100 text-red-900 border-red-300',
+      title: 'Impact réel sur le service',
+      description: '10 000 utilisateurs sont incapables de se connecter à leur compte aujourd\'hui.',
+      code: `// Conséquence commerciale :
+- Taux de connexion : 0%
+- Ventes paralysées
+- Support client submergé d'appels mécontents`,
+      detail: 'C\'est la douleur réelle vécue par l\'entreprise et ses clients. Tout est parti d\'un mot de 4 lettres ("mail") !',
+    },
+  ];
+
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
-      {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-lime-200 bg-lime-50/80 p-6 sm:p-8 mb-8">
-        <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Ingénierie du Débogage</span>
+    <div className="space-y-12 text-slate-900 leading-relaxed max-w-none">
+      {/* =========================================================================
+          EN-TÊTE DU CHAPITRE
+         ========================================================================= */}
+      <div className="rounded-3xl border-2 border-lime-200 bg-gradient-to-br from-lime-50/90 via-emerald-50/40 to-white p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2 text-lime-900 font-extrabold text-xs uppercase tracking-wider bg-lime-100/80 px-3 py-1 rounded-full border border-lime-300">
+            <Icon name="bug" className="w-4 h-4 text-lime-800" />
+            <span>Ingénierie du Débogage • Module 1</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-white/80 px-2.5 py-1 rounded-lg border border-slate-200">
+            <Icon name="clock" className="w-3.5 h-3.5 text-slate-500" />
+            <span>Lecture accessible : ~10 min</span>
+          </div>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight mb-3">
           Chapitre 2 — Bug, erreur, anomalie et dysfonctionnement
         </h1>
+        <p className="text-base sm:text-lg text-slate-700 font-medium">
+          Pourquoi utiliser les bons mots change tout : démêler la faute dans le code, l&apos;exception technique, l&apos;écart de comportement et l&apos;impact réel sur les utilisateurs.
+        </p>
+
+        {/* Objectifs du chapitre */}
+        <div className="mt-6 pt-5 border-t border-lime-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-semibold text-slate-800">
+          <div className="flex items-center gap-2">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Distinguer les 4 notions clés</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Maîtriser la cascade causale</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Appliquer les « 5 Pourquoi »</span>
+          </div>
+        </div>
       </div>
 
-      {/* 1. Introduction */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Introduction : Clarifier le vocabulaire technique
-        </h2>
-        <p className="text-base text-slate-800 font-medium">
-          Dans le langage courant des équipes informatiques, les termes <em>Bug</em>, <em>Erreur</em>, <em>Anomalie</em> et <em>Dysfonctionnement</em> sont souvent employés de façon interchangeable. Pourtant, pour un ingénieur du débogage, ces concepts désignent des réalités techniques différentes :
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-white border-2 border-rose-200 shadow-sm">
-            <span className="text-xs font-black uppercase text-rose-800">1. Le défaut</span>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900 mt-1">Bug</h3>
-            <p className="text-xs text-slate-700 font-medium mt-1">Le défaut dans le code ou la logique logicielle.</p>
-          </div>
-          <div className="p-4 rounded-2xl bg-white border-2 border-amber-200 shadow-sm">
-            <span className="text-xs font-black uppercase text-amber-800">2. L&apos;événement</span>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900 mt-1">Erreur (Error)</h3>
-            <p className="text-xs text-slate-700 font-medium mt-1">La situation problématique ou l&apos;exception levée.</p>
-          </div>
-          <div className="p-4 rounded-2xl bg-white border-2 border-blue-200 shadow-sm">
-            <span className="text-xs font-black uppercase text-blue-800">3. L&apos;écart</span>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900 mt-1">Anomalie</h3>
-            <p className="text-xs text-slate-700 font-medium mt-1">L&apos;écart entre le résultat observé et le résultat attendu.</p>
-          </div>
-          <div className="p-4 rounded-2xl bg-white border-2 border-purple-200 shadow-sm">
-            <span className="text-xs font-black uppercase text-purple-800">4. La conséquence</span>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900 mt-1">Dysfonctionnement</h3>
-            <p className="text-xs text-slate-700 font-medium mt-1">La dégradation concrète d&apos;une fonctionnalité du service.</p>
-          </div>
+      {/* =========================================================================
+          SECTION 1 : L'HISTOIRE CAPTIVANTE & L'ANALOGIE AUTOMOBILE
+         ========================================================================= */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">1</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            La petite histoire du mot « Bug » et l&apos;analogie automobile
+          </h2>
         </div>
-      </section>
 
-      {/* 2. Le Bug */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Qu&apos;est-ce qu&apos;un bug ?
-        </h2>
-        <p className="text-base text-slate-800 font-medium">
-          Le <strong>Bug</strong> désigne un défaut ou une imperfection présent dans le logiciel. Ce défaut peut provenir d&apos;une faute de frappe, d&apos;une formule mathématique erronée, d&apos;une mauvaise gestion des données ou d&apos;une incompréhension d&apos;un contrat d&apos;API.
-        </p>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5 space-y-3">
-          <p className="text-xs uppercase font-extrabold text-rose-700">Exemple de bug JavaScript :</p>
-          <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 overflow-x-auto">
-{`// Code erroné : addition au lieu d'une multiplication
-function calculerTotal(prix, quantite) {
-  return prix + quantite;
-}
-
-console.log(calculerTotal(50, 3)); 
-// Résultat obtenu : 53
-// Résultat attendu : 150`}
-          </pre>
-          <p className="text-xs uppercase font-extrabold text-emerald-700">Correction du bug :</p>
-          <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 overflow-x-auto">
-{`function calculerTotal(prix, quantite) {
-  return prix * quantite;
-}
-
-console.log(calculerTotal(50, 3)); // 150`}
-          </pre>
-        </div>
-        <Callout type="info" title="À retenir">
-          Le bug est le défaut intrinsèque présent dans le code source. Il existe même si aucun utilisateur ne l&apos;a encore déclenché.
-        </Callout>
-      </section>
-
-      {/* 3. L'erreur */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Qu&apos;est-ce qu&apos;une erreur (Error) ?
-        </h2>
-        <p className="text-base text-slate-800 font-medium">
-          Une <strong>erreur</strong> est un événement ou un état problématique qui empêche une opération de s&apos;exécuter correctement. Elle est souvent signalée explicitement par le moteur d&apos;exécution (exception) ou par un protocole (statut HTTP).
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 space-y-2">
-            <span className="text-xs font-black uppercase text-amber-800">Exception de runtime</span>
-            <pre className="font-mono text-xs bg-slate-100 p-3 rounded-lg text-slate-900">
-{`const utilisateur = null;
-console.log(utilisateur.nom);
-// TypeError: Cannot read properties of null`}
-            </pre>
-            <p className="text-xs text-slate-700">Le moteur JavaScript bloque l&apos;exécution face à une opération interdite.</p>
+        <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          <div className="flex items-center gap-2 text-slate-900 font-extrabold text-sm uppercase tracking-wide">
+            <Icon name="book-open" className="w-4 h-4 text-emerald-700" />
+            <span>D&apos;où vient le mot « Bug » ? (Septembre 1947)</span>
           </div>
-          <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 space-y-2">
-            <span className="text-xs font-black uppercase text-amber-800">Erreur de protocole réseau</span>
-            <pre className="font-mono text-xs bg-slate-100 p-3 rounded-lg text-slate-900">
-{`fetch('/api/users');
-// Réponse HTTP : 500 Internal Server Error`}
-            </pre>
-            <p className="text-xs text-slate-700">Le serveur notifie qu&apos;il a échoué dans le traitement de la requête.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. L'anomalie */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Qu&apos;est-ce qu&apos;une anomalie (Anomaly) ?
-        </h2>
-        <p className="text-base text-slate-800 font-medium">
-          Une <strong>anomalie</strong> est un écart constaté entre le comportement réel d&apos;un système et son comportement attendu par le cahier des charges.
-        </p>
-        <Callout type="tip" title="Une anomalie ne lève pas nécessairement d'exception">
-          <p className="text-sm">
-            Exemple : Une application bancaire affiche un solde sous la forme <code>1250.5 €</code> au lieu de <code>1250,50 €</code>. Le calcul mathématique est exact, aucun message d&apos;erreur n&apos;est émis dans la console, mais l&apos;affichage s&apos;écarte des exigences requises.
+          <p className="text-sm sm:text-base text-slate-700 font-medium leading-relaxed">
+            Le 9 septembre 1947, à l&apos;université de Harvard, l&apos;ordinateur électromécanique géant <em>Mark II</em> tombe en panne sans explication. La pionnière de l&apos;informatique <strong>Grace Hopper</strong> et son équipe ouvrent la machine et découvrent... un véritable papillon de nuit (un insecte, <em>bug</em> en anglais) coincé entre les lames d&apos;un relais mécanique !
           </p>
-        </Callout>
-      </section>
+          <p className="text-xs sm:text-sm text-slate-600 font-medium italic bg-white p-3 rounded-xl border border-slate-200">
+            Ils retirèrent l&apos;insecte avec une pince à épiler et collèrent le papillon dans le journal de bord avec la mention : « First actual case of bug being found » (Premier cas réel de bug trouvé). Le verbe <em>déboguer</em> (retirer les insectes) était né !
+          </p>
+        </div>
 
-      {/* 5. Le dysfonctionnement */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Qu&apos;est-ce qu&apos;un dysfonctionnement (Malfunction) ?
-        </h2>
-        <p className="text-base text-slate-800 font-medium">
-          Le <strong>dysfonctionnement</strong> représente la manifestation concrète du problème perçue par l&apos;utilisateur :
-        </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-bold text-slate-800">
-          <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">Impossible de se connecter</div>
-          <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">Le panier ne s&apos;enregistre pas</div>
-          <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">La page reste blanche</div>
-          <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">L&apos;application se ferme brutalement</div>
-          <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">Le formulaire ne soumet rien</div>
-          <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">Le serveur ne répond plus</div>
+        {/* L'analogie automobile */}
+        <div className="rounded-2xl bg-amber-50/70 border-2 border-amber-200/80 p-5 sm:p-6 space-y-4">
+          <div className="flex items-center gap-2 text-amber-950 font-black text-base">
+            <Icon name="sparkles" className="w-5 h-5 text-amber-700" />
+            <span>L&apos;analogie de la voiture : Comprendre les 4 notions en 30 secondes</span>
+          </div>
+          <p className="text-sm text-slate-800 font-medium">
+            Imaginez une voiture qui roule sur l&apos;autoroute :
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-xl bg-white border border-rose-200 space-y-1">
+              <span className="text-[11px] font-black uppercase text-rose-700">1. Le Bug</span>
+              <p className="text-xs font-bold text-slate-900">La pièce défectueuse</p>
+              <p className="text-xs text-slate-600 font-medium">Une durite de frein fissurée en usine lors de l&apos;assemblage.</p>
+            </div>
+            <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-1">
+              <span className="text-[11px] font-black uppercase text-amber-700">2. L&apos;Erreur</span>
+              <p className="text-xs font-bold text-slate-900">Le signal d&apos;alarme</p>
+              <p className="text-xs text-slate-600 font-medium">Le capteur détecte une baisse de pression et allume un voyant rouge au tableau de bord.</p>
+            </div>
+            <div className="p-3.5 rounded-xl bg-white border border-blue-200 space-y-1">
+              <span className="text-[11px] font-black uppercase text-blue-700">3. L&apos;Anomalie</span>
+              <p className="text-xs font-bold text-slate-900">L&apos;écart mesuré</p>
+              <p className="text-xs text-slate-600 font-medium">Il faut 60 mètres pour s&apos;arrêter au lieu des 25 mètres indiqués sur la notice.</p>
+            </div>
+            <div className="p-3.5 rounded-xl bg-white border border-purple-200 space-y-1">
+              <span className="text-[11px] font-black uppercase text-purple-700">4. Le Dysfonctionnement</span>
+              <p className="text-xs font-bold text-slate-900">La conséquence subie</p>
+              <p className="text-xs text-slate-600 font-medium">Le conducteur appuie à fond sur la pédale mais la voiture percute le panneau !</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 6. Tableau comparatif */}
+      {/* =========================================================================
+          SECTION 2 : LES 4 NOTIONS DÉCORTIQUÉES EN CODE
+         ========================================================================= */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">2</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Décryptage technique avec des exemples de code
+          </h2>
+        </div>
+
+        {/* 1. Le Bug */}
+        <div className="p-5 rounded-2xl bg-white border-2 border-rose-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-rose-700 font-black text-base">
+              <Icon name="bug" className="w-5 h-5" />
+              <span>1. Le Bug (Le Défaut dans le code)</span>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">Présent dans le texte source</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            Le bug est une faute inscrite dans le code par un humain. Il peut s&apos;agir d&apos;une mauvaise formule, d&apos;une faute d&apos;inattention ou d&apos;une condition inversée.
+          </p>
+          <CodeBlock
+            language="javascript"
+            filename="calculateurTVA.js"
+            code={`// ❌ LE BUG : On additionne le taux au lieu de multiplier
+function calculerPrixTTC(prixHT, tauxTVA) {
+  return prixHT + tauxTVA; // Si prixHT=100 et tauxTVA=0.20, donne 100.20 € au lieu de 120 € !
+}`}
+          />
+        </div>
+
+        {/* 2. L'Erreur */}
+        <div className="p-5 rounded-2xl bg-white border-2 border-amber-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-amber-700 font-black text-base">
+              <Icon name="info" className="w-5 h-5" />
+              <span>2. L&apos;Erreur (L&apos;Événement d&apos;arrêt technique)</span>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">Exception levée au runtime</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            L&apos;erreur survient lorsque la machine refuse d&apos;exécuter une instruction parce qu&apos;elle viole une règle du langage ou du système.
+          </p>
+          <CodeBlock
+            language="typescript"
+            filename="userProfile.ts"
+            code={`const profil = null;
+
+// ❌ L'ERREUR : Le moteur JavaScript stoppe immédiatement l'exécution
+console.log(profil.nom);
+// Résultat en console : Uncaught TypeError: Cannot read properties of null (reading 'nom')`}
+          />
+        </div>
+
+        {/* 3. L'Anomalie */}
+        <div className="p-5 rounded-2xl bg-white border-2 border-blue-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-blue-700 font-black text-base">
+              <Icon name="search" className="w-5 h-5" />
+              <span>3. L&apos;Anomalie (L&apos;Écart par rapport au résultat attendu)</span>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">Sans aucun message d&apos;erreur !</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            C&apos;est le cas le plus vicieux : le code s&apos;exécute sans aucun crash, aucune ligne rouge n&apos;apparaît dans la console, mais le résultat est faux ou non conforme au cahier des charges.
+          </p>
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-700 space-y-1">
+            <p><strong>Exemple de cahier des charges :</strong> Le montant en euros doit s&apos;afficher avec une virgule et deux décimales (<code className="text-blue-700 font-mono font-bold">1 250,50 €</code>).</p>
+            <p><strong>Résultat affiché par le site :</strong> <code className="text-rose-700 font-mono font-bold">1250.5 €</code>.</p>
+            <p className="text-slate-500 italic mt-1">La fonction n&apos;a pas crashé, mais il y a une anomalie d&apos;exigence métier.</p>
+          </div>
+        </div>
+
+        {/* 4. Le Dysfonctionnement */}
+        <div className="p-5 rounded-2xl bg-white border-2 border-purple-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-purple-700 font-black text-base">
+              <Icon name="x" className="w-5 h-5" />
+              <span>4. Le Dysfonctionnement (La Panne utilisateur)</span>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">Impact business &amp; utilisateur</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            C&apos;est la description du problème en langage humain, telle que la rapporte un client furieux au support :
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-semibold text-slate-800">
+            <div className="p-3 rounded-xl bg-purple-50/70 border border-purple-200 flex items-center gap-2">
+              <span className="text-purple-600">⚠️</span>
+              <span>« Je n&apos;arrive pas à payer »</span>
+            </div>
+            <div className="p-3 rounded-xl bg-purple-50/70 border border-purple-200 flex items-center gap-2">
+              <span className="text-purple-600">⚠️</span>
+              <span>« Mon mot de passe est refusé »</span>
+            </div>
+            <div className="p-3 rounded-xl bg-purple-50/70 border border-purple-200 flex items-center gap-2">
+              <span className="text-purple-600">⚠️</span>
+              <span>« Mon panier s&apos;est vidé tout seul »</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 3 : LA CASCADE CAUSALE INTERACTIVE (L'EFFET DOMINO)
+         ========================================================================= */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">3</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Simulateur interactif : La Cascade Causale (L&apos;effet Domino)
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Comprendre comment une petite erreur d&apos;inattention déclenche une réaction en chaîne jusqu&apos;à bloquer toute l&apos;entreprise :
+        </p>
+
+        {/* Interactive Domino Card */}
+        <div className="rounded-2xl border-2 border-slate-800 bg-slate-900 text-white overflow-hidden shadow-xl">
+          {/* Header */}
+          <div className="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
+              <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
+              <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
+              <span className="text-xs font-mono text-slate-400 ml-2">Cascade d&apos;une panne de connexion</span>
+            </div>
+            <span className="text-[11px] font-bold text-lime-400">Étape {activeDomino} sur 5</span>
+          </div>
+
+          {/* Stepper Buttons */}
+          <div className="grid grid-cols-5 border-b border-slate-800 text-xs font-bold divide-x divide-slate-800 bg-slate-900">
+            {dominoSteps.map((step) => (
+              <button
+                key={step.id}
+                onClick={() => setActiveDomino(step.id)}
+                className={`p-2.5 sm:p-3 text-center transition-all ${
+                  activeDomino === step.id
+                    ? 'bg-emerald-600/30 text-emerald-300 border-b-2 border-emerald-400 font-black'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                <span className="hidden sm:inline">Domino </span>{step.id}
+              </button>
+            ))}
+          </div>
+
+          {/* Domino Display Area */}
+          <div className="p-5 sm:p-6 space-y-4">
+            {dominoSteps.map(
+              (step) =>
+                activeDomino === step.id && (
+                  <div key={step.id} className="space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className={`text-xs font-black uppercase px-2.5 py-0.5 rounded-full border ${step.badgeColor}`}>
+                        {step.tag}
+                      </span>
+                      <span className="text-xs font-bold text-slate-400">{step.title}</span>
+                    </div>
+
+                    <p className="text-sm sm:text-base font-semibold text-slate-200">
+                      {step.description}
+                    </p>
+
+                    <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 font-mono text-xs text-lime-300 overflow-x-auto whitespace-pre">
+                      {step.code}
+                    </div>
+
+                    <div className="p-3.5 bg-slate-800/70 border border-slate-700 rounded-xl text-xs sm:text-sm text-slate-300 flex items-start gap-2.5">
+                      <Icon name="info" className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>{step.detail}</span>
+                    </div>
+                  </div>
+                )
+            )}
+
+            {/* Navigation buttons */}
+            <div className="pt-3 border-t border-slate-800 flex justify-between items-center text-xs font-bold">
+              <button
+                disabled={activeDomino === 1}
+                onClick={() => setActiveDomino((prev) => Math.max(1, prev - 1))}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                ← Domino précédent
+              </button>
+              <button
+                disabled={activeDomino === 5}
+                onClick={() => setActiveDomino((prev) => Math.min(5, prev + 1))}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
+              >
+                Domino suivant →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 4 : LES 3 FAMILLES D'ERREURS EN PROGRAMMATION
+         ========================================================================= */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">4</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Les 3 grandes familles d&apos;erreurs en programmation
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Quand votre programme ne fonctionne pas, il s&apos;agit systématiquement de l&apos;une de ces 3 familles :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Famille 1 : Syntaxe */}
+          <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2.5">
+            <div className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-rose-100 text-rose-800 font-black text-xs flex items-center justify-center">1</span>
+              <h3 className="font-bold text-sm sm:text-base text-slate-950">Erreur de Syntaxe</h3>
+            </div>
+            <p className="text-xs text-slate-600 font-medium">
+              La grammaire du code n&apos;est pas respectée (accolade manquante, mot-clé mal orthographié). Le programme <strong>refuse même de démarrer</strong>.
+            </p>
+            <div className="bg-slate-50 p-2.5 rounded-lg border font-mono text-[11px] text-rose-700">
+              {"SyntaxError: Unexpected token '}'"}
+            </div>
+            <div className="text-[11px] font-semibold text-emerald-700">
+              Facile à corriger : votre éditeur (VS Code) la souligne en rouge d&apos;avance !
+            </div>
+          </div>
+
+          {/* Famille 2 : Runtime */}
+          <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2.5">
+            <div className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 font-black text-xs flex items-center justify-center">2</span>
+              <h3 className="font-bold text-sm sm:text-base text-slate-950">Erreur d&apos;Exécution (Runtime)</h3>
+            </div>
+            <p className="text-xs text-slate-600 font-medium">
+              La syntaxe est parfaite, le programme démarre, mais en cours de route il heurte l&apos;impossible (ex: lire un fichier introuvable, variable <code>null</code>).
+            </p>
+            <div className="bg-slate-50 p-2.5 rounded-lg border font-mono text-[11px] text-amber-700">
+              TypeError: Cannot read properties of undefined
+            </div>
+            <div className="text-[11px] font-semibold text-amber-800">
+              Nécessite de poser des breakpoints ou de lire la Stack Trace.
+            </div>
+          </div>
+
+          {/* Famille 3 : Logique */}
+          <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-sm space-y-2.5">
+            <div className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-purple-100 text-purple-800 font-black text-xs flex items-center justify-center">3</span>
+              <h3 className="font-bold text-sm sm:text-base text-slate-950">Erreur de Logique (Sémantique)</h3>
+            </div>
+            <p className="text-xs text-slate-600 font-medium">
+              Le programme tourne impeccablement, sans aucun message rouge, mais le résultat produit est faux (ex: condition inversée, mauvais calcul).
+            </p>
+            <div className="bg-slate-50 p-2.5 rounded-lg border font-mono text-[11px] text-purple-700">
+              if (age &lt; 18) autoriserAcces(); // ❌ Logique inversée !
+            </div>
+            <div className="text-[11px] font-semibold text-purple-800">
+              Les plus redoutables : seuls les tests et l&apos;analyse humaine les démasquent.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 5 : LA TECHNIQUE DES "5 POURQUOI" (5 WHYS)
+         ========================================================================= */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">5</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            L&apos;arme absolue pour trouver la Cause Racine : La méthode des « 5 Pourquoi »
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Inventée dans l&apos;industrie automobile et adoptée par toutes les grandes entreprises tech (Google, Amazon), cette technique consiste à poser 5 fois de suite la question <em>« Pourquoi ? »</em> pour remonter de la surface jusqu&apos;à la cause racine originelle :
+        </p>
+
+        <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 p-5 sm:p-6 space-y-3">
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-emerald-200">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">1</span>
+            <div className="text-xs sm:text-sm font-medium text-slate-800">
+              <strong>1. Pourquoi l&apos;utilisateur ne peut pas valider sa commande ?</strong><br />
+              <span className="text-slate-600">Parce que le bouton « Payer » reste grisé et inactif.</span>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-emerald-200">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">2</span>
+            <div className="text-xs sm:text-sm font-medium text-slate-800">
+              <strong>2. Pourquoi le bouton reste grisé ?</strong><br />
+              <span className="text-slate-600">Parce que le formulaire considère que l&apos;adresse de livraison est manquante.</span>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-emerald-200">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">3</span>
+            <div className="text-xs sm:text-sm font-medium text-slate-800">
+              <strong>3. Pourquoi l&apos;adresse est considérée comme manquante ?</strong><br />
+              <span className="text-slate-600">Pourtant l&apos;utilisateur l&apos;a tapée, mais la requête API renvoie un code d&apos;erreur 400.</span>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-emerald-200">
+            <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">4</span>
+            <div className="text-xs sm:text-sm font-medium text-slate-800">
+              <strong>4. Pourquoi l&apos;API renvoie-t-elle une erreur 400 ?</strong><br />
+              <span className="text-slate-600">Parce que le validateur du serveur exige un champ <code>code_postal</code> de 5 chiffres exactement.</span>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-emerald-100/90 border border-emerald-300">
+            <span className="w-6 h-6 rounded-full bg-emerald-800 text-white font-black text-xs flex items-center justify-center shrink-0">5</span>
+            <div className="text-xs sm:text-sm font-medium text-emerald-950">
+              <strong>5. Pourquoi cette validation a-t-elle échoué pour ce client ?</strong> (🎯 <strong>CAUSE RACINE</strong>)<br />
+              <span>Parce que ce client habite à Londres (Royaume-Uni) où les codes postaux contiennent des lettres (ex: <code>SW1A 1AA</code>) ! Le validateur rejetait tous les clients internationaux !</span>
+            </div>
+          </div>
+        </div>
+
+        <Callout type="tip" title="La puissance des 5 Pourquoi">
+          Si le développeur s&apos;était arrêté au 1er pourquoi, il aurait simplement forcé l&apos;activation du bouton dans le HTML (pansement superficiel). En posant les 5 Pourquoi, il a découvert une règle métier internationale manquante dans son backend !
+        </Callout>
+      </section>
+
+      {/* =========================================================================
+          SECTION 6 : COMMENT RAPPORTER UN PROBLÈME COMME UN PRO
+         ========================================================================= */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">6</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Le Guide de communication : Signaler une anomalie comme un ingénieur
+          </h2>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-700 font-medium">
+          Dans une équipe technique, la qualité de votre description d&apos;un problème fait la différence entre des heures de frustration et une résolution en 10 minutes :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-5 rounded-2xl bg-rose-50/70 border-2 border-rose-200 space-y-2">
+            <div className="flex items-center gap-2 text-rose-800 font-bold text-sm">
+              <Icon name="x" className="w-4 h-4" />
+              <span>❌ Le rapport du débutant (Inexploitable)</span>
+            </div>
+            <div className="bg-white p-3.5 rounded-xl border border-rose-200 text-xs sm:text-sm font-mono text-slate-800 italic">
+              « Salut, ça marche pas sur mon ordi, le bouton beugue. Tu peux regarder stp ? »
+            </div>
+            <p className="text-xs text-rose-800 font-medium">
+              Aucun contexte, aucun message d&apos;erreur, aucun détail sur le navigateur ou les données testées. Impossible à reproduire !
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-emerald-50/70 border-2 border-emerald-200 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+              <Icon name="check" className="w-4 h-4" />
+              <span>✅ Le rapport de l&apos;ingénieur (Modèle 4 points)</span>
+            </div>
+            <div className="bg-white p-3.5 rounded-xl border border-emerald-200 text-xs text-slate-800 space-y-1">
+              <p><strong>1. Comportement attendu :</strong> L&apos;utilisateur est redirigé vers <code>/dashboard</code> après login.</p>
+              <p><strong>2. Comportement observé :</strong> Erreur rouge 500 dans la console DevTools.</p>
+              <p><strong>3. Étapes de reproduction :</strong> Taper email <code>test@demo.com</code> + mot de passe valide.</p>
+              <p><strong>4. Données techniques :</strong> Chrome v122, Node.js v20, log serveur : <code>ER_BAD_FIELD_ERROR</code>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 7 : SYNTHÈSE DU CHAPITRE
+         ========================================================================= */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          6. Comparaison des quatre notions
-        </h2>
+        <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">7</span>
+          <h2 className="text-xl font-bold text-slate-950">
+            Synthèse : Le tableau récapitulatif
+          </h2>
+        </div>
+
         <div className="overflow-x-auto rounded-2xl border-2 border-slate-200">
-          <table className="w-full text-left border-collapse text-sm">
+          <table className="w-full text-left border-collapse text-xs sm:text-sm">
             <thead className="bg-slate-100 text-slate-950 border-b-2 border-slate-200">
               <tr>
-                <th className="p-3.5 font-black">Notion</th>
-                <th className="p-3.5 font-black">Signification</th>
-                <th className="p-3.5 font-black">Exemple concret</th>
+                <th className="p-3 font-black">Concept</th>
+                <th className="p-3 font-black">Où se situe-t-il ?</th>
+                <th className="p-3 font-black">Comment le reconnaît-on ?</th>
+                <th className="p-3 font-black">Action requise</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 font-medium text-slate-800">
               <tr>
-                <td className="p-3.5 font-black text-rose-800 bg-rose-50/40">Bug</td>
-                <td className="p-3.5">Défaut dans le code logiciel ou la configuration.</td>
-                <td className="p-3.5">Opérateur <code>+</code> au lieu de <code>*</code>.</td>
+                <td className="p-3 font-black text-rose-700 bg-rose-50/30">Bug</td>
+                <td className="p-3">Dans le code source</td>
+                <td className="p-3">Faute de frappe, opérateur faux, logique erronée</td>
+                <td className="p-3 font-bold text-emerald-800">Corriger le code</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-black text-amber-800 bg-amber-50/40">Erreur</td>
-                <td className="p-3.5">Événement problématique ou exception déclenchée.</td>
-                <td className="p-3.5"><code>TypeError</code> ou réponse HTTP 500.</td>
+                <td className="p-3 font-black text-amber-700 bg-amber-50/30">Erreur</td>
+                <td className="p-3">À l&apos;exécution (Runtime)</td>
+                <td className="p-3">Exception console, statut HTTP 4xx ou 5xx</td>
+                <td className="p-3 font-bold text-emerald-800">Lire la Stack Trace</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-black text-blue-800 bg-blue-50/40">Anomalie</td>
-                <td className="p-3.5">Écart constaté par rapport au résultat attendu.</td>
-                <td className="p-3.5">Format de date <code>2026-11-06</code> au lieu de <code>06/11/2026</code>.</td>
+                <td className="p-3 font-black text-blue-700 bg-blue-50/30">Anomalie</td>
+                <td className="p-3">À la comparaison</td>
+                <td className="p-3">Écart entre le résultat attendu et le résultat réel</td>
+                <td className="p-3 font-bold text-emerald-800">Ajuster aux specs</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-black text-purple-800 bg-purple-50/40">Dysfonctionnement</td>
-                <td className="p-3.5">Fonctionnalité concrète rendue inopérante.</td>
-                <td className="p-3.5">Impossible de passer commande sur le site.</td>
+                <td className="p-3 font-black text-purple-700 bg-purple-50/30">Dysfonctionnement</td>
+                <td className="p-3">Dans l&apos;usage client</td>
+                <td className="p-3">Fonctionnalité inopérante (achat impossible, etc.)</td>
+                <td className="p-3 font-bold text-emerald-800">Résoudre l&apos;incident</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      {/* 7. Cause Racine */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Notion essentielle : La Cause Racine (Root Cause)
-        </h2>
-        <p className="text-base text-slate-800 font-medium">
-          La <strong>cause racine</strong> est l&apos;origine fondamentale d&apos;un dysfonctionnement. C&apos;est le défaut premier dont l&apos;élimination garantit que le problème ne pourra plus se manifester.
-        </p>
-        <div className="p-5 rounded-2xl bg-white border-2 border-emerald-300 space-y-3">
-          <h3 className="font-black text-base text-slate-950">Exemple d&apos;escalade causale : Panne de connexion</h3>
-          <div className="space-y-2 text-sm font-medium text-slate-800">
-            <div className="flex items-center gap-2">
-              <span className="w-36 font-black text-slate-950 shrink-0">Symptôme :</span>
-              <span>L&apos;utilisateur clique sur Connexion et rien ne se passe.</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-36 font-black text-slate-950 shrink-0">Dysfonctionnement :</span>
-              <span>Authentification indisponible.</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-36 font-black text-slate-950 shrink-0">Erreur visible :</span>
-              <span>Réponse HTTP 500 dans la console DevTools.</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-36 font-black text-slate-950 shrink-0">Bug intermédiaire :</span>
-              <span>Exception non catchée dans le contrôleur Node.js.</span>
-            </div>
-            <div className="flex items-center gap-2 bg-emerald-50 p-2 rounded-lg border border-emerald-300">
-              <span className="w-36 font-black text-emerald-900 shrink-0">Cause racine :</span>
-              <span className="font-bold text-emerald-900">Le backend utilise <code>mail</code> au lieu de <code>email</code> dans la requête SQL MySQL.</span>
-            </div>
-          </div>
-        </div>
-        <Callout type="warning" title="Piège classique à éviter">
-          Remplacer superficiellement une réponse HTTP 500 par une réponse HTTP 200 sans corriger la colonne SQL ne résout rien : cela masque l&apos;erreur sans traiter la cause racine !
-        </Callout>
-      </section>
-
-      {/* 8. Synthèse */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Synthèse du chapitre
-        </h2>
-        <div className="p-6 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-slate-900 space-y-2 text-base font-medium">
-          <p>• <strong>Bug :</strong> Le défaut tapi dans le code ou l&apos;architecture.</p>
-          <p>• <strong>Erreur :</strong> La manifestation technique (exception levée, interruption).</p>
-          <p>• <strong>Anomalie :</strong> La différence constatée entre le résultat attendu et le résultat réel.</p>
-          <p>• <strong>Dysfonctionnement :</strong> L&apos;impact fonctionnel direct subi par le service ou l&apos;utilisateur.</p>
-          <p>• <strong>Cause racine :</strong> L&apos;origine première qu&apos;il faut impérativement corriger.</p>
-        </div>
-      </section>
-
-      {/* 9. Quiz */}
+      {/* =========================================================================
+          SECTION 8 : QUIZ D'AUTO-ÉVALUATION
+         ========================================================================= */}
       <section className="space-y-4 pt-4">
         <QuickQuiz
-          title="Quiz d'auto-évaluation — Notions de Bug, Erreur et Cause Racine"
+          title="Auto-évaluation — Maîtrisez-vous le vocabulaire et les mécanismes ?"
           questions={[
             {
               id: 1,
-              question: "Une erreur dans le code qui utilise + au lieu de * dans un calcul de montant est :",
+              question: "D'après la définition exacte, qu'est-ce qu'un « Bug » ?",
               options: [
-                "Un dysfonctionnement réseau.",
-                "Un bug de programmation.",
-                "Un monitoring système.",
-                "Une anomalie de sécurité.",
+                "Un message rouge qui s'affiche dans la console.",
+                "Un défaut ou une imperfection logé dans le code source d'un programme.",
+                "La colère exprimée par un client au téléphone.",
+                "Une panne générale de courant dans le centre de données.",
               ],
               correctIndex: 1,
-              explanation: "Il s'agit d'un bug : un défaut logique inscrit directement dans le code source.",
+              explanation: "Exact ! Le bug est le défaut présent dans les lignes de code, même avant que le programme ne soit exécuté.",
             },
             {
               id: 2,
-              question: "Le navigateur affiche l'exception TypeError: Cannot read properties of null. De quoi s'agit-il ?",
+              question: "Un programme tourne sans planter et sans message d'erreur, mais affiche le total 100.20 € au lieu de 120 €. De quel type d'erreur s'agit-il ?",
               options: [
-                "D'une erreur technique levée à l'exécution.",
-                "D'un test unitaire.",
-                "D'une simple anomalie visuelle.",
-                "D'une fonctionnalité normale.",
+                "Une erreur de syntaxe.",
+                "Une erreur réseau HTTP 404.",
+                "Une erreur de logique (ou anomalie sémantique).",
+                "Un plantage du disque dur.",
               ],
-              correctIndex: 0,
-              explanation: "C'est une erreur technique : le runtime JavaScript interrompt l'exécution suite à une opération non valide.",
+              correctIndex: 2,
+              explanation: "Très bien ! C'est une erreur logique : le code est syntaxiquement valide et ne crash pas, mais le calcul mathématique est faux.",
             },
             {
               id: 3,
-              question: "Une application affiche une date sous la forme 2026-11-06 au lieu de 06/11/2026 exigée. C'est :",
+              question: "Quelle est l'utilité principale de la méthode des « 5 Pourquoi » ?",
               options: [
-                "Une panne de serveur.",
-                "Une erreur de syntaxe fatale.",
-                "Une anomalie d'affichage par rapport aux exigences.",
-                "Un crash de base de données.",
+                "Poser 5 questions pour savoir qui licencier dans l'équipe.",
+                "Remonter la chaîne des symptômes pour démasquer la véritable cause racine.",
+                "Ralentir le développement logiciel de 5 jours.",
+                "Demander 5 fois à l'utilisateur de redémarrer son ordinateur.",
               ],
-              correctIndex: 2,
-              explanation: "C'est une anomalie : un écart entre le résultat attendu et le résultat constaté.",
+              correctIndex: 1,
+              explanation: "Parfait ! Les 5 Pourquoi permettent de ne pas s'arrêter au symptôme visible et d'atteindre l'origine première du problème.",
             },
             {
               id: 4,
-              question: "Les utilisateurs ne peuvent plus du tout commander sur la boutique en ligne. Comment qualifier cette situation ?",
-              options: ["Un dysfonctionnement.", "Une variable.", "Une instruction.", "Un breakpoint."],
+              question: "Quelle est la différence entre une « anomalie » et une « erreur » ?",
+              options: [
+                "Une erreur est un événement d'interruption technique (exception, statut HTTP), tandis qu'une anomalie est un écart constaté par rapport aux exigences sans forcément planter.",
+                "Il n'y a aucune différence, ce sont exactement les mêmes mots.",
+                "L'anomalie n'arrive que sur Windows et l'erreur que sur Mac.",
+                "Une anomalie est un bug corrigé, une erreur est un bug non corrigé.",
+              ],
               correctIndex: 0,
-              explanation: "Un dysfonctionnement décrit l'altération concrète d'une fonctionnalité métier.",
+              explanation: "Exactement ! Une anomalie peut survenir dans un programme qui tourne parfaitement sans lever la moindre exception (ex: format de date non conforme).",
             },
             {
               id: 5,
-              question: "Quel est l'objectif premier de la recherche de la cause racine ?",
+              question: "Quel élément est indispensable dans un rapport d'anomalie professionnel ?",
               options: [
-                "Masquer les messages d'erreur affichés à l'écran.",
-                "Identifier l'origine première du problème pour une résolution durable.",
-                "Redémarrer le serveur à intervalles réguliers.",
-                "Supprimer les modules non utilisés.",
+                "Une capture d'écran du fond d'écran de l'ordinateur.",
+                "Les étapes précises de reproduction et le comportement attendu vs observé.",
+                "Uniquement la phrase « ça ne marche pas ».",
+                "Le montant du salaire du développeur.",
               ],
               correctIndex: 1,
-              explanation: "Résoudre la cause racine empêche définitivement la réapparition du défaut.",
+              explanation: "Bravo ! Des étapes de reproduction claires et la comparaison entre attendu et observé permettent à n'importe quel membre de l'équipe d'isoler le bug rapidement.",
             },
           ]}
         />
@@ -304,4 +658,3 @@ console.log(utilisateur.nom);
     </div>
   );
 };
-
