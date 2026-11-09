@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { CourseSidebar } from '@/components/courses/CourseSidebar';

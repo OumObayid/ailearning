@@ -96,7 +96,7 @@ export const AiAssistedDebuggingLab: React.FC = () => {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              <Icon name="sparkles" className="w-3.5 h-3.5" /> Laboratoire Interactif Module 7
+              <Icon name="sparkles" className="w-3.5 h-3.5" /> Laboratoire Interactif Module 6
             </span>
             <h3 className="text-xl sm:text-2xl font-black mt-1">
               Atelier Pratique : Ingénierie du Débogage Assistée par IA
