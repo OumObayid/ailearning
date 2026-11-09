@@ -21,7 +21,7 @@ interface NavItem {
   icon: IconName;
 }
 
-const NAV_ITEMS: NavItem[] = [
+const BASE_NAV_ITEMS: NavItem[] = [
   {
     label: 'Tableau de bord',
     href: '/',
@@ -37,6 +37,9 @@ const NAV_ITEMS: NavItem[] = [
     href: '/examens',
     icon: 'academic-cap',
   },
+];
+
+const USER_ONLY_NAV_ITEMS: NavItem[] = [
   {
     label: 'Ma progression',
     href: '/profil?tab=progression',
@@ -60,7 +63,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { user } = useAuth();
 
   const navItems: NavItem[] = React.useMemo(() => {
-    const items = [...NAV_ITEMS];
+    const items = [...BASE_NAV_ITEMS];
+
+    // 'Ma progression' et 'Mon Profil' ne doivent être affichés que pour un utilisateur connecté et non admin
+    if (user && user.role !== 'admin') {
+      items.push(...USER_ONLY_NAV_ITEMS);
+    }
+
     if (user?.role === 'admin') {
       items.push({
         label: 'Administration',
@@ -68,8 +77,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         icon: 'shield-check',
       });
     }
+
     return items;
-  }, [user?.role]);
+  }, [user]);
 
   const isItemActive = (href: string) => {
     if (href === '/') return pathname === '/';
@@ -188,13 +198,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Footer User Button */}
       <div className="p-4 border-t border-slate-200/80">
         <Link
-          href="/profil"
+          href={user?.role === 'admin' ? '/admin' : '/profil'}
           onClick={handleLinkClick}
           className={cn(
             'flex items-center gap-3.5 rounded-xl p-3 text-left hover:bg-slate-100 transition group',
             isCollapsed && !isMobileOpen ? 'justify-center p-2' : ''
           )}
-          title={isCollapsed && !isMobileOpen ? (user ? user.name : 'Mon Profil') : undefined}
+          title={isCollapsed && !isMobileOpen ? (user ? (user.role === 'admin' ? 'Administration' : user.name) : 'Connexion Membre') : undefined}
         >
           {user?.avatarUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
