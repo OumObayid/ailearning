@@ -65,7 +65,7 @@ export default async function PromptEngineeringChapterDetailPage({ params }: Cha
         />
       }
     >
-      <article className="rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-10 pt-6 sm:pt-8 shadow-sm">
+      <article className="rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-10 pt-6 sm:pt-8 shadow-sm min-w-0 max-w-full overflow-hidden">
         <PromptEngineeringModule6Renderer slug={chapterId} />
 
         {/* Previous & Next Navigation */}

@@ -60,26 +60,26 @@ export const ReadingProgressSection: React.FC<ReadingProgressSectionProps> = ({
   const history = readingProgress?.history || [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* 1. Barres de progression par formation */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
           <div>
-            <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
-              <Icon name="book-open" className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-base sm:text-lg font-black text-slate-950 flex items-center gap-2">
+              <Icon name="book-open" className="w-4 h-4 text-indigo-600" />
               <span>Avancement de lecture par cursus</span>
             </h3>
             <p className="text-xs text-slate-600 font-medium">
               Suivi détaillé de l&apos;ensemble des chapitres validés pour chaque programme.
             </p>
           </div>
-          <div className="text-xs font-black text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 self-start sm:self-auto">
+          <div className="text-xs font-black text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 self-start sm:self-auto">
             {readingProgress?.totalCompletedAllCourses ?? 0} / {readingProgress?.totalChaptersAllCourses ?? 310} chapitres lus
           </div>
         </div>
 
         {/* Grille des 4 Cursus */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
           {courses.map((course: CourseChapterProgress) => {
             const style = COURSE_STYLES[course.courseId] || {
               label: course.title,
@@ -96,41 +96,41 @@ export const ReadingProgressSection: React.FC<ReadingProgressSectionProps> = ({
               <div
                 key={course.courseId}
                 className={cn(
-                  'rounded-3xl border-2 p-5 transition-all shadow-xs space-y-4 bg-white',
+                  'rounded-2xl border-2 p-3.5 sm:p-4 transition-all shadow-2xs space-y-3 bg-white min-w-0',
                   style.border
                 )}
               >
                 {/* Header Carte Cursus */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1 min-w-0">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="space-y-0.5 min-w-0">
                     <span
                       className={cn(
-                        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-black border',
+                        'inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-black border',
                         style.badge
                       )}
                     >
-                      <Icon name={style.icon} className="w-3.5 h-3.5" />
+                      <Icon name={style.icon} className="w-3 h-3" />
                       <span>{style.label}</span>
                     </span>
-                    <h4 className="text-base font-black text-slate-950 truncate" title={course.title}>
+                    <h4 className="text-sm sm:text-base font-black text-slate-950 truncate" title={course.title}>
                       {course.title}
                     </h4>
                   </div>
 
                   <div className="text-right shrink-0">
-                    <div className="text-2xl font-black text-slate-950">
+                    <div className="text-xl sm:text-2xl font-black text-slate-950">
                       {course.progressPercent}%
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500">
+                    <span className="text-[10px] sm:text-[11px] font-bold text-slate-500">
                       {course.completedChaptersCount} / {course.totalChaptersCount} ch.
                     </span>
                   </div>
                 </div>
 
                 {/* Barre de progression */}
-                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                   <div
-                    className={cn('h-2.5 rounded-full transition-all duration-500', style.bar)}
+                    className={cn('h-2 rounded-full transition-all duration-500', style.bar)}
                     style={{ width: `${course.progressPercent}%` }}
                   />
                 </div>
@@ -140,50 +140,50 @@ export const ReadingProgressSection: React.FC<ReadingProgressSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => setExpandedCourse(isExpanded ? null : course.courseId)}
-                    className="inline-flex items-center gap-1.5 font-bold text-slate-700 hover:text-slate-950 cursor-pointer"
+                    className="inline-flex items-center gap-1 font-bold text-slate-700 hover:text-slate-950 cursor-pointer text-[11px]"
                   >
                     <span>{isExpanded ? 'Masquer les modules' : `Voir les ${course.modules.length} modules`}</span>
                     <Icon
                       name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                      className="w-3.5 h-3.5"
+                      className="w-3 h-3"
                     />
                   </button>
 
                   {!isAdminView && (
                     <Link
                       href={`/cours/${course.courseId}`}
-                      className="font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                      className="font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 text-[11px]"
                     >
                       <span>Accéder au cours</span>
-                      <Icon name="arrow-right" className="w-3 h-3" />
+                      <Icon name="arrow-right" className="w-2.5 h-2.5" />
                     </Link>
                   )}
                 </div>
 
                 {/* Accordéon : Détail des modules */}
                 {isExpanded && (
-                  <div className="pt-3 border-t border-slate-100 space-y-2 text-xs animate-in fade-in duration-200">
+                  <div className="pt-2 border-t border-slate-100 space-y-1.5 text-xs animate-in fade-in duration-200">
                     {course.modules.map((mod) => (
                       <div
                         key={mod.moduleId}
-                        className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200"
+                        className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200"
                       >
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="font-extrabold text-slate-800 uppercase tracking-wider text-[11px] whitespace-nowrap">
+                          <span className="font-extrabold text-slate-800 uppercase tracking-wider text-[10px] whitespace-nowrap">
                             {mod.moduleId.replace('-', ' ')} :
                           </span>
-                          <span className="text-slate-600 font-medium truncate">
+                          <span className="text-slate-600 font-medium truncate text-[11px]">
                             {mod.completedChaptersCount} / {mod.totalChaptersCount} terminés
                           </span>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <div className="w-16 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                          <div className="w-14 bg-slate-200 rounded-full h-1.5 overflow-hidden">
                             <div
                               className={cn('h-1.5 rounded-full', style.bar)}
                               style={{ width: `${mod.progressPercent}%` }}
                             />
                           </div>
-                          <span className="font-black text-[11px] text-slate-800 w-8 text-right">
+                          <span className="font-black text-[10px] text-slate-800 w-7 text-right">
                             {mod.progressPercent}%
                           </span>
                         </div>

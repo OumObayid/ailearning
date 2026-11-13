@@ -136,6 +136,8 @@ export const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
             courseId={resolvedCourseId}
             moduleId={moduleId}
             chapterSlug={resolvedSlug}
+            nextChapterHref={next ? `${basePath}/${next.slug}` : null}
+            chapterTitle={next ? undefined : undefined}
           />
         </div>
       )}

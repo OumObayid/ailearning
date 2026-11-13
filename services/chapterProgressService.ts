@@ -134,7 +134,9 @@ export class ChapterProgressService {
               ? `backend-ia-module-${mod.order}`
               : course.id === 'debugging'
                 ? `debugging-module-${mod.order}`
-                : `module-${mod.order}`;
+                : course.id === 'orchestration-agents-ide'
+                  ? `orchestration-agents-module-${mod.order}`
+                  : `module-${mod.order}`;
 
         const chapters = getChaptersForModule(internalModuleId);
         const totalChaptersCount = chapters.length;
@@ -202,7 +204,9 @@ export class ChapterProgressService {
               ? `backend-ia-module-${mod.order}`
               : course.id === 'debugging'
                 ? `debugging-module-${mod.order}`
-                : `module-${mod.order}`;
+                : course.id === 'orchestration-agents-ide'
+                  ? `orchestration-agents-module-${mod.order}`
+                  : `module-${mod.order}`;
         const chapters = getChaptersForModule(internalModuleId);
         chapters.forEach((c, idx) => {
           const chNum = c.number ?? (idx + 1);

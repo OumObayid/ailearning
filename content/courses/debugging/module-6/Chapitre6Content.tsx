@@ -71,7 +71,7 @@ export const Chapitre6Content: React.FC = () => {
             Méthodologie d&apos;Investigation & Étanchéité Diagnostic / Action
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Faire analyser une erreur sans demander immédiatement sa correction : Le principe d&apos;étanchéité de l&apos;enquête technique
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

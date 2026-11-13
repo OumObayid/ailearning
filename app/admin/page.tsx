@@ -96,6 +96,12 @@ const COURSE_META: Record<string, { label: string; badge: string; color: string;
     color: 'bg-lime-500',
     border: 'border-lime-300',
   },
+  'orchestration-agents-ide': {
+    label: "Orchestration d'agents IA",
+    badge: 'bg-indigo-100 text-indigo-950 border-indigo-300',
+    color: 'bg-indigo-500',
+    border: 'border-indigo-300',
+  },
 };
 
 function formatDuration(seconds: number): string {
@@ -144,7 +150,9 @@ function getModuleTitle(courseId: string, moduleId: string): string {
         ? `backend-ia-${norm}`
         : courseId === 'debugging'
           ? `debugging-${norm}`
-          : norm;
+          : courseId === 'orchestration-agents-ide'
+            ? `orchestration-agents-${norm}`
+            : norm;
   const mod = CourseService.getModuleById(internalId);
   return mod ? `Module ${mod.order} : ${mod.title}` : norm.toUpperCase();
 }
@@ -725,12 +733,21 @@ function AdminContent() {
                 Indicateurs de performance globale, taux de réussite et flux d&apos;activité des épreuves en temps réel.
               </p>
             </div>
-            <button
-              onClick={handleRefreshStats}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-xs cursor-pointer"
-            >
-              <span>Actualiser ↻</span>
-            </button>
+            <div className="flex items-center gap-2.5">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-xs font-bold text-white transition shadow-sm cursor-pointer"
+              >
+                <Icon name="user" className="w-3.5 h-3.5" />
+                <span>Mode Utilisateur</span>
+              </Link>
+              <button
+                onClick={handleRefreshStats}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-xs cursor-pointer"
+              >
+                <span>Actualiser ↻</span>
+              </button>
+            </div>
           </div>
 
           {/* Barre de Statut du Système & Paramètres Actifs */}
@@ -1268,6 +1285,7 @@ function AdminContent() {
                 <option value="backend-ia">Backend IA</option>
                 <option value="prompt-engineering-ide">Prompt Engineering IDE</option>
                 <option value="debugging">Ingénierie du Débogage</option>
+                <option value="orchestration-agents-ide">Orchestration d'agents IA</option>
               </select>
 
               {/* Filtre Statut / Résultat */}
@@ -1544,31 +1562,59 @@ function AdminContent() {
                 </div>
               </div>
 
-              {/* Mode Maintenance */}
-              <div className="space-y-2 pt-2 border-t border-slate-100">
-                <label className="text-sm font-black text-slate-900 block">
-                  Accès aux épreuves d&apos;examen :
-                </label>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-800">
+              {/* Mode Maintenance Global du Site */}
+              <div className="space-y-3 pt-3 border-t-2 border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-black text-slate-900 block">
+                    Mode Maintenance de la Plateforme :
+                  </label>
+                  <a
+                    href="/maintenance"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline inline-flex items-center gap-1"
+                  >
+                    <span>Prévisualiser la page de maintenance ↗</span>
+                  </a>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Lorsque le mode maintenance est activé, tous les visiteurs et étudiants sont redirigés vers la page de maintenance dédiée. Les administrateurs conservent leur accès à l&apos;espace d&apos;administration.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <label className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition ${
+                    settings.maintenance_mode === 'false'
+                      ? 'border-emerald-500 bg-emerald-50/60 text-emerald-950 font-bold'
+                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                  }`}>
                     <input
                       type="radio"
                       name="maintenance"
                       checked={settings.maintenance_mode === 'false'}
                       onChange={() => setSettings({ ...settings, maintenance_mode: 'false' })}
-                      className="text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 text-emerald-600 focus:ring-emerald-500"
                     />
-                    <span>Examens Ouverts (Normal)</span>
+                    <div>
+                      <div className="text-xs sm:text-sm font-black">Site En Ligne (Normal)</div>
+                      <div className="text-[11px] text-slate-500 font-medium">Accès public et examens autorisés</div>
+                    </div>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-800">
+
+                  <label className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition ${
+                    settings.maintenance_mode === 'true'
+                      ? 'border-amber-500 bg-amber-50/80 text-amber-950 font-bold'
+                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                  }`}>
                     <input
                       type="radio"
                       name="maintenance"
                       checked={settings.maintenance_mode === 'true'}
                       onChange={() => setSettings({ ...settings, maintenance_mode: 'true' })}
-                      className="text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 text-amber-600 focus:ring-amber-500"
                     />
-                    <span>Maintenance (Suspendre les passages)</span>
+                    <div>
+                      <div className="text-xs sm:text-sm font-black text-amber-900">Activer la Maintenance</div>
+                      <div className="text-[11px] text-amber-700 font-medium">Redirige le public vers /maintenance</div>
+                    </div>
                   </label>
                 </div>
               </div>

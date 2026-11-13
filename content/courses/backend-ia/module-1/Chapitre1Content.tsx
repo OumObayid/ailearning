@@ -12,138 +12,164 @@ export const Chapitre1Content: React.FC = () => {
   return (
     <div className="space-y-10 text-slate-900 leading-relaxed">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Fondations Système</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Mémoire (RAM), Stack, Heap et Event Loop avec Node.js
         </h1>
+        <p className="mt-2 text-sm sm:text-base font-medium text-slate-700">
+          Comprendre ce qui se passe sous le capot de votre serveur Node.js lorsqu&apos;il exécute du code et reçoit des requêtes.
+        </p>
       </div>
 
-      {/* 1. Objectifs */}
+      {/* 1. Objectifs pédagogiques */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Objectifs pédagogiques du chapitre
         </h2>
         <p className="text-base sm:text-lg font-medium text-slate-900">
-          A l&apos;issue de ce premier chapitre, vous serez capable de :
+          À l&apos;issue de ce premier chapitre, vous serez capable de :
         </p>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-base font-semibold text-slate-950">
-          <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base font-semibold text-slate-950">
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 break-words">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Expliquer simplement la différence entre RAM, Stack et Heap.</span>
-          </li>
-          <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+            <span>Expliquer avec des mots simples la différence entre la RAM, la Stack et le Heap.</span>
+          </div>
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 break-words">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Comprendre le rôle du Call Stack et de l&apos;Event Loop.</span>
-          </li>
-          <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+            <span>Comprendre le rôle du Call Stack et pourquoi Node.js est dit &quot;mono-threadé&quot;.</span>
+          </div>
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 break-words">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Distinguer une opération synchrone d&apos;une opération asynchrone.</span>
-          </li>
-          <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+            <span>Distinguer une opération instantanée d&apos;une opération asynchrone non-bloquante.</span>
+          </div>
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 break-words">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Comprendre pourquoi un calcul CPU trop lourd peut paralyser Node.js.</span>
-          </li>
-          <li className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 md:col-span-2">
+            <span>Comprendre pourquoi un calcul mathématique trop lourd peut paralyser tout un serveur.</span>
+          </div>
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 sm:col-span-2 break-words">
             <Icon name="check" className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-            <span>Mesurer et observer en direct la consommation mémoire avec <code className="bg-slate-200 px-1.5 py-0.5 rounded text-indigo-900 font-bold">process.memoryUsage()</code>.</span>
-          </li>
-        </ul>
+            <span>Mesurer et surveiller la mémoire d&apos;un serveur en direct avec <code className="bg-slate-200 px-1.5 py-0.5 rounded text-indigo-900 font-bold">process.memoryUsage()</code>.</span>
+          </div>
+        </div>
       </section>
 
       {/* 2. Comprendre la mémoire */}
       <section className="space-y-6">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Comprendre la mémoire
+          2. Comprendre la mémoire d&apos;un serveur
         </h2>
 
         <div className="space-y-4">
-          <h3 className="text-sm sm:text-base font-semibold text-slate-900">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900">
             2.1 La RAM : l&apos;espace de travail temporaire
           </h3>
           <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-            La <strong>RAM (Random Access Memory)</strong> est la mémoire ultra-rapide utilisée par votre machine pour stocker temporairement les instructions et données des programmes en cours d&apos;exécution.
+            La <strong>RAM (Random Access Memory)</strong> est la mémoire ultra-rapide de votre machine. Dès que vous lancez un serveur Node.js, le système d&apos;exploitation lui réserve un espace dans cette RAM pour y déposer son code, ses variables et les requêtes des utilisateurs en cours de traitement.
           </p>
 
-          <Callout type="info" title="L'analogie du bureau de travail">
-            <p>
-              Imaginez votre ordinateur comme un bureau de travail :
+          <Callout type="info" title="L'analogie du bureau de travail (très facile à visualiser)">
+            <p className="leading-relaxed">
+              Pour visualiser clairement le rôle de chaque composant de votre ordinateur :
             </p>
-            <ul className="list-disc list-inside mt-2 space-y-1 font-semibold text-slate-900">
-              <li><strong>Le disque dur (SSD)</strong> est une armoire où vous rangez vos dossiers de façon permanente.</li>
-              <li><strong>La RAM</strong> est la surface de votre table où vous posez les dossiers ouverts dont vous avez besoin immédiatement.</li>
-              <li><strong>Le processeur (CPU)</strong> est la personne assise au bureau qui lit et traite ces dossiers.</li>
+            <ul className="list-disc list-inside mt-2 space-y-2 font-semibold text-slate-900">
+              <li><strong>Le disque dur (SSD) :</strong> C&apos;est comme une <em>armoire d&apos;archivage</em>. Vos fichiers y sont rangés pour toujours, même quand la machine s&apos;éteint, mais aller chercher un dossier prend un certain temps.</li>
+              <li><strong>La mémoire vive (RAM) :</strong> C&apos;est la <em>surface de votre bureau</em>. Vous y posez les dossiers ouverts dont vous avez besoin immédiatement. C&apos;est ultra rapide d&apos;accès, mais quand on range le bureau (arrêt du serveur), tout ce qui n&apos;a pas été rangé dans l&apos;armoire disparaît.</li>
+              <li><strong>Le processeur (CPU) :</strong> C&apos;est la <em>personne assise au bureau</em>. Elle lit les documents posés sur la table, calcule les résultats et prend des décisions.</li>
             </ul>
           </Callout>
         </div>
 
         <div className="space-y-4 pt-2">
-          <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-            2.2 Stack et Heap : deux zones fondamentales de V8
+          <h3 className="text-base sm:text-lg font-bold text-slate-900">
+            2.2 Stack et Heap : les deux compartiments de Node.js
           </h3>
+          <p className="text-base font-medium text-slate-900 leading-relaxed">
+            Le moteur JavaScript <strong>V8</strong> (le cerveau de Node.js développé par Google) découpe la mémoire en deux zones bien distinctes ayant chacune une mission précise :
+          </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 space-y-2">
-              <span className="inline-flex rounded-lg bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-950">Zone 1</span>
+          {/* Max 2 cartes par ligne */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border-2 border-indigo-200 bg-white p-5 space-y-2 break-words shadow-sm">
+              <span className="inline-flex rounded-lg bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-950">Compartiment 1</span>
               <h4 className="text-lg font-black text-slate-950">La Stack (La Pile)</h4>
-              <p className="text-base font-medium text-slate-900 leading-relaxed">
-                Elle conserve les <strong>frames d&apos;exécution des fonctions</strong> et les variables locales primitives (nombres, booléens). Les fonctions s&apos;empilent (push) lors de l&apos;appel puis se dépilent (pop) dès qu&apos;elles se terminent. Accès ultra-rapide et taille stricte.
+              <p className="text-sm sm:text-base font-medium text-slate-800 leading-relaxed">
+                Imaginez une <strong>pile d&apos;assiettes</strong> : vous ne pouvez ajouter ou retirer qu&apos;une assiette au sommet (principe <em>LIFO : Dernier arrivé, premier sorti</em>).
               </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm font-semibold text-slate-700 space-y-1">
+                <li>Elle retient la fonction qui tourne en ce moment.</li>
+                <li>Elle garde les petites variables simples (nombres, booléens).</li>
+                <li>Dès qu&apos;une fonction se termine, elle est retirée immédiatement.</li>
+              </ul>
             </div>
 
-            <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 space-y-2">
-              <span className="inline-flex rounded-lg bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-950">Zone 2</span>
+            <div className="rounded-2xl border-2 border-indigo-200 bg-white p-5 space-y-2 break-words shadow-sm">
+              <span className="inline-flex rounded-lg bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-950">Compartiment 2</span>
               <h4 className="text-lg font-black text-slate-950">Le Heap (Le Tas)</h4>
-              <p className="text-base font-medium text-slate-900 leading-relaxed">
-                C&apos;est le vaste espace de stockage dynamique où JavaScript alloue les <strong>objets, tableaux, closures et instances</strong>. Sa taille varie dynamiquement, et les données y subsistent tant qu&apos;elles restent référencées.
+              <p className="text-sm sm:text-base font-medium text-slate-800 leading-relaxed">
+                Imaginez un <strong>grand entrepôt de stockage</strong> pour les objets volumineux ou dont la taille peut grandir avec le temps.
               </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm font-semibold text-slate-700 space-y-1">
+                <li>Elle stocke les objets, les tableaux et les longues chaînes.</li>
+                <li>La Stack ne garde qu&apos;une petite &quot;étiquette d&apos;adresse&quot; (référence) qui pointe vers cet entrepôt.</li>
+                <li>Le nettoyage automatique est assuré par le <em>Garbage Collector</em>.</li>
+              </ul>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
-            <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} Exemple d&apos;allocation en mémoire</span>
-            <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`function calculer() {
-  const nombre = 10; // Primitive -> Stockée directement dans la Stack
-  const utilisateur = { // Référence dans la Stack -> Objet stocké dans le Heap
-    nom: "Amine",
-    age: 25
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words">
+            <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} Exemple concret : Qui va où dans la mémoire ?</span>
+            <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`function preparerReponseIA() {
+  const codeHttp = 200;           // Type simple -> Reste bien au chaud dans la Stack
+  const utilisateur = {           // L'adresse est dans la Stack...
+    prenom: "Sarah",              // ...mais tout le contenu de l'objet
+    role: "Admin"                 // réside physiquement dans le Heap !
   };
-  console.log(nombre);
-  console.log(utilisateur.nom);
+
+  console.log("Statut:", codeHttp);
+  console.log("Utilisateur:", utilisateur.prenom);
 }
 
-calculer(); // Entrée dans la Stack, puis retrait dès la fin d'exécution`}
-            </pre>
+preparerReponseIA(); // 1. La fonction entre sur la Stack -> 2. s'exécute -> 3. se vide aussitôt`}</pre>
+            </div>
           </div>
         </div>
 
+        {/* 2.3 Fuite mémoire vulgarisée */}
         <div className="space-y-4 pt-2">
-          <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-            2.3 Pourquoi la mémoire peut-elle poser problème ? (Fuite mémoire)
+          <h3 className="text-base sm:text-lg font-bold text-slate-900">
+            2.3 Le piège n°1 en Backend : La fuite de mémoire (Memory Leak)
           </h3>
           <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-            Observez attentivement cette mauvaise pratique fréquente dans une API backend :
+            Pourquoi un serveur Node.js peut-il planter au bout de 2 jours alors que le code semble fonctionner ? À cause d&apos;une <strong>accumulation invisible</strong>.
           </p>
 
-          <div className="rounded-2xl border border-rose-300 bg-rose-50/50 p-5">
-            <span className="text-xs font-mono uppercase text-rose-800 font-bold block mb-1">⚠️ Risque de fuite mémoire (Memory Leak)</span>
-            <pre className="font-mono text-sm leading-relaxed text-rose-950 overflow-x-auto">
-{`const utilisateurs = []; // Tableau global qui ne se vide JAMAIS
+          <div className="rounded-2xl border-2 border-rose-300 bg-rose-50/70 p-5 break-words space-y-3">
+            <div className="flex items-center gap-2 text-rose-900 font-extrabold text-xs uppercase tracking-wider">
+              <Icon name="warning" className="w-4 h-4 text-rose-700 shrink-0" />
+              <span>Exemple d&apos;erreur classique de débutant</span>
+            </div>
+            <div className="font-mono text-xs sm:text-sm leading-relaxed text-rose-950 bg-white/90 p-4 rounded-xl border border-rose-200 overflow-x-auto">
+              <pre>{`// ❌ MAUVAISE PRATIQUE : un tableau déclaré tout en haut du fichier
+const historiqueMessages = []; 
 
-app.get("/ajouter", (req, res) => {
-  utilisateurs.push({
-    nom: "Utilisateur",
+app.post("/chat", (req, res) => {
+  // À chaque message d'un visiteur, on ajoute un objet dans le tableau
+  historiqueMessages.push({
+    prompt: req.body.prompt,
     date: new Date()
   });
-  res.json({ total: utilisateurs.length });
-});`}
-            </pre>
-            <p className="mt-3 text-sm font-semibold text-rose-900">
-              ì chaque appel de <code className="bg-rose-200/60 px-1 py-0.5 rounded font-bold text-rose-950">/ajouter</code>, un objet est accumulé dans le tableau global. Le Garbage Collector ne peut jamais le libérer car la référence reste active indéfiniment.
-            </p>
+  
+  res.json({ confirmation: "Message enregistré" });
+});`}</pre>
+            </div>
+            <div className="text-sm font-semibold text-rose-900 leading-relaxed">
+              <strong>Ce qui se produit :</strong> Le tableau <code className="bg-rose-200/60 px-1 py-0.5 rounded font-bold text-rose-950">historiqueMessages</code> ne se vide jamais. Au bout de 50 000 requêtes, la RAM du serveur est saturée et le système d&apos;exploitation coupe brutalement le serveur avec un message <em>&quot;JavaScript heap out of memory&quot;</em>.
+            </div>
           </div>
         </div>
       </section>
@@ -154,364 +180,348 @@ app.get("/ajouter", (req, res) => {
       {/* 3. Démonstration pratique Node.js */}
       <section className="space-y-6">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Démonstration pratique Node.js : observer la mémoire
+          3. Démonstration pratique : Mesurer la mémoire en direct
         </h2>
 
         <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-          Créons une API Express minimale pour inspecter les indicateurs réels de Node.js via <code className="font-mono font-bold bg-slate-200 text-indigo-950 px-1.5 py-0.5 rounded">process.memoryUsage()</code>.
+          Node.js intègre un outil natif très simple pour surveiller sa santé en temps réel : la fonction <code className="font-mono font-bold bg-slate-200 text-indigo-950 px-1.5 py-0.5 rounded">process.memoryUsage()</code>.
         </p>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
-          <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} server.js</span>
-          <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const express = require("express");
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words">
+          <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} server.js — Détecter la mémoire avec Express</span>
+          <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+            <pre>{`const express = require("express");
 const app = express();
 const PORT = 3000;
 
-// Tableau qui conserve volontairement les données
-const utilisateurs = [];
+// Tableau de test pour simuler une consommation
+const cacheTemporaire = [];
 
-app.get("/", (req, res) => {
-  res.send("Serveur Node.js opérationnel !");
-});
-
-// Afficher la consommation mémoire en direct
+// 1. Route pour lire l'état de la mémoire
 app.get("/memory", (req, res) => {
-  const memory = process.memoryUsage();
+  const m = process.memoryUsage();
   res.json({
-    rss: (memory.rss / 1024 / 1024).toFixed(2) + " MB",
-    heapUsed: (memory.heapUsed / 1024 / 1024).toFixed(2) + " MB",
-    heapTotal: (memory.heapTotal / 1024 / 1024).toFixed(2) + " MB"
+    // RSS : Mémoire totale occupée sur la machine (en Mo)
+    rss: (m.rss / 1024 / 1024).toFixed(2) + " MB",
+    // heapUsed : Mémoire réellement consommée par nos objets
+    heapUsed: (m.heapUsed / 1024 / 1024).toFixed(2) + " MB",
+    // heapTotal : Taille totale actuellement réservée pour le Heap
+    heapTotal: (m.heapTotal / 1024 / 1024).toFixed(2) + " MB"
   });
 });
 
-// Ajouter 10 000 objets en RAM
-app.get("/add", (req, res) => {
+// 2. Route pour injecter des données et observer l'effet
+app.get("/ajouter", (req, res) => {
   for (let i = 0; i < 10000; i++) {
-    utilisateurs.push({
-      id: utilisateurs.length + 1,
-      nom: "Utilisateur " + i,
-      email: \`user\${i}@test.com\`
+    cacheTemporaire.push({
+      id: i,
+      texte: "Donnée de test n°" + i,
+      date: new Date()
     });
   }
-  res.json({
-    message: "Données ajoutées",
-    total: utilisateurs.length
-  });
+  res.json({ message: "10 000 objets ajoutés !", total: cacheTemporaire.length });
 });
 
-app.listen(PORT, () => {
-  console.log(\`Serveur démarré sur http://localhost:\${PORT}\`);
-});`}
-          </pre>
+app.listen(PORT, () => console.log(\`Serveur prêt sur http://localhost:\${PORT}\`));`}</pre>
+          </div>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border-2 border-slate-300">
+        {/* Tableau explicatif responsive : desktop table + mobile cards */}
+        <div className="hidden sm:block overflow-x-auto rounded-2xl border-2 border-slate-300">
           <table className="w-full text-left border-collapse text-sm sm:text-base">
             <thead>
               <tr className="bg-slate-100 border-b-2 border-slate-300 text-slate-950 font-black">
-                <th className="p-3.5">Adresse de test</th>
+                <th className="p-3.5">Adresse à tester</th>
                 <th className="p-3.5">Action réalisée</th>
-                <th className="p-3.5">Résultat à observer</th>
+                <th className="p-3.5">Ce que vous observez</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 font-semibold text-slate-900 bg-white">
               <tr>
-                <td className="p-3.5 font-mono text-indigo-700">http://localhost:3000/</td>
-                <td className="p-3.5">Vérifie l&apos;état du serveur</td>
-                <td className="p-3.5">Message de bienvenue</td>
+                <td className="p-3.5 font-mono text-indigo-700">GET /memory</td>
+                <td className="p-3.5">Premier relevé au repos</td>
+                <td className="p-3.5">Le <code className="font-bold">heapUsed</code> est bas (environ 5 à 12 Mo).</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-mono text-indigo-700">http://localhost:3000/memory</td>
-                <td className="p-3.5">Relevé de référence</td>
-                <td className="p-3.5">heapUsed initial (ex: ~12 MB)</td>
+                <td className="p-3.5 font-mono text-indigo-700">GET /ajouter</td>
+                <td className="p-3.5">Création de 10 000 objets en RAM</td>
+                <td className="p-3.5">Les objets s&apos;installent dans le Heap.</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-mono text-indigo-700">http://localhost:3000/add</td>
-                <td className="p-3.5">Ajout de 10 000 objets</td>
-                <td className="p-3.5">Allocation dans le Heap</td>
-              </tr>
-              <tr>
-                <td className="p-3.5 font-mono text-indigo-700">http://localhost:3000/memory</td>
-                <td className="p-3.5">Relevé après ajout</td>
-                <td className="p-3.5">heapUsed grimpe significativement</td>
+                <td className="p-3.5 font-mono text-indigo-700">GET /memory</td>
+                <td className="p-3.5">Deuxième relevé de contrôle</td>
+                <td className="p-3.5">Le <code className="font-bold">heapUsed</code> a nettement augmenté.</td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        {/* Version mobile en cartes (max 2 cartes par ligne) */}
+        <div className="sm:hidden grid grid-cols-1 gap-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1.5 break-words">
+            <span className="font-mono text-xs font-bold text-indigo-700">GET /memory</span>
+            <p className="text-sm font-bold text-slate-900">Relevé initial au repos</p>
+            <p className="text-xs text-slate-700">Le heapUsed se situe entre 5 et 12 Mo.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1.5 break-words">
+            <span className="font-mono text-xs font-bold text-indigo-700">GET /ajouter</span>
+            <p className="text-sm font-bold text-slate-900">Injection de 10 000 objets</p>
+            <p className="text-xs text-slate-700">Les données remplissent immédiatement le Heap.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-1.5 break-words">
+            <span className="font-mono text-xs font-bold text-indigo-700">GET /memory</span>
+            <p className="text-sm font-bold text-slate-900">Relevé après injection</p>
+            <p className="text-xs text-slate-700">Le heapUsed grimpe en flèche.</p>
+          </div>
+        </div>
       </section>
 
-      {/* 4. Call Stack & Event Loop */}
+      {/* 4. Call Stack & Mono-thread */}
       <section className="space-y-6">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Comprendre le Call Stack et l&apos;Event Loop
+          4. Le Call Stack et la nature &quot;mono-threadée&quot; de Node.js
         </h2>
 
         <div className="space-y-4">
-          <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-            4.1 Le Call Stack (Pile d&apos;exécution)
-          </h3>
           <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-            Le Call Stack suit les fonctions en cours d&apos;exécution selon la règle LIFO (Last In, First Out). JavaScript est <strong>mono-threadé</strong> : il n&apos;exécute qu&apos;une seule instruction à la fois sur ce Call Stack.
-          </p>
-        </div>
-
-        <div className="space-y-4 pt-2">
-          <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-            4.2 L&apos;Event Loop et les Microtâches
-          </h3>
-          <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-            Considérez ce cas d&apos;école :
+            Dire que Node.js est <strong>mono-threadé</strong> signifie une chose capitale : <strong>il ne possède qu&apos;un seul ouvrier principal</strong> pour exécuter vos lignes de code JavaScript l&apos;une après l&apos;autre.
           </p>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
-            <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`console.log("Début");
-
-setTimeout(() => {
-  console.log("Timer");
-}, 0);
-
-Promise.resolve().then(() => {
-  console.log("Promise");
-});
-
-console.log("Fin");
-
-// RÉSULTAT OBTENU :
-// Début
-// Fin
-// Promise
-// Timer`}
-            </pre>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 space-y-2 break-words shadow-sm">
+              <h3 className="text-base font-black text-slate-950">Ce que fait le Call Stack</h3>
+              <p className="text-sm font-medium text-slate-800 leading-relaxed">
+                Il enregistre à quel endroit du code nous nous trouvons. Si vous appelez la fonction <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">A()</code>, puis qu&apos;elle appelle <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">B()</code>, la Stack empile d&apos;abord A, puis B par-dessus.
+              </p>
+            </div>
+            <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 space-y-2 break-words shadow-sm">
+              <h3 className="text-base font-black text-slate-950">Le danger d&apos;un blocage</h3>
+              <p className="text-sm font-medium text-slate-800 leading-relaxed">
+                Tant que l&apos;ouvrier est occupé à faire un calcul complexe sur une fonction, la Stack est bloquée. <strong>Aucun autre utilisateur ne peut recevoir de réponse pendant ce temps !</strong>
+              </p>
+            </div>
           </div>
-
-          <Callout type="warning" title="La règle absolue de priorité">
-            <p>
-              1. Le code synchrone s&apos;exécute immédiatement (<code className="font-bold">Début</code>, puis <code className="font-bold">Fin</code>).<br />
-              2. La file des <strong>microtâches (Promises)</strong> est intégralement vidée avant de passer aux timers.<br />
-              3. Le callback de <code className="font-bold">setTimeout(0)</code> n&apos;est exécuté que lorsque le Call Stack est libre ET que les microtâches sont achevées.
-            </p>
-          </Callout>
         </div>
       </section>
 
-      {/* 5. Bloquer ou ne pas bloquer Node.js */}
+      {/* 5. Comparaison : Bloquant vs Non-Bloquant */}
       <section className="space-y-6">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Démonstration : Bloquer ou ne pas bloquer Node.js
+          5. Comparaison pratique : Bloquer ou libérer Node.js
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="rounded-2xl border-2 border-rose-300 bg-rose-50/50 p-5 space-y-3">
-            <h3 className="text-lg font-black text-rose-950">❌ Route CPU bloquante</h3>
-            <pre className="font-mono text-xs leading-relaxed text-rose-950 bg-white/80 p-3 rounded-xl border border-rose-200 overflow-x-auto">
-{`app.get("/block", (req, res) => {
-  const debut = Date.now();
-  // Boucle synchrone lourde
-  while (Date.now() - debut < 10000) {
-    // Monopolise le thread à 100%
+        <div className="space-y-4">
+          <div className="rounded-2xl border-2 border-rose-300 bg-rose-50/50 p-5 space-y-3 break-words shadow-sm">
+            <div className="flex items-center gap-2 text-rose-950 font-black text-base">
+              <Icon name="x-circle" className="w-5 h-5 text-rose-600 shrink-0" />
+              <span>Route bloquante (Calcul lourd)</span>
+            </div>
+            <div className="font-mono text-xs leading-relaxed text-rose-950 bg-white p-3 rounded-xl border border-rose-200 overflow-x-auto">
+              <pre>{`app.get("/calcul-lourd", (req, res) => {
+  const fin = Date.now() + 5000;
+  // Boucle synchrone de 5 secondes
+  while (Date.now() < fin) {
+    // Le processeur tourne à 100%
   }
-  res.send("Terminé");
-});`}
-            </pre>
-            <p className="text-sm font-semibold text-rose-900 leading-relaxed">
-              Pendant 10 secondes, le thread unique est figé. Plus aucune autre requête HTTP (même un simple <code className="font-bold">/</code>) ne peut être traitée pour aucun utilisateur !
+  res.send("Calcul terminé");
+});`}</pre>
+            </div>
+            <p className="text-xs sm:text-sm font-semibold text-rose-900 leading-relaxed">
+              ⚠️ <strong>Catastrophe :</strong> Pendant ces 5 secondes, le serveur ne répond à personne. Même un utilisateur ouvrant la page d&apos;accueil reste bloqué devant un écran blanc !
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 p-5 space-y-3">
-            <h3 className="text-lg font-black text-emerald-950">✅ Route asynchrone non-bloquante</h3>
-            <pre className="font-mono text-xs leading-relaxed text-emerald-950 bg-white/80 p-3 rounded-xl border border-emerald-200 overflow-x-auto">
-{`app.get("/async", async (req, res) => {
-  // Attente non-bloquante (ex: appel API IA)
+          <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 p-5 space-y-3 break-words shadow-sm">
+            <div className="flex items-center gap-2 text-emerald-950 font-black text-base">
+              <Icon name="check-circle" className="w-5 h-5 text-emerald-600 shrink-0" />
+              <span>Route asynchrone (Attente IA)</span>
+            </div>
+            <div className="font-mono text-xs leading-relaxed text-emerald-950 bg-white p-3 rounded-xl border border-emerald-200 overflow-x-auto">
+              <pre>{`app.get("/appel-ia", async (req, res) => {
+  // Attente non-bloquante (ex: réponse Gemini)
   await new Promise(resolve => {
-    setTimeout(resolve, 10000);
+    setTimeout(resolve, 5000);
   });
-  res.send("Attente terminée");
-});`}
-            </pre>
-            <p className="text-sm font-semibold text-emerald-900 leading-relaxed">
-              Pendant l&apos;attente, Node.js délègue le timer à libuv et libère le Call Stack pour répondre instantanément à toutes les autres requêtes entrantes.
+  res.send("Réponse IA prête");
+});`}</pre>
+            </div>
+            <p className="text-xs sm:text-sm font-semibold text-emerald-900 leading-relaxed">
+              ✅ <strong>Parfait :</strong> Pendant l&apos;attente des 5 secondes, l&apos;ouvrier Node.js est libre comme l&apos;air ! Il peut répondre instantanément à des centaines d&apos;autres visiteurs.
             </p>
           </div>
         </div>
       </section>
 
-      {/* 6. TP Pratique : Frontend React & Chronomètre */}
+      {/* 6. Travaux Pratiques avec React */}
       <PracticalWork
-        title="6. Démonstration React : Mesurer la latence et le blocage"
-        objective="Observer la différence d'expérience utilisateur entre route bloquante et asynchrone avec performance.now()"
+        title="6. Démonstration Frontend : Mesurer la latence et le blocage"
+        objective="Constater visuellement la différence entre une API bloquante et une API asynchrone depuis une interface React"
         steps={[
-          "Observer la différence d'expérience utilisateur entre route bloquante et asynchrone",
-          "Mesurer le temps de réponse avec window.performance.now()",
-          "Comprendre le comportement de l'interface client face à un thread backend saturé"
+          "Créer deux boutons de test dans votre interface React",
+          "Mesurer le temps de réponse avec la méthode standard window.performance.now()",
+          "Constater comment une seule requête mal conçue peut geler l'expérience de tous vos utilisateurs"
         ]}
       >
-        <div className="space-y-4">
+        <div className="space-y-4 break-words">
           <p className="text-base font-semibold text-slate-900">
-            Intégrez ce composant dans votre frontend React pour envoyer des requêtes concurrentes à votre serveur Express :
+            Copiez ce composant simple dans votre application React pour expérimenter le test :
           </p>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
-            <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} App.jsx (React)</span>
-            <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`import { useState } from "react";
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words">
+            <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} TesteurDeLatence.jsx</span>
+            <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`import { useState } from "react";
 
-function App() {
-  const [resultat, setResultat] = useState("");
-  const [chargement, setChargement] = useState(false);
+export function TesteurDeLatence() {
+  const [etat, setEtat] = useState("En attente de test");
+  const [enChargement, setEnChargement] = useState(false);
 
-  async function testerRoute(route) {
-    setChargement(true);
-    setResultat("Traitement en cours...");
+  async function tester(endpoint) {
+    setEnChargement(true);
+    setEtat("Requête envoyée...");
     const debut = performance.now();
     try {
-      const response = await fetch(\`http://localhost:3000/\${route}\`);
-      const data = await response.text();
-      const duree = (performance.now() - debut).toFixed(0);
-      setResultat(\`\${data} | Durée : \${duree} ms\`);
-    } catch (error) {
-      setResultat("Erreur : " + error.message);
+      const rep = await fetch("http://localhost:3000/" + endpoint);
+      const texte = await rep.text();
+      const tempsTotal = (performance.now() - debut).toFixed(0);
+      setEtat(\`\${texte} en \${tempsTotal} ms\`);
+    } catch (e) {
+      setEtat("Erreur de connexion");
     } finally {
-      setChargement(false);
+      setEnChargement(false);
     }
   }
 
   return (
-    <main className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Test du serveur Node.js</h1>
-      <div className="space-x-3">
-        <button onClick={() => testerRoute("block")} className="px-4 py-2 bg-rose-600 text-white rounded-lg">
+    <div className="p-6 rounded-2xl border-2 border-slate-200 bg-white space-y-4">
+      <h3 className="text-lg font-bold">Laboratoire de test Backend</h3>
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={() => tester("calcul-lourd")}
+          disabled={enChargement}
+          className="px-4 py-2 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 disabled:opacity-50"
+        >
           Tester route bloquante
         </button>
-        <button onClick={() => testerRoute("async")} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+        <button
+          onClick={() => tester("appel-ia")}
+          disabled={enChargement}
+          className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+        >
           Tester route asynchrone
         </button>
       </div>
-      <p className="text-lg font-bold">{chargement ? "Chargement..." : resultat}</p>
-    </main>
+      <p className="font-mono text-sm font-bold text-indigo-950 bg-slate-100 p-3 rounded-lg">
+        {enChargement ? "⏳ Chargement en cours..." : etat}
+      </p>
+    </div>
   );
-}`}
-            </pre>
+}`}</pre>
+            </div>
           </div>
         </div>
       </PracticalWork>
 
-      {/* 7. Exercices interactifs */}
+      {/* 7. Exercices interactifs de validation */}
       <section className="space-y-6">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          7. Exercices pratiques interactifs
+          7. Exercices interactifs de validation
         </h2>
 
         <QuickQuiz
-          title="Exercice 1 — Prédire l'ordre d'exécution"
-          question={`Considérez ce code sans l'exécuter :
-console.log("1");
-setTimeout(() => console.log("2"), 0);
-console.log("3");
-Promise.resolve().then(() => console.log("4"));
-console.log("5");
-
-Quelle sera la séquence exacte affichée dans la console ?`}
+          title="Exercice 1 — La Stack et le Heap"
+          question="Où est stocké le contenu complet d'un objet utilisateur volumineux en JavaScript ?"
           options={[
-            "1, 2, 3, 4, 5",
-            "1, 3, 5, 4, 2",
-            "1, 3, 4, 2, 5",
-            "1, 5, 3, 2, 4"
+            "Dans la Stack exclusivement",
+            "Dans le Heap, la Stack ne conservant qu'une référence vers cet objet",
+            "Directement sur le disque dur SSD"
           ]}
           correctIndex={1}
-          explanation="Le code synchrone s'exécute d'abord (1, 3, 5). Ensuite la file des microtâches (Promise 4) est traitée avant les macrotâches/timers (setTimeout 2). La réponse est donc 1, 3, 5, 4, 2."
+          explanation="La Stack est dédiée aux variables simples et aux pointeurs d'exécution. Les objets et tableaux dynamiques résident physiquement dans le Heap."
         />
 
         <QuickQuiz
-          title="Exercice 2 — Identifier un risque de fuite mémoire"
-          question={`Soit le code suivant :
-const historique = [];
-app.get("/historique", (req, res) => {
-  historique.push({ date: new Date(), message: "Demande IA" });
-  res.json({ total: historique.length });
-});
-
-Pourquoi ce code provoque-t-il une croissance infinie de la mémoire RAM ?`}
+          title="Exercice 2 — Identifier la cause d'une fuite mémoire"
+          question="Pourquoi l'ajout continu d'éléments dans un tableau global provoque-t-il une fuite de mémoire ?"
           options={[
-            "Parce que chaque requête instancie un nouveau serveur Express",
-            "Parce que les objets restent référencés dans le tableau global et le Garbage Collector ne peut pas les libérer",
-            "Parce que Node.js ne dispose pas de ramasse-miettes"
+            "Parce que Node.js ne dispose d'aucun système de nettoyage de mémoire",
+            "Parce que les objets restent rattachés à une variable vivante et le Garbage Collector n'a pas le droit de les détruire",
+            "Parce qu'Express recharge le serveur à chaque requête"
           ]}
           correctIndex={1}
-          explanation="Les objets restent rattachés à une variable vivante en portée globale. Tant qu'un chemin de référence existe, le Garbage Collector (V8) a l'obligation stricte de conserver la mémoire allouée."
+          explanation="Le Garbage Collector a pour règle d'or de ne jamais supprimer un objet auquel votre code peut encore accéder. Une variable globale restant vivante en permanence, tout ce qu'elle contient est conservé indéfiniment."
         />
 
         <QuickQuiz
-          title="Exercice 3 — Comprendre le blocage CPU"
-          question="Si une route /analyse effectue un calcul synchrone lourd de 10 secondes sur le thread principal, que se passe-t-il pour un autre utilisateur appelant la route légère /status ?"
+          title="Exercice 3 — Comprendre le mono-thread"
+          question="Si une route exécute une boucle 'while' bloquante pendant 8 secondes, que ressent un deuxième utilisateur voulant consulter la page d'accueil ?"
           options={[
-            "/status répond toujours immédiatement car Node.js crée un thread par requête",
-            "/status est bloquée en file d'attente et ne répond qu'après la fin des 10 secondes de calcul",
-            "Node.js stoppe automatiquement le processus avec une erreur 500"
+            "Il reçoit la page d'accueil instantanément car Node.js crée un processus par utilisateur",
+            "Sa requête est suspendue et patiente pendant 8 secondes avant d'être traitée",
+            "Le serveur redémarre instantanément sans prévenir"
           ]}
           correctIndex={1}
-          explanation="JavaScript s'exécute sur un seul thread. Une boucle synchrone occupe le Call Stack sans interruption, empêchant l'Event Loop de dépiler le callback de la requête /status."
+          explanation="Le thread JavaScript principal est unique. Tant qu'il est coincé dans une boucle synchrone, aucune autre requête ne peut entrer sur le Call Stack."
         />
       </section>
 
-      {/* 8. Tableau de synthèse */}
+      {/* 8. Synthèse récapitulative */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          8. Synthèse : Les concepts clés à retenir
+          8. Synthèse : Les 4 règles d&apos;or à retenir
         </h2>
 
-        <div className="overflow-x-auto rounded-2xl border-2 border-slate-300">
-          <table className="w-full text-left border-collapse text-sm sm:text-base">
-            <thead>
-              <tr className="bg-slate-100 border-b-2 border-slate-300 text-slate-950 font-black">
-                <th className="p-3.5">Notion</th>
-                <th className="p-3.5">Ce qu&apos;il faut impérativement retenir</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 font-semibold text-slate-900 bg-white">
-              <tr>
-                <td className="p-3.5 font-bold text-indigo-700">RAM</td>
-                <td className="p-3.5">Mémoire vive temporaire utilisée par le processus Node.js pour son exécution.</td>
-              </tr>
-              <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Stack (Pile)</td>
-                <td className="p-3.5">Gère les appels de fonctions et les variables locales primitives (très rapide).</td>
-              </tr>
-              <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Heap (Tas)</td>
-                <td className="p-3.5">Zone dynamique où résident les objets, tableaux et structures complexes.</td>
-              </tr>
-              <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Garbage Collector</td>
-                <td className="p-3.5">Programme interne de V8 qui recycle automatiquement les objets devenus inaccessibles.</td>
-              </tr>
-              <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Event Loop</td>
-                <td className="p-3.5">Ordonnanceur de libuv coordonnant les callbacks asynchrones quand le Call Stack se vide.</td>
-              </tr>
-              <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Calcul bloquant</td>
-                <td className="p-3.5">Une boucle CPU intensive bloque tout le serveur s&apos;il n&apos;est pas délégué à un Worker.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4.5 space-y-1.5 break-words shadow-sm">
+            <span className="text-xs font-black uppercase text-indigo-700">Règle n°1</span>
+            <h3 className="text-base font-bold text-slate-950">RAM = Bureau de travail</h3>
+            <p className="text-xs sm:text-sm text-slate-700 font-medium">
+              La RAM héberge vos données en cours d&apos;utilisation. Elle est ultra-rapide mais limitée.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4.5 space-y-1.5 break-words shadow-sm">
+            <span className="text-xs font-black uppercase text-indigo-700">Règle n°2</span>
+            <h3 className="text-base font-bold text-slate-950">Stack vs Heap</h3>
+            <p className="text-xs sm:text-sm text-slate-700 font-medium">
+              La Stack gère les fonctions empilées (LIFO). Le Heap stocke les objets et les tableaux.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4.5 space-y-1.5 break-words shadow-sm">
+            <span className="text-xs font-black uppercase text-indigo-700">Règle n°3</span>
+            <h3 className="text-base font-bold text-slate-950">Pas de variables globales infinies</h3>
+            <p className="text-xs sm:text-sm text-slate-700 font-medium">
+              Tout tableau global qui grossit sans arrêt finira par faire crasher le serveur (Memory Leak).
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4.5 space-y-1.5 break-words shadow-sm">
+            <span className="text-xs font-black uppercase text-indigo-700">Règle n°4</span>
+            <h3 className="text-base font-bold text-slate-950">Ne jamais bloquer le thread</h3>
+            <p className="text-xs sm:text-sm text-slate-700 font-medium">
+              Déléguez les calculs lourds et utilisez l&apos;asynchrone pour les opérations réseaux et IA.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* 9. Lien avec le Backend IA */}
-      <section className="rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-8 space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900">
-          9. Le lien avec votre futur Backend IA
+      <section className="rounded-3xl border-2 border-indigo-200 bg-indigo-50/50 p-6 sm:p-8 space-y-3 break-words">
+        <div className="flex items-center gap-2 text-indigo-900 font-extrabold text-xs uppercase tracking-wider">
+          <Icon name="sparkles" className="w-4 h-4 text-indigo-700 shrink-0" />
+          <span>Pourquoi est-ce crucial pour une application d&apos;IA ?</span>
+        </div>
+        <h2 className="text-lg sm:text-xl font-black text-slate-950">
+          Le lien direct avec votre futur Backend IA
         </h2>
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-          Dans une architecture moderne combinant <strong>React → Node.js Express → Google Gemini</strong> :
+        <p className="text-base font-medium text-slate-900 leading-relaxed">
+          Lorsqu&apos;un utilisateur pose une question à un modèle d&apos;IA (comme Google Gemini), la réponse met souvent entre 1 et 3 secondes à être générée. Grâce à l&apos;architecture non-bloquante de Node.js :
         </p>
-        <ul className="list-disc list-inside space-y-2 text-base font-semibold text-slate-900">
-          <li><strong>React</strong> s&apos;exécute dans le navigateur client et utilise la mémoire de la machine cliente.</li>
-          <li><strong>Node.js</strong> agit comme passerelle sécurisée : il reçoit la requête, valide les données et appelle l&apos;API Gemini via HTTPS.</li>
-          <li><strong>Gemini</strong> exécute l&apos;inférence sur les serveurs de Google. Cette attente réseau est <strong>asynchrone et non bloquante</strong> : pendant les 2 secondes d&apos;inférence de Gemini, Node.js peut répondre à des dizaines d&apos;autres requêtes !</li>
+        <ul className="list-disc list-inside space-y-2 text-sm sm:text-base font-semibold text-slate-900">
+          <li>Votre serveur Node.js envoie la requête à l&apos;API de Google et <strong>libère immédiatement son ouvrier</strong>.</li>
+          <li>Pendant les 2 secondes d&apos;attente, ce même serveur peut accueillir 200 autres visiteurs sans aucun ralentissement.</li>
+          <li>Dès que Google a terminé, l&apos;Event Loop réveille le callback et envoie la réponse au client.</li>
         </ul>
       </section>
 
@@ -519,14 +529,13 @@ Pourquoi ce code provoque-t-il une croissance infinie de la mémoire RAM ?`}
       <InteractiveChecklist
         title="10. Validation des compétences du Chapitre 1"
         items={[
-          "Je sais expliquer simplement la différence entre RAM, Stack et Heap.",
-          "Je comprends pourquoi un tableau global non purgé provoque une fuite mémoire.",
-          "Je sais expliquer le rôle du Call Stack et de l'Event Loop.",
-          "Je distingue clairement une attente réseau asynchrone d'un calcul CPU synchrone bloquant.",
-          "J'ai testé et observé les routes /memory, /add, /block et /async."
+          "Je sais expliquer la métaphore du bureau de travail (SSD, RAM, CPU).",
+          "Je distingue la Stack (pile rapide) du Heap (entrepôt des objets).",
+          "Je comprends pourquoi un tableau global non vidé provoque une fuite de mémoire.",
+          "Je sais pourquoi une boucle de calcul synchrone paralyse le serveur pour tous les utilisateurs.",
+          "Je sais utiliser process.memoryUsage() pour surveiller la santé d'un serveur."
         ]}
       />
     </div>
   );
 };
-

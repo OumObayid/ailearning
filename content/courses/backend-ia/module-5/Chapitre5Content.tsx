@@ -12,13 +12,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Caching &amp; Performance Redis</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Rate Limiting et protection des quotas d&apos;appels API
         </h1>
       </div>
@@ -81,18 +82,18 @@ export const Chapitre5Content: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Règle 1</span>
             <h3 className="font-bold text-slate-950 text-base mt-2">Volume Maximal</h3>
             <p className="text-sm text-slate-800 mt-1">Exemple : <strong>5 requêtes</strong> autorisées par cycle.</p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Règle 2</span>
             <h3 className="font-bold text-slate-950 text-base mt-2">Fenêtre Temporelle</h3>
             <p className="text-sm text-slate-800 mt-1">Exemple : période glissante ou fixe de <strong>60 secondes</strong>.</p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
             <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Règle 3</span>
             <h3 className="font-bold text-slate-950 text-base mt-2">Identifiant Unique</h3>
             <p className="text-sm text-slate-800 mt-1">Exemple : adresse IP cliente ou identifiant utilisateur <code className="font-mono text-xs">user:25</code>.</p>
@@ -296,15 +297,15 @@ module.exports = createRedisRateLimiter;`}
         </div>
 
         {/* Original Document Images: Fixed Window & Leaky Bucket */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+        <div className="space-y-4 min-w-0 max-w-full">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-5/fixed-window-rate-limiting.jpg"
                 alt="Fixed Window Rate Limiting Diagram"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 500px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <p className="mt-2 text-xs sm:text-sm text-center text-slate-700 font-semibold">
@@ -312,14 +313,14 @@ module.exports = createRedisRateLimiter;`}
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-5/leaky-bucket-rate-limiting.jpg"
                 alt="Leaky Bucket Rate Limiting Diagram"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 500px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <p className="mt-2 text-xs sm:text-sm text-center text-slate-700 font-semibold">
@@ -677,20 +678,20 @@ bootstrap();`}
         <p className="text-slate-300 text-base leading-relaxed">
           Vous disposez désormais d&apos;une boîte à outils d&apos;ingénierie backend complète pour exploiter l&apos;IA de manière scalable et rentable :
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-sm pt-2">
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm pt-2 min-w-0">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 1 :</span> Principes du Cache-Aside, réduction de 90%+ de la latence, économie des tokens.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 2 :</span> Déploiement Redis Docker, commandes primitives rapides, connexion Node.js.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 3 :</span> TTL dynamique (<code className="font-mono text-xs">SET EX</code>) et invalidation proactive sur mutations SQL.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 4 :</span> Hash SHA-256 déterministe, parade au Cache Stampede, isolation par utilisateur.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 sm:col-span-2 md:col-span-2">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 sm:col-span-2 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 5 :</span> Rate Limiting distribué avec Redis Lua, gestion des codes HTTP 429 et protection anti-abus.
           </div>
         </div>

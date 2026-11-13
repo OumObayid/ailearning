@@ -5,6 +5,7 @@ import {
   BACKEND_IA_MODULES,
   PROMPT_ENGINEERING_IDE_MODULES,
   DEBUGGING_MODULES,
+  ORCHESTRATION_AGENTS_IDE_MODULES,
 } from '@/lib/constants';
 import { Course, CourseModule } from '@/types/course';
 
@@ -77,7 +78,17 @@ export class CourseService {
     if (normalized === 'debugging') {
       return DEBUGGING_MODULES;
     }
+    if (normalized === 'orchestration-agents-ide') {
+      return ORCHESTRATION_AGENTS_IDE_MODULES;
+    }
     return COURSE_MODULES.filter((m) => m.courseId?.toLowerCase() === normalized);
+  }
+
+  /**
+   * Récupère les modules du cursus Orchestration d'une équipe d'agents IA (10 modules)
+   */
+  static getOrchestrationAgentsModules(): CourseModule[] {
+    return ORCHESTRATION_AGENTS_IDE_MODULES;
   }
 
   /**

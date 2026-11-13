@@ -245,8 +245,9 @@ export const WasmWebGpuLab: React.FC<WasmWebGpuLabProps> = ({ initialTab = 'wasm
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+          {/* Max 2 cartes par ligne */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2 break-words [overflow-wrap:anywhere] min-w-0">
               <label htmlFor="elemInput" className="text-xs font-extrabold uppercase text-slate-700 block">
                 Nombre d&apos;éléments à traiter (N)
               </label>
@@ -262,7 +263,7 @@ export const WasmWebGpuLab: React.FC<WasmWebGpuLabProps> = ({ initialTab = 'wasm
               <span className="text-xs text-slate-500">Ex: 1 000 éléments</span>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="text-xs font-extrabold uppercase text-slate-700 block">
                 Taille groupe de travail fixe
               </span>
@@ -272,7 +273,7 @@ export const WasmWebGpuLab: React.FC<WasmWebGpuLabProps> = ({ initialTab = 'wasm
               <span className="text-xs text-slate-500">Défini par @workgroup_size(64)</span>
             </div>
 
-            <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-4 space-y-2">
+            <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-4 space-y-2 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
               <span className="text-xs font-extrabold uppercase text-indigo-900 block">
                 Workgroups à lancer
               </span>

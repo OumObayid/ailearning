@@ -21,12 +21,12 @@ export function CourseReadingProgressBar({
   if (progress.totalCount === 0) return null;
 
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-2 py-2 px-1", className)}>
       {showDetails && (
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="text-slate-600">Progression de lecture globale</span>
-          <span className="font-mono font-black text-emerald-700">
-            {progress.completedCount} / {progress.totalCount} chap. ({progress.percent}%)
+        <div className="flex items-center justify-between gap-2 text-[11px] sm:text-xs font-bold whitespace-nowrap flex-nowrap pb-1">
+          <span className="text-slate-950 whitespace-nowrap">Progression de lecture globale</span>
+          <span className="font-mono text-[12px] font-black text-emerald-700 shrink-0 whitespace-nowrap">
+            {progress.completedCount}/{progress.totalCount} chap. ({progress.percent}%)
           </span>
         </div>
       )}

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Course } from '@/types/course';
 import { Icon } from '@/components/common/Icon';
 import { CourseReadingProgressBar } from '@/components/courses/CourseReadingProgressBar';
+import { CoursePassedBadge } from '@/components/courses/CoursePassedBadge';
 
 interface CourseCardProps {
   course: Course;
@@ -14,6 +15,7 @@ const COURSE_CARD_IMAGES: Record<string, string> = {
   'backend-ia': '/images/cours/backend-ia/course-card-amber.jpg',
   'prompt-engineering-ide': '/images/cours/prompt-engineering-ide/course-card-purple.jpg',
   'debugging': '/images/cours/debugging/course-card-emerald.jpg',
+  'orchestration-agents-ide': '/images/cours/orchestration-agents-ide/orchestration-team-maestro.jpg',
 };
 
 interface CourseTheme {
@@ -78,6 +80,18 @@ const COURSE_THEMES: Record<string, CourseTheme> = {
     buttonHover: 'hover:bg-lime-400/80',
     buttonText: 'text-lime-950 font-bold',
   },
+  'orchestration-agents-ide': {
+    cardBg: 'bg-indigo-50/80 hover:bg-indigo-100/60',
+    cardBorder: 'border-indigo-200',
+    iconBg: 'bg-indigo-100',
+    iconText: 'text-indigo-800',
+    titleHover: 'group-hover:text-indigo-600',
+    subtitleText: 'text-indigo-700',
+    borderHover: 'hover:border-indigo-400 hover:shadow-indigo-500/10',
+    buttonBg: 'bg-indigo-300/70',
+    buttonHover: 'hover:bg-indigo-400/80',
+    buttonText: 'text-indigo-950 font-bold',
+  },
 };
 
 const DEFAULT_THEME: CourseTheme = {
@@ -99,7 +113,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
   return (
     <div
-      className={`group flex flex-col justify-between h-full rounded-3xl border-2 ${theme.cardBorder} ${theme.cardBg} p-6 sm:p-7 shadow-sm transition hover:shadow-xl ${theme.borderHover}`}
+      className={`group flex flex-col justify-between h-full rounded-3xl border-2 ${theme.cardBorder} ${theme.cardBg} p-5 sm:p-7 shadow-sm transition hover:shadow-xl ${theme.borderHover}`}
     >
       <div className="space-y-4 flex-1 flex flex-col">
         {/* Banner Image intégrée comme les cartes d'examens */}
@@ -114,6 +128,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             <div className="absolute top-3 right-3 flex items-center gap-2">
+              <CoursePassedBadge courseId={course.id} showDownloadButton={false} />
               <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black border backdrop-blur-md bg-white/95 shadow-sm text-slate-950 border-slate-200">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 {course.modulesCount} modules
@@ -133,18 +148,21 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             </h2>
           </div>
 
-          <p className={`text-xs sm:text-sm font-bold leading-snug ${theme.subtitleText}`}>
+          <p className={`text-xs sm:text-sm font-bold leading-snug ${theme.subtitleText} min-h-[1.25rem] sm:min-h-[1.5rem]`}>
             {course.subtitle}
           </p>
         </div>
 
-        {/* Description */}
-        <p className="text-base text-slate-800 font-medium leading-relaxed flex-1">
+        {/* Description — Hauteur constante pour alignement parfait des barres de progression */}
+        <p
+          className="text-base text-slate-800 font-medium leading-relaxed min-h-[6.5rem] sm:min-h-[7.5rem]"
+          title={course.description}
+        >
           {course.description}
         </p>
 
         {/* Progression de lecture globale du cours */}
-        <CourseReadingProgressBar courseId={course.id} className="pt-2" />
+        <CourseReadingProgressBar courseId={course.id} className="pt-3 pb-1 mt-auto" />
       </div>
 
       {/* Action Footer */}

@@ -12,13 +12,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — WebAssembly &amp; Accélération Matérielle</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Exécution locale de modèles d&apos;IA dans le navigateur (Transformers.js &amp; ONNX)
         </h1>
       </div>
@@ -102,52 +103,52 @@ export const Chapitre5Content: React.FC = () => {
           Trois bibliothèques majeures permettent aujourd&apos;hui d&apos;embarquer des modèles d&apos;IA directement dans une application web :
         </p>
 
-        {/* 3 Original Document Logos */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm space-y-3">
-            <div className="relative w-full h-36 rounded-xl overflow-hidden bg-slate-950">
+        {/* 3 Original Document Logos Stacked Vertically */}
+        <div className="space-y-4 min-w-0 max-w-full">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm space-y-3 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div className="relative w-full h-44 sm:h-52 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/transformers-js-browser-ai.jpg"
                 alt="Logo Transformers.js de Hugging Face"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 300px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="font-bold text-slate-950 text-base">Transformers.js (Hugging Face)</h3>
-            <p className="text-xs text-slate-700 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
               Portage officiel de la célèbre bibliothèque Python Transformers. Permet d&apos;exécuter des pipelines complets (sentiment, classification, reconnaissance vocale Whisper, embeddings) en 3 lignes de JavaScript.
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm space-y-3">
-            <div className="relative w-full h-36 rounded-xl overflow-hidden bg-slate-950">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm space-y-3 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div className="relative w-full h-44 sm:h-52 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/onnx-runtime-web-engine.jpg"
                 alt="Logo ONNX Runtime de Microsoft"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 300px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="font-bold text-slate-950 text-base">ONNX Runtime Web (Microsoft)</h3>
-            <p className="text-xs text-slate-700 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
               Moteur d&apos;inférence multiplateforme ultra-optimisé exécutant le format universel ONNX. Tire parti de WebGPU pour l&apos;accélération graphique et de WebAssembly SIMD pour le processeur.
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm space-y-3">
-            <div className="relative w-full h-36 rounded-xl overflow-hidden bg-slate-950">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm space-y-3 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div className="relative w-full h-44 sm:h-52 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/tensorflow-js-browser-ml.jpg"
                 alt="Logo TensorFlow.js de Google"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 300px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="font-bold text-slate-950 text-base">TensorFlow.js (Google)</h3>
-            <p className="text-xs text-slate-700 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
               Bibliothèque historique permettant l&apos;entraînement et l&apos;inférence de modèles TensorFlow dans le navigateur et sous Node.js, exploitant WebGL, WebGPU et WebAssembly.
             </p>
           </div>
@@ -381,20 +382,20 @@ export default function AnalyseSentiment() {
         <p className="text-slate-300 text-base leading-relaxed">
           Vous maîtrisez désormais les technologies d&apos;exécution les plus avancées du web moderne :
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-sm pt-2">
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm pt-2 min-w-0">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-indigo-400 font-bold">Chapitre 1 :</span> Format binaire WebAssembly, syntaxe WAT, instanciation sécurisée dans Node.js et React.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-indigo-400 font-bold">Chapitre 2 :</span> Benchmarks scientifiques V8 JIT vs WASM, boucle d&apos;échauffement, gestion de la frontière FFI.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 3 :</span> Architecture GPU massivement parallèle, API WebGPU, premier Compute Shader WGSL.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 4 :</span> Grille de Workgroups (<code className="font-mono text-xs">@workgroup_size(64)</code>), dispatch de 1M d&apos;éléments, amortissement du bus PCIe.
           </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 sm:col-span-2 md:col-span-2">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3 sm:col-span-2 break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-emerald-400 font-bold">Chapitre 5 :</span> Déploiement de modèles locaux avec Transformers.js &amp; ONNX, confidentialité Zero-Knowledge et architecture hybride avec Gemini.
           </div>
         </div>

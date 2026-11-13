@@ -3,16 +3,17 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre8Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 8 — Instructions permanentes et ponctuelles
         </h1>
       </div>
@@ -99,14 +100,15 @@ export const Chapitre8Content: React.FC = () => {
       </section>
 
       {/* 3. Organisation dans Antigravity */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. Structure modulaire des règles dans le projet
         </h2>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-900 text-slate-100 p-6 font-mono text-sm space-y-2">
-          <p className="text-xs uppercase font-extrabold text-indigo-400">[ARBORESCENCE RECOMMANDÉE]</p>
-          <pre className="whitespace-pre-wrap text-slate-300">
-{`mon-projet/
+        <CodeBlock
+          filename="ARBORESCENCE RECOMMANDÉE"
+          language="markdown"
+          wrap={true}
+          code={`mon-projet/
 ├── .agent/
 │   └── rules/
 │       ├── general.md       # Rôle, posture et méthode générale
@@ -115,8 +117,7 @@ export const Chapitre8Content: React.FC = () => {
 ├── src/
 ├── package.json
 └── README.md`}
-          </pre>
-        </div>
+        />
         <Callout type="tip" title="Bénéfice immédiat">
           Cette séparation évite de polluer chaque prompt de chat avec 40 lignes de règles de sécurité. Vos prompts ponctuels restent courts, ciblés et consomment un minimum de tokens.
         </Callout>

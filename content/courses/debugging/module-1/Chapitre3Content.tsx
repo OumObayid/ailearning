@@ -28,7 +28,7 @@ export const Chapitre3Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight mb-3">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere] mb-3">
           Chapitre 3 — Différence entre erreur de syntaxe, logique et d&apos;exécution
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium">

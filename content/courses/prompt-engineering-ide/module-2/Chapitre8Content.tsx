@@ -6,13 +6,13 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 export const Chapitre8Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 8 — Conditions d&apos;autorisation avant exécution
         </h1>
       </div>
@@ -22,9 +22,9 @@ export const Chapitre8Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Anatomie d&apos;une demande d&apos;autorisation professionnelle
         </h2>
-        <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-6 space-y-4 font-mono text-sm">
+        <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4 sm:p-6 space-y-4 font-mono text-xs sm:text-sm min-w-0 max-w-full overflow-hidden">
           <p className="text-xs uppercase font-extrabold text-indigo-900 tracking-wider">[GABARIT DE VALIDATION PRÉALABLE]</p>
-          <div className="bg-white p-4 rounded-xl border border-indigo-200 space-y-2 text-slate-900">
+          <div className="bg-white p-4 rounded-xl border border-indigo-200 space-y-2 text-slate-900 break-words [overflow-wrap:anywhere]">
             <p><strong>1. Action envisagée :</strong> Modification du fichier de service Gemini.</p>
             <p><strong>2. Cible exacte :</strong> <code>src/services/gemini.js</code> (lignes 12 à 25).</p>
             <p><strong>3. Objectif :</strong> Remplacer l&apos;initialisation dépréciée par le SDK <code>@google/genai</code>.</p>

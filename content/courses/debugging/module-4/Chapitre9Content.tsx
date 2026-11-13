@@ -144,7 +144,7 @@ export const Chapitre9Content: React.FC = () => {
             MySQL &amp; Connection Pool Engineering
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Débogage des connexions MySQL : Connection Pools, gestion des fuites, codes POSIX/SQL et diagnostics réseau
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

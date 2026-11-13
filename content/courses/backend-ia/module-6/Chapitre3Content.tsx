@@ -12,14 +12,15 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre3Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — WebAssembly &amp; Accélération Matérielle</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 3 — Introduction à WebGPU —— Architecture matérielle et premier shader WGSL
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
+          Chapitre 3 — Introduction à WebGPU : Architecture matérielle et premier shader WGSL
         </h1>
       </div>
 
@@ -62,15 +63,15 @@ export const Chapitre3Content: React.FC = () => {
         </p>
 
         {/* Original Document Images: CPU & GPU */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+        <div className="space-y-4 min-w-0 max-w-full">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/cpu-hardware-architecture.jpg"
                 alt="Architecture matérielle d'un processeur CPU"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 500px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">Le processeur central (CPU)</h3>
@@ -79,14 +80,14 @@ export const Chapitre3Content: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/gpu-nvidia-parallel-architecture.jpg"
                 alt="Architecture matérielle d'un processeur graphique GPU NVIDIA"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 500px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">Le processeur graphique (GPU)</h3>

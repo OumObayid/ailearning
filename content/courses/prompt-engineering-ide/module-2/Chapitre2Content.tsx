@@ -3,16 +3,17 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre2Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 2 — Instructions globales et instructions propres au projet
         </h1>
       </div>
@@ -142,15 +143,15 @@ export const Chapitre2Content: React.FC = () => {
           Une instruction propre au projet peut préciser ou enrichir une règle globale, mais <strong>ne doit jamais affaiblir silencieusement une interdiction de sécurité</strong>.
         </p>
 
-        <div className="rounded-2xl border-2 border-indigo-200 bg-slate-900 text-slate-100 p-6 font-mono text-sm space-y-2">
-          <p className="text-xs uppercase font-extrabold text-indigo-400">[RÈGLE D&apos;ARBITRAGE OBLIGATOIRE]</p>
-          <pre className="whitespace-pre-wrap text-slate-200">
-{`Si une consigne propre au projet ou un prompt ponctuel semble contredire une règle globale de sécurité ou d'autorisation :
+        <CodeBlock
+          filename="RÈGLE D'ARBITRAGE OBLIGATOIRE"
+          language="markdown"
+          wrap={true}
+          code={`Si une consigne propre au projet ou un prompt ponctuel semble contredire une règle globale de sécurité ou d'autorisation :
 1. Ne choisis pas arbitrairement l'option la plus permissive.
 2. Signale le conflit explicitement dans la conversation.
 3. Attends l'arbitrage écrit de l'utilisateur avant toute action.`}
-          </pre>
-        </div>
+        />
       </section>
 
       {/* 5. TP & Quiz */}

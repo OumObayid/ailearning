@@ -2,16 +2,17 @@
 
 import React from 'react';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre6Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 6 — Gestion des fichiers autorisés et interdits
         </h1>
       </div>
@@ -21,7 +22,7 @@ export const Chapitre6Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Fichiers autorisés, conditionnels et interdits
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <div className="p-5 rounded-2xl border-2 border-emerald-200 bg-white shadow-sm space-y-2">
             <span className="text-xs font-black uppercase text-emerald-700">A. Fichiers autorisés</span>
             <p className="text-xs font-mono text-slate-800">
@@ -77,15 +78,15 @@ export const Chapitre6Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. Bloc de règles pour les instructions principales
         </h2>
-        <div className="rounded-2xl border-2 border-slate-300 bg-slate-900 text-slate-100 p-6 font-mono text-sm space-y-2">
-          <p className="text-xs uppercase font-extrabold text-indigo-400">[GESTION DU SYSTÈME DE FICHIERS]</p>
-          <pre className="whitespace-pre-wrap text-slate-200">
-{`1. Périmètre : Travaille exclusivement dans le dossier du workspace ouvert. Ne remonte jamais aux dossiers parents.
+        <CodeBlock
+          filename="GESTION DU SYSTÈME DE FICHIERS"
+          language="markdown"
+          wrap={true}
+          code={`1. Périmètre : Travaille exclusivement dans le dossier du workspace ouvert. Ne remonte jamais aux dossiers parents.
 2. Documents : Analyse uniquement les documents explicitement attachés par l'utilisateur. Ne recherche aucun fichier personnel sur le disque.
 3. Secrets : Ne lis jamais les fichiers .env* ni les clés d'API sans demande explicite. Ne les reproduis jamais dans tes réponses.
 4. Fichiers inconnus : N'ouvre aucun fichier suspect découvert dans le projet sans en informer l'utilisateur.`}
-          </pre>
-        </div>
+        />
       </section>
 
       {/* 4. TP & Quiz */}

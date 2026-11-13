@@ -7,6 +7,7 @@ import { Icon } from '@/components/common/Icon';
 import { ModulePassedBadge } from '@/components/courses/ModulePassedBadge';
 import { CourseReadingProgressBar } from '@/components/courses/CourseReadingProgressBar';
 import { ModuleReadingProgressBar } from '@/components/courses/ModuleReadingProgressBar';
+import { CoursePassedBadge } from '@/components/courses/CoursePassedBadge';
 
 export const metadata = {
   title: 'Prompt Engineering pour les Agents IA dans les IDE — Programme du cours • AiLearning',
@@ -42,9 +43,12 @@ export default function PromptEngineeringIdeCoursePage() {
         />
       </div>
 
-      {/* Progression de lecture générale du cours */}
-      <div className="p-4 sm:p-5 rounded-3xl border-2 border-purple-200 bg-purple-50/70 shadow-sm">
-        <CourseReadingProgressBar courseId="prompt-engineering-ide" />
+      {/* Progression de lecture générale du cours & Certificat si tous modules validés */}
+      <div className="p-4 sm:p-5 rounded-3xl border-2 border-purple-200 bg-purple-50/70 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <CourseReadingProgressBar courseId="prompt-engineering-ide" />
+        </div>
+        <CoursePassedBadge courseId="prompt-engineering-ide" className="shrink-0" />
       </div>
 
       {/* 3. Une carte pour chaque module avec Titre, Petite description et Lien */}
@@ -52,7 +56,7 @@ export default function PromptEngineeringIdeCoursePage() {
         {modules.map((module) => (
           <div
             key={module.id}
-            className="flex flex-col justify-between rounded-2xl border-2 border-purple-200 bg-purple-50/80 hover:bg-purple-100/60 p-4 sm:p-6 shadow-sm hover:border-purple-400 hover:shadow-purple-500/10 hover:shadow-md transition space-y-4 min-w-0"
+            className="flex flex-col justify-between rounded-2xl border-2 border-purple-200 bg-purple-50/80 hover:bg-purple-100/60 p-4 sm:p-6 shadow-sm hover:border-purple-400 hover:shadow-purple-500/10 hover:shadow-md transition min-w-0"
           >
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -68,28 +72,31 @@ export default function PromptEngineeringIdeCoursePage() {
                   href={`/cours/prompt-engineering-ide/module-${module.order}`}
                   className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-purple-300/70 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-purple-950 hover:bg-purple-400/80 transition shadow-sm shrink-0 cursor-pointer"
                 >
-                  <span>Accéder au module</span>
+                  <span>Accéder</span>
                   <Icon name="arrow-right" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </Link>
               </div>
 
               <div className="space-y-2 min-w-0">
                 <h2
-                  className="text-lg sm:text-xl font-black text-slate-950 leading-snug truncate"
+                  className="text-lg sm:text-xl font-black text-slate-950 leading-snug min-h-[3rem] sm:min-h-[3.5rem] flex items-center"
                   title={module.title}
                 >
                   {module.title}
                 </h2>
 
-                <p className="text-sm sm:text-base font-medium text-slate-700 leading-relaxed">
+                <p
+                  className="text-sm sm:text-base font-medium text-slate-700 leading-relaxed min-h-[8.5rem] sm:min-h-[9.5rem]"
+                  title={module.description}
+                >
                   {module.description}
                 </p>
               </div>
+            </div>
 
-              {/* Progression de lecture du module */}
-              <div className="pt-2 border-t border-purple-200/80">
-                <ModuleReadingProgressBar courseId="prompt-engineering-ide" moduleId={module.order} />
-              </div>
+            {/* Progression de lecture du module — alignée au même niveau */}
+            <div className="pt-3 border-t border-purple-200/80 mt-4">
+              <ModuleReadingProgressBar courseId="prompt-engineering-ide" moduleId={module.order} />
             </div>
           </div>
         ))}

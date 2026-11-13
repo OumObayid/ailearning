@@ -3,16 +3,17 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre12Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 12 — TP 2.2 : Création et configuration dans Antigravity
         </h1>
       </div>
@@ -61,7 +62,7 @@ export const Chapitre12Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           2. Le cycle de vie d&apos;une mission d&apos;analyse
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-center">
+        <div className="grid gap-3 text-center grid-cols-1 sm:grid-cols-2">
           <div className="p-3.5 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-1">
             <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-900 font-black text-xs inline-flex items-center justify-center">1</span>
             <p className="text-xs font-black text-slate-950">Attente</p>
@@ -95,17 +96,20 @@ export const Chapitre12Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. Test de configuration initial à soumettre dans le chat
         </h2>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-6 space-y-2">
+        <div className="space-y-2">
           <p className="text-xs font-black uppercase text-indigo-700">Prompt de vérification d&apos;amorçage :</p>
-          <pre className="font-mono text-xs sm:text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap">
-{`Présente ta configuration actuelle :
+          <CodeBlock
+            filename="PROMPT DE VÉRIFICATION D'AMORÇAGE"
+            language="markdown"
+            wrap={true}
+            code={`Présente ta configuration actuelle :
 - Ton identité et ton rôle exact
 - Ta mission principale et tes responsabilités
 - Les documents auxquels tu es autorisé à accéder
 - Les actions nécessitant mon autorisation et celles qui te sont strictement interdites
 - La méthode suivie pour analyser un document et le format de ton rapport
 Ne réalise aucune opération sur les fichiers. Réponds uniquement à partir de tes instructions.`}
-          </pre>
+          />
         </div>
 
         <Callout type="tip" title="Critère de réussite du TP 2.2">

@@ -7,32 +7,37 @@ import { PracticalWork } from '@/components/courses/PracticalWork';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
 import { WorkerThreadsLab } from '@/components/interactive/WorkerThreadsLab';
+import { Icon } from '@/components/common/Icon';
 
 export const Chapitre2Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Concurrence &amp; Multithreading</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 2 — Web Workers et Worker Threads
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
+          Chapitre 2 — Web Workers (Frontend) et Worker Threads (Backend)
         </h1>
+        <p className="mt-2 text-sm sm:text-base font-medium text-slate-700 break-words [overflow-wrap:anywhere]">
+          Découvrir les threads d&apos;arrière-plan dans le navigateur avec React et sur le serveur avec Node.js pour préserver la fluidité de votre application.
+        </p>
       </div>
 
       {/* 1. Pourquoi des Workers ? */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           1. Pourquoi avons-nous besoin de Workers ?
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Lorsqu&apos;une application React ou une API Node.js exécute un traitement mathématique ou une analyse de plusieurs millions de lignes directement sur son thread principal, l&apos;expérience s&apos;effondre : l&apos;interface utilisateur gèle, les boutons ne répondent plus et le serveur ne peut plus traiter aucune requête :
         </p>
 
         {/* IMAGE 6 : Frozen UI vs Responsive UI */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/frozen-ui-vs-responsive-ui.jpeg"
@@ -42,24 +47,24 @@ export const Chapitre2Content: React.FC = () => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.6 — Impact d&apos;un Worker : à gauche, le thread principal saturé fige l&apos;UI ; à droite, le Worker traite la tâche en tâche de fond et garde l&apos;interface 100% fluide.
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
+            Figure 2.6 — Impact d&apos;un Worker : à gauche, le thread principal saturé fige l&apos;UI ; à droite, le Worker traite la tâche en arrière-plan et garde l&apos;interface 100% fluide.
           </p>
         </div>
       </section>
 
       {/* 2. Web Workers dans React */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           2. Les Web Workers : Les threads dans le navigateur (Frontend React)
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Un <strong>Web Worker</strong> s&apos;exécute dans un thread d&apos;arrière-plan isolé dans le navigateur. Il communique avec React via le passage de messages sérialisés (<code className="font-mono font-bold text-indigo-700">postMessage</code>) :
         </p>
 
         {/* IMAGE 7 : Web Workers Message Passing */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/web-workers-message-passing.jpeg"
@@ -69,30 +74,30 @@ export const Chapitre2Content: React.FC = () => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.7 — Communication asynchrone par messages entre le Main Thread (DOM, événements, rendu) et le Web Worker (calculs lourds).
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="space-y-4 min-w-0">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} src/workers/calculWorker.js</span>
-            <pre className="font-mono text-xs leading-relaxed text-indigo-100 overflow-x-auto">
-{`self.onmessage = (event) => {
+            <div className="font-mono text-xs leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`self.onmessage = (event) => {
   const nombre = event.data;
   let resultat = 0;
   for (let i = 0; i < nombre; i++) {
     resultat += i;
   }
   self.postMessage(resultat);
-};`}
-            </pre>
+};`}</pre>
+            </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-mono uppercase text-emerald-300 font-bold block mb-2">{'//'} src/App.jsx (React)</span>
-            <pre className="font-mono text-xs leading-relaxed text-emerald-100 overflow-x-auto">
-{`import { useState } from "react";
+            <div className="font-mono text-xs leading-relaxed text-emerald-100 overflow-x-auto">
+              <pre>{`import { useState } from "react";
 
 export default function App() {
   const [resultat, setResultat] = useState(null);
@@ -110,13 +115,13 @@ export default function App() {
   };
 
   return <button onClick={lancerCalcul}>Calculer</button>;
-}`}
-            </pre>
+}`}</pre>
+            </div>
           </div>
         </div>
 
         <Callout type="info" title="Règle d'or des Web Workers">
-          <p>
+          <p className="break-words [overflow-wrap:anywhere]">
             Un Web Worker <strong>n&apos;a aucun accès au DOM</strong> (pas de <code className="font-bold">window</code>, ni <code className="font-bold">document</code>). C&apos;est le composant React qui, recevant la réponse via <code className="font-bold">onmessage</code>, met à jour le state et déclenche le re-rendu de l&apos;interface.
           </p>
         </Callout>
@@ -126,17 +131,17 @@ export default function App() {
       <WorkerThreadsLab />
 
       {/* 3. Worker Threads dans Node.js */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           3. Les Worker Threads : Les threads dans Node.js (Backend)
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Côté serveur, Node.js propose le module natif <code className="font-mono font-bold bg-slate-200 px-1.5 py-0.5 rounded text-indigo-950">node:worker_threads</code>. Contrairement aux Web Workers, les Worker Threads ont accès au moteur d&apos;E/S de Node.js et peuvent exécuter des tâches CPU de fond en utilisant les capacités multi-cœurs du processeur :
         </p>
 
         {/* IMAGE 8 : Worker Threads Backend Server */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/worker-threads-backend-server.jpeg"
@@ -146,16 +151,16 @@ export default function App() {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.8 — Worker Threads côté serveur : exploitation directe des cœurs CPU pour traiter les calculs sans bloquer l&apos;Event Loop.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="space-y-4 min-w-0">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} calculWorker.js (Backend)</span>
-            <pre className="font-mono text-xs leading-relaxed text-indigo-100 overflow-x-auto">
-{`const { parentPort } = require("node:worker_threads");
+            <div className="font-mono text-xs leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`const { parentPort } = require("node:worker_threads");
 
 parentPort.on("message", (nombre) => {
   let resultat = 0;
@@ -163,14 +168,14 @@ parentPort.on("message", (nombre) => {
     resultat += i;
   }
   parentPort.postMessage(resultat);
-});`}
-            </pre>
+});`}</pre>
+            </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-mono uppercase text-emerald-300 font-bold block mb-2">{'//'} server.js (Main Thread)</span>
-            <pre className="font-mono text-xs leading-relaxed text-emerald-100 overflow-x-auto">
-{`const { Worker } = require("node:worker_threads");
+            <div className="font-mono text-xs leading-relaxed text-emerald-100 overflow-x-auto">
+              <pre>{`const { Worker } = require("node:worker_threads");
 
 console.log("Thread principal actif");
 const worker = new Worker("./calculWorker.js");
@@ -180,50 +185,78 @@ worker.on("message", (res) => {
   console.log("Résultat calculé :", res);
 });
 
-console.log("Le serveur continue de servir !");`}
-            </pre>
+console.log("Le serveur continue de servir !");`}</pre>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. Tableau comparatif */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      {/* 4. Tableau comparatif responsive avec wrapping */}
+      <section className="space-y-4 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           4. Tableau comparatif : Web Workers vs Worker Threads
         </h2>
 
-        <div className="overflow-x-auto rounded-2xl border-2 border-slate-300">
-          <table className="w-full text-left border-collapse text-sm sm:text-base">
+        {/* Desktop view : table-fixed guarantee 100% width with no overflow */}
+        <div className="hidden sm:block rounded-2xl border-2 border-slate-300 bg-white overflow-hidden min-w-0 max-w-full">
+          <table className="w-full table-fixed text-left border-collapse text-xs sm:text-sm">
+            <colgroup>
+              <col className="w-[28%]" />
+              <col className="w-[36%]" />
+              <col className="w-[36%]" />
+            </colgroup>
             <thead>
               <tr className="bg-slate-100 border-b-2 border-slate-300 text-slate-950 font-black">
-                <th className="p-3.5">Caractéristique</th>
-                <th className="p-3.5">Web Worker (Frontend)</th>
-                <th className="p-3.5">Worker Thread (Backend)</th>
+                <th className="p-3">Caractéristique</th>
+                <th className="p-3">Web Worker (Frontend)</th>
+                <th className="p-3">Worker Thread (Backend)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 font-semibold text-slate-900 bg-white">
+            <tbody className="divide-y divide-slate-200 font-semibold text-slate-900">
               <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Environnement</td>
-                <td className="p-3.5">Navigateur web (Chromium, Firefox, Safari)</td>
-                <td className="p-3.5">Runtime Node.js (Serveur)</td>
+                <td className="p-3 font-bold text-indigo-700 align-top break-words [overflow-wrap:anywhere]">Environnement</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Navigateur web (Chromium, Firefox, Safari)</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Runtime Node.js (Serveur)</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Canal de réception</td>
-                <td className="p-3.5"><code className="font-mono bg-slate-100 px-1 py-0.5 rounded">self.onmessage</code></td>
-                <td className="p-3.5"><code className="font-mono bg-slate-100 px-1 py-0.5 rounded">parentPort.on(&apos;message&apos;)</code></td>
+                <td className="p-3 font-bold text-indigo-700 align-top break-words [overflow-wrap:anywhere]">Canal de réception</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]"><code className="font-mono bg-slate-100 px-1 py-0.5 rounded break-all inline-block">self.onmessage</code></td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]"><code className="font-mono bg-slate-100 px-1 py-0.5 rounded break-all inline-block">parentPort.on(&apos;message&apos;)</code></td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Accès aux modules système</td>
-                <td className="p-3.5">Non (sandbox navigateur)</td>
-                <td className="p-3.5">Oui (<code className="font-mono">fs</code>, <code className="font-mono">crypto</code>, <code className="font-mono">mysql</code>...)</td>
+                <td className="p-3 font-bold text-indigo-700 align-top break-words [overflow-wrap:anywhere]">Modules système</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Non (environnement sandboxé)</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Oui (<code className="font-mono text-xs">fs</code>, <code className="font-mono text-xs">crypto</code>, <code className="font-mono text-xs">mysql</code>...)</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-indigo-700">Accès au DOM</td>
-                <td className="p-3.5">Non (interdit)</td>
-                <td className="p-3.5">Non (inapplicable côté serveur)</td>
+                <td className="p-3 font-bold text-indigo-700 align-top break-words [overflow-wrap:anywhere]">Accès au DOM</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Non (interdit pour sécurité de thread)</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Non (inapplicable côté serveur)</td>
               </tr>
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile cards view (max 2 cards per line) */}
+        <div className="sm:hidden grid grid-cols-1 gap-3 min-w-0">
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 space-y-2.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="font-black text-indigo-700 text-sm block">Web Worker (Frontend)</span>
+            <ul className="text-xs text-slate-800 space-y-1.5 font-medium">
+              <li><strong>Environnement :</strong> Navigateur web (Chromium, Firefox, Safari)</li>
+              <li><strong>Canal :</strong> <code className="font-mono bg-slate-100 px-1 py-0.5 rounded break-all">self.onmessage</code></li>
+              <li><strong>Modules système :</strong> Non (sandboxé)</li>
+              <li><strong>Accès DOM :</strong> Non (interdit)</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 space-y-2.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="font-black text-indigo-700 text-sm block">Worker Thread (Backend)</span>
+            <ul className="text-xs text-slate-800 space-y-1.5 font-medium">
+              <li><strong>Environnement :</strong> Runtime Node.js (Serveur)</li>
+              <li><strong>Canal :</strong> <code className="font-mono bg-slate-100 px-1 py-0.5 rounded break-all">parentPort.on(&apos;message&apos;)</code></li>
+              <li><strong>Modules système :</strong> Oui (fs, crypto, mysql...)</li>
+              <li><strong>Accès DOM :</strong> Non (inapplicable côté serveur)</li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -237,11 +270,11 @@ console.log("Le serveur continue de servir !");`}
           "Tester l'appel simultané de /calcul et /bonjour dans deux onglets"
         ]}
       >
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="space-y-4 min-w-0">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} server.js</span>
-            <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const express = require("express");
+            <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`const express = require("express");
 const { Worker } = require("node:worker_threads");
 const app = express();
 
@@ -259,15 +292,15 @@ app.get("/bonjour", (req, res) => {
   res.send("Bonjour ! Le serveur reste 100% disponible.");
 });
 
-app.listen(3000, () => console.log("Serveur démarré sur :3000"));`}
-            </pre>
+app.listen(3000, () => console.log("Serveur démarré sur :3000"));`}</pre>
+            </div>
           </div>
         </div>
       </PracticalWork>
 
       {/* 6. Exercices interactifs */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           6. Exercices de validation des connaissances
         </h2>
 
@@ -322,4 +355,3 @@ app.listen(3000, () => console.log("Serveur démarré sur :3000"));`}
     </div>
   );
 };
-

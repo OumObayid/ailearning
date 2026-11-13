@@ -232,17 +232,17 @@ export const RealtimeProtocolsLab: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Tokens reçus</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Tokens reçus</span>
               <p className="text-2xl font-black text-slate-950">{streamStats.tokens}</p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Caractères décodés</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Caractères décodés</span>
               <p className="text-2xl font-black text-slate-950">{streamStats.chars}</p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Débit & Vitesse</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Débit & Vitesse</span>
               <p className="text-2xl font-black text-emerald-800">
                 {streamStats.durationMs > 0
                   ? `${Math.round((streamStats.tokens / (streamStats.durationMs / 1000)) || 0)} tok/s`

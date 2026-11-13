@@ -6,44 +6,44 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Prompt, instruction, contexte et commande
         </h1>
       </div>
 
       {/* 1. Le Prompt */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Le Prompt
         </h2>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
           Un <strong>prompt</strong> est une entrée transmise à un modèle d&apos;intelligence artificielle pour orienter sa réponse ou son comportement. Il indique globalement ce que l&apos;on attend du modèle.
         </p>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5">
+        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5 min-w-0 max-w-full overflow-hidden">
           <p className="text-xs uppercase font-extrabold text-indigo-700 tracking-wider mb-2">Exemple de prompt direct :</p>
-          <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900">
+          <pre className="font-mono text-xs sm:text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full overflow-x-auto">
             Explique-moi le fonctionnement de Node.js avec un exemple simple.
           </pre>
         </div>
       </section>
 
       {/* 2. L'instruction */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           2. L&apos;instruction
         </h2>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
           Une <strong>instruction</strong> est une consigne qui définit précisément ce que l&apos;IA doit faire ou respecter. Elle encadre le comportement, la méthode et le format de la réponse.
         </p>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5">
+        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5 min-w-0 max-w-full overflow-hidden">
           <p className="text-xs uppercase font-extrabold text-indigo-700 tracking-wider mb-2">Exemple d&apos;instruction encadrée :</p>
-          <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap">
+          <pre className="font-mono text-xs sm:text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full overflow-x-auto">
 {`Tu es un développeur Node.js expérimenté.
 Explique le fonctionnement de Node.js.
 Utilise un langage accessible.
@@ -57,16 +57,16 @@ Ne dépasse pas 15 lignes.`}
       </section>
 
       {/* 3. Le contexte */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. Le contexte
         </h2>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
           Le <strong>contexte</strong> fournit les informations indispensables pour comprendre une demande et orienter la réponse vers la réalité technique du projet.
         </p>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5">
+        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5 min-w-0 max-w-full overflow-hidden">
           <p className="text-xs uppercase font-extrabold text-indigo-700 tracking-wider mb-2">Exemple de contexte technique :</p>
-          <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap">
+          <pre className="font-mono text-xs sm:text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full overflow-x-auto">
 {`Contexte :
 Je développe une API REST avec Node.js et Express.js.
 Je suis actuellement en train de créer un endpoint de génération IA avec Gemini.`}
@@ -78,16 +78,16 @@ Je suis actuellement en train de créer un endpoint de génération IA avec Gemi
       </section>
 
       {/* 4. La commande */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. La commande
         </h2>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
           Une <strong>commande</strong> est une demande d&apos;exécution d&apos;une action précise et opérationnelle.
         </p>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5">
+        <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-5 min-w-0 max-w-full overflow-hidden">
           <p className="text-xs uppercase font-extrabold text-indigo-700 tracking-wider mb-2">Exemple de commande d&apos;opération :</p>
-          <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap">
+          <pre className="font-mono text-xs sm:text-sm bg-white p-4 rounded-xl border border-slate-200 text-slate-900 whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full overflow-x-auto">
 {`Analyse le fichier server.js.
 Identifie les erreurs potentielles.
 Ne modifie aucun fichier.

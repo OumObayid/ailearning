@@ -197,7 +197,9 @@ export class ProgressionService {
             ? `backend-ia-module-${modOrder}`
             : ex.course_id === 'debugging'
               ? `debugging-module-${modOrder}`
-              : `module-${modOrder}`;
+              : ex.course_id === 'orchestration-agents-ide'
+                ? `orchestration-agents-module-${modOrder}`
+                : `module-${modOrder}`;
       const modInfo = CourseService.getModuleById(internalId);
 
       return {

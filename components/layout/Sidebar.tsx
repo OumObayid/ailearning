@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { APP_NAME } from '@/lib/constants';
 import { Icon, IconName } from '@/components/common/Icon';
@@ -104,28 +105,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div>
         <div
           className={cn(
-            'flex h-18 items-center border-b border-slate-200/80 transition-all',
-            isCollapsed && !isMobileOpen ? 'justify-center px-2' : 'justify-between px-5'
+            'flex h-20 items-center border-b border-slate-200/80 transition-all',
+            isCollapsed && !isMobileOpen ? 'justify-center px-2' : 'justify-between px-4 sm:px-5'
           )}
         >
-          {/* Logo masqué lorsque la barre latérale est repliée */}
+          {/* Logo officiel au-dessus de la sidebar */}
           {(!isCollapsed || isMobileOpen) && (
             <Link
               href="/"
               onClick={handleLinkClick}
-              className="flex items-center gap-3.5 overflow-hidden focus:outline-none"
+              className="flex items-center overflow-hidden focus:outline-none py-1.5 group"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white font-black text-lg shadow-sm ring-2 ring-indigo-500/20">
-                AI
-              </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-slate-900 tracking-tight leading-none text-lg">
-                  {APP_NAME}
-                </span>
-                <span className="text-sm font-semibold text-slate-600 mt-1">
-                  Formation IA
-                </span>
-              </div>
+              <Image
+                src="/images/logo.png"
+                alt={APP_NAME}
+                width={190}
+                height={63}
+                priority
+                className="h-12 sm:h-13 w-auto object-contain transition-transform group-hover:scale-105"
+              />
             </Link>
           )}
 
@@ -134,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             onClick={onToggleCollapse}
             className={cn(
-              'hidden lg:flex items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer active:scale-95',
+              'hidden lg:flex items-center justify-center mt-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer active:scale-95',
               isCollapsed && !isMobileOpen
                 ? 'h-10 w-10 bg-slate-50 border border-slate-200/80 shadow-xs'
                 : 'h-9 w-9 hover:bg-slate-100'
@@ -144,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <Icon
               name={isCollapsed ? 'chevron-right' : 'chevron-left'}
-              className="w-4 h-4 text-slate-600 hover:text-slate-900"
+              className="w-4 h-4  text-slate-600 hover:text-slate-900"
               strokeWidth="1.5"
             />
           </button>
@@ -153,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={onCloseMobile}
-            className="flex lg:hidden h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition"
+            className="flex lg:hidden  h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition"
             aria-label="Fermer le menu"
           >
             <Icon name="x" className="w-5 h-5" />

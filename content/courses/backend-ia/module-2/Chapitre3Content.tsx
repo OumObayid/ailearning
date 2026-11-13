@@ -6,43 +6,49 @@ import { Callout } from '@/components/courses/Callout';
 import { PracticalWork } from '@/components/courses/PracticalWork';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
+import { Icon } from '@/components/common/Icon';
 
 export const Chapitre3Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Concurrence &amp; Multithreading</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 3 — Communication entre threads —— messages et données
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
+          Chapitre 3 — Communication entre threads : messages et données
         </h1>
+        <p className="mt-2 text-sm sm:text-base font-medium text-slate-700 break-words [overflow-wrap:anywhere]">
+          Maîtriser le passage de messages, l&apos;algorithme Structured Clone et le transfert d&apos;ArrayBuffer sans duplication mémoire.
+        </p>
       </div>
 
       {/* 1. Comprendre la communication */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           1. Canaux de communication entre le Parent et le Worker
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Chaque thread dispose de son propre contexte d&apos;exécution. Pour échanger des données, ils s&apos;appuient sur un canal bidirectionnel symétrique :
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 space-y-2">
+        {/* Max 2 cartes par ligne */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 space-y-2 break-words [overflow-wrap:anywhere] min-w-0 shadow-sm">
             <span className="text-xs font-black uppercase text-indigo-700">Du Parent vers le Worker</span>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">worker.postMessage(data)</h3>
-            <p className="text-sm font-semibold text-slate-800 leading-relaxed">
+            <h3 className="text-base font-bold text-slate-900">worker.postMessage(data)</h3>
+            <p className="text-xs sm:text-sm font-semibold text-slate-800 leading-relaxed">
               Le thread principal émet des données reçues côté Worker via <code className="font-mono font-bold bg-slate-100 px-1 py-0.5 rounded">parentPort.on(&apos;message&apos;, data =&gt; ...)</code>.
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-5 space-y-2">
+          <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-5 space-y-2 break-words [overflow-wrap:anywhere] min-w-0 shadow-sm">
             <span className="text-xs font-black uppercase text-indigo-950">Du Worker vers le Parent</span>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">parentPort.postMessage(result)</h3>
-            <p className="text-sm font-semibold text-slate-800 leading-relaxed">
+            <h3 className="text-base font-bold text-slate-900">parentPort.postMessage(result)</h3>
+            <p className="text-xs sm:text-sm font-semibold text-slate-800 leading-relaxed">
               Le Worker renvoie son calcul, capté côté parent par <code className="font-mono font-bold bg-white px-1 py-0.5 rounded border border-indigo-200">worker.on(&apos;message&apos;, result =&gt; ...)</code>.
             </p>
           </div>
@@ -50,19 +56,19 @@ export const Chapitre3Content: React.FC = () => {
       </section>
 
       {/* 2. Structured Clone Algorithm */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           2. L&apos;algorithme de clonage structuré (Structured Clone)
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Par défaut, lorsque vous passez un objet JavaScript dans <code className="font-mono font-bold bg-slate-200 px-1.5 py-0.5 rounded text-indigo-950">postMessage()</code>, Node.js ne passe <strong>pas</strong> la référence de l&apos;objet original en mémoire : il en crée une copie profonde intégrale.
         </p>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
           <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} Démonstration de l&apos;indépendance des copies</span>
-          <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const utilisateur = { nom: "Ahmed", age: 25 };
+          <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+            <pre>{`const utilisateur = { nom: "Ahmed", age: 25 };
 
 worker.postMessage(utilisateur);
 
@@ -70,29 +76,29 @@ worker.postMessage(utilisateur);
 utilisateur.age = 40;
 
 // Le Worker recevra quand même { nom: "Ahmed", age: 25 } !
-// Car les deux objets vivent désormais dans des mémoires séparées.`}
-          </pre>
+// Car les deux objets vivent désormais dans des mémoires séparées.`}</pre>
+          </div>
         </div>
 
         <Callout type="warning" title="Ce qui est interdit au clonage structuré">
-          <p>
-            Vous ne pouvez <strong>pas transmettre de fonctions</strong>, de méthodes de classe ou d&apos;instances avec des prototypes personnalisés. L&apos;envoi d&apos;un objet contenant une fonction lèvera une erreur système <code className="font-bold">DOMException / DataCloneError</code>. Ne transmettez que des données pures (JSON, primitives, buffers).
+          <p className="break-words [overflow-wrap:anywhere]">
+            Vous ne pouvez <strong>pas transmettre de fonctions</strong>, de méthodes de classe ou d&apos;instances avec des prototypes personnalisés. L&apos;envoi d&apos;un objet contenant une fonction lèvera une erreur système <code className="font-bold">DOMException / DataCloneError</code>. Ne transmettez que des données sérialisables (JSON, primitives, typed buffers).
           </p>
         </Callout>
       </section>
 
       {/* 3. Copier vs Transférer */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           3. Copier ou transférer des données ? (ArrayBuffer Transfer)
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Pour des données de plusieurs dizaines de mégaoctets (ex: image haute définition, audio ou fichier vectoriel pour un modèle d&apos;IA), cloner la mémoire prend du temps et double la RAM consommée. La solution consiste à <strong>transférer la propriété du buffer</strong> :
         </p>
 
         {/* IMAGE 9 : Transfer ownership ArrayBuffer */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/transfer-ownership-arraybuffer.jpeg"
@@ -102,37 +108,37 @@ utilisateur.age = 40;
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.9 — Mécanisme de transfert : la propriété du bloc binaire est déplacée vers le Worker récepteur. L&apos;original dans le parent est immédiatement « détaché » (byteLength = 0).
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
           <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} Syntaxe du transfert (second argument sous forme de tableau)</span>
-          <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const buffer = new ArrayBuffer(1024); // 1 Ko de mémoire binaire
+          <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+            <pre>{`const buffer = new ArrayBuffer(1024); // 1 Ko de mémoire binaire
 console.log("Taille avant transfert :", buffer.byteLength); // 1024
 
-// On passe le buffer en second argument pour signaler le transfert :
+// On passe le buffer en second argument pour signaler le transfert sans copie :
 worker.postMessage(buffer, [buffer]);
 
-console.log("Taille après transfert :", buffer.byteLength); // 0 (Détaché !)`}
-          </pre>
+console.log("Taille après transfert :", buffer.byteLength); // 0 (Détaché !)`}</pre>
+          </div>
         </div>
       </section>
 
       {/* 4. Mémoire partagée (SharedArrayBuffer) */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           4. La mémoire partagée : SharedArrayBuffer
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Au lieu de copier ou de perdre l&apos;accès par transfert, <code className="font-mono font-bold text-indigo-700">SharedArrayBuffer</code> alloue une zone mémoire commune visible simultanément par le thread principal et tous les Workers :
         </p>
 
         {/* IMAGE 10 : SharedArrayBuffer Shared Memory */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/shared-memory-sharedarraybuffer.jpeg"
@@ -142,7 +148,7 @@ console.log("Taille après transfert :", buffer.byteLength); // 0 (Détaché !)`
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.10 — SharedArrayBuffer : les deux threads lisent et écrivent directement sur la même zone physique sans aucun transfert de message.
           </p>
         </div>
@@ -158,11 +164,11 @@ console.log("Taille après transfert :", buffer.byteLength); // 0 (Détaché !)`
           "Gérer proprement la fin du Worker et les erreurs potentielles"
         ]}
       >
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="space-y-4 min-w-0">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} analyseWorker.js</span>
-            <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const { parentPort } = require("node:worker_threads");
+            <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`const { parentPort } = require("node:worker_threads");
 
 parentPort.on("message", (texte) => {
   const nombreCaracteres = texte.length;
@@ -174,15 +180,15 @@ parentPort.on("message", (texte) => {
     nombreMots,
     majuscules: texte.toUpperCase()
   });
-});`}
-            </pre>
+});`}</pre>
+            </div>
           </div>
         </div>
       </PracticalWork>
 
       {/* 6. Exercices interactifs */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           6. Exercices de validation des acquis
         </h2>
 
@@ -237,4 +243,3 @@ parentPort.on("message", (texte) => {
     </div>
   );
 };
-

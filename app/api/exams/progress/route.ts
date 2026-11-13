@@ -61,6 +61,15 @@ export async function GET() {
       }
     });
 
+    // Détail des scores par module pour identifier les badges (Royal vs Réussite)
+    const moduleScores: Record<string, Record<string, number>> = {};
+    rows.forEach((r) => {
+      if (!moduleScores[r.course_id]) {
+        moduleScores[r.course_id] = {};
+      }
+      moduleScores[r.course_id][r.module_id] = Number(r.best_score);
+    });
+
     // Calcul des cours entièrement réussis (tous les modules validés)
     const passedCourses: string[] = [];
 
@@ -76,6 +85,7 @@ export async function GET() {
       userId: session.userId,
       passedModules,
       passedCourses,
+      moduleScores,
     });
   } catch (error) {
     console.error('Erreur récupération progression examens:', error);

@@ -7,33 +7,39 @@ import { PracticalWork } from '@/components/courses/PracticalWork';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
 import { WorkerThreadsLab } from '@/components/interactive/WorkerThreadsLab';
+import { Icon } from '@/components/common/Icon';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Concurrence &amp; Multithreading</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Traitements CPU intensifs et optimisation des performances
         </h1>
+        <p className="mt-2 text-sm sm:text-base font-medium text-slate-700 break-words [overflow-wrap:anywhere]">
+          Mesurer scientifiquement le retard de l&apos;Event Loop et concevoir un Worker Pool industriel adapté aux processeurs multi-cœurs.
+        </p>
       </div>
 
       {/* 1. CPU-bound vs I/O-bound */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           1. Distinguer les traitements CPU-bound et I/O-bound
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Avant de dégainer des Workers, il est capital d&apos;analyser la nature réelle du traitement :
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Max 2 cartes par ligne */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
           {/* Card 1 : CPU-bound */}
-          <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-4">
+          <div className="rounded-3xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3 break-words [overflow-wrap:anywhere] min-w-0">
             <div className="relative mx-auto overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
               <Image
                 src="/images/cours/backend-ia/module-2/cpu-bound-intensive-chip.jpeg"
@@ -43,14 +49,14 @@ export const Chapitre5Content: React.FC = () => {
                 className="h-auto w-full object-contain"
               />
             </div>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">CPU-Bound (Limité par le calcul)</h3>
-            <p className="text-sm font-medium text-slate-800 leading-relaxed">
-              Le programme passe 100% de son temps à faire tourner des calculs sur les transistors du processeur : cryptographie, compression, calculs matriciels, rendu 3D. <strong>Nécessite des Worker Threads</strong>.
+            <h3 className="text-base font-bold text-slate-900">CPU-Bound (Limité par le calcul)</h3>
+            <p className="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed">
+              Le programme sature le processeur : cryptographie, compression, calculs matriciels, vectorisation locale. <strong>Nécessite des Worker Threads</strong>.
             </p>
           </div>
 
           {/* Card 2 : I/O-bound */}
-          <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-4">
+          <div className="rounded-3xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3 break-words [overflow-wrap:anywhere] min-w-0">
             <div className="relative mx-auto overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
               <Image
                 src="/images/cours/backend-ia/module-2/io-bound-web-server-network.jpeg"
@@ -60,8 +66,8 @@ export const Chapitre5Content: React.FC = () => {
                 className="h-auto w-full object-contain"
               />
             </div>
-            <h3 className="text-sm sm:text-base font-bold text-slate-900">I/O-Bound (Limité par les entrées/sorties)</h3>
-            <p className="text-sm font-medium text-slate-800 leading-relaxed">
+            <h3 className="text-base font-bold text-slate-900">I/O-Bound (Limité par les entrées/sorties)</h3>
+            <p className="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed">
               Le programme attend le réseau ou le disque : appel API Gemini, requête MySQL, lecture de fichier. <strong>Géré nativement par l&apos;Event Loop sans Worker</strong>.
             </p>
           </div>
@@ -69,17 +75,17 @@ export const Chapitre5Content: React.FC = () => {
       </section>
 
       {/* 2. Pourquoi un calcul lourd bloque-t-il Node.js ? */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           2. Comment un calcul lourd paralyse l&apos;Event Loop
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Toutes les requêtes HTTP entrantes passent par une file d&apos;événements unique. Lorsqu&apos;une requête déclenche une boucle synchrone, aucune autre requête ne peut être dépilée :
         </p>
 
         {/* IMAGE 16 : Event loop blocking queue */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/event-loop-blocking-queue.png"
@@ -89,26 +95,26 @@ export const Chapitre5Content: React.FC = () => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.14 — Blocage en chaîne : l&apos;opération synchrone monopolise la roue de l&apos;Event Loop, empêchant le traitement des requêtes légères en attente dans l&apos;Event Queue.
           </p>
         </div>
       </section>
 
       {/* 3. Métrologie avancée : monitorEventLoopDelay */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           3. Mesurer scientifiquement le retard de l&apos;Event Loop
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Node.js fournit l&apos;outil d&apos;observabilité officiel <code className="font-mono font-bold bg-slate-200 px-1.5 py-0.5 rounded text-indigo-950">monitorEventLoopDelay()</code> dans le module natif <code className="font-mono">node:perf_hooks</code> :
         </p>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
           <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} Mesure en continu des retards de l&apos;Event Loop</span>
-          <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const { monitorEventLoopDelay } = require("node:perf_hooks");
+          <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+            <pre>{`const { monitorEventLoopDelay } = require("node:perf_hooks");
 
 const histogram = monitorEventLoopDelay({ resolution: 20 });
 histogram.enable();
@@ -120,12 +126,12 @@ setInterval(() => {
 
   console.log(\`Retard moyen Event Loop : \${retardMoyen} ms | Max : \${retardMax} ms\`);
   histogram.reset();
-}, 5000);`}
-          </pre>
+}, 5000);`}</pre>
+          </div>
         </div>
 
         <Callout type="tip" title="Interprétation des métriques">
-          <p>
+          <p className="break-words [overflow-wrap:anywhere]">
             Sur un serveur sain et fluide, le retard moyen doit être proche de <strong>0 à 2 ms</strong>. Si vos métriques grimpent à 500 ms ou 5 000 ms, vous avez un blocage CPU synchrone ou une surcharge sévère.
           </p>
         </Callout>
@@ -135,17 +141,17 @@ setInterval(() => {
       <WorkerThreadsLab />
 
       {/* 4. Pourquoi limiter le nombre de Workers ? */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           4. Combien de Workers créer ? (Le piège de la sur-allocation)
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Créer 50 ou 100 Workers sur une machine à 4 cœurs dégrade dramatiquement les performances en raison du coût de changement de contexte (*context switching*) :
         </p>
 
         {/* IMAGE 17 : Worker pool optimal cores */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/worker-pool-optimal-cores.jpeg"
@@ -155,24 +161,24 @@ setInterval(() => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.15 — Allocation optimale contre congestion : la formule recommandée est <code className="font-bold">Math.max(1, os.availableParallelism() - 1)</code> pour réserver un cœur au thread principal.
           </p>
         </div>
       </section>
 
       {/* 5. Le Worker Pool : Architecture professionnelle */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           5. L&apos;architecture industrielle : Le Worker Pool
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Au lieu d&apos;instancier un Worker pour chaque requête (très coûteux en RAM et CPU), le <strong>Worker Pool</strong> pré-alloue un nombre fixe de Workers réutilisables avec une file d&apos;attente :
         </p>
 
         {/* IMAGE 18 : Worker Pool Architecture */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/nodejs-thread-pool-architecture.jpeg"
@@ -182,8 +188,8 @@ setInterval(() => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.16 — Architecture du Worker Pool : le Worker Manager distribue les tâches entrantes aux Workers inactifs et file les requêtes excédentaires.
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
+            Figure 2.16 — Architecture du Worker Pool : le Worker Manager distribue les tâches entrantes aux Workers inactifs et gère la file d&apos;attente.
           </p>
         </div>
       </section>
@@ -198,11 +204,11 @@ setInterval(() => {
           "Valider la résilience sous un flux de 20 requêtes simultanées"
         ]}
       >
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
-            <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} workerPool.js (Architecture simplifiée)</span>
-            <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const { Worker } = require("node:worker_threads");
+        <div className="space-y-4 min-w-0">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} workerPool.js (Architecture complète réutilisable)</span>
+            <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`const { Worker } = require("node:worker_threads");
 
 class WorkerPool {
   constructor(size, workerPath) {
@@ -217,7 +223,7 @@ class WorkerPool {
         const task = slot.task;
         slot.task = null;
         slot.free = true;
-        task.resolve(res);
+        if (task) task.resolve(res);
         this.dispatch();
       });
 
@@ -243,15 +249,15 @@ class WorkerPool {
   }
 }
 
-module.exports = WorkerPool;`}
-            </pre>
+module.exports = WorkerPool;`}</pre>
+            </div>
           </div>
         </div>
       </PracticalWork>
 
       {/* 7. Exercices interactifs & Évaluation finale */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           7. Évaluation finale de validation du Module 2
         </h2>
 
@@ -307,4 +313,3 @@ module.exports = WorkerPool;`}
     </div>
   );
 };
-

@@ -9,7 +9,7 @@ export interface ChapterCardProps {
   href: string;
   duration?: string;
   description?: string;
-  theme?: 'blue' | 'amber' | 'purple' | 'emerald' | 'lime';
+  theme?: 'blue' | 'amber' | 'purple' | 'emerald' | 'lime' | 'indigo';
 }
 
 interface ChapterThemeStyle {
@@ -98,6 +98,20 @@ const THEME_STYLES: Record<string, ChapterThemeStyle> = {
     durationBadge: 'bg-white/95 text-lime-950 border-lime-200',
     pulseDot: 'bg-lime-600',
   },
+  indigo: {
+    cardBg: 'bg-indigo-50/80 hover:bg-indigo-100/60',
+    cardBorder: 'border-indigo-200',
+    hoverBorder: 'hover:border-indigo-400 hover:shadow-indigo-500/10 hover:shadow-md',
+    badgeBg: 'bg-indigo-400 text-indigo-950 font-black',
+    labelColor: 'text-indigo-800',
+    titleHover: 'group-hover:text-indigo-800',
+    buttonBg: 'bg-indigo-300/70',
+    buttonHover: 'hover:bg-indigo-400/80',
+    buttonText: 'text-indigo-950 font-bold',
+    chapterBadge: 'bg-indigo-100/90 text-indigo-950 border-indigo-200',
+    durationBadge: 'bg-white/95 text-indigo-950 border-indigo-200',
+    pulseDot: 'bg-indigo-600',
+  },
 };
 
 const cleanTitle = (rawTitle: string): string => {
@@ -121,20 +135,20 @@ export const ChapterCard: React.FC<ChapterCardProps> = ({
   return (
     <div
       className={cn(
-        'group relative flex flex-col rounded-3xl border-2 p-5 sm:p-6 shadow-sm transition-all duration-200',
+        'group relative flex flex-col rounded-3xl border-2 p-5 sm:p-6 shadow-sm transition-all duration-200 min-w-0 max-w-full overflow-hidden',
         t.cardBorder,
         t.cardBg,
         t.hoverBorder
       )}
     >
-      <div className="space-y-3">
+      <div className="space-y-3 min-w-0">
         {/* En-tête : Badges à gauche & Bouton d'action à droite */}
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+          <div className="flex items-center gap-2.5 flex-wrap min-w-0">
             {/* Badge Chapitre avec son numéro */}
             <span
               className={cn(
-                'inline-flex items-center text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full border shadow-2xs',
+                'inline-flex items-center text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full border shadow-2xs whitespace-normal break-words',
                 t.chapterBadge
               )}
             >
@@ -145,7 +159,7 @@ export const ChapterCard: React.FC<ChapterCardProps> = ({
             {duration && (
               <span
                 className={cn(
-                  'inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border shadow-2xs',
+                  'inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border shadow-2xs whitespace-normal break-words',
                   t.durationBadge
                 )}
               >
@@ -170,21 +184,21 @@ export const ChapterCard: React.FC<ChapterCardProps> = ({
           </Link>
         </div>
 
-        {/* Titre et description en pleine largeur */}
-        <div className="space-y-1.5 pt-1">
+        {/* Titre et description en pleine largeur avec wrapping garanti */}
+        <div className="space-y-1.5 pt-1 min-w-0">
           <h3
             className={cn(
-              'text-lg sm:text-xl font-black text-slate-950 leading-snug tracking-tight transition-colors',
+              'text-lg sm:text-xl font-black text-slate-950 leading-snug tracking-tight transition-colors whitespace-normal break-words [overflow-wrap:anywhere]',
               t.titleHover
             )}
           >
-            <Link href={href} className="hover:underline focus:outline-none">
+            <Link href={href} className="hover:underline focus:outline-none break-words [overflow-wrap:anywhere]">
               {displayTitle}
             </Link>
           </h3>
 
           {description && (
-            <p className="text-sm sm:text-base font-normal sm:font-medium text-slate-700 leading-relaxed line-clamp-2">
+            <p className="text-sm sm:text-base font-normal sm:font-medium text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
               {description}
             </p>
           )}

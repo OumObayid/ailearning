@@ -6,13 +6,13 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 export const Chapitre7Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 7 — Gestion des contradictions
         </h1>
       </div>
@@ -25,9 +25,9 @@ export const Chapitre7Content: React.FC = () => {
         <p className="text-base sm:text-lg text-slate-900 font-medium">
           Une <strong>contradiction</strong> apparaît lorsque deux instructions imposent à l&apos;agent des actions incompatibles ou des exigences qu&apos;il est logiquement ou techniquement impossible de satisfaire simultanément.
         </p>
-        <div className="p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/50 space-y-2">
+        <div className="p-4 sm:p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/50 space-y-2 min-w-0 max-w-full overflow-hidden">
           <span className="text-xs font-black uppercase text-rose-700">Exemple de conflit direct :</span>
-          <pre className="font-mono text-sm bg-white p-3 rounded-xl border border-rose-300 text-slate-900 whitespace-pre-wrap">
+          <pre className="font-mono text-xs sm:text-sm bg-white p-3 rounded-xl border border-rose-300 text-slate-900 whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full overflow-x-auto">
 {`Instruction A : « Ne modifie aucun fichier du projet. »
 Instruction B : « Corrige directement les erreurs dans le fichier server.js. »`}
           </pre>
@@ -119,7 +119,7 @@ Instruction B : « Corrige directement les erreurs dans le fichier server.js. »
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. Le protocole de résolution en cas de conflit
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
+        <div className="grid gap-3 text-center grid-cols-1 sm:grid-cols-2">
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
             <p className="text-xs font-black text-indigo-700 uppercase">1. Détecter</p>
             <p className="text-xs text-slate-600 mt-1">Repérer les exigences incompatibles</p>

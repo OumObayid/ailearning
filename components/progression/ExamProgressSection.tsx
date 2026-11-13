@@ -48,13 +48,13 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* 1. Grille d'évaluation par cursus */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
           <div>
-            <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
-              <Icon name="academic-cap" className="w-5 h-5 text-emerald-600" />
+            <h3 className="text-base sm:text-lg font-black text-slate-950 flex items-center gap-2">
+              <Icon name="academic-cap" className="w-4 h-4 text-emerald-600" />
               <span>Évaluations &amp; Certifications par formation</span>
             </h3>
             <p className="text-xs text-slate-600 font-medium">
@@ -63,7 +63,7 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
           {courses.map((course) => {
             const isFullPass = course.passedCount === course.modulesCount && course.modulesCount > 0;
 
@@ -71,25 +71,25 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
               <div
                 key={course.id}
                 className={cn(
-                  'rounded-3xl border-2 p-5 bg-white shadow-xs space-y-4',
+                  'rounded-2xl border-2 p-3.5 sm:p-4 bg-white shadow-2xs space-y-3',
                   isFullPass ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200'
                 )}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1 min-w-0">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-black bg-slate-100 text-slate-800 border border-slate-200">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="space-y-0.5 min-w-0">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-black bg-slate-100 text-slate-800 border border-slate-200">
                       <span>{course.modulesCount} modules au total</span>
                     </span>
-                    <h4 className="text-base font-black text-slate-950 truncate" title={course.title}>
+                    <h4 className="text-sm sm:text-base font-black text-slate-950 truncate" title={course.title}>
                       {course.title}
                     </h4>
                   </div>
 
                   <div className="text-right shrink-0">
-                    <div className="text-2xl font-black text-slate-950">
+                    <div className="text-xl sm:text-2xl font-black text-slate-950">
                       {course.averageScore > 0 ? `${course.averageScore}%` : '—'}
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500">Moyenne</span>
+                    <span className="text-[10px] sm:text-[11px] font-bold text-slate-500">Moyenne</span>
                   </div>
                 </div>
 
@@ -107,17 +107,17 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-100">
-                  <span className="font-bold text-slate-600">
+                  <span className="font-bold text-slate-600 text-[11px]">
                     {course.passedCount} / {course.modulesCount} modules certifiés
                   </span>
 
                   {!isAdminView && (
                     <Link
                       href={`/examens/${course.slug}`}
-                      className="font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1"
+                      className="font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 text-[11px]"
                     >
                       <span>Passer un examen</span>
-                      <Icon name="arrow-right" className="w-3 h-3" />
+                      <Icon name="arrow-right" className="w-2.5 h-2.5" />
                     </Link>
                   )}
                 </div>
@@ -128,14 +128,14 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
       </div>
 
       {/* 2. Historique des tentatives d'examens */}
-      <div className="rounded-3xl border-2 border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
+      <div className="rounded-2xl border-2 border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-slate-200">
           <div>
-            <h3 className="text-base sm:text-lg font-black text-slate-950 flex items-center gap-2">
-              <Icon name="clock" className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-sm sm:text-base font-black text-slate-950 flex items-center gap-2">
+              <Icon name="clock" className="w-4 h-4 text-indigo-600" />
               <span>Historique des épreuves passées</span>
             </h3>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-[11px] text-slate-500 font-medium">
               {filteredExams.length} tentative{filteredExams.length > 1 ? 's' : ''} enregistrée{filteredExams.length > 1 ? 's' : ''}
             </p>
           </div>
@@ -144,7 +144,7 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
             <select
               value={selectedCourseFilter}
               onChange={(e) => setSelectedCourseFilter(e.target.value)}
-              className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
             >
               <option value="all">Toutes les formations</option>
               {courses.map((c) => (
@@ -157,48 +157,48 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
         </div>
 
         {filteredExams.length === 0 ? (
-          <div className="py-10 text-center space-y-2">
-            <span className="text-3xl">🎓</span>
+          <div className="py-6 text-center space-y-2">
+            <span className="text-2xl">🎓</span>
             <p className="text-xs font-bold text-slate-600">Aucune épreuve passée pour le moment.</p>
             {!isAdminView && (
               <Link
                 href="/examens"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition"
               >
                 <span>Accéder aux examens</span>
-                <Icon name="arrow-right" className="w-3.5 h-3.5" />
+                <Icon name="arrow-right" className="w-3 h-3" />
               </Link>
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 font-extrabold uppercase tracking-wider text-[11px]">
-                  <th className="py-2.5 px-3">Épreuve &amp; Module</th>
-                  <th className="py-2.5 px-3 text-center">Score</th>
-                  <th className="py-2.5 px-3 text-center">Questions</th>
-                  <th className="py-2.5 px-3 text-center">Durée</th>
-                  <th className="py-2.5 px-3">Date</th>
-                  <th className="py-2.5 px-3 text-right">Résultat</th>
+                <tr className="border-b border-slate-200 text-slate-500 font-extrabold uppercase tracking-wider text-[10px]">
+                  <th className="py-2 px-2.5">Épreuve &amp; Module</th>
+                  <th className="py-2 px-2.5 text-center">Score</th>
+                  <th className="py-2 px-2.5 text-center">Questions</th>
+                  <th className="py-2 px-2.5 text-center">Durée</th>
+                  <th className="py-2 px-2.5">Date</th>
+                  <th className="py-2 px-2.5 text-right">Résultat</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredExams.map((ex) => (
                   <tr key={ex.id} className="hover:bg-slate-50/80 transition">
-                    <td className="py-3 px-3 font-semibold text-slate-900">
+                    <td className="py-2 px-2.5 font-semibold text-slate-900">
                       <div className="font-bold text-slate-950 truncate max-w-[280px]">
                         {ex.moduleTitle}
                       </div>
-                      <div className="text-[11px] font-medium text-slate-500 capitalize">
+                      <div className="text-[10px] font-medium text-slate-500 capitalize">
                         {ex.courseId.replace('-', ' ')}
                       </div>
                     </td>
 
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-2 px-2.5 text-center">
                       <span
                         className={cn(
-                          'inline-flex items-center px-2.5 py-1 rounded-lg font-black text-xs',
+                          'inline-flex items-center px-2 py-0.5 rounded-md font-black text-[11px]',
                           ex.passed
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                             : 'bg-rose-100 text-rose-800 border border-rose-300'
@@ -208,34 +208,34 @@ export const ExamProgressSection: React.FC<ExamProgressSectionProps> = ({
                       </span>
                     </td>
 
-                    <td className="py-3 px-3 text-center font-bold text-slate-700 whitespace-nowrap">
+                    <td className="py-2 px-2.5 text-center font-bold text-slate-700 whitespace-nowrap text-[11px]">
                       {ex.correctAnswersCount} / {ex.totalQuestions}
                     </td>
 
-                    <td className="py-3 px-3 text-center text-slate-500 font-medium whitespace-nowrap">
+                    <td className="py-2 px-2.5 text-center text-slate-500 font-medium whitespace-nowrap text-[11px]">
                       {formatDuration(ex.timeSpentSeconds)}
                     </td>
 
-                    <td className="py-3 px-3 text-slate-500 font-medium whitespace-nowrap">
+                    <td className="py-2 px-2.5 text-slate-500 font-medium whitespace-nowrap text-[11px]">
                       {formatDate(ex.createdAt)}
                     </td>
 
-                    <td className="py-3 px-3 text-right whitespace-nowrap">
+                    <td className="py-2 px-2.5 text-right whitespace-nowrap">
                       {ex.passed ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-700 font-black text-xs">
-                          <Icon name="check" className="w-3.5 h-3.5" />
+                        <span className="inline-flex items-center gap-1 text-emerald-700 font-black text-[11px]">
+                          <Icon name="check" className="w-3 h-3" />
                           <span>Certifié</span>
                         </span>
                       ) : !isAdminView ? (
                         <Link
                           href={`/examens/${ex.courseId}/${ex.moduleId}`}
-                          className="inline-flex items-center gap-1 text-rose-700 hover:text-rose-900 font-bold text-xs"
+                          className="inline-flex items-center gap-1 text-rose-700 hover:text-rose-900 font-bold text-[11px]"
                         >
                           <span>Repasser</span>
-                          <Icon name="arrow-right" className="w-3 h-3" />
+                          <Icon name="arrow-right" className="w-2.5 h-2.5" />
                         </Link>
                       ) : (
-                        <span className="text-rose-700 font-bold text-xs">Non validé</span>
+                        <span className="text-rose-700 font-bold text-[11px]">Non validé</span>
                       )}
                     </td>
                   </tr>

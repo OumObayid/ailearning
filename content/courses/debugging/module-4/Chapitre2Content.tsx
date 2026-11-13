@@ -311,7 +311,7 @@ export const Chapitre2Content: React.FC = () => {
             HTTP Status Code Diagnostics
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Diagnostic des codes de statut HTTP : 400, 401, 403, 404, 405, 422, 429 et 500
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

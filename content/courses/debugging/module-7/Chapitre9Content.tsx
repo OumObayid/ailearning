@@ -78,7 +78,7 @@ export const Chapitre9Content: React.FC = () => {
           <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
           <span>Module 7 — Grand Projet de Fin d&apos;Études (Capstone) • Section 7.9</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Vérification Globale de la Non-Régression et Pipeline d&apos;Audit Pré-Merge
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">

@@ -7,32 +7,37 @@ import { PracticalWork } from '@/components/courses/PracticalWork';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
 import { WorkerThreadsLab } from '@/components/interactive/WorkerThreadsLab';
+import { Icon } from '@/components/common/Icon';
 
 export const Chapitre4Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Concurrence &amp; Multithreading</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 4 — Transfert de données et SharedArrayBuffer
         </h1>
+        <p className="mt-2 text-sm sm:text-base font-medium text-slate-700 break-words [overflow-wrap:anywhere]">
+          Manipuler les ArrayBuffer et TypedArray, partager la mémoire physique avec SharedArrayBuffer et éliminer les Race Conditions grâce à Atomics.
+        </p>
       </div>
 
       {/* 1. ArrayBuffer et TypedArray */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           1. Comprendre ArrayBuffer et les vues TypedArray
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Un <strong>ArrayBuffer</strong> représente un bloc continu d&apos;octets bruts en mémoire. Pour lire ou écrire des valeurs numériques dans ce bloc sans recopie, nous posons dessus une vue typée (<strong>TypedArray</strong> ou <strong>DataView</strong>) :
         </p>
 
         {/* IMAGE 11 : TypedArray backing store views */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/typedarray-backing-store-views.jpeg"
@@ -42,53 +47,71 @@ export const Chapitre4Content: React.FC = () => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.11 — Mémoire binaire sous-jacente (Backing store) : différentes vues (Uint8, Int32, DataView) accédant aux mêmes octets sans duplication de mémoire.
           </p>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border-2 border-slate-300">
-          <table className="w-full text-left border-collapse text-sm sm:text-base">
+        {/* Tableau responsive avec wrapping automatique et table-fixed */}
+        <div className="hidden sm:block rounded-2xl border-2 border-slate-300 bg-white overflow-hidden min-w-0 max-w-full">
+          <table className="w-full table-fixed text-left border-collapse text-xs sm:text-sm">
+            <colgroup>
+              <col className="w-[25%]" />
+              <col className="w-[30%]" />
+              <col className="w-[45%]" />
+            </colgroup>
             <thead>
               <tr className="bg-slate-100 border-b-2 border-slate-300 text-slate-950 font-black">
-                <th className="p-3.5">Vue typée</th>
-                <th className="p-3.5">Taille par élément</th>
-                <th className="p-3.5">Cas d&apos;usage typique</th>
+                <th className="p-3">Vue typée</th>
+                <th className="p-3">Taille par élément</th>
+                <th className="p-3">Cas d&apos;usage typique</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 font-semibold text-slate-900 bg-white">
+            <tbody className="divide-y divide-slate-200 font-semibold text-slate-900">
               <tr>
-                <td className="p-3.5 font-mono text-indigo-700">Uint8Array</td>
-                <td className="p-3.5">1 octet (0 à 255)</td>
-                <td className="p-3.5">Images, flux réseau, fichiers binaires</td>
+                <td className="p-3 font-mono text-indigo-700 font-bold align-top break-words [overflow-wrap:anywhere]">Uint8Array</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">1 octet (0 à 255)</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Images, flux réseau, fichiers binaires</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-mono text-indigo-700">Int32Array</td>
-                <td className="p-3.5">4 octets (entiers signés)</td>
-                <td className="p-3.5">Compteurs, index de recherche, calculs mathématiques</td>
+                <td className="p-3 font-mono text-indigo-700 font-bold align-top break-words [overflow-wrap:anywhere]">Int32Array</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">4 octets (entiers signés)</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Compteurs, index de recherche, calculs mathématiques</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-mono text-indigo-700">Float32Array / Float64Array</td>
-                <td className="p-3.5">4 à 8 octets</td>
-                <td className="p-3.5">Vecteurs d&apos;embeddings IA, coordonnées géométriques</td>
+                <td className="p-3 font-mono text-indigo-700 font-bold align-top break-words [overflow-wrap:anywhere]">Float32 / Float64</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">4 à 8 octets</td>
+                <td className="p-3 align-top break-words [overflow-wrap:anywhere]">Vecteurs d&apos;embeddings IA, coordonnées géométriques</td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        {/* Mobile cards view (max 2 cards per line) */}
+        <div className="sm:hidden grid grid-cols-1 gap-3 min-w-0">
+          <div className="rounded-xl border border-slate-200 bg-white p-3.5 space-y-1.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="font-mono font-bold text-indigo-700 text-sm">Uint8Array (1 octet)</span>
+            <p className="text-xs text-slate-800">Idéal pour les flux réseau, les images et les octets bruts.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-3.5 space-y-1.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="font-mono font-bold text-indigo-700 text-sm">Float32 / Float64 (4 à 8 octets)</span>
+            <p className="text-xs text-slate-800">Essentiel pour les vecteurs d&apos;embeddings d&apos;IA et calculs scientifiques.</p>
+          </div>
+        </div>
       </section>
 
       {/* 2. SharedArrayBuffer */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           2. SharedArrayBuffer : Le partage physique de la mémoire
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           Contrairement à l&apos;ArrayBuffer qui nécessite un transfert exclusif, le <strong>SharedArrayBuffer</strong> permet au Parent et aux Workers d&apos;écrire directement dans les mêmes cellules de mémoire vive :
         </p>
 
         {/* IMAGE 12 : SharedArrayBuffer Architecture */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/sharedarraybuffer-architecture.jpeg"
@@ -98,24 +121,24 @@ export const Chapitre4Content: React.FC = () => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
             Figure 2.12 — Espace mémoire partagé : aucun message ni copie requise, lecture/écriture ultra-rapide à coût zéro.
           </p>
         </div>
       </section>
 
       {/* 3. Le problème des Race Conditions */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           3. Le piège mortel : Les conditions de concurrence (Race Conditions)
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
-          Lorsque deux threads incrémentent une variable partagée en même temps avec <code className="font-mono bg-slate-200 px-1 py-0.5 rounded font-bold">compteur[0]++</code>, l&apos;opération n&apos;est <strong>pas atomique</strong>. Elle se décompose en 3 sous-étapes au niveau processeur :
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
+          Lorsque deux threads incrémentent une variable partagée en même temps avec <code className="font-mono bg-slate-200 px-1 py-0.5 rounded font-bold">compteur[0]++</code>, l&apos;opération n&apos;est <strong>pas atomique</strong>. Elle se décompose en 3 sous-étapes au niveau processeur (lecture, modification, écriture) :
         </p>
 
         {/* IMAGE 13 : Race condition diagram */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-3xl border-2 border-slate-300 bg-white p-6 shadow-sm space-y-3 min-w-0">
           <div className="relative mx-auto max-w-xl overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50">
             <Image
               src="/images/cours/backend-ia/module-2/race-condition-concurrency-bug.jpeg"
@@ -125,8 +148,8 @@ export const Chapitre4Content: React.FC = () => {
               className="h-auto w-full object-contain"
             />
           </div>
-          <p className="text-center text-sm font-bold text-slate-800">
-            Figure 2.13 — Collision de concurrence : Thread 1 et Thread 2 lisent simultanément la valeur 5. Chacun calcule 6 et l&apos;écrit en mémoire. Le résultat final vaut 6 au lieu de 7 (un incrément définitivement perdu !).
+          <p className="text-center text-xs sm:text-sm font-bold text-slate-800 break-words [overflow-wrap:anywhere]">
+            Figure 2.13 — Collision de concurrence : Thread 1 et Thread 2 lisent simultanément la valeur 5. Chacun calcule 6 et l&apos;écrit. Le résultat final vaut 6 au lieu de 7 (un incrément définitivement perdu !).
           </p>
         </div>
       </section>
@@ -134,41 +157,42 @@ export const Chapitre4Content: React.FC = () => {
       {/* Laboratoire interactif */}
       <WorkerThreadsLab />
 
-      {/* 4. La solution Atomics */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      {/* 4. La solution Atomics (MAX 2 CARTES PAR LIGNE) */}
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           4. La solution : Les opérations atomiques avec Atomics
         </h2>
 
-        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed">
+        <p className="text-base sm:text-lg font-medium text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere]">
           L&apos;objet natif <code className="font-mono font-bold text-indigo-700">Atomics</code> fournit des instructions matérielles garanties indivisibles : aucun autre thread ne peut interrompre le cycle lecture-modification-écriture :
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4.5 space-y-1.5">
+        {/* Règle respectée : MAX 2 cartes par ligne */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4.5 space-y-1.5 break-words [overflow-wrap:anywhere] min-w-0 shadow-sm">
             <h3 className="text-base font-black text-indigo-950">Atomics.add()</h3>
-            <p className="text-sm font-semibold text-slate-800">
+            <p className="text-xs sm:text-sm font-semibold text-slate-800">
               Incrémente une cellule de mémoire atomiquement sans perte d&apos;opération.
             </p>
           </div>
-          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4.5 space-y-1.5">
+          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4.5 space-y-1.5 break-words [overflow-wrap:anywhere] min-w-0 shadow-sm">
             <h3 className="text-base font-black text-indigo-950">Atomics.load()</h3>
-            <p className="text-sm font-semibold text-slate-800">
+            <p className="text-xs sm:text-sm font-semibold text-slate-800">
               Lecture atomique garantie même si un autre thread est en train d&apos;écrire.
             </p>
           </div>
-          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4.5 space-y-1.5">
+          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4.5 space-y-1.5 break-words [overflow-wrap:anywhere] min-w-0 shadow-sm sm:col-span-2">
             <h3 className="text-base font-black text-indigo-950">Atomics.store()</h3>
-            <p className="text-sm font-semibold text-slate-800">
-              Écriture atomique avec barrière de synchronisation mémoire.
+            <p className="text-xs sm:text-sm font-semibold text-slate-800">
+              Écriture atomique avec barrière de synchronisation mémoire matérielle.
             </p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
           <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} Démonstration Atomics.add() dans un Worker</span>
-          <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const { parentPort } = require("node:worker_threads");
+          <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+            <pre>{`const { parentPort } = require("node:worker_threads");
 
 parentPort.on("message", (sharedBuffer) => {
   const compteur = new Int32Array(sharedBuffer);
@@ -180,12 +204,12 @@ parentPort.on("message", (sharedBuffer) => {
   }
 
   parentPort.postMessage("Terminé");
-});`}
-          </pre>
+});`}</pre>
+          </div>
         </div>
 
         <Callout type="warning" title="Attention à Atomics.wait()">
-          <p>
+          <p className="break-words [overflow-wrap:anywhere]">
             <code className="font-bold">Atomics.wait(view, index, value)</code> bloque le thread jusqu&apos;à notification. <strong>Ne l&apos;utilisez jamais sur le thread principal de Node.js</strong>, car cela paralyserait tout votre serveur ! Cette fonction est réservée aux Worker Threads.
           </p>
         </Callout>
@@ -201,11 +225,11 @@ parentPort.on("message", (sharedBuffer) => {
           "Attendre les deux notifications et vérifier avec Atomics.load()"
         ]}
       >
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white">
+        <div className="space-y-4 min-w-0">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white break-words [overflow-wrap:anywhere] min-w-0">
             <span className="text-xs font-mono uppercase text-indigo-300 font-bold block mb-2">{'//'} server.js (Coordination)</span>
-            <pre className="font-mono text-sm leading-relaxed text-indigo-100 overflow-x-auto">
-{`const { Worker } = require("node:worker_threads");
+            <div className="font-mono text-xs sm:text-sm leading-relaxed text-indigo-100 overflow-x-auto">
+              <pre>{`const { Worker } = require("node:worker_threads");
 
 const shared = new SharedArrayBuffer(4);
 const compteur = new Int32Array(shared);
@@ -227,15 +251,15 @@ w1.on("message", verifier);
 w2.on("message", verifier);
 
 w1.postMessage(shared);
-w2.postMessage(shared);`}
-            </pre>
+w2.postMessage(shared);`}</pre>
+            </div>
           </div>
         </div>
       </PracticalWork>
 
       {/* 6. Exercices interactifs */}
-      <section className="space-y-6">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+      <section className="space-y-6 min-w-0">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 break-words">
           6. Exercices de validation des acquis
         </h2>
 
@@ -290,4 +314,3 @@ w2.postMessage(shared);`}
     </div>
   );
 };
-

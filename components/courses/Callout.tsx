@@ -69,27 +69,27 @@ export const Callout: React.FC<CalloutProps> = ({
   return (
     <div
       className={cn(
-        'my-6 rounded-2xl p-5 sm:p-6 shadow-sm',
+        'my-6 rounded-2xl p-5 sm:p-6 shadow-sm min-w-0 max-w-full overflow-hidden',
         styles.border,
         styles.bg
       )}
     >
-      <div className="flex items-start gap-3.5">
+      <div className="flex items-start gap-3.5 min-w-0">
         <div className={cn('shrink-0 mt-0.5 p-2 rounded-xl bg-white shadow-xs', styles.iconColor)}>
           <Icon name={styles.iconName} className="w-5 h-5" />
         </div>
         <div className="space-y-2 flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <span
               className={cn(
-                'inline-flex items-center rounded-md px-3 py-1 text-sm font-black uppercase tracking-wider',
+                'inline-flex items-center rounded-md px-3 py-1 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-normal break-words [overflow-wrap:anywhere]',
                 styles.badgeBg
               )}
             >
               {title || styles.defaultTitle}
             </span>
           </div>
-          <div className="text-base sm:text-lg text-slate-950 leading-relaxed font-semibold">
+          <div className="text-base sm:text-lg text-slate-950 leading-relaxed font-semibold break-words [overflow-wrap:anywhere] min-w-0">
             {children}
           </div>
         </div>

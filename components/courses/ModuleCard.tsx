@@ -38,7 +38,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module }) => {
       {/* Footer link */}
       <div className="mt-6 pt-4 border-t border-indigo-200 flex items-center justify-between text-base font-extrabold text-indigo-700">
         <span className="flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
-          Accéder au module
+          Accéder
           <Icon name="arrow-right" className="w-5 h-5" />
         </span>
         <span className="text-sm text-slate-700 font-bold">

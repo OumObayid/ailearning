@@ -69,8 +69,10 @@ const rootFiles = [
   'next.config.ts',
   'postcss.config.mjs',
   'README-CPANEL.md',
+  '.env.production',
   '.env.example',
   'tsconfig.json',
+  'mdx-components.tsx',
 ];
 
 for (const file of rootFiles) {
@@ -78,6 +80,14 @@ for (const file of rootFiles) {
   if (fs.existsSync(src)) {
     fs.copyFileSync(src, path.join(stagingDir, file));
   }
+}
+
+// Copier .env.production en tant que .env par défaut pour la production cPanel
+if (fs.existsSync(path.join(rootDir, '.env.production'))) {
+  fs.copyFileSync(
+    path.join(rootDir, '.env.production'),
+    path.join(stagingDir, '.env')
+  );
 }
 
 // 5. Copie du code applicatif pour Next.js (sans node_modules)
@@ -104,33 +114,13 @@ function scanForNodeModules(dir) {
 scanForNodeModules(stagingDir);
 console.log('✅ Vérification réussie : ZÉRO node_modules dans le paquet.');
 
-// 7. Compression prioritaire en format ZIP avec 7-Zip
-const sevenZipExe = 'C:\\Program Files\\7-Zip\\7z.exe';
+// 7. Compression en un SEUL fichier ZIP standard à la racine du site
 const zipFile = path.join(rootDir, 'ailearning-prod.zip');
 if (fs.existsSync(zipFile)) fs.unlinkSync(zipFile);
 
-console.log('6. Compression dans ailearning-prod.zip...');
-if (fs.existsSync(sevenZipExe)) {
-  execSync(`"${sevenZipExe}" a -tzip -mx=5 "${zipFile}" "${stagingDir}\\*"`, { stdio: 'inherit' });
-} else {
-  execSync(`powershell -Command "Compress-Archive -Path '${stagingDir}\\*' -DestinationPath '${zipFile}' -Force"`, { stdio: 'inherit' });
-}
-
-// 8. Compression optionnelle en format RAR si WinRAR est présent
-const rarExe = 'C:\\Program Files\\WinRAR\\Rar.exe';
-const rarFile = path.join(rootDir, 'ailearning-prod.rar');
-if (fs.existsSync(rarFile)) fs.unlinkSync(rarFile);
-
-let rarSize = null;
-if (fs.existsSync(rarExe)) {
-  try {
-    console.log('7. Compression dans ailearning-prod.rar...');
-    execSync(`"${rarExe}" a -r -ep1 -m3 "${rarFile}" "${stagingDir}\\*"`, { stdio: 'inherit' });
-    rarSize = (fs.statSync(rarFile).size / (1024 * 1024)).toFixed(2);
-  } catch (err) {
-    console.warn('WinRAR non exécuté ou ignoré :', err.message);
-  }
-}
+console.log('6. Compression dans ailearning-prod.zip (un seul fichier à la racine)...');
+const stagingItems = fs.readdirSync(stagingDir).map(name => `"${name}"`).join(' ');
+execSync(`tar.exe -a -c -f "${zipFile}" -C "${stagingDir}" ${stagingItems}`, { stdio: 'inherit' });
 
 // Nettoyage du dossier temporaire
 fs.rmSync(stagingDir, { recursive: true, force: true });
@@ -138,9 +128,7 @@ fs.rmSync(stagingDir, { recursive: true, force: true });
 const zipSize = (fs.statSync(zipFile).size / (1024 * 1024)).toFixed(2);
 
 console.log('\n============================================================');
-console.log('Archive de production cPanel prête (SANS node_modules) :');
-console.log(`- ZIP : ${zipFile} (${zipSize} Mo)`);
-if (rarSize) {
-  console.log(`- RAR : ${rarFile} (${rarSize} Mo)`);
-}
+console.log('Archive unique de production prête :');
+console.log(`- Fichier : ${zipFile} (${zipSize} Mo)`);
+console.log(`- Emplacement : STRICTEMENT à la racine du site`);
 console.log('============================================================\n');

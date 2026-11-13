@@ -11,13 +11,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre4Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Caching &amp; Performance Redis</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 4 — Mise en cache des résultats d&apos;inférence de Google Gemini
         </h1>
       </div>
@@ -62,28 +63,28 @@ export const Chapitre4Content: React.FC = () => {
 
         <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-4">
           <h3 className="text-sm sm:text-base font-bold text-slate-900">Les 5 paramètres indispensables d&apos;une clé d&apos;inférence IA :</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs min-w-0">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0">
               <strong className="text-indigo-900 block font-black">1. Prompt normalisé</strong>
               Le texte nettoyé avec <code>trim()</code> pour éviter les espaces parasites.
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0">
               <strong className="text-indigo-900 block font-black">2. Identifiant du Modèle</strong>
               Ex: <code>gemini-2.5-flash</code> vs <code>gemini-1.5-pro</code>.
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0">
               <strong className="text-indigo-900 block font-black">3. Instruction Système</strong>
               Toute modification du persona système change la réponse du LLM.
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0">
               <strong className="text-indigo-900 block font-black">4. Paramètres de génération</strong>
               La température (0.2 déterministe vs 0.9 créatif).
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0">
               <strong className="text-indigo-900 block font-black">5. Version logique (ex: &apos;v1&apos;)</strong>
               Permet d&apos;invalider en bloc tout le cache en passant à &apos;v2&apos;.
             </div>
-            <div className="rounded-xl border border-rose-300 bg-rose-50 p-3 text-rose-950">
+            <div className="rounded-xl border border-rose-300 bg-rose-50 p-3 text-rose-950 break-words [overflow-wrap:anywhere] min-w-0">
               <strong className="text-rose-900 block font-black">6. Contexte utilisateur</strong>
               Indispensable si le document ou la discussion est privée !
             </div>

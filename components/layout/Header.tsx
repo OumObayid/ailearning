@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { APP_NAME } from '@/lib/constants';
 import { Icon } from '@/components/common/Icon';
@@ -16,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
   const isAdmin = pathname.startsWith('/admin');
 
   return (
-    <header className="lg:hidden sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 backdrop-blur-md">
+    <header className="lg:hidden sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 backdrop-blur-md">
       {/* Mobile navigation trigger & Brand */}
       <div className="flex items-center gap-3">
         <button
@@ -27,16 +29,21 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobile }) => {
         >
           <Icon name="menu" className="w-5 h-5" />
         </button>
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 focus:outline-none">
+          <Image
+            src="/images/logo.png"
+            alt={APP_NAME}
+            width={150}
+            height={50}
+            priority
+            className="h-9 w-auto object-contain"
+          />
           {isAdmin && (
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-purple-700 text-white text-xs">
-              🛡️
+            <span className="text-xs font-bold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded">
+              Admin
             </span>
           )}
-          <span className="text-sm font-extrabold text-slate-900 tracking-tight">
-            {isAdmin ? `${APP_NAME} Admin` : APP_NAME}
-          </span>
-        </div>
+        </Link>
       </div>
     </header>
   );

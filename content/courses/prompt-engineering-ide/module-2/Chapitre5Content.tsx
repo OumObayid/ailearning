@@ -3,16 +3,17 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Définition des limites d&apos;intervention
         </h1>
       </div>
@@ -22,7 +23,7 @@ export const Chapitre5Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Les trois régimes d&apos;intervention
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <div className="p-5 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 space-y-2">
             <span className="text-xs font-black uppercase text-emerald-800">Niveau 1 — Actions Autorisées</span>
             <p className="text-sm font-bold text-slate-950">Exécution libre dans le périmètre</p>
@@ -91,17 +92,17 @@ export const Chapitre5Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. Procédure d&apos;arrêt face à un dépassement de limite
         </h2>
-        <div className="rounded-2xl border-2 border-slate-200 bg-slate-900 text-slate-100 p-6 font-mono text-sm space-y-2">
-          <p className="text-xs uppercase font-extrabold text-indigo-400">[PROTOCOLE D&apos;ARRÊT IMMÉDIAT]</p>
-          <pre className="whitespace-pre-wrap text-slate-200">
-{`Lorsqu'une tâche nécessite une action dépassant tes autorisations :
+        <CodeBlock
+          filename="PROTOCOLE D'ARRÊT IMMÉDIAT"
+          language="markdown"
+          wrap={true}
+          code={`Lorsqu'une tâche nécessite une action dépassant tes autorisations :
 1. Gèle immédiatement l'opération concernée.
 2. Explique précisément pourquoi cette action dépasse le cadre initial.
 3. Désigne les fichiers ou dépendances affectés.
 4. Présente les risques potentiels.
 5. Attends une autorisation explicite et ciblée avant de reprendre.`}
-          </pre>
-        </div>
+        />
 
         <Callout type="warning" title="Principe du moindre privilège">
           Moins l&apos;agent possède de permissions superflues, plus le risque d&apos;accident irréversible est réduit. Ne lui accordez que les accès strictement requis par sa mission.

@@ -7,203 +7,272 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Prompt Engineering IDE</span>
+          <span>Module 4 — Les Agents IA dans l&apos;IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Utilisation des outils (Tools &amp; Function Calling)
         </h1>
+        <p className="text-sm sm:text-base text-slate-700 mt-2 font-medium">
+          Comment l&apos;IA passe de la simple parole à l&apos;action concrète grâce au mécanisme de Tool Calling et au standard universel MCP.
+        </p>
       </div>
 
-      {/* 1. Introduction */}
+      {/* 1. L'analogie du Chef et du Commis de cuisine */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Comment l&apos;agent passe-t-il de la réflexion à l&apos;action ?
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <Icon name="cog" className="w-5 h-5 text-indigo-600" />
+          <span>1. L&apos;analogie du restaurant : Le Chef cuisinier et le Commis</span>
         </h2>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
-          Un modèle d&apos;intelligence artificielle (LLM) est fondamentalement un système de prédiction textuelle. Il ne dispose d&apos;aucune main physique ni d&apos;aucun pointeur matériel sur le disque dur. Pour qu&apos;il puisse inspecter un composant ou lancer un build de production, l&apos;environnement hôte doit lui fournir des <strong>Tools (outils)</strong>.
+          Pour un débutant, il est souvent surprenant d&apos;apprendre qu&apos;un modèle de langage comme Gemini ou GPT <strong>ne sait absolument rien faire d&apos;autre que prédire du texte</strong>. Il ne possède aucun bras mécanique pour ouvrir votre disque dur, ni aucun câble branché sur votre terminal.
         </p>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
-          Les outils constituent la passerelle technique entre l&apos;esprit du modèle et le système d&apos;exploitation.
+          Alors, comment fait-il pour modifier un fichier ? Pensez à la cuisine d&apos;un grand restaurant :
         </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm">
+            <div className="flex items-center gap-2 font-extrabold text-slate-950 text-base">
+              <span className="text-xl">👨‍🍳</span>
+              <span>Le Modèle d&apos;IA = Le Chef cuisinier</span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Le chef a l&apos;expertise et la vision d&apos;ensemble. Il ne quitte pas son plan de travail : lorsqu&apos;il a besoin d&apos;un ingrédient, il rédige un bon de commande très précis sur un ticket : <em className="text-indigo-800 font-medium">« Outil : Découpe, Ingrédient : 3 tomates, Épaisseur : 5 mm »</em>.
+            </p>
+          </div>
+
+          <div className="p-5 bg-white border-2 border-indigo-200 rounded-2xl space-y-2 shadow-sm">
+            <div className="flex items-center gap-2 font-extrabold text-indigo-950 text-base">
+              <span className="text-xl">🏃</span>
+              <span>L&apos;IDE (Antigravity) = Le Commis de cuisine</span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              L&apos;IDE intercepte le ticket, vérifie si l&apos;action est autorisée par les permissions, prend le couteau, coupe les tomates et ramène l&apos;assiette au chef. Le chef examine alors le résultat concret et poursuit sa recette.
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 bg-indigo-50/80 border border-indigo-200 rounded-2xl text-xs sm:text-sm text-indigo-950 font-medium">
+          💡 <strong>En résumé :</strong> Le modèle n&apos;exécute jamais rien lui-même. Il émet un ordre structuré (un <em>Tool Call</em>), et c&apos;est votre IDE qui réalise l&apos;action sur votre machine sous votre surveillance.
+        </div>
       </section>
 
-      {/* 2. Les catégories d'outils */}
+      {/* 2. Les 6 grandes familles d'outils */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Les 6 grandes familles d&apos;outils dans un IDE
+          2. Les 6 grandes familles d&apos;outils dans un IDE moderne
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1 shadow-sm">
-            <div className="flex items-center gap-2 font-bold text-indigo-700 text-sm">
-              <Icon name="book-open" className="w-4 h-4" />
-              <span>1. Lecture de fichiers</span>
+        <p className="text-sm sm:text-base text-slate-700">
+          Dans Google Antigravity, l&apos;agent dispose d&apos;une boîte à outils spécialisée pour couvrir chaque facette du développement :
+        </p>
+
+        <div className="grid gap-4 pt-1 grid-cols-1 sm:grid-cols-2">
+          <div className="p-4 sm:p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Famille 1</span>
+              <h4 className="font-extrabold text-slate-950 text-base mt-2">Lecture de fichiers (read_file)</h4>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                Permet d&apos;ouvrir n&apos;importe quel fichier source (<code className="bg-slate-100 px-1 rounded font-mono text-[11px]">.tsx</code>, <code className="bg-slate-100 px-1 rounded font-mono text-[11px]">.json</code>, <code className="bg-slate-100 px-1 rounded font-mono text-[11px]">.css</code>) en lecture seule pour comprendre le code sans risque d&apos;altération.
+              </p>
             </div>
-            <p className="text-xs text-slate-700">Consulter <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">package.json</code>, composants et CSS sans altération.</p>
+            <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 p-1.5 rounded-lg border border-emerald-100">Risque : Zéro</span>
           </div>
 
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1 shadow-sm">
-            <div className="flex items-center gap-2 font-bold text-indigo-700 text-sm">
-              <Icon name="magnifying-glass" className="w-4 h-4" />
-              <span>2. Recherche textuelle</span>
+          <div className="p-4 sm:p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Famille 2</span>
+              <h4 className="font-extrabold text-slate-950 text-base mt-2">Recherche de symboles (grep / search)</h4>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                Recherche instantanée dans toute l&apos;arborescence d&apos;un nom de fonction, d&apos;un composant React ou d&apos;un endpoint d&apos;API sans avoir à ouvrir tous les dossiers un par un.
+              </p>
             </div>
-            <p className="text-xs text-slate-700">Rechercher des symboles, fonctions, endpoints ou imports dans l&apos;arborescence.</p>
+            <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 p-1.5 rounded-lg border border-emerald-100">Risque : Zéro</span>
           </div>
 
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1 shadow-sm">
-            <div className="flex items-center gap-2 font-bold text-indigo-700 text-sm">
-              <Icon name="pencil-square" className="w-4 h-4" />
-              <span>3. Édition chirurgicale</span>
+          <div className="p-4 sm:p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Famille 3</span>
+              <h4 className="font-extrabold text-slate-950 text-base mt-2">Édition ciblée (edit_file)</h4>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                Applique une modification chirurgicale sur un fichier existant en remplaçant exactement le bloc de code visé, sans écraser le reste du fichier.
+              </p>
             </div>
-            <p className="text-xs text-slate-700">Modifier un composant existant via des remplacements ciblés ou créer un fichier neuf.</p>
+            <span className="text-[11px] font-mono text-amber-800 bg-amber-50 p-1.5 rounded-lg border border-amber-100">Risque : Modéré (Validation)</span>
           </div>
 
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1 shadow-sm">
-            <div className="flex items-center gap-2 font-bold text-indigo-700 text-sm">
-              <Icon name="command-line" className="w-4 h-4" />
-              <span>4. Terminal &amp; Shell</span>
+          <div className="p-4 sm:p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Famille 4</span>
+              <h4 className="font-extrabold text-slate-950 text-base mt-2">Terminal système (run_command)</h4>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                Exécute des commandes en ligne de commande comme <code className="bg-slate-100 px-1 rounded font-mono text-[11px]">npm run build</code>, <code className="bg-slate-100 px-1 rounded font-mono text-[11px]">npx tsc</code> ou <code className="bg-slate-100 px-1 rounded font-mono text-[11px]">git status</code>.
+              </p>
             </div>
-            <p className="text-xs text-slate-700">Exécuter <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">npm run build</code>, <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">npm run lint</code> ou lancer des scripts Node.js.</p>
+            <span className="text-[11px] font-mono text-rose-800 bg-rose-50 p-1.5 rounded-lg border border-rose-100">Risque : Élevé (Surveillance)</span>
           </div>
 
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1 shadow-sm">
-            <div className="flex items-center gap-2 font-bold text-indigo-700 text-sm">
-              <Icon name="globe-alt" className="w-4 h-4" />
-              <span>5. Navigateur (Browser)</span>
+          <div className="p-4 sm:p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Famille 5</span>
+              <h4 className="font-extrabold text-slate-950 text-base mt-2">Navigateur Web &amp; Aperçu</h4>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                Prend une capture d&apos;écran de la page web rendue en local pour vérifier visuellement le design, les marges et la disposition des éléments UI.
+              </p>
             </div>
-            <p className="text-xs text-slate-700">Vérifier le rendu d&apos;un écran ou d&apos;une page web dans un navigateur headless.</p>
+            <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 p-1.5 rounded-lg border border-emerald-100">Risque : Faible</span>
           </div>
 
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1 shadow-sm">
-            <div className="flex items-center gap-2 font-bold text-indigo-700 text-sm">
-              <Icon name="shield-check" className="w-4 h-4" />
-              <span>6. Tests &amp; Validation</span>
+          <div className="p-4 sm:p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Famille 6</span>
+              <h4 className="font-extrabold text-slate-950 text-base mt-2">Banc de tests unitaires</h4>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                Lance la suite de tests Vitest ou Jest pour apporter la preuve indiscutable que la nouvelle fonctionnalité ne casse aucune règle existante.
+              </p>
             </div>
-            <p className="text-xs text-slate-700">Lancer Vitest, Jest ou des tests E2E pour valider les modifications apportées.</p>
+            <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 p-1.5 rounded-lg border border-emerald-100">Risque : Zéro</span>
           </div>
         </div>
       </section>
 
-      {/* 3. Qu'est-ce que le Tool Calling ? */}
+      {/* 3. Comment fonctionne le Tool Calling (Sans scrollbar) */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Mécanisme du Tool Calling (Function Calling)
+          3. Dans les coulisses : Le protocole JSON du Tool Calling
         </h2>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
-          Le <strong>Tool Calling</strong> est le protocole standardisé par lequel le modèle exprime sa volonté d&apos;exécuter une fonction sous la forme d&apos;un objet JSON structuré contenant le nom de l&apos;outil et ses paramètres :
+          Comment l&apos;IA communique-t-elle avec l&apos;IDE ? À travers un échange de messages JSON standardisés en 4 temps :
         </p>
 
-        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-          <pre>{`// 1. Description de l'outil exposée au modèle par l'IDE
-const tools = [
-  {
-    type: "function",
-    name: "rechercher_produit",
-    description: "Recherche un produit par son nom ou sa référence",
-    parameters: {
-      type: "object",
-      properties: {
-        nom: { type: "string", description: "Nom du produit recherché" }
-      },
-      required: ["nom"]
-    }
-  }
-];
+        {/* Bloc structuré sans scrollbar */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-6 font-mono text-xs sm:text-sm text-slate-200 shadow-xl space-y-4 break-words min-w-0 max-w-full">
+          <div>
+            <div className="text-indigo-400 font-bold mb-1">// Étape 1 : L&apos;IDE présente au modèle les outils qu&apos;il a le droit d&apos;utiliser</div>
+            <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-slate-300">
+              &#123; &quot;name&quot;: &quot;read_file&quot;, &quot;description&quot;: &quot;Lit le contenu d&apos;un fichier source&quot;, &quot;parameters&quot;: &#123; &quot;path&quot;: &quot;chemin/du/fichier.tsx&quot; &#125; &#125;
+            </div>
+          </div>
 
-// 2. Réponse du modèle (Tool Call émis)
-{
-  "tool_calls": [
-    {
-      "name": "rechercher_produit",
-      "args": { "nom": "Clavier sans fil" }
-    }
-  ]
-}
+          <div>
+            <div className="text-amber-400 font-bold mb-1">// Étape 2 : Le modèle répond en demandant d&apos;exécuter un outil précis</div>
+            <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-amber-300">
+              &#123; &quot;call_tool&quot;: &quot;read_file&quot;, &quot;arguments&quot;: &#123; &quot;path&quot;: &quot;src/components/Header.tsx&quot; &#125; &#125;
+            </div>
+          </div>
 
-// 3. L'environnement exécute la fonction réelle et renvoie le résultat au modèle
-// 4. Le modèle interprète la réponse et formule sa conclusion à l'utilisateur`}</pre>
+          <div>
+            <div className="text-emerald-400 font-bold mb-1">// Étape 3 : L&apos;IDE lit le fichier sur le disque et lui renvoie le contenu réel</div>
+            <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-emerald-300">
+              &#123; &quot;status&quot;: &quot;success&quot;, &quot;content&quot;: &quot;export function Header() &#123; return &lt;nav&gt;...&lt;/nav&gt;; &#125;&quot; &#125;
+            </div>
+          </div>
+
+          <div>
+            <div className="text-sky-400 font-bold mb-1">// Étape 4 : Le modèle formule sa réponse finale en s&apos;appuyant sur ce qu&apos;il a lu</div>
+            <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-sky-200 font-sans text-xs">
+              « J&apos;ai inspecté votre Header.tsx : le menu de navigation utilise Tailwind. Je peux maintenant y intégrer le bouton demandé. »
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 4. Protocole MCP */}
+      {/* 4. Le standard MCP */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Outils externes et protocole MCP (Model Context Protocol)
+          4. Le protocole MCP (Model Context Protocol) : La prise USB-C des agents IA
         </h2>
         <p className="text-base sm:text-lg text-slate-900 font-medium">
-          Tous les outils ne sont pas codés en dur dans l&apos;IDE. Grâce au standard <strong>MCP (Model Context Protocol)</strong>, un agent peut se connecter dynamiquement à des serveurs tiers pour interagir avec des bases de données SQL, des dépôts GitHub ou des documentations externes :
+          Auparavant, chaque éditeur de logiciel devait inventer un connecteur sur mesure pour relier une IA à une base de données PostgreSQL ou à GitHub. Le <strong>Model Context Protocol (MCP)</strong> est le standard ouvert universel qui révolutionne cette intégration :
         </p>
 
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-indigo-50/70 border-2 border-indigo-200 rounded-2xl text-sm font-medium">
-          <div className="p-3 bg-white rounded-xl border border-indigo-200 text-center w-full md:w-1/3">
-            <span className="font-bold text-slate-900 block">Agent Antigravity</span>
-            <span className="text-xs text-slate-600">Client MCP</span>
+        <div className="p-5 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-indigo-200 rounded-2xl space-y-3">
+          <div className="flex items-center gap-2 font-extrabold text-indigo-950 text-base">
+            <span className="text-xl">🔌</span>
+            <span>Pourquoi comparer MCP à une prise USB-C ?</span>
           </div>
-          <span className="text-indigo-600 font-black text-xl">↔ [Protocole MCP] ↔</span>
-          <div className="p-3 bg-white rounded-xl border border-indigo-200 text-center w-full md:w-1/3">
-            <span className="font-bold text-indigo-700 block">Serveurs MCP Spécialisés</span>
-            <span className="text-xs text-slate-600">GitHub, PostgreSQL, Jira, Figma</span>
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            De la même façon qu&apos;une prise USB-C permet de brancher indifféremment un clavier, un écran ou un disque externe sur votre ordinateur portable avec un seul câble standard, le protocole <strong>MCP</strong> permet à Google Antigravity de se connecter en un clic à des dizaines d&apos;outils externes :
+          </p>
+          <div className="grid gap-2 pt-1 text-center text-xs font-bold text-slate-800 grid-cols-1 sm:grid-cols-2">
+            <div className="p-2 bg-white rounded-lg border border-indigo-100 shadow-xs">GitHub MCP</div>
+            <div className="p-2 bg-white rounded-lg border border-indigo-100 shadow-xs">PostgreSQL MCP</div>
+            <div className="p-2 bg-white rounded-lg border border-indigo-100 shadow-xs">Linear / Jira MCP</div>
+            <div className="p-2 bg-white rounded-lg border border-indigo-100 shadow-xs">Figma MCP</div>
           </div>
         </div>
 
         <Callout type="warning">
-          <strong>Vigilance sur les outils externes :</strong> Chaque outil tiers élargit la surface d&apos;attaque. Un agent ne doit jamais disposer d&apos;outils avec accès en écriture sur des bases de données de production sans validation humaine systématique.
+          <strong>Règle de sécurité élémentaire :</strong> Ne connectez jamais un serveur MCP avec des droits d&apos;écriture sur vos bases de données de production. Utilisez toujours des comptes de test ou restreints en lecture seule.
         </Callout>
       </section>
 
-      {/* 5. Travaux pratiques */}
+      {/* 5. Travaux pratiques guidés */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Travaux pratiques guidés (TP 4.5)
+          5. Travaux pratiques guidés (TP 4.5) : Observer les Tool Calls
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-2">
-            <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">Exercice 1</span>
-            <h4 className="font-bold text-slate-950">Cartographie des outils</h4>
-            <p className="text-xs text-slate-700">Demandez à Antigravity de lister ses catégories d&apos;outils actives et d&apos;expliquer les risques associés à chacune.</p>
+        <div className="p-5 bg-white border-2 border-indigo-200 rounded-2xl space-y-3">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-800 uppercase tracking-wider">TP 4.5 — Visualiser les appels d&apos;outils</span>
+          <h4 className="font-extrabold text-slate-950 text-base">Suivre l&apos;émission d&apos;un Tool Call en direct</h4>
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            Dans Google Antigravity, demandez :
+          </p>
+          <div className="p-3.5 bg-slate-900 text-slate-100 rounded-xl font-mono text-xs break-words border border-slate-800 min-w-0 max-w-full">
+            « Utilise ton outil de recherche pour trouver où est déclarée la variable d&apos;environnement PORT ou API_URL dans mon code. Présente l&apos;outil que tu as utilisé et son résultat. »
           </div>
-          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-2">
-            <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">Exercice 2</span>
-            <h4 className="font-bold text-slate-950">Séparation lecture/écriture</h4>
-            <p className="text-xs text-slate-700">Demandez comment l&apos;agent procéderait pour modifier un titre sans autoriser l&apos;outil d&apos;édition.</p>
-          </div>
+          <p className="text-xs text-slate-600 italic">
+            → Observez le volet d&apos;agent : vous verrez un petit badge indiquant le nom de l&apos;outil appelé (ex: <code className="bg-slate-100 px-1 rounded font-mono text-xs">search</code>) et les paramètres exacts transmis.
+          </p>
         </div>
       </section>
 
-      {/* Quiz */}
+      {/* 6. Quiz d'évaluation */}
       <section className="space-y-4 pt-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          Auto-évaluation : Utilisation des outils
+          Auto-évaluation : Vos acquis sur les Outils
         </h2>
         <QuickQuiz
-          title="Validation des acquis — Chapitre 5"
+          title="Validation des acquis — Chapitre 5 (Tools & Function Calling)"
           questions={[
             {
               id: 1,
-              question: "Que signifie le terme 'Tool Calling' dans le contexte d'un agent IA ?",
+              question: "Que se passe-t-il techniquement lors d'un « Tool Call » émis par un modèle d'IA ?",
               options: [
-                "L'agent téléphone à un support technique.",
-                "Le mécanisme par lequel le modèle IA demande l'exécution d'une fonction externe avec des paramètres structurés.",
-                "La suppression des outils inutilisés dans l'IDE.",
-                "L'installation d'une nouvelle version de Node.js."
+                "L'IA envoie un email au créateur du projet.",
+                "Le modèle émet un objet JSON structuré spécifiant le nom de l'outil souhaité et ses paramètres, que l'IDE prend ensuite en charge pour l'exécuter.",
+                "Le modèle arrête de fonctionner définitivement.",
+                "L'ordinateur formate automatiquement le disque dur."
               ],
               correctIndex: 1,
-              explanation: "Le Tool Calling permet au modèle d'émettre une intention structurée (nom de la fonction + arguments) que l'environnement hôte exécute concrètement."
+              explanation: "Le modèle ne manipule pas le matériel : il émet une intention d'action formelle en JSON, et c'est l'environnement hôte de l'IDE qui exécute l'outil sous contrôle des permissions."
             },
             {
               id: 2,
-              question: "À quoi sert principalement le protocole standardisé MCP (Model Context Protocol) ?",
+              question: "À quoi compare-t-on le protocole ouvert MCP (Model Context Protocol) ?",
               options: [
-                "À remplacer le langage JavaScript par du Python.",
-                "À connecter de manière standardisée des agents IA à des outils et sources de données externes (GitHub, bases de données, APIs).",
-                "À désactiver la sécurité du système d'exploitation.",
-                "À crypter les fichiers de code source."
+                "À une prise USB-C standardisée permettant de relier n'importe quel outil ou base de données externe à l'agent IA de façon unifiée.",
+                "À un antivirus gratuit réservé aux téléphones.",
+                "À une ancienne disquette 3,5 pouces.",
+                "À un câble d'alimentation secteur 220V."
+              ],
+              correctIndex: 0,
+              explanation: "MCP est le standard universel de connectivité permettant à un agent de dialoguer avec des serveurs de données externes (GitHub, PostgreSQL, Jira...) avec un protocole unique."
+            },
+            {
+              id: 3,
+              question: "Pourquoi l'outil de terminal (run_command) est-il classé parmi les outils à risque élevé ?",
+              options: [
+                "Parce qu'il consomme trop de mémoire vive.",
+                "Parce qu'une commande mal formulée peut installer des paquets malveillants, écraser des branches Git ou supprimer des données locales.",
+                "Parce que le terminal ne fonctionne que la nuit.",
+                "Parce qu'il empêche le clavier de fonctionner."
               ],
               correctIndex: 1,
-              explanation: "MCP est le standard universel de communication permettant aux agents d'interagir avec une multitude d'outils et de services externes de façon unifiée."
+              explanation: "Le terminal exécute des commandes directement sur le système d'exploitation de votre machine, d'où la nécessité d'une surveillance et d'une validation rigoureuse des autorisations."
             }
           ]}
         />
@@ -211,4 +280,3 @@ const tools = [
     </div>
   );
 };
-

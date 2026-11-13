@@ -4,7 +4,7 @@ import React from 'react';
 import { Icon, type IconName } from '@/components/common/Icon';
 import { cn } from '@/lib/utils';
 
-export type ProgressionTabKey = 'overview' | 'reading' | 'exams' | 'profile';
+export type ProgressionTabKey = 'overview' | 'badges' | 'reading' | 'exams' | 'profile';
 
 interface TabItem {
   key: ProgressionTabKey;
@@ -19,6 +19,7 @@ interface ProgressionTabsProps {
   showProfileTab?: boolean;
   readingCount?: number;
   examsCount?: number;
+  badgesCount?: number;
 }
 
 export const ProgressionTabs: React.FC<ProgressionTabsProps> = ({
@@ -27,12 +28,19 @@ export const ProgressionTabs: React.FC<ProgressionTabsProps> = ({
   showProfileTab = true,
   readingCount,
   examsCount,
+  badgesCount,
 }) => {
   const tabs: TabItem[] = [
     {
       key: 'overview',
       label: "Vue d'ensemble",
       icon: 'chart-bar',
+    },
+    {
+      key: 'badges',
+      label: 'Certifications & Badges',
+      icon: 'academic-cap',
+      badge: badgesCount !== undefined ? badgesCount : undefined,
     },
     {
       key: 'reading',
@@ -57,7 +65,7 @@ export const ProgressionTabs: React.FC<ProgressionTabsProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 bg-slate-200/70 rounded-2xl overflow-x-auto select-none border border-slate-300/80">
+    <div className="flex items-center gap-1 sm:gap-1.5 p-1 bg-slate-200/70 rounded-xl select-none border border-slate-300/80 overflow-hidden">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.key;
         return (
@@ -66,21 +74,21 @@ export const ProgressionTabs: React.FC<ProgressionTabsProps> = ({
             type="button"
             onClick={() => onSelectTab(tab.key)}
             className={cn(
-              'inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer',
+              'inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold text-xs transition-all whitespace-nowrap cursor-pointer',
               isActive
-                ? 'bg-white text-slate-950 shadow-xs border border-slate-300/60 font-black'
+                ? 'bg-white text-slate-950 shadow-2xs border border-slate-300/70 font-black'
                 : 'text-slate-600 hover:text-slate-950 hover:bg-white/50'
             )}
           >
             <Icon
               name={tab.icon}
-              className={cn('w-4 h-4', isActive ? 'text-indigo-600' : 'text-slate-500')}
+              className={cn('w-3.5 h-3.5 shrink-0', isActive ? 'text-indigo-600' : 'text-slate-500')}
             />
             <span>{tab.label}</span>
             {tab.badge !== undefined && (
               <span
                 className={cn(
-                  'px-2 py-0.5 rounded-full text-xs font-black',
+                  'px-1.5 py-0.2 rounded-full text-[10px] font-black',
                   isActive
                     ? 'bg-indigo-100 text-indigo-700'
                     : 'bg-slate-300/60 text-slate-700'

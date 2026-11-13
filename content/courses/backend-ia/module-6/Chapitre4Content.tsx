@@ -12,14 +12,15 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre4Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — WebAssembly &amp; Accélération Matérielle</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 4 — Calculs GPU dans le navigateur —— Workgroups &amp; Benchmarks
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
+          Chapitre 4 — Calculs GPU dans le navigateur : Workgroups &amp; Benchmarks
         </h1>
       </div>
 
@@ -61,68 +62,68 @@ export const Chapitre4Content: React.FC = () => {
           Le GPU n&apos;est plus seulement réservé aux jeux vidéo : il est devenu le moteur incontournable de l&apos;informatique moderne et de l&apos;intelligence artificielle.
         </p>
 
-        {/* 4 Original Document Images Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-            <div className="relative w-full h-48 sm:h-56 rounded-xl overflow-hidden bg-slate-950">
+        {/* 4 Original Document Images Stacked Vertically */}
+        <div className="space-y-4 min-w-0 max-w-full">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/webgpu-digital-image-matrix.jpg"
                 alt="Matrice de pixels d'une image numérique"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 400px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">1. Traitement d&apos;Images &amp; Vision</h3>
-            <p className="text-xs text-slate-700 mt-1">
+            <p className="text-xs sm:text-sm text-slate-700 mt-1">
               Chaque pixel correspond à une cellule d&apos;une matrice 2D/3D. Les filtres de convolution, transformations de couleurs et convolutions de vision par ordinateur sont calculés en parallèle sur des millions de pixels.
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-            <div className="relative w-full h-48 sm:h-56 rounded-xl overflow-hidden bg-slate-950">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/webgpu-3d-graphics-rendering.jpg"
                 alt="Rendu graphique 3D en maillage fil de fer"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 400px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">2. Graphismes 3D &amp; Rendu</h3>
-            <p className="text-xs text-slate-700 mt-1">
+            <p className="text-xs sm:text-sm text-slate-700 mt-1">
               Calcul de millions de polygones, lancer de rayons (Ray Tracing), ombrage dynamique et éclairage réaliste exécutés à 60 ou 120 images par seconde directement dans le navigateur.
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-            <div className="relative w-full h-48 sm:h-56 rounded-xl overflow-hidden bg-slate-950">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/webgpu-ai-matrix-tensors.jpg"
                 alt="Intelligence artificielle : Tenseurs et réseaux de neurones sur GPU"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 400px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">3. Intelligence Artificielle &amp; Tenseurs</h3>
-            <p className="text-xs text-slate-700 mt-1">
+            <p className="text-xs sm:text-sm text-slate-700 mt-1">
               Les couches de réseaux de neurones (Transformers, CNN, MLP) reposent sur des multiplications de matrices massives (<code className="font-mono text-xs">GEMM</code>) où le GPU surclasse le CPU d&apos;un facteur 10x à 50x.
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-            <div className="relative w-full h-48 sm:h-56 rounded-xl overflow-hidden bg-slate-950">
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-6/webgpu-scientific-simulation.jpg"
                 alt="Simulation scientifique et dynamique des fluides"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100vw, 400px"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             </div>
             <h3 className="mt-3 font-bold text-slate-950 text-base">4. Calcul Scientifique &amp; Fluides</h3>
-            <p className="text-xs text-slate-700 mt-1">
+            <p className="text-xs sm:text-sm text-slate-700 mt-1">
               Résolution d&apos;équations différentielles aux dérivées partielles, dynamique des fluides, physique des particules et prévisions météorologiques simulées en temps réel.
             </p>
           </div>

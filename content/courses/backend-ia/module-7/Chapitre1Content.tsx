@@ -8,13 +8,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
+    <div className="space-y-10 text-slate-900 leading-relaxed font-sans min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Projet Fil Rouge d&apos;Intégration</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Analyse des besoins et conception de l&apos;architecture
         </h1>
       </div>
@@ -154,8 +155,8 @@ export const Chapitre1Content: React.FC = () => {
           Notre application sera organisée autour de trois grandes parties interconnectées :
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl border border-indigo-200 bg-indigo-50/50 space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+          <div className="p-4 rounded-xl border border-indigo-200 bg-indigo-50/50 space-y-2 break-words [overflow-wrap:anywhere] min-w-0">
             <div className="flex items-center gap-2 text-indigo-900 font-bold text-sm">
               <Icon name="layout" className="w-4 h-4 text-indigo-700" />
               <span>Frontend React</span>
@@ -164,7 +165,7 @@ export const Chapitre1Content: React.FC = () => {
               Interface visible par l&apos;utilisateur, formulaires réactifs, affichage du streaming temps réel et visualisation de l&apos;historique.
             </p>
           </div>
-          <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/50 space-y-2">
+          <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/50 space-y-2 break-words [overflow-wrap:anywhere] min-w-0">
             <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
               <Icon name="server" className="w-4 h-4 text-amber-700" />
               <span>Backend Node.js / Express</span>
@@ -173,7 +174,7 @@ export const Chapitre1Content: React.FC = () => {
               Traitement des requêtes HTTP, validation, coordination des services, streaming SSE et délestage des tâches lourdes.
             </p>
           </div>
-          <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 space-y-2">
+          <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 space-y-2 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
             <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
               <Icon name="database" className="w-4 h-4 text-emerald-700" />
               <span>Services externes &amp; Stockage</span>

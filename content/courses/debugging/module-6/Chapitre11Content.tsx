@@ -88,7 +88,7 @@ export const Chapitre11Content: React.FC = () => {
           <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
           <span>Module 6 — Diagnostic assisté par IA & Agents Autonomes • Section 6.11</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Encadrer les Permissions de l&apos;Agent : Périmètre, Fichiers Autorisés et Sécurité
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 max-w-4xl font-medium leading-relaxed">

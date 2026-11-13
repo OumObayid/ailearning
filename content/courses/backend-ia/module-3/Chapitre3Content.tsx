@@ -12,14 +12,15 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre3Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Réseau, HTTP &amp; Protocoles</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 3 — WebSocket —— Communication bidirectionnelle en temps réel
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
+          Chapitre 3 — WebSocket : Communication bidirectionnelle en temps réel
         </h1>
       </div>
 
@@ -69,34 +70,38 @@ export const Chapitre3Content: React.FC = () => {
           En environnement de production, utilisez exclusivement <code>wss://</code> (chiffrement TLS). Vérifiez systématiquement l&apos;en-tête <code>Origin</code> lors du Handshake pour empêcher les attaques de détournement de session inter-sites (CSWSH : <em>Cross-Site WebSocket Hijacking</em>).
         </Callout>
 
-        <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-4">
+        <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-4 min-w-0 max-w-full">
           <h3 className="text-sm sm:text-base font-bold text-slate-900">Les 3 étapes du Handshake HTTP 101</h3>
-          <div className="space-y-3 text-sm">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
-              <span className="font-black text-indigo-950">1. Demande d&apos;élévation du client (HTTP Upgrade) :</span>
-              <pre className="mt-2 rounded bg-slate-950 p-3 font-mono text-xs text-indigo-300">
-{`GET /chat HTTP/1.1
-Host: localhost:3000
-Upgrade: websocket
-Connection: Upgrade
-Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-Sec-WebSocket-Version: 13`}
-              </pre>
+          <div className="space-y-3 text-sm min-w-0 max-w-full">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 min-w-0 max-w-full">
+              <span className="font-black text-indigo-950 block text-xs sm:text-sm mb-2">
+                1. Demande d&apos;élévation du client (HTTP Upgrade) :
+              </span>
+              <div className="rounded-xl bg-slate-950 p-3.5 font-mono text-xs text-indigo-300 space-y-1 break-words [overflow-wrap:anywhere] min-w-0 leading-relaxed">
+                <div className="break-words">GET /chat HTTP/1.1</div>
+                <div className="break-words">Host: localhost:3000</div>
+                <div className="break-words">Upgrade: websocket</div>
+                <div className="break-words">Connection: Upgrade</div>
+                <div className="break-all text-indigo-200 font-semibold">Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==</div>
+                <div className="break-words">Sec-WebSocket-Version: 13</div>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
-              <span className="font-black text-emerald-950">2. Accord du serveur Node.js (Statut 101) :</span>
-              <pre className="mt-2 rounded bg-slate-950 p-3 font-mono text-xs text-emerald-300">
-{`HTTP/1.1 101 Switching Protocols
-Upgrade: websocket
-Connection: Upgrade
-Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`}
-              </pre>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 min-w-0 max-w-full">
+              <span className="font-black text-emerald-950 block text-xs sm:text-sm mb-2">
+                2. Accord du serveur Node.js (Statut 101) :
+              </span>
+              <div className="rounded-xl bg-slate-950 p-3.5 font-mono text-xs text-emerald-300 space-y-1 break-words [overflow-wrap:anywhere] min-w-0 leading-relaxed">
+                <div className="break-words font-black text-emerald-400">HTTP/1.1 101 Switching Protocols</div>
+                <div className="break-words">Upgrade: websocket</div>
+                <div className="break-words">Connection: Upgrade</div>
+                <div className="break-all text-emerald-200 font-semibold">Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=</div>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
-              <span className="font-black text-sky-950">3. Canal Full-Duplex actif :</span>
-              <p className="mt-1 text-xs text-slate-800">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 min-w-0 max-w-full">
+              <span className="font-black text-sky-950 block text-xs sm:text-sm">3. Canal Full-Duplex actif :</span>
+              <p className="mt-1 text-xs text-slate-800 leading-relaxed break-words">
                 La connexion TCP reste ouverte indéfiniment. Chaque message n&apos;est plus encadré par 1 Ko d&apos;en-têtes HTTP, mais seulement par <strong>2 à 10 octets de framing</strong> binaire !
               </p>
             </div>
@@ -158,65 +163,71 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`}
           Distinguez quand WebSocket est indispensable et quand une approche plus simple (comme le Polling ou SSE) est préférable :
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100">
-                <Image
-                  src="/images/cours/backend-ia/module-3/use-case-gaming.jpg"
-                  alt="Jeu multijoueur nécessitant WebSocket"
-                  fill
-                  className="object-contain"
-                />
+        <div className="space-y-6 my-6 min-w-0">
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-4 break-words [overflow-wrap:anywhere] min-w-0">
+            <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden rounded-xl bg-slate-100">
+              <Image
+                src="/images/cours/backend-ia/module-3/use-case-gaming.jpg"
+                alt="Jeu multijoueur nécessitant WebSocket"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <h4 className="font-black text-slate-950 text-base sm:text-lg">1. Jeux &amp; Collaboration 3D</h4>
+                <span className="inline-block self-start sm:self-auto rounded bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-900 border border-emerald-300">
+                  WebSocket Indispensable
+                </span>
               </div>
-              <h4 className="mt-3 font-black text-slate-950 text-base">1. Jeux &amp; Collaboration 3D</h4>
-              <p className="mt-1 text-xs text-slate-700 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
                 Positions des joueurs, collisions et actions synchronisées à 60 Hz. WebSocket est obligatoire en raison de la latence inférieure à 15 ms.
               </p>
             </div>
-            <span className="mt-3 inline-block rounded bg-emerald-100 px-2 py-1 text-center text-xs font-black text-emerald-900 border border-emerald-300">
-              WebSocket Indispensable
-            </span>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100">
-                <Image
-                  src="/images/cours/backend-ia/module-3/use-case-chat.jpg"
-                  alt="Messagerie instantanée de groupe"
-                  fill
-                  className="object-contain"
-                />
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-4 break-words [overflow-wrap:anywhere] min-w-0">
+            <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden rounded-xl bg-slate-100">
+              <Image
+                src="/images/cours/backend-ia/module-3/use-case-chat.jpg"
+                alt="Messagerie instantanée de groupe"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <h4 className="font-black text-slate-950 text-base sm:text-lg">2. Messagerie Instantanée</h4>
+                <span className="inline-block self-start sm:self-auto rounded bg-sky-100 px-3 py-1 text-xs font-black text-sky-900 border border-sky-300">
+                  WebSocket Très Adapté
+                </span>
               </div>
-              <h4 className="mt-3 font-black text-slate-950 text-base">2. Messagerie Instantanée</h4>
-              <p className="mt-1 text-xs text-slate-700 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
                 Envoi et réception instantanés entre plusieurs interlocuteurs connectés, indicateurs de saisie en direct et accusés de lecture.
               </p>
             </div>
-            <span className="mt-3 inline-block rounded bg-sky-100 px-2 py-1 text-center text-xs font-black text-sky-900 border border-sky-300">
-              WebSocket Très Adapté
-            </span>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100">
-                <Image
-                  src="/images/cours/backend-ia/module-3/use-case-dashboard.jpg"
-                  alt="Tableau de bord de suivi de tâches et jobs"
-                  fill
-                  className="object-contain"
-                />
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-4 break-words [overflow-wrap:anywhere] min-w-0">
+            <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden rounded-xl bg-slate-100">
+              <Image
+                src="/images/cours/backend-ia/module-3/use-case-dashboard.jpg"
+                alt="Tableau de bord de suivi de tâches et jobs"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <h4 className="font-black text-slate-950 text-base sm:text-lg">3. Suivi de Jobs &amp; Tâches IA</h4>
+                <span className="inline-block self-start sm:self-auto rounded bg-amber-100 px-3 py-1 text-xs font-black text-amber-900 border border-amber-300">
+                  Polling ou SSE Suffisants
+                </span>
               </div>
-              <h4 className="mt-3 font-black text-slate-950 text-base">3. Suivi de Jobs &amp; Tâches IA</h4>
-              <p className="mt-1 text-xs text-slate-700 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
                 Vérification ponctuelle de barres de progression ou de rapports en arrière-plan.
               </p>
             </div>
-            <span className="mt-3 inline-block rounded bg-amber-100 px-2 py-1 text-center text-xs font-black text-amber-900 border border-amber-300">
-              Polling ou SSE Suffisants
-            </span>
           </div>
         </div>
       </section>

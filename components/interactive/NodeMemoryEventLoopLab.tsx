@@ -101,29 +101,29 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
   };
 
   return (
-    <div className="my-8 rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-8 shadow-sm">
+    <div className="my-8 rounded-3xl border-2 border-slate-300 bg-white p-5 sm:p-7 shadow-sm min-w-0 max-w-full">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-slate-200 pb-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-800">
+      <div className="flex flex-col gap-4 border-b-2 border-slate-200 pb-5">
+        <div className="flex items-start gap-3.5 w-full">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-800">
             <Icon name="cpu" className="w-6 h-6" />
           </div>
-          <div>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-950">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-950 leading-tight">
               Laboratoire Interactif : Mémoire &amp; Event Loop Node.js
             </h3>
-            <p className="text-base text-slate-800 font-semibold">
+            <p className="mt-1 text-sm sm:text-base text-slate-800 font-semibold leading-normal">
               Manipulez en temps réel la RAM et observez le cheminement des microtasks
             </p>
           </div>
         </div>
 
         {/* Tab switch */}
-        <div className="flex rounded-xl bg-slate-100 p-1 border-2 border-slate-200">
+        <div className="flex flex-wrap rounded-xl bg-slate-100 p-1.5 border-2 border-slate-200 gap-1.5 self-start">
           <button
             type="button"
             onClick={() => setActiveTab('memory')}
-            className={`rounded-lg px-3.5 py-2 text-sm font-black transition ${
+            className={`rounded-lg px-4 py-2 text-sm font-black transition ${
               activeTab === 'memory'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-800 hover:text-slate-950'
@@ -134,7 +134,7 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('eventloop')}
-            className={`rounded-lg px-3.5 py-2 text-sm font-black transition ${
+            className={`rounded-lg px-4 py-2 text-sm font-black transition ${
               activeTab === 'eventloop'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-800 hover:text-slate-950'
@@ -147,27 +147,28 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
 
       {/* Tab 1: Memory & GC */}
       {activeTab === 'memory' && (
-        <div className="mt-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 text-center">
-              <span className="text-xs uppercase font-extrabold text-slate-700">Objets en Heap</span>
+        <div className="mt-6 space-y-6 min-w-0">
+          {/* Règle respectée : MAX 2 cartes par ligne, responsive et wrappé */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs uppercase font-extrabold text-slate-700 block">Objets en Heap</span>
               <p className="mt-1 text-2xl font-black text-slate-950">{itemsCount.toLocaleString()}</p>
-              <span className="text-xs text-slate-600 font-semibold">tableau utilisateurs[]</span>
+              <span className="text-xs text-slate-600 font-semibold block">tableau utilisateurs[]</span>
             </div>
-            <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-4 text-center">
-              <span className="text-xs uppercase font-extrabold text-indigo-900">heapUsed</span>
+            <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-4 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs uppercase font-extrabold text-indigo-900 block">heapUsed</span>
               <p className="mt-1 text-2xl font-black text-indigo-950">{heapUsedMB} MB</p>
-              <span className="text-xs text-indigo-800 font-semibold">Objets actifs en RAM</span>
+              <span className="text-xs text-indigo-800 font-semibold block">Objets actifs en RAM</span>
             </div>
-            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 text-center">
-              <span className="text-xs uppercase font-extrabold text-slate-700">heapTotal</span>
+            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs uppercase font-extrabold text-slate-700 block">heapTotal</span>
               <p className="mt-1 text-2xl font-black text-slate-950">{heapTotalMB} MB</p>
-              <span className="text-xs text-slate-600 font-semibold">Alloué par le moteur V8</span>
+              <span className="text-xs text-slate-600 font-semibold block">Alloué par le moteur V8</span>
             </div>
-            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 text-center">
-              <span className="text-xs uppercase font-extrabold text-slate-700">RSS (Processus)</span>
+            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs uppercase font-extrabold text-slate-700 block">RSS (Processus)</span>
               <p className="mt-1 text-2xl font-black text-slate-950">{rssMB} MB</p>
-              <span className="text-xs text-slate-600 font-semibold">Mémoire physique totale</span>
+              <span className="text-xs text-slate-600 font-semibold block">Mémoire physique totale</span>
             </div>
           </div>
 
@@ -178,7 +179,7 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
               onClick={handleAddItems}
               className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-base font-bold text-white shadow-sm hover:bg-indigo-500 transition focus:outline-none"
             >
-              <Icon name="sparkles" className="w-5 h-5" />
+              <Icon name="sparkles" className="w-5 h-5 shrink-0" />
               <span>Simuler route /add (+10 000 objets)</span>
             </button>
 
@@ -187,13 +188,13 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
               onClick={handleClearMemory}
               className="inline-flex items-center gap-2 rounded-xl border-2 border-rose-300 bg-rose-50 px-5 py-3 text-base font-bold text-rose-950 hover:bg-rose-100 transition focus:outline-none"
             >
-              <Icon name="x" className="w-5 h-5 text-rose-700" />
+              <Icon name="x" className="w-5 h-5 text-rose-700 shrink-0" />
               <span>Simuler route /clear (Libérer références)</span>
             </button>
           </div>
 
           {/* Pedagogical Note */}
-          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-4.5 text-base font-semibold text-slate-900 leading-relaxed">
+          <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-4.5 text-base font-semibold text-slate-900 leading-relaxed break-words [overflow-wrap:anywhere] min-w-0">
             {gcTriggered ? (
               <p>
                 💡 <strong className="text-indigo-950 font-black">Observation clé :</strong> En vidant le tableau global, les objets deviennent inaccessibles. <strong className="text-indigo-950 font-black">heapUsed</strong> chute car la mémoire est libérée par le Garbage Collector. En revanche, <strong className="text-indigo-950 font-black">RSS</strong> reste souvent élevé car V8 conserve les pages mémoires déjà réquisitionnées pour de futures requêtes.
@@ -209,53 +210,54 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
 
       {/* Tab 2: Event Loop visualizer */}
       {activeTab === 'eventloop' && (
-        <div className="mt-6 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="mt-6 space-y-6 min-w-0">
+          {/* Règle respectée : MAX 2 cartes par ligne, responsive et wrappé */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
             {/* Call Stack */}
-            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4">
+            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="block text-xs uppercase font-extrabold text-slate-700 mb-2">1. Call Stack (Synchrone)</span>
-              <div className="rounded-xl border border-slate-200 bg-white p-3 font-mono text-sm font-bold text-indigo-700">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 font-mono text-sm font-bold text-indigo-700 break-words [overflow-wrap:anywhere] whitespace-pre-wrap">
                 {eventLoopSteps[currentStep].callStack}
               </div>
             </div>
 
             {/* Microtasks */}
-            <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-4">
+            <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50/50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="block text-xs uppercase font-extrabold text-indigo-950 mb-2">2. Microtasks Queue</span>
-              <div className="rounded-xl border border-indigo-200 bg-white p-3 font-mono text-sm font-bold text-indigo-950">
+              <div className="rounded-xl border border-indigo-200 bg-white p-3 font-mono text-sm font-bold text-indigo-950 break-words [overflow-wrap:anywhere] whitespace-pre-wrap">
                 {eventLoopSteps[currentStep].microtasks}
               </div>
             </div>
 
             {/* Timers Queue */}
-            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4">
+            <div className="rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
               <span className="block text-xs uppercase font-extrabold text-slate-700 mb-2">3. Timers Queue (Libuv)</span>
-              <div className="rounded-xl border border-slate-200 bg-white p-3 font-mono text-sm font-bold text-slate-900">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 font-mono text-sm font-bold text-slate-900 break-words [overflow-wrap:anywhere] whitespace-pre-wrap">
                 {eventLoopSteps[currentStep].timers}
               </div>
             </div>
           </div>
 
           {/* Terminal Output */}
-          <div className="rounded-2xl border-2 border-slate-950 bg-slate-950 p-5 text-white">
+          <div className="rounded-2xl border-2 border-slate-950 bg-slate-950 p-5 text-white min-w-0 break-words">
             <span className="block text-xs uppercase font-extrabold text-indigo-300 mb-2">Sortie console (stdout)</span>
-            <pre className="font-mono text-base font-bold text-emerald-400 whitespace-pre-wrap leading-relaxed">
+            <pre className="font-mono text-base font-bold text-emerald-400 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">
               {eventLoopSteps[currentStep].output}
             </pre>
           </div>
 
           {/* Step Explanation */}
-          <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4.5">
-            <span className="text-xs uppercase font-black tracking-wider text-slate-700">
+          <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="text-xs uppercase font-black tracking-wider text-slate-700 block">
               Étape {currentStep + 1} sur {eventLoopSteps.length}
             </span>
-            <p className="mt-1 text-base font-bold text-slate-950">
+            <p className="mt-1 text-base font-bold text-slate-950 break-words">
               {eventLoopSteps[currentStep].explanation}
             </p>
           </div>
 
           {/* Step controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={handleNextStep}
@@ -263,7 +265,7 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-base font-bold text-white shadow-sm hover:bg-indigo-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>Étape suivante</span>
-              <Icon name="arrow-right" className="w-5 h-5" />
+              <Icon name="arrow-right" className="w-5 h-5 shrink-0" />
             </button>
 
             <button
@@ -271,7 +273,7 @@ export const NodeMemoryEventLoopLab: React.FC = () => {
               onClick={handleResetLoop}
               className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-base font-bold text-slate-900 hover:bg-slate-100 transition"
             >
-              <Icon name="arrow-left" className="w-4 h-4" />
+              <Icon name="arrow-left" className="w-4 h-4 shrink-0" />
               <span>Recommencer</span>
             </button>
           </div>

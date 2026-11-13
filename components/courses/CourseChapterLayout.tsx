@@ -129,11 +129,11 @@ export const CourseChapterLayout: React.FC<CourseChapterLayoutProps> = ({
         gratuite et immédiate.
       </p>
 
-      {/* Grille des bénéfices */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-2xl mx-auto mb-8 text-left">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 shadow-2xs">
+      {/* Grille des bénéfices - Max 2 cartes par ligne */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-w-2xl mx-auto mb-8 text-left min-w-0">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 shadow-2xs break-words [overflow-wrap:anywhere] min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 text-indigo-800 text-sm font-bold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 text-indigo-800 text-sm font-bold shrink-0">
               📖
             </span>
             <h3 className="font-bold text-xs sm:text-sm text-slate-900">Leçons Complètes</h3>
@@ -143,9 +143,9 @@ export const CourseChapterLayout: React.FC<CourseChapterLayoutProps> = ({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 shadow-2xs">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 shadow-2xs break-words [overflow-wrap:anywhere] min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-sm font-bold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-sm font-bold shrink-0">
               📊
             </span>
             <h3 className="font-bold text-xs sm:text-sm text-slate-900">Suivi &amp; Acquis</h3>
@@ -155,9 +155,9 @@ export const CourseChapterLayout: React.FC<CourseChapterLayoutProps> = ({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 shadow-2xs">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 shadow-2xs break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100 text-amber-800 text-sm font-bold">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100 text-amber-800 text-sm font-bold shrink-0">
               🧪
             </span>
             <h3 className="font-bold text-xs sm:text-sm text-slate-900">Labs &amp; Pratique</h3>
@@ -232,11 +232,11 @@ export const CourseChapterLayout: React.FC<CourseChapterLayoutProps> = ({
 
       {/* Layout: Full screen width vs standard 2-column layout */}
       {isFullWidth ? (
-        <div className="w-full min-w-0">{activeContent}</div>
+        <div className="w-full min-w-0 max-w-full">{activeContent}</div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-2 min-w-0">{activeContent}</div>
-          <aside className="space-y-6 lg:sticky lg:top-20">{sidebar}</aside>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start min-w-0 max-w-full">
+          <div className="lg:col-span-2 min-w-0 max-w-full">{activeContent}</div>
+          <aside className="space-y-6 lg:sticky lg:top-20 min-w-0 max-w-full">{sidebar}</aside>
         </div>
       )}
 

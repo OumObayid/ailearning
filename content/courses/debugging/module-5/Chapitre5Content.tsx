@@ -161,7 +161,7 @@ export const Chapitre5Content: React.FC = () => {
           <Icon name="activity" className="w-4 h-4 text-lime-700" />
           <span>Module 5 — Optimisation & Diagnostic de Performance Avancé</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Détecter les Problèmes de Concurrence : Race Conditions & Deadlocks
         </h1>
         <p className="text-sm sm:text-base text-slate-700 mt-2 font-medium">

@@ -6,13 +6,13 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 export const Chapitre3Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 3 — Rôle, objectif, contraintes et résultats attendus
         </h1>
       </div>
@@ -114,7 +114,7 @@ export const Chapitre3Content: React.FC = () => {
           Dans un IDE où l&apos;agent dispose d&apos;outils de manipulation de fichiers et d&apos;accès au terminal, les contraintes sont des gardes-fous capitaux.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
           <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
             <span className="text-xs font-black uppercase text-indigo-700">Périmètre &amp; Lecture</span>
             <p className="text-xs text-slate-700">« Ne pas sortir du dossier <code>src/</code>. Ne jamais consulter les fichiers <code>.env*</code>. »</p>

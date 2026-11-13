@@ -12,13 +12,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Caching &amp; Performance Redis</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Comprendre le cache et ses avantages en Backend IA
         </h1>
       </div>
@@ -65,8 +66,8 @@ export const Chapitre1Content: React.FC = () => {
           Si 1 000 utilisateurs posent à votre API la question <em>« Résume-moi le fonctionnement de Node.js en 5 lignes »</em>, appeler le modèle Gemini 1 000 fois est un gaspillage colossal de quotas, d&apos;argent et de temps (1 000 x 1.8s = 30 minutes de temps cumulé). Avec le cache, le LLM n&apos;est appelé <strong>qu&apos;une seule fois</strong>, et les 999 requêtes suivantes sont servies en 2 millisecondes depuis la mémoire vive !
         </Callout>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 my-6">
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm flex flex-col justify-between">
+        <div className="space-y-6 my-6 min-w-0 max-w-full">
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100">
               <Image
                 src="/images/cours/backend-ia/module-5/ram-memory-hardware.jpg"
@@ -80,7 +81,7 @@ export const Chapitre1Content: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm flex flex-col justify-between">
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-950">
               <Image
                 src="/images/cours/backend-ia/module-5/redis-in-memory-datastore.jpg"
@@ -141,22 +142,22 @@ export const Chapitre1Content: React.FC = () => {
           Un développeur débutant stocke souvent le cache dans un simple objet <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-indigo-700">const cache = {}</code>. Voici pourquoi cette pratique est bannie en architecture d&apos;entreprise :
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
             <h4 className="font-black text-rose-950 text-sm">1. Volatilité au redémarrage</h4>
             <p className="mt-2 text-xs text-slate-800 leading-relaxed font-medium">
               Chaque fois que Node.js redémarre (déploiement CI/CD, crash ou mise à jour), la variable s&apos;efface et le cache repart à zéro, provoquant une tempête d&apos;appels simultanés sur MySQL et Gemini.
             </p>
           </div>
 
-          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4">
+          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
             <h4 className="font-black text-rose-950 text-sm">2. Non partagé en cluster</h4>
             <p className="mt-2 text-xs text-slate-800 leading-relaxed font-medium">
               En production, vous exécutez 4 à 8 workers Node.js (PM2 ou Kubernetes). Chaque worker possède sa propre mémoire isolée : un utilisateur aura un Cache Hit sur le worker 1 et un Cache Miss sur le worker 2 !
             </p>
           </div>
 
-          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4">
+          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
             <h4 className="font-black text-rose-950 text-sm">3. Risque d&apos;OOM (Out Of Memory)</h4>
             <p className="mt-2 text-xs text-slate-800 leading-relaxed font-medium">
               Sans politique d&apos;éviction automatique (LRU) ni expiration programmée (TTL), l&apos;objet JavaScript grossit indéfiniment jusqu&apos;à saturer la Heap V8 (1.4 Go) et faire crasher le processus.

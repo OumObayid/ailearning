@@ -7,13 +7,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre9Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
+    <div className="space-y-10 text-slate-900 leading-relaxed font-sans min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Projet Fil Rouge d&apos;Intégration</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 9 — Tests, débogage et optimisation globale de l&apos;application
         </h1>
       </div>
@@ -60,16 +61,16 @@ export const Chapitre9Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           2. Définir une stratégie de tests
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
             <h3 className="font-bold text-slate-950 text-sm">1. Tests unitaires</h3>
             <p className="text-xs text-slate-700">Validation des fonctions isolées : validation de prompt, calcul de hash, sanitisation.</p>
           </div>
-          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
             <h3 className="font-bold text-slate-950 text-sm">2. Tests d&apos;intégration</h3>
             <p className="text-xs text-slate-700">Vérification de la communication : routes Express, pool MySQL, client Redis, client Gemini.</p>
           </div>
-          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
             <h3 className="font-bold text-slate-950 text-sm">3. Tests E2E</h3>
             <p className="text-xs text-slate-700">Parcours utilisateur complet : saisie React, diffusion SSE, écriture SQL et historique.</p>
           </div>

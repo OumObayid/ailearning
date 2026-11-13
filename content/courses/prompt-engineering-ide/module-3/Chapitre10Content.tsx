@@ -3,17 +3,18 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
 import { Icon } from '@/components/common/Icon';
 
 export const Chapitre10Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 10 — Prompt Chaining
         </h1>
       </div>
@@ -30,7 +31,7 @@ export const Chapitre10Content: React.FC = () => {
           Le <strong>Prompt Chaining</strong> (ou chaînage de prompts) consiste à <strong>relier plusieurs prompts distincts</strong> au sein d&apos;un workflow automatisé, où chaque prompt se concentre sur une micro-responsabilité précise.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+        <div className="grid gap-4 mt-2 grid-cols-1 sm:grid-cols-2">
           <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
             <h4 className="font-bold text-indigo-900 mb-1 flex items-center gap-2">
               <Icon name="cpu-chip" className="w-4 h-4 text-indigo-600" />
@@ -60,16 +61,17 @@ export const Chapitre10Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           2. Décomposition de prompt vs Chaînage de prompt
         </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse border border-slate-200 rounded-xl overflow-hidden">
-            <thead className="bg-slate-100 text-slate-900 text-sm font-black uppercase">
+        {/* Version desktop & tablette */}
+        <div className="hidden sm:block">
+          <table className="w-full text-left border-collapse border border-slate-200 rounded-xl overflow-hidden text-sm">
+            <thead className="bg-slate-100 text-slate-900 text-xs sm:text-sm font-black uppercase">
               <tr>
                 <th className="p-3.5 border border-slate-200">Critère</th>
                 <th className="p-3.5 border border-slate-200">Prompt Decomposition (Chapitre 4)</th>
                 <th className="p-3.5 border border-slate-200">Prompt Chaining (Chapitre 10)</th>
               </tr>
             </thead>
-            <tbody className="text-sm font-medium text-slate-800 divide-y divide-slate-200 bg-white">
+            <tbody className="font-medium text-slate-800 divide-y divide-slate-200 bg-white">
               <tr>
                 <td className="p-3.5 border border-slate-200 font-bold">Nature</td>
                 <td className="p-3.5 border border-slate-200">Méthode d&apos;analyse intellectuelle</td>
@@ -87,6 +89,25 @@ export const Chapitre10Content: React.FC = () => {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        {/* Version mobile adaptée : cartes empilées sans aucun scrollbar */}
+        <div className="sm:hidden space-y-3">
+          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Nature</span>
+            <div className="text-xs text-slate-700"><strong className="text-slate-900">Décomposition :</strong> Méthode d&apos;analyse intellectuelle</div>
+            <div className="text-xs text-indigo-900 font-semibold"><strong className="text-indigo-950">Chaînage :</strong> Architecture technique d&apos;exécution</div>
+          </div>
+          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Exécution</span>
+            <div className="text-xs text-slate-700"><strong className="text-slate-900">Décomposition :</strong> Peut avoir lieu au sein d&apos;un seul prompt ou plan d&apos;action</div>
+            <div className="text-xs text-indigo-900 font-semibold"><strong className="text-indigo-950">Chaînage :</strong> Implique plusieurs appels de modèles distincts connectés</div>
+          </div>
+          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Passage de données</span>
+            <div className="text-xs text-slate-700"><strong className="text-slate-900">Décomposition :</strong> Géré implicitement dans le fil de discussion</div>
+            <div className="text-xs text-indigo-900 font-semibold"><strong className="text-indigo-950">Chaînage :</strong> Géré explicitement via du code (JSON, parseurs, variables)</div>
+          </div>
         </div>
       </section>
 
@@ -195,77 +216,170 @@ export const Chapitre10Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           5. Implémentation complète : Orchestrateur Node.js & Gemini
         </h2>
-        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-          <pre>{`import express from 'express';
-import { GoogleGenAI } from '@google/genai';
-import { z } from 'zod';
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-6 font-mono text-xs sm:text-sm text-slate-200 shadow-xl min-w-0 max-w-full break-words [overflow-wrap:anywhere]">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800 text-xs text-slate-400">
+            <span className="font-semibold text-indigo-400 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+              api/pipeline-chain.ts
+            </span>
+            <span className="bg-slate-800/80 px-2 py-0.5 rounded text-[11px] text-slate-300">Express + Zod + @google/genai</span>
+          </div>
 
-const app = express();
-app.use(express.json());
+          <div className="space-y-1.5 leading-relaxed break-words">
+            <div>
+              <span className="text-purple-400 font-semibold">import</span> express <span className="text-purple-400 font-semibold">from</span> <span className="text-emerald-400">&apos;express&apos;</span>;
+            </div>
+            <div>
+              <span className="text-purple-400 font-semibold">import</span> &#123; GoogleGenAI &#125; <span className="text-purple-400 font-semibold">from</span> <span className="text-emerald-400">&apos;@google/genai&apos;</span>;
+            </div>
+            <div>
+              <span className="text-purple-400 font-semibold">import</span> &#123; z &#125; <span className="text-purple-400 font-semibold">from</span> <span className="text-emerald-400">&apos;zod&apos;</span>;
+            </div>
+            <div className="py-1"></div>
+            <div>
+              <span className="text-purple-400 font-semibold">const</span> app = express();
+            </div>
+            <div>app.use(express.json());</div>
+            <div className="py-1"></div>
+            <div>
+              <span className="text-purple-400 font-semibold">const</span> ai = <span className="text-purple-400 font-semibold">new</span> <span className="text-yellow-300 font-semibold">GoogleGenAI</span>();
+            </div>
+            <div className="py-1"></div>
+            <div className="text-slate-500 italic">// Schéma de validation pour l&apos;étape d&apos;extraction</div>
+            <div>
+              <span className="text-purple-400 font-semibold">const</span> ExtractionSchema = z.object(&#123;
+              <div className="pl-3 sm:pl-4">
+                langage: z.string(),
+              </div>
+              <div className="pl-3 sm:pl-4">
+                framework: z.string().optional(),
+              </div>
+              <div className="pl-3 sm:pl-4">
+                points_d_entree: z.array(z.string()),
+              </div>
+              <div className="pl-3 sm:pl-4">
+                endpoints_detectes: z.array(z.string()),
+              </div>
+              &#125;);
+            </div>
+            <div className="py-1"></div>
+            <div>
+              app.<span className="text-blue-400">post</span>(<span className="text-emerald-400">&apos;/api/pipeline-chain&apos;</span>, <span className="text-purple-400 font-semibold">async</span> (req, res) =&gt; &#123;
+            </div>
+            <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+              <div>
+                <span className="text-purple-400 font-semibold">try</span> &#123;
+              </div>
+              <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> &#123; sourceCode &#125; = req.body;
+                </div>
+                <div>
+                  <span className="text-purple-400 font-semibold">if</span> (!sourceCode) <span className="text-purple-400 font-semibold">return</span> res.status(<span className="text-amber-300">400</span>).json(&#123; error: <span className="text-emerald-400">&apos;Code manquant.&apos;</span> &#125;);
+                </div>
 
-const ai = new GoogleGenAI();
+                <div className="pt-2 text-slate-500 italic">// ÉTAPE 1 : Extraction structurée</div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> prompt1 = <span className="text-emerald-400">`</span>
+                </div>
+                <div className="pl-3 text-emerald-300/90 text-[11px] sm:text-xs bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/80 my-1 space-y-1">
+                  <div>Extrais les métadonnées techniques du code sous format JSON :</div>
+                  <div>- langage, framework, points_d_entree, endpoints_detectes</div>
+                  <div className="pt-1 text-slate-400 font-semibold text-[11px]">CODE :</div>
+                  <div className="text-sky-300">$&#123;sourceCode&#125;</div>
+                </div>
+                <div><span className="text-emerald-400">`</span>;</div>
 
-// Schéma de validation pour l'étape d'extraction
-const ExtractionSchema = z.object({
-  langage: z.string(),
-  framework: z.string().optional(),
-  points_d_entree: z.array(z.string()),
-  endpoints_detectes: z.array(z.string()),
-});
+                <div className="py-1">
+                  <span className="text-purple-400 font-semibold">const</span> res1 = <span className="text-purple-400 font-semibold">await</span> ai.models.generateContent(&#123;
+                  <div className="pl-3 sm:pl-4">
+                    model: <span className="text-emerald-400">&apos;gemini-3.5-flash-lite&apos;</span>,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    contents: prompt1,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    config: &#123; responseMimeType: <span className="text-emerald-400">&apos;application/json&apos;</span> &#125;,
+                  </div>
+                  &#125;);
+                </div>
 
-app.post('/api/pipeline-chain', async (req, res) => {
-  try {
-    const { sourceCode } = req.body;
-    if (!sourceCode) return res.status(400).json({ error: 'Code manquant.' });
+                <div className="pt-1 text-slate-500 italic">// Validation Zod de l&apos;étape intermédiaire</div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> donneesExtraites = ExtractionSchema.parse(JSON.parse(res1.text));
+                </div>
 
-    // ÉTAPE 1 : Extraction structurée
-    const prompt1 = \`
-      Extrais les métadonnées techniques du code sous format JSON :
-      - langage, framework, points_d_entree, endpoints_detectes
-      CODE :
-      \${sourceCode}
-    \`;
-    const res1 = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt1,
-      config: { responseMimeType: 'application/json' },
-    });
-    
-    // Validation Zod de l'étape intermédiaire
-    const donneesExtraites = ExtractionSchema.parse(JSON.parse(res1.text));
+                <div className="pt-2 text-slate-500 italic">// ÉTAPE 2 : Analyse ciblée sur les endpoints détectés</div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> prompt2 = <span className="text-emerald-400">`</span>
+                </div>
+                <div className="pl-3 text-emerald-300/90 text-[11px] sm:text-xs bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/80 my-1 space-y-1">
+                  <div>Analyse la sécurité de ces endpoints : <span className="text-sky-300">$&#123;JSON.stringify(donneesExtraites.endpoints_detectes)&#125;</span></div>
+                  <div>En te basant sur ce code source :</div>
+                  <div className="text-sky-300">$&#123;sourceCode&#125;</div>
+                </div>
+                <div><span className="text-emerald-400">`</span>;</div>
 
-    // ÉTAPE 2 : Analyse ciblée sur les endpoints détectés
-    const prompt2 = \`
-      Analyse la sécurité de ces endpoints : \${JSON.stringify(donneesExtraites.endpoints_detectes)}
-      En te basant sur ce code source :
-      \${sourceCode}
-    \`;
-    const res2 = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt2,
-    });
-    const rapportSecurite = res2.text;
+                <div className="py-1">
+                  <span className="text-purple-400 font-semibold">const</span> res2 = <span className="text-purple-400 font-semibold">await</span> ai.models.generateContent(&#123;
+                  <div className="pl-3 sm:pl-4">
+                    model: <span className="text-emerald-400">&apos;gemini-3.5-flash-lite&apos;</span>,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    contents: prompt2,
+                  </div>
+                  &#125;);
+                </div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> rapportSecurite = res2.text;
+                </div>
 
-    // ÉTAPE 3 : Synthèse finale
-    const prompt3 = \`
-      Rédige une synthèse exécutive de 3 paragraphes pour le CTO basée sur :
-      - Métadonnées : \${JSON.stringify(donneesExtraites)}
-      - Analyse : \${rapportSecurite}
-    \`;
-    const res3 = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt3,
-    });
+                <div className="pt-2 text-slate-500 italic">// ÉTAPE 3 : Synthèse finale</div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> prompt3 = <span className="text-emerald-400">`</span>
+                </div>
+                <div className="pl-3 text-emerald-300/90 text-[11px] sm:text-xs bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/80 my-1 space-y-1">
+                  <div>Rédige une synthèse exécutive de 3 paragraphes pour le CTO basée sur :</div>
+                  <div>- Métadonnées : <span className="text-sky-300">$&#123;JSON.stringify(donneesExtraites)&#125;</span></div>
+                  <div>- Analyse : <span className="text-sky-300">$&#123;rapportSecurite&#125;</span></div>
+                </div>
+                <div><span className="text-emerald-400">`</span>;</div>
 
-    return res.json({
-      etape1: donneesExtraites,
-      etape2: rapportSecurite,
-      synthese: res3.text,
-    });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});`}</pre>
+                <div className="py-1">
+                  <span className="text-purple-400 font-semibold">const</span> res3 = <span className="text-purple-400 font-semibold">await</span> ai.models.generateContent(&#123;
+                  <div className="pl-3 sm:pl-4">
+                    model: <span className="text-emerald-400">&apos;gemini-3.5-flash-lite&apos;</span>,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    contents: prompt3,
+                  </div>
+                  &#125;);
+                </div>
+
+                <div className="py-1">
+                  <span className="text-purple-400 font-semibold">return</span> res.json(&#123;
+                  <div className="pl-3 sm:pl-4">
+                    etape1: donneesExtraites,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    etape2: rapportSecurite,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    synthese: res3.text,
+                  </div>
+                  &#125;);
+                </div>
+              </div>
+              <div>
+                &#125; <span className="text-purple-400 font-semibold">catch</span> (error) &#123;
+              </div>
+              <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1">
+                <span className="text-purple-400 font-semibold">return</span> res.status(<span className="text-amber-300">500</span>).json(&#123; error: (error <span className="text-purple-400 font-semibold">as</span> Error).message &#125;);
+              </div>
+              <div>&#125;</div>
+            </div>
+            <div>&#125;);</div>
+          </div>
         </div>
       </section>
 
@@ -304,6 +418,20 @@ app.post('/api/pipeline-chain', async (req, res) => {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* Checklist interactive */}
+      <section className="space-y-4">
+        <InteractiveChecklist
+          title="Auto-évaluation : Vos acquis sur le Prompt Chaining"
+          items={[
+            "Je comprends la différence entre Décomposition (logique) et Chaînage (pipeline d'exécution en code).",
+            "Je sais orchestrer des appels en chaîne où la sortie de l'étape 1 alimente l'étape 2.",
+            "J'utilise Promise.all() pour paralléliser les prompts indépendants et diviser le temps de latence.",
+            "Je valide chaque étape intermédiaire avec Zod pour stopper immédiatement la propagation d'erreurs.",
+            "Je sais implémenter un aiguillage conditionnel pour router chaque requête vers l'agent adéquat."
+          ]}
+        />
       </section>
 
       {/* Quiz */}

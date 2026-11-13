@@ -117,7 +117,7 @@ export const Chapitre11Content: React.FC = () => {
           <Icon name="academic-cap" className="w-4 h-4 text-lime-700" />
           <span>Module 2 — Atelier Pratique de Synthèse</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 11 — TP Final : Diagnostic et Résolution d&apos;Anomalies avec Chrome DevTools et VS Code
         </h1>
         <p className="mt-3 text-base text-slate-700 font-medium">

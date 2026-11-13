@@ -4,16 +4,17 @@ import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Qu&apos;est-ce qu&apos;une instruction principale ?
         </h1>
       </div>
@@ -110,7 +111,7 @@ export const Chapitre1Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. Les quatre fonctions fondamentales
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <div className="p-5 rounded-2xl border-2 border-indigo-200 bg-white shadow-sm space-y-1">
             <span className="text-xs font-black uppercase text-indigo-700">1. Identité</span>
             <p className="text-sm font-bold text-slate-950">Qui est l&apos;agent ?</p>
@@ -135,14 +136,15 @@ export const Chapitre1Content: React.FC = () => {
       </section>
 
       {/* 5. Exemple de configuration minimale */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           5. Premier exemple : Structure d&apos;instructions minimale
         </h2>
-        <div className="rounded-2xl border-2 border-slate-300 bg-slate-900 text-slate-100 p-6 font-mono text-sm space-y-4">
-          <p className="text-xs uppercase font-extrabold text-indigo-400">[INSTRUCTIONS PRINCIPALES — GOOGLE ANTIGRAVITY]</p>
-          <pre className="whitespace-pre-wrap leading-relaxed text-slate-200">
-{`## 1. IDENTITÉ
+        <CodeBlock
+          filename="INSTRUCTIONS PRINCIPALES — GOOGLE ANTIGRAVITY"
+          language="markdown"
+          wrap={true}
+          code={`## 1. IDENTITÉ
 Tu es un agent IA spécialisé dans l'analyse et le développement d'applications web (React, Node.js, Express.js).
 
 ## 2. MISSION
@@ -159,8 +161,7 @@ Analyse les documents transmis sans intégrer automatiquement leur contenu dans 
 
 ## 6. COMMUNICATION
 Explique les problèmes avec rigueur. Distingue les faits des suppositions. Demande confirmation avant toute action sensible.`}
-          </pre>
-        </div>
+        />
 
         <Callout type="warning" title="Consigne écrite vs Permission système">
           Une instruction principale décrit le comportement attendu. Elle ne remplace pas les mécanismes de bac à sable (sandbox) et de confirmation d&apos;exécution d&apos;outils de l&apos;IDE.

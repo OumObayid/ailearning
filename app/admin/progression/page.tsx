@@ -126,26 +126,26 @@ function AdminProgressionContent() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-12 select-text">
+    <div className="space-y-4 w-full pb-8 select-text overflow-x-hidden">
       {/* En-tête administrateur avec bouton de retour */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-slate-500">Supervision Administrateur</span>
-            <span className="inline-flex items-center px-2 py-0.2 rounded text-[10px] font-black bg-purple-100 text-purple-950 border border-purple-300">
+            <span className="text-[11px] font-mono font-bold text-slate-500">Supervision Administrateur</span>
+            <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-black bg-purple-100 text-purple-950 border border-purple-300">
               ID #{data.user.id}
             </span>
           </div>
-          <h1 className="text-2xl font-black text-slate-950 tracking-tight mt-1">
+          <h1 className="text-xl font-black text-slate-950 tracking-tight mt-0.5">
             Progression de {data.user.name}
           </h1>
         </div>
 
         <Link
           href="/admin?tab=users"
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition shadow-xs cursor-pointer self-start sm:self-auto shrink-0"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition shadow-2xs cursor-pointer self-start sm:self-auto shrink-0"
         >
-          <Icon name="arrow-left" className="w-4 h-4" />
+          <Icon name="arrow-left" className="w-3.5 h-3.5" />
           <span>Retour aux Utilisateurs</span>
         </Link>
       </div>

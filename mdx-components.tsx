@@ -105,7 +105,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         </div>
         <h1
           {...props}
-          className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight"
+          className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]"
         >
           {children}
         </h1>

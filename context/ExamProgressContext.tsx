@@ -6,7 +6,9 @@ import { useAuth } from '@/context/AuthContext';
 interface ExamProgressContextType {
   passedModules: Record<string, string[]>;
   passedCourses: string[];
+  moduleScores: Record<string, Record<string, number>>;
   isModulePassed: (courseId: string, moduleIdentifier: string | number) => boolean;
+  getModuleBadgeType: (courseId: string, moduleIdentifier: string | number) => 'royal' | 'success' | null;
   isCoursePassed: (courseId: string) => boolean;
   refreshProgress: () => Promise<void>;
   isLoading: boolean;
@@ -15,7 +17,9 @@ interface ExamProgressContextType {
 const ExamProgressContext = createContext<ExamProgressContextType>({
   passedModules: {},
   passedCourses: [],
+  moduleScores: {},
   isModulePassed: () => false,
+  getModuleBadgeType: () => null,
   isCoursePassed: () => false,
   refreshProgress: async () => {},
   isLoading: true,
@@ -37,12 +41,14 @@ export function ExamProgressProvider({ children }: { children: React.ReactNode }
   const { user } = useAuth();
   const [passedModules, setPassedModules] = useState<Record<string, string[]>>({});
   const [passedCourses, setPassedCourses] = useState<string[]>([]);
+  const [moduleScores, setModuleScores] = useState<Record<string, Record<string, number>>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refreshProgress = useCallback(async () => {
     if (!user) {
       setPassedModules({});
       setPassedCourses([]);
+      setModuleScores({});
       setIsLoading(false);
       return;
     }
@@ -54,9 +60,11 @@ export function ExamProgressProvider({ children }: { children: React.ReactNode }
         if (data.authenticated) {
           setPassedModules(data.passedModules || {});
           setPassedCourses(data.passedCourses || []);
+          setModuleScores(data.moduleScores || {});
         } else {
           setPassedModules({});
           setPassedCourses([]);
+          setModuleScores({});
         }
       }
     } catch (err) {
@@ -81,9 +89,11 @@ export function ExamProgressProvider({ children }: { children: React.ReactNode }
           if (data.authenticated) {
             setPassedModules(data.passedModules || {});
             setPassedCourses(data.passedCourses || []);
+            setModuleScores(data.moduleScores || {});
           } else {
             setPassedModules({});
             setPassedCourses([]);
+            setModuleScores({});
           }
         }
       } catch (err) {
@@ -111,6 +121,18 @@ export function ExamProgressProvider({ children }: { children: React.ReactNode }
     [passedModules]
   );
 
+  const getModuleBadgeType = useCallback(
+    (courseId: string, moduleIdentifier: string | number): 'royal' | 'success' | null => {
+      const courseScores = moduleScores[courseId];
+      if (!courseScores) return null;
+      const targetSlug = normalizeModuleIdentifier(moduleIdentifier);
+      const score = courseScores[targetSlug];
+      if (typeof score !== 'number' || score < 80) return null;
+      return score >= 100 ? 'royal' : 'success';
+    },
+    [moduleScores]
+  );
+
   const isCoursePassed = useCallback(
     (courseId: string): boolean => {
       return passedCourses.includes(courseId);
@@ -123,7 +145,9 @@ export function ExamProgressProvider({ children }: { children: React.ReactNode }
       value={{
         passedModules,
         passedCourses,
+        moduleScores,
         isModulePassed,
+        getModuleBadgeType,
         isCoursePassed,
         refreshProgress,
         isLoading,

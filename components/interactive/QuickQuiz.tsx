@@ -100,13 +100,13 @@ export const QuickQuiz: React.FC<QuickQuizProps> = ({
           const isCorrect = selected === q.correctIndex;
 
           return (
-            <div key={q.id} className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 space-y-3">
-              <p className="text-sm sm:text-base font-bold text-slate-900">
+            <div key={q.id} className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 space-y-3 min-w-0 max-w-full">
+              <p className="text-sm sm:text-base font-bold text-slate-950 break-words [overflow-wrap:anywhere] leading-snug">
                 {normalizedQuestions.length > 1 ? `${idx + 1}. ` : ''}
                 {q.question}
               </p>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 min-w-0">
                 {q.options.map((opt, oIdx) => {
                   let optStyle =
                     'border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-indigo-50/40';
@@ -131,11 +131,11 @@ export const QuickQuiz: React.FC<QuickQuizProps> = ({
                       type="button"
                       disabled={showResults}
                       onClick={() => handleSelect(q.id, oIdx)}
-                      className={`w-full text-left rounded-lg border p-2.5 text-sm transition flex items-center justify-between ${optStyle}`}
+                      className={`w-full text-left rounded-lg border p-2.5 text-xs sm:text-sm transition flex flex-col sm:flex-row sm:items-center justify-between gap-2 min-w-0 max-w-full cursor-pointer ${optStyle}`}
                     >
-                      <span>{opt}</span>
+                      <span className="break-words [overflow-wrap:anywhere] min-w-0">{opt}</span>
                       {showResults && oIdx === q.correctIndex && (
-                        <span className="text-emerald-600 font-bold ml-2">✓ Bonne réponse</span>
+                        <span className="text-emerald-600 font-bold sm:ml-2 shrink-0 text-xs">✓ Bonne réponse</span>
                       )}
                     </button>
                   );
@@ -144,7 +144,7 @@ export const QuickQuiz: React.FC<QuickQuizProps> = ({
 
               {showResults && (
                 <div
-                  className={`p-2.5 rounded-lg text-sm leading-relaxed ${
+                  className={`p-2.5 rounded-lg text-xs sm:text-sm leading-relaxed break-words [overflow-wrap:anywhere] min-w-0 ${
                     isCorrect ? 'bg-emerald-50 text-emerald-800' : 'bg-slate-100 text-slate-700'
                   }`}
                 >

@@ -7,174 +7,272 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre8Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Prompt Engineering IDE</span>
+          <span>Module 4 — Les Agents IA dans l&apos;IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 8 — Exécution des commandes par un agent IA
         </h1>
+        <p className="text-sm sm:text-base text-slate-700 mt-2 font-medium">
+          Comprendre comment l&apos;agent interprète les retours de commandes (stdout, stderr, exit code) et diagnostique méthodiquement les pannes.
+        </p>
       </div>
 
       {/* 1. stdout, stderr et Exit Code */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Les 3 flux d&apos;information d&apos;une commande exécutée
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <Icon name="command-line" className="w-5 h-5 text-indigo-600" />
+          <span>1. Les 3 flux d&apos;information vitaux d&apos;une commande exécutée</span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <div className="flex items-center gap-2 text-indigo-700 font-bold text-base">
-              <Icon name="document-text" className="w-5 h-5" />
-              <span>stdout (Sortie standard)</span>
+        <p className="text-base sm:text-lg text-slate-900 font-medium">
+          Lorsqu&apos;un agent lance une commande comme <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-xs text-indigo-700 font-bold">npm run build</code>, il ne se fie pas à son intuition : il écoute 3 canaux de retour formels renvoyés par votre système d&apos;exploitation :
+        </p>
+
+        <div className="grid gap-4 pt-1 grid-cols-1 sm:grid-cols-2">
+          {/* stdout */}
+          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Canal 1</span>
+                <span className="text-xl">📄</span>
+              </div>
+              <h3 className="font-extrabold text-slate-950 text-base">stdout (Sortie Standard)</h3>
+              <div className="text-xs font-semibold text-indigo-600 mb-1">Le reçu de caisse normal</div>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Le flux textuel habituel : liste des fichiers générés, durée de compilation, URL locale du serveur. C&apos;est le journal de bord du bon fonctionnement.
+              </p>
             </div>
-            <p className="text-xs text-slate-700 leading-relaxed">
-              Le flux textuel normal émis lors du bon déroulement : modules compilés, durée de transpilation, liens locaux du serveur.
-            </p>
+            <div className="text-[11px] font-mono text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-200">
+              Ex : &quot;✓ built in 420ms&quot;
+            </div>
           </div>
 
-          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <div className="flex items-center gap-2 text-rose-700 font-bold text-base">
-              <Icon name="exclamation-circle" className="w-5 h-5" />
-              <span>stderr (Sortie d&apos;erreur)</span>
+          {/* stderr */}
+          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-black uppercase text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md">Canal 2</span>
+                <span className="text-xl">⚠️</span>
+              </div>
+              <h3 className="font-extrabold text-slate-950 text-base">stderr (Sortie d&apos;Erreur)</h3>
+              <div className="text-xs font-semibold text-rose-600 mb-1">Le voyant orange ou rouge</div>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Le flux dédié aux alertes, avertissements (warnings) et messages d&apos;échec. <em>Attention :</em> certains outils y écrivent de simples alertes informatives sans que la commande n&apos;ait échoué !
+              </p>
             </div>
-            <p className="text-xs text-slate-700 leading-relaxed">
-              Les messages de dysfonctionnement ou avertissements (warnings). <em>Attention :</em> certains outils écrivent des logs informatifs dans stderr sans que la commande ait échoué.
-            </p>
+            <div className="text-[11px] font-mono text-rose-800 bg-rose-50 p-2 rounded-lg border border-rose-200">
+              Ex : &quot;Cannot find module &apos;zod&apos;&quot;
+            </div>
           </div>
 
-          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <div className="flex items-center gap-2 text-emerald-700 font-bold text-base">
-              <Icon name="check-badge" className="w-5 h-5" />
-              <span>Exit Code (Code de retour)</span>
+          {/* exit code */}
+          <div className="p-5 bg-white border-2 border-emerald-200 rounded-2xl shadow-sm space-y-2 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md">Canal 3</span>
+                <span className="text-xl">🚦</span>
+              </div>
+              <h3 className="font-extrabold text-slate-950 text-base">Exit Code (Code de retour)</h3>
+              <div className="text-xs font-semibold text-emerald-700 mb-1">Le feu tricolore numérique</div>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Le chiffre final officiel renvoyé par le système :
+                <br />
+                • <strong className="text-emerald-700">Code 0</strong> = Feu Vert (Succès absolu).
+                <br />
+                • <strong className="text-rose-700">Code &gt; 0</strong> (1, 127, etc.) = Feu Rouge (Échec d&apos;exécution).
+              </p>
             </div>
-            <p className="text-xs text-slate-700 leading-relaxed">
-              La valeur numérique finale renvoyée au système : <code className="bg-slate-100 px-1 py-0.5 rounded font-mono font-bold text-emerald-700">0</code> signifie succès, toute valeur supérieure à 0 signale une erreur d&apos;exécution.
-            </p>
+            <div className="text-[11px] font-mono text-emerald-900 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+              Le seul verdict juridique du système.
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2. Processus ponctuels vs persistants */}
+      {/* 2. Commandes ponctuelles vs Daemons */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           2. Commandes ponctuelles vs Processus persistants (Daemons)
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm">
-            <h4 className="font-bold text-slate-950 text-base mb-1">Commande ponctuelle (Synchrone)</h4>
+        <p className="text-base sm:text-lg text-slate-900 font-medium">
+          Pour un agent, toutes les commandes ne se comportent pas de la même manière dans le temps :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm">
+            <span className="text-xs font-black uppercase text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Type A</span>
+            <h4 className="font-extrabold text-slate-950 text-base">Commande ponctuelle (Synchrone)</h4>
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-              Exemple : <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-xs">npm run build</code>.<br />
-              Le programme réalise son travail, retourne son Exit Code et s&apos;arrête immédiatement. L&apos;agent peut lire directement le résultat.
+              Exemples : <code className="bg-slate-100 px-1 rounded font-mono text-xs">npm run build</code>, <code className="bg-slate-100 px-1 rounded font-mono text-xs">git status</code>, <code className="bg-slate-100 px-1 rounded font-mono text-xs">npm test</code>.
+            </p>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+              Le programme démarre, exécute sa tâche en quelques secondes, renvoie son Exit Code (0 ou 1) et s&apos;arrête. L&apos;agent attend sagement la fin et lit le compte rendu complet.
             </p>
           </div>
-          <div className="p-5 bg-white border-2 border-amber-200 rounded-2xl shadow-sm">
-            <h4 className="font-bold text-amber-950 text-base mb-1">Processus persistant (Asynchrone / Daemon)</h4>
+
+          <div className="p-5 bg-white border-2 border-amber-200 rounded-2xl space-y-2 shadow-sm">
+            <span className="text-xs font-black uppercase text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md">Type B</span>
+            <h4 className="font-extrabold text-slate-950 text-base">Processus persistant (Daemon / Arrière-plan)</h4>
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-              Exemple : <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-xs">npm run dev</code>.<br />
-              Le serveur de développement reste actif en arrière-plan pour écouter les requêtes HTTP. L&apos;agent ne doit pas attendre indéfiniment qu&apos;il se termine.
+              Exemples : <code className="bg-slate-100 px-1 rounded font-mono text-xs">npm run dev</code>, <code className="bg-slate-100 px-1 rounded font-mono text-xs">next dev</code>.
+            </p>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+              Le serveur web démarre et <strong>ne s&apos;arrête jamais</strong> : il reste éveillé pour servir vos pages aux utilisateurs. Si l&apos;agent attendait la fin de la commande, il resterait bloqué indéfiniment ! L&apos;IDE doit donc lancer ce processus en arrière-plan.
             </p>
           </div>
         </div>
       </section>
 
-      {/* 3. Diagnostic des erreurs courantes */}
+      {/* 3. Diagnostic méthodique des erreurs courantes */}
       <section className="space-y-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Démarche de diagnostic méthodique face à une erreur
+          3. Guide de diagnostic méthodique face aux 3 pannes les plus courantes
         </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse border border-slate-200 rounded-xl overflow-hidden">
-            <thead className="bg-slate-100 text-slate-900 text-sm font-black uppercase">
+
+        {/* Desktop Table */}
+        <div className="hidden sm:block">
+          <table className="w-full text-left border-collapse border border-slate-200 rounded-xl overflow-hidden text-sm">
+            <thead className="bg-slate-100 text-slate-900 font-black uppercase text-xs">
               <tr>
-                <th className="p-3 border border-slate-200">Message d&apos;erreur type</th>
-                <th className="p-3 border border-slate-200">Cause profonde</th>
-                <th className="p-3 border border-slate-200">Réaction attendue de l&apos;agent</th>
+                <th className="p-3.5 border border-slate-200 w-1/3">Message d&apos;erreur rencontré</th>
+                <th className="p-3.5 border border-slate-200">Cause profonde réelle</th>
+                <th className="p-3.5 border border-slate-200 text-indigo-900">Réflexe méthodique de l&apos;agent</th>
               </tr>
             </thead>
-            <tbody className="text-xs sm:text-sm font-medium text-slate-800 divide-y divide-slate-200 bg-white">
+            <tbody className="font-medium text-slate-800 divide-y divide-slate-200 bg-white">
               <tr>
-                <td className="p-3 border border-slate-200 font-mono font-bold text-rose-700">Missing script: &quot;build&quot;</td>
-                <td className="p-3 border border-slate-200">Mauvais dossier de travail (cwd) ou script absent de package.json.</td>
-                <td className="p-3 border border-slate-200">Vérifier <code className="font-mono">pwd</code> et inspecter la section <code className="font-mono">&quot;scripts&quot;</code> avant de retenter.</td>
+                <td className="p-3.5 border border-slate-200 font-mono text-xs font-bold text-rose-700">Missing script: &quot;build&quot;</td>
+                <td className="p-3.5 border border-slate-200 text-slate-700">Le terminal est dans le mauvais dossier (mauvais cwd) ou la clé n&apos;existe pas dans package.json.</td>
+                <td className="p-3.5 border border-slate-200 font-bold text-indigo-700">Exécuter <code className="font-mono text-xs">pwd</code> pour vérifier son emplacement avant de relancer.</td>
               </tr>
               <tr>
-                <td className="p-3 border border-slate-200 font-mono font-bold text-rose-700">Cannot find module &apos;express&apos;</td>
-                <td className="p-3 border border-slate-200">Dépendance non installée dans le <code className="font-mono">node_modules</code> local.</td>
-                <td className="p-3 border border-slate-200">Demander l&apos;autorisation explicite d&apos;exécuter <code className="font-mono">npm install express</code>.</td>
+                <td className="p-3.5 border border-slate-200 font-mono text-xs font-bold text-rose-700">Cannot find module &apos;express&apos;</td>
+                <td className="p-3.5 border border-slate-200 text-slate-700">La bibliothèque n&apos;a pas été téléchargée dans <code className="font-mono text-xs">node_modules/</code>.</td>
+                <td className="p-3.5 border border-slate-200 font-bold text-indigo-700">Demander l&apos;autorisation d&apos;exécuter <code className="font-mono text-xs">npm install express</code>.</td>
               </tr>
               <tr>
-                <td className="p-3 border border-slate-200 font-mono font-bold text-rose-700">listen EADDRINUSE: :::3000</td>
-                <td className="p-3 border border-slate-200">Le port 3000 est déjà occupé par un autre processus serveur.</td>
-                <td className="p-3 border border-slate-200">Identifier le processus occupant ou configurer un port alternatif (ex: 3001).</td>
+                <td className="p-3.5 border border-slate-200 font-mono text-xs font-bold text-rose-700">listen EADDRINUSE: :::3000</td>
+                <td className="p-3.5 border border-slate-200 text-slate-700">Le port réseau 3000 est déjà squatté par un autre serveur qui tourne en arrière-plan.</td>
+                <td className="p-3.5 border border-slate-200 font-bold text-indigo-700">Changer le port (ex: 3001) ou fermer l&apos;ancien processus en double.</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </section>
 
-      {/* 4. Idempotence et relances */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Idempotence et dangers des relances aveugles (Retry)
-        </h2>
-        <p className="text-base sm:text-lg text-slate-900 font-medium">
-          Une opération est dite <strong>idempotente</strong> si son exécution répétée produit exactement le même résultat sans effet secondaire cumulatif (ex: une commande de lecture ou de build).
-        </p>
-        <Callout type="danger">
-          <strong>Non-idempotence des commandes de modification :</strong> Si une commande de création de données échoue à cause d&apos;un timeout réseau, la relancer brutalement risque d&apos;insérer des doublons en base ou de corrompre l&apos;état applicatif. L&apos;agent doit d&apos;abord inspecter l&apos;état réel avant de décider d&apos;une relance.
-        </Callout>
-      </section>
-
-      {/* 5. Travaux pratiques */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          5. Travaux pratiques guidés (TP 4.8)
-        </h2>
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl space-y-3">
-          <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">TP 4.8 — Autorisation et analyse du build</span>
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-            Dans Google Antigravity, vérifiez que le script build existe dans votre <code className="font-mono text-xs">package.json</code>, puis autorisez <strong>uniquement</strong> l&apos;exécution de :<br />
-            <code className="bg-slate-100 px-2 py-1 rounded font-mono text-sm font-bold text-indigo-700">npm run build</code>
-          </p>
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800">
-            Examinez la restitution de l&apos;agent : vérifie-t-il l&apos;Exit Code ? Distingue-t-il une compilation technique réussie du bon fonctionnement fonctionnel de toutes les fonctionnalités de l&apos;application ?
+        {/* Mobile Cards */}
+        <div className="sm:hidden space-y-3">
+          <div className="p-3.5 bg-white border border-rose-200 rounded-xl space-y-1">
+            <span className="font-mono text-xs font-bold text-rose-700">Missing script: &quot;build&quot;</span>
+            <p className="text-xs text-slate-700"><strong>Cause :</strong> Mauvais dossier de travail (cwd) ou script absent.</p>
+            <p className="text-xs text-indigo-900 font-semibold"><strong>Solution :</strong> Vérifier son dossier avec <code className="font-mono text-xs">pwd</code>.</p>
+          </div>
+          <div className="p-3.5 bg-white border border-rose-200 rounded-xl space-y-1">
+            <span className="font-mono text-xs font-bold text-rose-700">Cannot find module &apos;...&apos;</span>
+            <p className="text-xs text-slate-700"><strong>Cause :</strong> Bibliothèque non installée dans node_modules.</p>
+            <p className="text-xs text-indigo-900 font-semibold"><strong>Solution :</strong> Lancer <code className="font-mono text-xs">npm install &lt;paquet&gt;</code>.</p>
+          </div>
+          <div className="p-3.5 bg-white border border-rose-200 rounded-xl space-y-1">
+            <span className="font-mono text-xs font-bold text-rose-700">listen EADDRINUSE: :::3000</span>
+            <p className="text-xs text-slate-700"><strong>Cause :</strong> Le port 3000 est déjà occupé par un autre serveur.</p>
+            <p className="text-xs text-indigo-900 font-semibold"><strong>Solution :</strong> Choisir le port 3001 ou fermer l&apos;ancien terminal.</p>
           </div>
         </div>
       </section>
 
-      {/* Quiz */}
+      {/* 4. Idempotence : Le danger des relances aveugles */}
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          4. Idempotence : Pourquoi il ne faut pas relancer une commande à l&apos;aveugle
+        </h2>
+        <p className="text-base sm:text-lg text-slate-900 font-medium">
+          Le mot <strong>idempotence</strong> peut sembler barbare aux débutants. Voici pourtant l&apos;analogie la plus simple pour le retenir :
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl space-y-2 shadow-sm">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">✅ Commande Idempotente</span>
+            <h4 className="font-extrabold text-slate-950 text-base">L&apos;interrupteur de lumière</h4>
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Si la lumière est allumée et que vous rappuyez sur « Allumer », elle reste allumée. Vous pouvez relancer la commande 10 fois sans aucun risque d&apos;effet de bord (ex: <code className="bg-slate-100 px-1 rounded font-mono text-xs">npm run build</code>, <code className="bg-slate-100 px-1 rounded font-mono text-xs">git status</code>).
+            </p>
+          </div>
+
+          <div className="p-5 bg-white border-2 border-rose-200 rounded-2xl space-y-2 shadow-sm">
+            <span className="text-xs font-bold uppercase tracking-wider text-rose-700">❌ Commande Non-Idempotente</span>
+            <h4 className="font-extrabold text-slate-950 text-base">Le bouton « Débiter 50 € »</h4>
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Si la connexion Internet hésite et que vous appuyez 3 fois d&apos;affilée par énervement, vous serez débité de 150 € ! En programmation, relancer brutalement une création de table ou une insertion de données crée des doublons corrompus.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Travaux pratiques guidés */}
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
+          5. Travaux pratiques guidés (TP 4.8) : Valider un build
+        </h2>
+        <div className="p-5 bg-white border-2 border-indigo-200 rounded-2xl space-y-3">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-800 uppercase tracking-wider">TP 4.8 — Le juge de paix de la compilation</span>
+          <h4 className="font-extrabold text-slate-950 text-base">Faire exécuter et analyser un build</h4>
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            Dans Google Antigravity, demandez :
+          </p>
+          <div className="p-3.5 bg-slate-900 text-slate-100 rounded-xl font-mono text-xs break-words border border-slate-800 min-w-0 max-w-full">
+            « Exécute la commande &quot;npm run build&quot; pour vérifier la compilation de notre projet. Vérifie l&apos;Exit Code renvoyé et explique-moi en français si le build est un succès total ou s&apos;il y a des erreurs dans stdout ou stderr. »
+          </div>
+          <p className="text-xs text-slate-600 italic">
+            → Constatez que l&apos;agent vérifie l&apos;Exit Code 0 avant de vous féliciter.
+          </p>
+        </div>
+      </section>
+
+      {/* 6. Quiz d'évaluation */}
       <section className="space-y-4 pt-4">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          Auto-évaluation : Exécution des commandes
+          Auto-évaluation : Vos acquis sur l&apos;Exécution
         </h2>
         <QuickQuiz
-          title="Validation des acquis — Chapitre 8"
+          title="Validation des acquis — Chapitre 8 (Exécution des commandes)"
           questions={[
             {
               id: 1,
-              question: "Que représente généralement un Exit Code égal à 0 après l'exécution d'une commande ?",
+              question: "Quel Exit Code garantit de manière universelle que la commande s'est terminée avec un succès total ?",
               options: [
-                "Une erreur de syntaxe fatale.",
-                "L'exécution s'est terminée avec succès sans erreur signalée par le système.",
-                "Le terminal est planté.",
-                "Le disque dur est saturé."
+                "Code 404",
+                "Code 0",
+                "Code 1",
+                "Code 500"
               ],
               correctIndex: 1,
-              explanation: "Dans les conventions Unix et Windows, le code 0 est universellement réservé au succès de l'exécution."
+              explanation: "Dans les conventions Unix et Windows, le code 0 est universellement réservé au succès. Toute valeur supérieure à 0 signale une erreur."
             },
             {
               id: 2,
-              question: "Pourquoi une compilation réussie (npm run build) ne garantit-elle pas qu'une application est exempte de bugs ?",
+              question: "Pourquoi une commande comme « npm run dev » ne doit-elle pas être exécutée de manière synchrone classique par l'agent ?",
               options: [
-                "Parce que npm ne vérifie que la syntaxe et le packaging technique, sans tester la logique métier ni le comportement utilisateur.",
-                "Parce que Vite supprime automatiquement les composants après le build.",
-                "Parce que les tests unitaires sont interdits lors du build.",
-                "Parce que le navigateur ne lit jamais les fichiers du build."
+                "Parce qu'elle consomme trop d'électricité.",
+                "Parce qu'il s'agit d'un processus persistant (daemon) qui reste éveillé en continu, ce qui bloquerait l'agent indéfiniment.",
+                "Parce que npm refuse de démarrer si une IA est connectée.",
+                "Parce que Vite ne fonctionne que le week-end."
               ],
-              correctIndex: 0,
-              explanation: "Le compilateur vérifie la validité syntaxique et assemble les modules, mais il ne peut pas deviner si votre algorithme répond fidèlement aux besoins fonctionnels."
+              correctIndex: 1,
+              explanation: "Un serveur de développement écoute en continu et ne rend jamais la main : il doit donc tourner en arrière-plan sans bloquer la conversation."
+            },
+            {
+              id: 3,
+              question: "Qu'est-ce qu'une opération « idempotente » en informatique ?",
+              options: [
+                "Une opération qui s'arrête dès qu'il y a du soleil.",
+                "Une opération que l'on peut exécuter plusieurs fois de suite sans provoquer d'effets secondaires cumulatifs indésirables.",
+                "Une commande réservée aux super-utilisateurs Linux.",
+                "Une commande qui s'auto-détruit après 10 secondes."
+              ],
+              correctIndex: 1,
+              explanation: "Une commande idempotente (comme un build ou une lecture) produit le même résultat quel que soit le nombre d'exécutions successives."
             }
           ]}
         />
@@ -182,4 +280,3 @@ export const Chapitre8Content: React.FC = () => {
     </div>
   );
 };
-

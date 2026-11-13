@@ -99,7 +99,7 @@ export const Chapitre1Content: React.FC = () => {
             Performance Engineering Foundations
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Comprendre les performances d&apos;une application : Métriques clés, percentiles P50/P95/P99, TTFB et Chrome DevTools
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

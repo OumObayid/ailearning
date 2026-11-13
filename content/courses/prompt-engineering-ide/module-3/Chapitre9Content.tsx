@@ -3,17 +3,18 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
 import { Icon } from '@/components/common/Icon';
 
 export const Chapitre9Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 9 — Self-critique et vérification
         </h1>
       </div>
@@ -98,7 +99,7 @@ export const Chapitre9Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. Les 5 mécanismes de vérification essentiels
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
             <div className="font-bold text-slate-900 flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs">1</span>
@@ -156,29 +157,73 @@ export const Chapitre9Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. Le cycle opérationnel en 4 étapes
         </h2>
-        <div className="flex flex-col md:flex-row gap-3 items-stretch">
-          <div className="flex-1 p-4 bg-white border-2 border-indigo-200 rounded-xl text-center">
-            <div className="w-8 h-8 mx-auto rounded-full bg-indigo-100 text-indigo-700 font-black flex items-center justify-center mb-2">1</div>
-            <h4 className="font-bold text-slate-950">Production</h4>
-            <p className="text-xs text-slate-600 mt-1">Génération de la première version de l&apos;analyse ou du code.</p>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+          <div className="p-4 sm:p-5 bg-white border-2 border-indigo-200 rounded-2xl space-y-3 min-w-0 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Étape 1</span>
+                <span className="w-7 h-7 rounded-full bg-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-sm">1</span>
+              </div>
+              <h4 className="font-extrabold text-slate-950 text-base">Production</h4>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+                Génération de la première version de l&apos;analyse ou du code.
+              </p>
+            </div>
+            <div className="pt-2 text-xs font-bold text-indigo-700 flex items-center justify-between border-t border-indigo-100">
+              <span>Sortie : 1ère ébauche</span>
+              <span className="text-sm font-bold text-indigo-400" aria-hidden="true">→</span>
+            </div>
           </div>
-          <div className="hidden md:flex items-center text-indigo-400 font-bold">→</div>
-          <div className="flex-1 p-4 bg-white border-2 border-amber-200 rounded-xl text-center">
-            <div className="w-8 h-8 mx-auto rounded-full bg-amber-100 text-amber-700 font-black flex items-center justify-center mb-2">2</div>
-            <h4 className="font-bold text-slate-950">Self-Critique</h4>
-            <p className="text-xs text-slate-600 mt-1">Examen critique et détection des faiblesses, biais ou imprécisions.</p>
+
+          <div className="p-4 sm:p-5 bg-white border-2 border-amber-200 rounded-2xl space-y-3 min-w-0 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md">Étape 2</span>
+                <span className="w-7 h-7 rounded-full bg-amber-600 text-white font-black text-xs flex items-center justify-center shadow-sm">2</span>
+              </div>
+              <h4 className="font-extrabold text-slate-950 text-base">Self-Critique</h4>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+                Examen critique et détection des faiblesses, biais ou imprécisions.
+              </p>
+            </div>
+            <div className="pt-2 text-xs font-bold text-amber-700 flex items-center justify-between border-t border-amber-100">
+              <span>Sortie : Failles identifiées</span>
+              <span className="text-sm font-bold text-amber-400" aria-hidden="true">→</span>
+            </div>
           </div>
-          <div className="hidden md:flex items-center text-amber-400 font-bold">→</div>
-          <div className="flex-1 p-4 bg-white border-2 border-emerald-200 rounded-xl text-center">
-            <div className="w-8 h-8 mx-auto rounded-full bg-emerald-100 text-emerald-700 font-black flex items-center justify-center mb-2">3</div>
-            <h4 className="font-bold text-slate-950">Self-Verification</h4>
-            <p className="text-xs text-slate-600 mt-1">Contrôle formel basé sur les preuves du document source et grille mesurable.</p>
+
+          <div className="p-4 sm:p-5 bg-white border-2 border-emerald-200 rounded-2xl space-y-3 min-w-0 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">Étape 3</span>
+                <span className="w-7 h-7 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shadow-sm">3</span>
+              </div>
+              <h4 className="font-extrabold text-slate-950 text-base">Self-Verification</h4>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+                Contrôle formel basé sur les preuves du document source et grille mesurable.
+              </p>
+            </div>
+            <div className="pt-2 text-xs font-bold text-emerald-700 flex items-center justify-between border-t border-emerald-100">
+              <span>Sortie : Faits validés</span>
+              <span className="text-sm font-bold text-emerald-400" aria-hidden="true">→</span>
+            </div>
           </div>
-          <div className="hidden md:flex items-center text-emerald-400 font-bold">→</div>
-          <div className="flex-1 p-4 bg-white border-2 border-blue-200 rounded-xl text-center">
-            <div className="w-8 h-8 mx-auto rounded-full bg-blue-100 text-blue-700 font-black flex items-center justify-center mb-2">4</div>
-            <h4 className="font-bold text-slate-950">Self-Correction</h4>
-            <p className="text-xs text-slate-600 mt-1">Réécriture intégrant les corrections sans régression.</p>
+
+          <div className="p-4 sm:p-5 bg-white border-2 border-blue-200 rounded-2xl space-y-3 min-w-0 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md">Étape 4</span>
+                <span className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-sm">4</span>
+              </div>
+              <h4 className="font-extrabold text-slate-950 text-base">Self-Correction</h4>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+                Réécriture intégrant les corrections sans régression.
+              </p>
+            </div>
+            <div className="pt-2 text-xs font-bold text-blue-700 flex items-center justify-between border-t border-blue-100">
+              <span>Sortie : Version finale certifiée</span>
+              <span className="text-base font-black text-emerald-600" aria-hidden="true">✓</span>
+            </div>
           </div>
         </div>
       </section>
@@ -188,44 +233,45 @@ export const Chapitre9Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           5. Prompt professionnel de Self-Critique pour l&apos;IDE
         </h2>
-        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-          <pre>{`[ROLE]
-Tu es un auditeur de qualité et de vérification logicielle.
+        <div className="bg-slate-950 text-slate-100 p-4 sm:p-6 rounded-2xl font-mono text-xs sm:text-sm border border-slate-800 shadow-inner space-y-3 break-words min-w-0 max-w-full">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span className="text-indigo-400 font-bold uppercase text-[11px] tracking-wider">[ROLE & MISSION AUDITEUR]</span>
+            <span className="text-slate-400 text-xs font-sans">Prompt Self-Critique</span>
+          </div>
 
-[MISSION]
-Examine l'analyse préliminaire fournie ci-dessous à la lumière du code source original. Ton rôle est de traquer toute hallucination, affirmation sans preuve ou incohérence technique.
+          <div className="space-y-2.5 text-slate-300">
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+              <strong className="text-indigo-300 uppercase text-[11px] block">[MISSION]</strong>
+              <span className="text-slate-200">
+                Examine l&apos;analyse préliminaire fournie à la lumière du code source original. Traque toute hallucination, affirmation sans preuve ou incohérence technique.
+              </span>
+            </div>
 
-[CODE_SOURCE_ORIGINAL]
-{{code_source}}
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+              <strong className="text-amber-400 uppercase text-[11px] block">[MÉTHODE DE VÉRIFICATION EN 4 CRITÈRES]</strong>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                <div className="p-2 rounded bg-slate-950 border border-emerald-900/60 text-emerald-300">
+                  <strong>• VALIDE :</strong> Prouvé formellement par le code source.
+                </div>
+                <div className="p-2 rounded bg-slate-950 border border-amber-900/60 text-amber-300">
+                  <strong>• PARTIEL :</strong> Vrai mais incomplet ou imprécis.
+                </div>
+                <div className="p-2 rounded bg-slate-950 border border-blue-900/60 text-blue-300">
+                  <strong>• NON_PROUVÉ :</strong> Hypothèse sans preuve directe.
+                </div>
+                <div className="p-2 rounded bg-slate-950 border border-rose-900/60 text-rose-300">
+                  <strong>• INVALIDE :</strong> Faux ou contredit par le code.
+                </div>
+              </div>
+            </div>
 
-[ANALYSE_A_EXAMINER]
-{{analyse_preliminaire}}
-
-[METHODE_DE_VERIFICATION]
-Pour chaque point soulevé dans l'analyse préliminaire :
-1. Vérifie si le fichier et la ligne cités existent réellement.
-2. Vérifie si l'affirmation correspond fidèlement au comportement effectif du code.
-3. Classe le constat selon l'échelle suivante :
-   - VALIDE : Prouvé formellement par le code.
-   - PARTIEL : Vrai mais incomplet ou imprécis.
-   - NON_PROUVE : Hypothèse plausible mais sans preuve directe dans le code.
-   - INVALIDE : Affirmation fausse ou contradictoire avec le code.
-
-[FORMAT_DE_SORTIE_OBLIGATOIRE]
-Produis un objet JSON strict :
-{
-  "statut_global": "CONFORME" | "A_CORRIGER" | "NON_CONFORME",
-  "score_fiabilite": <note de 0 a 100>,
-  "constats_critiques": [
-    {
-      "affirmation_analysee": "string",
-      "verdict": "VALIDE" | "PARTIEL" | "NON_PROUVE" | "INVALIDE",
-      "preuve_code": "string ou null",
-      "correction_requise": "string ou null"
-    }
-  ],
-  "analyse_corrigee": "string"
-}`}</pre>
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+              <strong className="text-emerald-400 uppercase text-[11px] block">[FORMAT DE SORTIE JSON STRICT]</strong>
+              <div className="bg-slate-950 p-2 rounded text-emerald-300 font-semibold break-all text-xs">
+                &#123; &quot;statut_global&quot;: &quot;CONFORME&quot; | &quot;A_CORRIGER&quot; | &quot;NON_CONFORME&quot;, &quot;score_fiabilite&quot;: 0-100, &quot;constats_critiques&quot;: [...] &#125;
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -283,66 +329,134 @@ Produis un objet JSON strict :
           Dans une application backend, la vérification ne doit pas être laissée au hasard d&apos;une seule passe. On effectue deux appels distincts vers l&apos;API Gemini : le premier pour produire l&apos;audit préliminaire, et le second, doté du rôle de vérificateur, pour auditer la première réponse face au code original.
         </p>
 
-        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-          <pre>{`import express from 'express';
-import { GoogleGenAI } from '@google/genai';
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-6 font-mono text-xs sm:text-sm text-slate-200 shadow-xl min-w-0 max-w-full break-words [overflow-wrap:anywhere]">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800 text-xs text-slate-400">
+            <span className="font-semibold text-indigo-400 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+              api/audit-with-self-critique.ts
+            </span>
+            <span className="bg-slate-800/80 px-2 py-0.5 rounded text-[11px] text-slate-300">Express + @google/genai</span>
+          </div>
 
-const app = express();
-app.use(express.json());
+          <div className="space-y-1.5 leading-relaxed break-words">
+            <div>
+              <span className="text-purple-400 font-semibold">import</span> express <span className="text-purple-400 font-semibold">from</span> <span className="text-emerald-400">&apos;express&apos;</span>;
+            </div>
+            <div>
+              <span className="text-purple-400 font-semibold">import</span> &#123; GoogleGenAI &#125; <span className="text-purple-400 font-semibold">from</span> <span className="text-emerald-400">&apos;@google/genai&apos;</span>;
+            </div>
+            <div className="py-1"></div>
+            <div>
+              <span className="text-purple-400 font-semibold">const</span> app = express();
+            </div>
+            <div>
+              app.use(express.json());
+            </div>
+            <div className="py-1"></div>
+            <div>
+              <span className="text-purple-400 font-semibold">const</span> ai = <span className="text-purple-400 font-semibold">new</span> <span className="text-yellow-300 font-semibold">GoogleGenAI</span>();
+            </div>
+            <div className="py-1"></div>
+            <div>
+              app.<span className="text-blue-400">post</span>(<span className="text-emerald-400">&apos;/api/audit-with-self-critique&apos;</span>, <span className="text-purple-400 font-semibold">async</span> (req, res) =&gt; &#123;
+            </div>
+            <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+              <div>
+                <span className="text-purple-400 font-semibold">try</span> &#123;
+              </div>
+              <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> &#123; sourceCode &#125; = req.body;
+                </div>
+                <div>
+                  <span className="text-purple-400 font-semibold">if</span> (!sourceCode) &#123;
+                </div>
+                <div className="pl-3 sm:pl-4">
+                  <span className="text-purple-400 font-semibold">return</span> res.status(<span className="text-amber-300">400</span>).json(&#123; error: <span className="text-emerald-400">&apos;Code source manquant.&apos;</span> &#125;);
+                </div>
+                <div>&#125;</div>
 
-const ai = new GoogleGenAI();
+                <div className="pt-2 text-slate-500 italic">// PASSE 1 : Analyse initiale du code</div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> prompt1 = <span className="text-emerald-400">`</span>
+                </div>
+                <div className="pl-3 text-emerald-300/90 text-[11px] sm:text-xs bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/80 my-1 space-y-1">
+                  <div>Tu es un expert en sécurité logicielle.</div>
+                  <div>Analyse le code suivant et liste les vulnérabilités détectées :</div>
+                  <div className="text-sky-300">$&#123;sourceCode&#125;</div>
+                </div>
+                <div><span className="text-emerald-400">`</span>;</div>
 
-app.post('/api/audit-with-self-critique', async (req, res) => {
-  try {
-    const { sourceCode } = req.body;
-    if (!sourceCode) {
-      return res.status(400).json({ error: 'Code source manquant.' });
-    }
+                <div className="py-1">
+                  <span className="text-purple-400 font-semibold">const</span> rep1 = <span className="text-purple-400 font-semibold">await</span> ai.models.generateContent(&#123;
+                  <div className="pl-3 sm:pl-4">
+                    model: <span className="text-emerald-400">&apos;gemini-3.5-flash-lite&apos;</span>,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    contents: prompt1,
+                  </div>
+                  &#125;);
+                </div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> premiereAnalyse = rep1.text;
+                </div>
 
-    // PASSE 1 : Analyse initiale du code
-    const prompt1 = \`
-      Tu es un expert en sécurité logicielle.
-      Analyse le code suivant et liste les vulnérabilités détectées :
-      \${sourceCode}
-    \`;
-    const rep1 = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt1,
-    });
-    const premiereAnalyse = rep1.text;
+                <div className="pt-2 text-slate-500 italic">// PASSE 2 : Self-Critique et vérification indépendante</div>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> prompt2 = <span className="text-emerald-400">`</span>
+                </div>
+                <div className="pl-3 text-emerald-300/90 text-[11px] sm:text-xs bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/80 my-1 space-y-1">
+                  <div className="font-semibold text-amber-300">Tu es un auditeur qualité intransigeant.</div>
+                  <div>Voici un code source original et une première analyse effectuée.</div>
+                  <div className="pt-1 text-slate-400 font-semibold text-[11px]">CODE SOURCE ORIGINAL :</div>
+                  <div className="text-sky-300">$&#123;sourceCode&#125;</div>
+                  <div className="pt-1 text-slate-400 font-semibold text-[11px]">PREMIERE ANALYSE :</div>
+                  <div className="text-sky-300">$&#123;premiereAnalyse&#125;</div>
+                  <div className="pt-1 text-slate-400 font-semibold text-[11px]">MISSION :</div>
+                  <div>1. Vérifie si chaque vulnérabilité listée existe réellement dans le code source.</div>
+                  <div>2. Si une vulnérabilité repose sur une supposition sans preuve, signale-la.</div>
+                  <div>3. Produis un rapport épuré sous format JSON strict avec score sur 100.</div>
+                </div>
+                <div><span className="text-emerald-400">`</span>;</div>
 
-    // PASSE 2 : Self-Critique et vérification indépendante
-    const prompt2 = \`
-      Tu es un auditeur qualité intransigeant.
-      Voici un code source original et une première analyse effectuée.
-      
-      CODE SOURCE ORIGINAL :
-      \${sourceCode}
-      
-      PREMIERE ANALYSE :
-      \${premiereAnalyse}
-      
-      MISSION :
-      1. Vérifie si chaque vulnérabilité listée existe réellement dans le code source.
-      2. Si une vulnérabilité repose sur une supposition sans preuve, signale-la.
-      3. Produis un rapport épuré sous format JSON strict avec score sur 100.
-    \`;
+                <div className="py-1">
+                  <span className="text-purple-400 font-semibold">const</span> rep2 = <span className="text-purple-400 font-semibold">await</span> ai.models.generateContent(&#123;
+                  <div className="pl-3 sm:pl-4">
+                    model: <span className="text-emerald-400">&apos;gemini-3.5-flash-lite&apos;</span>,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    contents: prompt2,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    config: &#123; responseMimeType: <span className="text-emerald-400">&apos;application/json&apos;</span> &#125;,
+                  </div>
+                  &#125;);
+                </div>
 
-    const rep2 = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt2,
-      config: { responseMimeType: 'application/json' },
-    });
-
-    const resultatVerifie = JSON.parse(rep2.text);
-    return res.json({
-      premiereAnalyse,
-      resultatVerifie,
-    });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});`}</pre>
+                <div>
+                  <span className="text-purple-400 font-semibold">const</span> resultatVerifie = JSON.parse(rep2.text);
+                </div>
+                <div className="py-1">
+                  <span className="text-purple-400 font-semibold">return</span> res.json(&#123;
+                  <div className="pl-3 sm:pl-4">
+                    premiereAnalyse,
+                  </div>
+                  <div className="pl-3 sm:pl-4">
+                    resultatVerifie,
+                  </div>
+                  &#125;);
+                </div>
+              </div>
+              <div>
+                &#125; <span className="text-purple-400 font-semibold">catch</span> (error) &#123;
+              </div>
+              <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1">
+                <span className="text-purple-400 font-semibold">return</span> res.status(<span className="text-amber-300">500</span>).json(&#123; error: (error <span className="text-purple-400 font-semibold">as</span> Error).message &#125;);
+              </div>
+              <div>&#125;</div>
+            </div>
+            <div>&#125;);</div>
+          </div>
         </div>
       </section>
 
@@ -381,6 +495,20 @@ app.post('/api/audit-with-self-critique', async (req, res) => {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* Checklist interactive */}
+      <section className="space-y-4">
+        <InteractiveChecklist
+          title="Auto-évaluation : Vos acquis sur la Self-Critique & Vérification"
+          items={[
+            "Je comprends pourquoi il faut séparer l'étape de production du code de l'étape de relecture critique.",
+            "Je sais que la vérification doit toujours confronter la réponse au fichier source original.",
+            "J'utilise une grille de notation chiffrée sur 100 points pour mesurer objectivement la fiabilité d'un livrable.",
+            "J'interdis formellement à l'agent d'extrapoler ou de deviner des éléments absents du code.",
+            "Je sais mettre en place un double appel API (Créateur -> Vérificateur) pour sécuriser un backend."
+          ]}
+        />
       </section>
 
       {/* Quiz */}

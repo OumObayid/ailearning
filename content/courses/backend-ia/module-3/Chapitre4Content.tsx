@@ -11,14 +11,15 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre4Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Réseau, HTTP &amp; Protocoles</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 4 — SSE (Server-Sent Events) —— Communication en flux continu
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
+          Chapitre 4 — SSE (Server-Sent Events) : Communication en flux continu
         </h1>
       </div>
 
@@ -85,11 +86,11 @@ data: {"text": " est un environnement"}
 event: completed
 data: {"finishReason": "STOP"}`}
           </pre>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 pt-2 text-xs">
-            <div className="rounded border bg-slate-50 p-2"><strong className="text-indigo-900">data :</strong> Données utiles (texte ou JSON).</div>
-            <div className="rounded border bg-slate-50 p-2"><strong className="text-indigo-900">event :</strong> Nom de l&apos;événement personnalisé.</div>
-            <div className="rounded border bg-slate-50 p-2"><strong className="text-indigo-900">id :</strong> Identifiant pour la reprise sur déconnexion.</div>
-            <div className="rounded border bg-slate-50 p-2"><strong className="text-indigo-900">retry :</strong> Délai de reconnexion en ms en cas de coupure.</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs min-w-0">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0"><strong className="text-indigo-900">data :</strong> Données utiles (texte ou JSON).</div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0"><strong className="text-indigo-900">event :</strong> Nom de l&apos;événement personnalisé.</div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0"><strong className="text-indigo-900">id :</strong> Identifiant pour la reprise sur déconnexion.</div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 break-words [overflow-wrap:anywhere] min-w-0"><strong className="text-indigo-900">retry :</strong> Délai de reconnexion en ms en cas de coupure.</div>
           </div>
         </div>
       </section>

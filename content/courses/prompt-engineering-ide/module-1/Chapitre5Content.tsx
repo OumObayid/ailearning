@@ -6,13 +6,13 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Instructions positives et négatives
         </h1>
       </div>
@@ -98,9 +98,9 @@ export const Chapitre5Content: React.FC = () => {
             </p>
             <p className="text-xs text-slate-600">L&apos;agent ignore ce que vous qualifiez de dangereux selon votre contexte.</p>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0 max-w-full">
             <span className="text-xs font-black uppercase text-emerald-700">Règles opérationnelles précises (professionnelles)</span>
-            <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-emerald-300 text-slate-900 whitespace-pre-wrap">
+            <pre className="font-mono text-xs sm:text-sm bg-white p-4 rounded-xl border border-emerald-300 text-slate-900 whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full overflow-x-auto">
 {`- Ne supprime aucun fichier du projet.
 - Ne modifie aucun fichier sans validation préalable de mon côté.
 - Ne lance aucune commande bash/powershell destructive (ex: rm, git reset --hard).
@@ -111,11 +111,11 @@ export const Chapitre5Content: React.FC = () => {
       </section>
 
       {/* 4. Combiner Positif et Négatif */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. Le modèle combiné : Autorisations + Interdictions + Gestion du doute
         </h2>
-        <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-6 space-y-3 font-mono text-sm">
+        <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/50 p-4 sm:p-6 space-y-3 font-mono text-xs sm:text-sm min-w-0 max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
           <p className="text-xs uppercase font-extrabold text-indigo-700 tracking-wider">[ACTIONS AUTORISÉES]</p>
           <p className="text-slate-800">- Analyser les composants de <code>src/</code>.</p>
           <p className="text-slate-800">- Présenter les erreurs détectées et les causes possibles.</p>

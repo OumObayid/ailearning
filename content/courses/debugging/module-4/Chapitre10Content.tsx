@@ -163,7 +163,7 @@ export const Chapitre10Content: React.FC = () => {
             SQL &amp; Database Diagnostics
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Analyse des requêtes SQL et des erreurs de base de données : Intégrité relationnelle, requêtes préparées et EXPLAIN
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

@@ -5,13 +5,13 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 export const Chapitre4Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 4 — Définition des responsabilités
         </h1>
       </div>
@@ -21,7 +21,7 @@ export const Chapitre4Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Les 5 catégories de responsabilités
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm space-y-1">
             <span className="text-xs font-black uppercase text-indigo-700">01. Analyse</span>
             <p className="text-xs text-slate-700">Examiner, comprendre, comparer et diagnostiquer (ex: routes API, fuites mémoire).</p>
@@ -92,9 +92,9 @@ export const Chapitre4Content: React.FC = () => {
               « Vérifie la sécurité du projet. »
             </p>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0 max-w-full">
             <span className="text-xs font-black uppercase text-emerald-700">Responsabilité vérifiable (professionnelle) :</span>
-            <pre className="font-mono text-sm bg-white p-4 rounded-xl border border-emerald-300 text-slate-900 whitespace-pre-wrap">
+            <pre className="font-mono text-xs sm:text-sm bg-white p-4 rounded-xl border border-emerald-300 text-slate-900 whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full overflow-x-auto">
 {`Pour chaque endpoint examiné, indique :
 - Chemin d'accès et méthode HTTP
 - Contrôles de validation Zod observés

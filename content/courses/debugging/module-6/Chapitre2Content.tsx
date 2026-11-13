@@ -62,7 +62,7 @@ export const Chapitre2Content: React.FC = () => {
             Méthodologie Comparée & Synergie d&apos;Outils
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Différence entre débogage traditionnel et débogage assisté par IA : Complémentarité, limites et matrice de décision
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

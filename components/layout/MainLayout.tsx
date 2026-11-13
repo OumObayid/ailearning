@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { AdminSidebar } from './AdminSidebar';
 import { Header } from './Header';
 import { useCourseDisplay } from '@/context/CourseDisplayContext';
+import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 
 interface MainLayoutProps {
@@ -17,12 +18,44 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { isFullWidth } = useCourseDisplay();
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   const isAdmin = pathname.startsWith('/admin');
+  const isMaintenancePage = pathname === '/maintenance';
+
+  // Vérification de l'état de maintenance
+  useEffect(() => {
+    // Les admins et la page de maintenance elle-même ne sont pas redirigés
+    if (isAdmin || isMaintenancePage || isAuthLoading) return;
+    if (user?.role === 'admin') return;
+
+    let isMounted = true;
+    fetch('/api/settings', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        if (data.maintenance_mode) {
+          router.replace('/maintenance');
+        }
+      })
+      .catch((err) => {
+        console.error('Erreur vérification maintenance:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname, isAdmin, isMaintenancePage, isAuthLoading, user, router]);
 
   const handleOpenMobile = useCallback(() => setIsMobileOpen(true), []);
   const handleCloseMobile = useCallback(() => setIsMobileOpen(false), []);
   const handleToggleCollapse = useCallback(() => setIsCollapsed((prev) => !prev), []);
+
+  // Si on est sur la page de maintenance, on affiche directement le contenu plein écran sans navigation
+  if (isMaintenancePage) {
+    return <div className="min-h-screen bg-slate-900 text-slate-100">{children}</div>;
+  }
 
   return (
     <div className={cn('flex min-h-screen font-sans', isAdmin ? 'bg-slate-100 text-slate-900' : 'bg-slate-50 text-slate-900')}>

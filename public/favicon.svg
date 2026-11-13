@@ -1,0 +1,28 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F1F5F9" />
+    </linearGradient>
+    <filter id="softShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0D2148" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Circular Light Background with crisp subtle ring -->
+  <circle cx="256" cy="256" r="244" fill="url(#bgGrad)" stroke="#CBD5E1" stroke-width="8" filter="url(#softShadow)" />
+
+  <!-- Inner delicate ring for depth -->
+  <circle cx="256" cy="256" r="236" fill="none" stroke="#F8FAFC" stroke-width="4" />
+
+  <!-- Centered Large Ai Glyphs from Official Brand Logo -->
+  <g transform="translate(68, 120) scale(5.65)">
+    <!-- Letter A: Bold Dark Navy -->
+    <path fill="#0D2148" d="M 19.8 0 L 33.0 0 L 49.8 48.0 L 39.5 48.0 L 36.8 39.8 L 15.5 39.8 L 12.2 48.0 L 0 48.0 Z M 26.4 15.2 L 20.8 30.5 L 32.0 30.5 Z" />
+    <!-- Letter i: dot -->
+    <circle fill="#0089FC" cx="59.5" cy="7.0" r="7.0" />
+    <!-- Letter i: stem -->
+    <rect fill="#0089FC" x="54.0" y="18.0" width="11.5" height="30.0" rx="2" />
+  </g>
+</svg>

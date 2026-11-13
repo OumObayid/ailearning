@@ -11,13 +11,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Réseau, HTTP &amp; Protocoles</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Fonctionnement du HTTP et cycle requête/réponse
         </h1>
       </div>
@@ -73,18 +74,18 @@ export const Chapitre1Content: React.FC = () => {
           <p className="text-sm font-semibold text-slate-800">
             Dans une application web de production, React ne discute <strong>jamais</strong> directement avec la base de données MySQL :
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center pt-2">
-            <div className="rounded-xl border-2 border-sky-300 bg-sky-50 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-center pt-2 min-w-0">
+            <div className="rounded-xl border-2 border-sky-300 bg-sky-50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="text-xs font-black uppercase text-sky-800">Client Frontend</span>
               <p className="mt-1 text-base font-black text-slate-950">React (Vite / Next.js)</p>
               <p className="mt-1 text-xs text-slate-700">Envoie Requête HTTP GET /api/projects</p>
             </div>
-            <div className="rounded-xl border-2 border-indigo-300 bg-indigo-50 p-4">
+            <div className="rounded-xl border-2 border-indigo-300 bg-indigo-50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="text-xs font-black uppercase text-indigo-800">Serveur Backend</span>
               <p className="mt-1 text-base font-black text-slate-950">Node.js / Express</p>
               <p className="mt-1 text-xs text-slate-700">Contrôle auth, valide, interroge la BDD ou l&apos;IA</p>
             </div>
-            <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4">
+            <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
               <span className="text-xs font-black uppercase text-emerald-800">Stockage / IA</span>
               <p className="mt-1 text-base font-black text-slate-950">MySQL / Gemini</p>
               <p className="mt-1 text-xs text-slate-700">Exécute les requêtes SQL ou modèles LLM</p>
@@ -205,10 +206,10 @@ export const Chapitre1Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           5. Les codes de statut HTTP indispensables en ingénierie Backend
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50/50 p-4">
-            <span className="rounded bg-emerald-200 px-2 py-0.5 text-xs font-black text-emerald-900">2xx Succès</span>
-            <ul className="mt-2 space-y-1.5 text-xs font-bold text-slate-900">
+        <div className="space-y-4 min-w-0">
+          <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50/50 p-4.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="rounded bg-emerald-200 px-2.5 py-0.5 text-xs font-black text-emerald-900">2xx Succès</span>
+            <ul className="mt-2.5 space-y-2 text-xs sm:text-sm font-bold text-slate-900">
               <li><strong className="text-emerald-800">200 OK :</strong> Requête traitée avec succès.</li>
               <li><strong className="text-emerald-800">201 Created :</strong> Ressource créée (POST).</li>
               <li><strong className="text-emerald-800">202 Accepted :</strong> Tâche asynchrone acceptée.</li>
@@ -216,9 +217,9 @@ export const Chapitre1Content: React.FC = () => {
             </ul>
           </div>
 
-          <div className="rounded-xl border-2 border-amber-300 bg-amber-50/50 p-4">
-            <span className="rounded bg-amber-200 px-2 py-0.5 text-xs font-black text-amber-900">4xx Erreurs Client</span>
-            <ul className="mt-2 space-y-1.5 text-xs font-bold text-slate-900">
+          <div className="rounded-xl border-2 border-amber-300 bg-amber-50/50 p-4.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="rounded bg-amber-200 px-2.5 py-0.5 text-xs font-black text-amber-900">4xx Erreurs Client</span>
+            <ul className="mt-2.5 space-y-2 text-xs sm:text-sm font-bold text-slate-900">
               <li><strong className="text-amber-800">400 Bad Request :</strong> Payload invalide ou champs manquants.</li>
               <li><strong className="text-amber-800">401 Unauthorized :</strong> Jeton JWT ou authentification manquant.</li>
               <li><strong className="text-amber-800">403 Forbidden :</strong> Identité connue mais droits insuffisants.</li>
@@ -227,9 +228,9 @@ export const Chapitre1Content: React.FC = () => {
             </ul>
           </div>
 
-          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4">
-            <span className="rounded bg-rose-200 px-2 py-0.5 text-xs font-black text-rose-900">5xx Erreurs Serveur</span>
-            <ul className="mt-2 space-y-1.5 text-xs font-bold text-slate-900">
+          <div className="rounded-xl border-2 border-rose-300 bg-rose-50/50 p-4.5 break-words [overflow-wrap:anywhere] min-w-0">
+            <span className="rounded bg-rose-200 px-2.5 py-0.5 text-xs font-black text-rose-900">5xx Erreurs Serveur</span>
+            <ul className="mt-2.5 space-y-2 text-xs sm:text-sm font-bold text-slate-900">
               <li><strong className="text-rose-800">500 Internal Error :</strong> Exception non interceptée dans Node.js.</li>
               <li><strong className="text-rose-800">502 Bad Gateway :</strong> Mauvaise réponse d&apos;un proxy ou de Gemini.</li>
               <li><strong className="text-rose-800">503 Unavailable :</strong> Surcharge ou maintenance momentanée.</li>

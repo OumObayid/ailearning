@@ -113,7 +113,7 @@ const tax = calculateTax(order);`,
             Prompt Engineering pour l&apos;Ingénierie Logicielle
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Construire un prompt professionnel de diagnostic : Le Framework d&apos;ingénierie à 7 composants
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

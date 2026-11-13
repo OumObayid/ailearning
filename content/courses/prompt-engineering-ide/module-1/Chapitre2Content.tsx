@@ -4,16 +4,17 @@ import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Icon } from '@/components/common/Icon';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre2Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 2 — Anatomie d&apos;un prompt professionnel
         </h1>
       </div>
@@ -102,14 +103,15 @@ export const Chapitre2Content: React.FC = () => {
       </section>
 
       {/* 3. Exemple complet de prompt professionnel */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. Exemple d&apos;application : Prompt d&apos;Audit Technique
         </h2>
-        <div className="rounded-2xl border-2 border-slate-300 bg-slate-900 text-slate-100 p-6 space-y-4 font-mono text-sm">
-          <p className="text-xs uppercase font-extrabold text-indigo-400 tracking-wider">[PROMPT PROFESSIONNEL — AUDIT TECHNIQUE ANTIGRAVITY]</p>
-          <pre className="whitespace-pre-wrap leading-relaxed text-slate-200">
-{`[RÔLE]
+        <CodeBlock
+          filename="PROMPT PROFESSIONNEL — AUDIT TECHNIQUE ANTIGRAVITY"
+          language="markdown"
+          wrap={true}
+          code={`[RÔLE]
 Tu es un ingénieur logiciel spécialisé en React, Node.js et sécurité informatique.
 
 [CONTEXTE]
@@ -147,8 +149,7 @@ Produire un rapport structuré comprenant :
 - Risques éventuels.
 - Solutions recommandées.
 - Conclusion.`}
-          </pre>
-        </div>
+        />
         <Callout type="warning" title="Remarque de sécurité fondamentale">
           Les instructions textuelles ne garantissent pas à elles seules le blocage technique absolu des actions. Dans un IDE comme Google Antigravity, il convient d&apos;activer en parallèle les permissions du bac à sable et les confirmations humaines pour l&apos;exécution d&apos;outils.
         </Callout>

@@ -187,6 +187,33 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               </Link>
             );
           })}
+
+          {/* Menu pour passer en mode utilisateur */}
+          <div className="pt-3 mt-3 border-t border-slate-800/80">
+            <Link
+              href="/"
+              onClick={handleLinkClick}
+              title={isCollapsed && !isMobileOpen ? 'Mode Utilisateur' : undefined}
+              className={cn(
+                'flex items-center gap-3.5 rounded-xl px-3.5 py-3 transition-all cursor-pointer bg-slate-900/80 hover:bg-slate-800 text-purple-300 hover:text-white border border-purple-500/20 hover:border-purple-400/50 group shadow-xs',
+                isCollapsed && !isMobileOpen && 'justify-center px-2 py-3'
+              )}
+            >
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition">
+                <Icon name="user" className="w-4 h-4" />
+              </div>
+              {(!isCollapsed || isMobileOpen) && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-bold text-white group-hover:text-purple-200 truncate">
+                    Mode Utilisateur
+                  </span>
+                  <span className="text-[11px] font-semibold text-purple-400/80 truncate">
+                    Retour aux cours &amp; examens
+                  </span>
+                </div>
+              )}
+            </Link>
+          </div>
         </nav>
       </div>
 

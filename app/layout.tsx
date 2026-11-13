@@ -24,6 +24,16 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: `${APP_NAME} — Plateforme de Formation IA`,
   description: APP_DESCRIPTION,
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -37,7 +47,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body suppressHydrationWarning className="min-h-full bg-slate-50 text-slate-900 font-sans">
+      <body suppressHydrationWarning className="min-h-full bg-slate-50 text-slate-900 font-sans ">
         <ExtensionCleanUp />
         <AuthProvider>
           <ExamProgressProvider>

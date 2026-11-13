@@ -147,7 +147,7 @@ export const Chapitre7Content: React.FC = () => {
             CORS &amp; Same-Origin Policy
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Analyse et résolution des erreurs CORS : Same-Origin Policy, Preflight OPTIONS et credentials
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

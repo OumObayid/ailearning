@@ -14,6 +14,16 @@ import { DEBUGGING_MODULE_4_CHAPTERS } from '@/content/courses/debugging/module-
 import { DEBUGGING_MODULE_5_CHAPTERS } from '@/content/courses/debugging/module-5/data';
 import { DEBUGGING_MODULE_6_CHAPTERS } from '@/content/courses/debugging/module-6/data';
 import { DEBUGGING_MODULE_7_CHAPTERS } from '@/content/courses/debugging/module-7/data';
+import { ORCHESTRATION_MODULE_1_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-1/data';
+import { ORCHESTRATION_MODULE_2_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-2/data';
+import { ORCHESTRATION_MODULE_3_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-3/data';
+import { ORCHESTRATION_MODULE_4_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-4/data';
+import { ORCHESTRATION_MODULE_5_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-5/data';
+import { ORCHESTRATION_MODULE_6_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-6/data';
+import { ORCHESTRATION_MODULE_7_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-7/data';
+import { ORCHESTRATION_MODULE_8_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-8/data';
+import { ORCHESTRATION_MODULE_9_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-9/data';
+import { ORCHESTRATION_MODULE_10_CHAPTERS } from '@/content/courses/orchestration-agents-ide/module-10/data';
 
 export interface FlatChapter {
   slug: string;
@@ -950,13 +960,114 @@ export function getChaptersForModule(moduleId: string): FlatChapter[] {
         duration: ch.duration,
         description: ch.description,
       }));
+    case 'orchestration-agents-module-1':
+      return ORCHESTRATION_MODULE_1_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 1 • Fonctionnement des agents dans un IDE',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-2':
+      return ORCHESTRATION_MODULE_2_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 2 • Organisation d\'une équipe d\'agents IA',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-3':
+      return ORCHESTRATION_MODULE_3_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 3 • Maîtrise de Git pour le multi-agents',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-4':
+      return ORCHESTRATION_MODULE_4_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 4 • Git Worktrees et parallélisme',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-5':
+      return ORCHESTRATION_MODULE_5_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 5 • Configuration des agents et instructions',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-6':
+      return ORCHESTRATION_MODULE_6_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 6 • Préparation et distribution des missions',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-7':
+      return ORCHESTRATION_MODULE_7_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 7 • Orchestration et coordination du travail',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-8':
+      return ORCHESTRATION_MODULE_8_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 8 • Contrôle qualité et validation QA/Reviewer',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-9':
+      return ORCHESTRATION_MODULE_9_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 9 • Intégration, sécurité et livraison finale',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
+    case 'orchestration-agents-module-10':
+      return ORCHESTRATION_MODULE_10_CHAPTERS.map((ch) => ({
+        slug: ch.slug,
+        title: ch.title,
+        part: 'Module 10 • Projet Fil Rouge TaskFlow',
+        number: ch.number,
+        duration: ch.duration,
+        description: ch.description,
+      }));
     default:
       return [];
   }
 }
 
 export function getChapterNavigationForModule(moduleId: string, slug: string) {
-  switch (moduleId.toLowerCase()) {
+  const normId = moduleId.toLowerCase();
+  if (normId.startsWith('orchestration-agents-module-')) {
+    const chapters = getChaptersForModule(normId);
+    const idx = chapters.findIndex((c) => c.slug === slug);
+    if (idx === -1) return { prev: null, next: null };
+    return {
+      prev: idx > 0 ? chapters[idx - 1] : null,
+      next: idx < chapters.length - 1 ? chapters[idx + 1] : null,
+    };
+  }
+
+  switch (normId) {
     case 'backend-ia-module-7': {
       const chapters = getChaptersForModule('backend-ia-module-7');
       const idx = chapters.findIndex((c) => c.slug === slug);

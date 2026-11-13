@@ -100,15 +100,15 @@ export const ChapterHistoryTable: React.FC<ChapterHistoryTableProps> = ({
   }
 
   return (
-    <div className="rounded-3xl border-2 border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
+    <div className="rounded-2xl border-2 border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs space-y-3">
       {/* Header avec Filtres et Recherche */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-slate-200">
         <div>
-          <h3 className="text-base sm:text-lg font-black text-slate-950 flex items-center gap-2">
-            <Icon name="check-circle" className="w-5 h-5 text-emerald-600" />
+          <h3 className="text-sm sm:text-base font-black text-slate-950 flex items-center gap-2">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600" />
             <span>Historique chronologique des chapitres validés</span>
           </h3>
-          <p className="text-xs font-medium text-slate-500 mt-0.5">
+          <p className="text-[11px] font-medium text-slate-500 mt-0.5">
             {filteredHistory.length} chapitre{filteredHistory.length > 1 ? 's' : ''} terminé
             {filteredHistory.length > 1 ? 's' : ''} au total
           </p>
@@ -122,7 +122,7 @@ export const ChapterHistoryTable: React.FC<ChapterHistoryTableProps> = ({
               setSelectedCourse(e.target.value);
               setVisibleCount(10);
             }}
-            className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+            className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
           >
             <option value="all">Tous les cursus</option>
             <option value="ai-engineering">AI Engineering</option>
@@ -141,27 +141,28 @@ export const ChapterHistoryTable: React.FC<ChapterHistoryTableProps> = ({
                 setSearchTerm(e.target.value);
                 setVisibleCount(10);
               }}
-              className="rounded-xl border border-slate-300 bg-slate-50 pl-8 pr-3 py-1.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 w-44 sm:w-56"
-            />
+              className="rounded-lg border border-slate-300 bg-slate-50 pl-7 pr-2.5 py-1 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 w-40 sm:w-52"
+            >
+            </input>
             <Icon
               name="search"
-              className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+              className="w-3 h-3 text-slate-400 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"
             />
           </div>
         </div>
       </div>
 
       {/* Liste / Tableau des chapitres validés */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 text-slate-500 font-extrabold uppercase tracking-wider text-[11px]">
-              <th className="py-2.5 px-3">Cursus</th>
-              <th className="py-2.5 px-3">Module</th>
-              <th className="py-2.5 px-3">N°</th>
-              <th className="py-2.5 px-3">Titre du Chapitre</th>
-              <th className="py-2.5 px-3 whitespace-nowrap">Validé le</th>
-              <th className="py-2.5 px-3 text-right">Action</th>
+            <tr className="border-b border-slate-200 text-slate-500 font-extrabold uppercase tracking-wider text-[10px]">
+              <th className="py-2 px-2.5">Cursus</th>
+              <th className="py-2 px-2.5">Module</th>
+              <th className="py-2 px-2.5">N°</th>
+              <th className="py-2 px-2.5">Titre du Chapitre</th>
+              <th className="py-2 px-2.5 whitespace-nowrap">Validé le</th>
+              <th className="py-2 px-2.5 text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -178,39 +179,39 @@ export const ChapterHistoryTable: React.FC<ChapterHistoryTableProps> = ({
 
               return (
                 <tr key={rowKey} className="hover:bg-slate-50/80 transition group">
-                  <td className="py-3 px-3 whitespace-nowrap">
+                  <td className="py-2 px-2.5 whitespace-nowrap">
                     <span
                       className={cn(
-                        'inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-black border',
+                        'inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black border',
                         theme.badge
                       )}
                     >
                       {theme.label}
                     </span>
                   </td>
-                  <td className="py-3 px-3 whitespace-nowrap font-bold text-slate-700">
+                  <td className="py-2 px-2.5 whitespace-nowrap font-bold text-slate-700 text-[11px]">
                     <span className="capitalize">{moduleLabel}</span>
                   </td>
-                  <td className="py-3 px-3 whitespace-nowrap">
-                    <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[11px] font-black font-mono bg-indigo-50 text-indigo-800 border border-indigo-200 shadow-2xs">
+                  <td className="py-2 px-2.5 whitespace-nowrap">
+                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-md text-[10px] font-black font-mono bg-indigo-50 text-indigo-800 border border-indigo-200 shadow-2xs">
                       Ch. {chNum}
                     </span>
                   </td>
-                  <td className="py-3 px-3 font-semibold text-slate-900 min-w-[200px] max-w-[340px]">
-                    <span className="line-clamp-2" title={item.chapterTitle}>
+                  <td className="py-2 px-2.5 font-semibold text-slate-900 min-w-[180px] max-w-[320px]">
+                    <span className="line-clamp-2 text-[11px]" title={item.chapterTitle}>
                       {item.chapterTitle}
                     </span>
                   </td>
-                  <td className="py-3 px-3 whitespace-nowrap text-slate-500 font-medium">
+                  <td className="py-2 px-2.5 whitespace-nowrap text-slate-500 font-medium text-[11px]">
                     {formatCompletedDate(item.completedAt)}
                   </td>
-                  <td className="py-3 px-3 text-right whitespace-nowrap">
+                  <td className="py-2 px-2.5 text-right whitespace-nowrap">
                     <Link
                       href={targetUrl}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 font-bold text-xs transition border border-slate-200 shadow-2xs group-hover:border-indigo-200 cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 font-bold text-[11px] transition border border-slate-200 shadow-2xs group-hover:border-indigo-200 cursor-pointer"
                     >
                       <span>Relire</span>
-                      <Icon name="arrow-right" className="w-3 h-3 text-slate-400 group-hover:text-indigo-600" />
+                      <Icon name="arrow-right" className="w-2.5 h-2.5 text-slate-400 group-hover:text-indigo-600" />
                     </Link>
                   </td>
                 </tr>
@@ -222,14 +223,14 @@ export const ChapterHistoryTable: React.FC<ChapterHistoryTableProps> = ({
 
       {/* Bouton afficher plus */}
       {hasMore && (
-        <div className="pt-3 text-center border-t border-slate-100">
+        <div className="pt-2 text-center border-t border-slate-100">
           <button
             type="button"
             onClick={() => setVisibleCount((prev) => prev + 15)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-xs font-bold transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-xs font-bold transition cursor-pointer"
           >
             <span>Afficher plus ({filteredHistory.length - visibleCount} restants)</span>
-            <Icon name="chevron-down" className="w-3.5 h-3.5" />
+            <Icon name="chevron-down" className="w-3 h-3" />
           </button>
         </div>
       )}

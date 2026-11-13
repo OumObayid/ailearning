@@ -132,7 +132,7 @@ export const Chapitre2Content: React.FC = () => {
           <Icon name="code" className="w-4 h-4 text-lime-700" />
           <span>Module 3 — Techniques Avancées de Débogage</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 2 — Déboguer les erreurs de variables et de types
         </h1>
         <p className="mt-3 text-base text-slate-700 font-medium">

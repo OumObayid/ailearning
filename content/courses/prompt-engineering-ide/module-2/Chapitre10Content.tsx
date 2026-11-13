@@ -5,13 +5,13 @@ import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 
 export const Chapitre10Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 10 — Gestion des exceptions et des situations imprévues
         </h1>
       </div>
@@ -21,7 +21,7 @@ export const Chapitre10Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Le protocole de décision en 6 étapes
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
+        <div className="grid gap-3 text-center grid-cols-1 sm:grid-cols-2">
           <div className="p-3.5 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-1">
             <span className="text-xs font-black uppercase text-indigo-700">1. Détecter</span>
             <p className="text-xs text-slate-600">Repérer l&apos;erreur ou l&apos;anomalie</p>

@@ -11,13 +11,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Réseau, HTTP &amp; Protocoles</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Streaming des réponses IA vers React avec Gemini
         </h1>
       </div>
@@ -103,20 +104,20 @@ export const Chapitre5Content: React.FC = () => {
             Une incompréhension fréquente consiste à croire que le navigateur communique directement avec Gemini. Dans une architecture professionnelle, Node.js sert de passerelle d&apos;orchestration et de sécurité :
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="rounded-xl border-2 border-indigo-200 bg-indigo-50/60 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center min-w-0">
+            <div className="rounded-xl border-2 border-indigo-200 bg-indigo-50/60 p-4 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="text-xs font-black uppercase text-indigo-900">1. Client React</span>
               <p className="mt-1 text-sm font-bold text-slate-950">fetch POST /api/generate</p>
               <p className="mt-2 text-xs text-slate-700">Envoie {`{ "prompt": "..." }`} et lit le flux avec getReader()</p>
             </div>
 
-            <div className="rounded-xl border-2 border-purple-200 bg-purple-50/60 p-4">
+            <div className="rounded-xl border-2 border-purple-200 bg-purple-50/60 p-4 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="text-xs font-black uppercase text-purple-900">2. Backend Node.js / Express</span>
               <p className="mt-1 text-sm font-bold text-slate-950">Relais &amp; Sécurité</p>
               <p className="mt-2 text-xs text-slate-700">Valide le prompt, injecte la clé API secrète, écrit avec res.write()</p>
             </div>
 
-            <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/60 p-4">
+            <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/60 p-4 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
               <span className="text-xs font-black uppercase text-emerald-900">3. API Google Gemini</span>
               <p className="mt-1 text-sm font-bold text-slate-950">Inférence LLM</p>
               <p className="mt-2 text-xs text-slate-700">Génère les tokens et les pousse vers le stream Node.js</p>

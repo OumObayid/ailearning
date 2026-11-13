@@ -12,13 +12,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre2Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Bases de données &amp; Indexation</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 2 — Index simples, uniques et composites (Règle du préfixe gauche)
         </h1>
       </div>
@@ -61,33 +62,37 @@ export const Chapitre2Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           2. Index Simple et Index UNIQUE : Performance vs Intégrité
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3">
-            <span className="rounded bg-indigo-100 px-3 py-1 text-xs font-black text-indigo-900 border border-indigo-300">
-              Index Simple (INDEX)
-            </span>
+        <div className="space-y-4 min-w-0 max-w-full">
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div>
+              <span className="inline-block rounded bg-indigo-100 px-3 py-1 text-xs font-black text-indigo-900 border border-indigo-300">
+                Index Simple (INDEX)
+              </span>
+            </div>
             <h3 className="text-sm sm:text-base font-bold text-slate-900">Accélération pure des lectures</h3>
             <p className="text-sm text-slate-800 leading-relaxed font-medium">
               Créé sur une seule colonne fréquemment filtrée dans la clause <code>WHERE</code>. Autorise les doublons de valeurs sans aucune restriction.
             </p>
-            <pre className="rounded bg-slate-950 p-3 font-mono text-xs text-indigo-300">
-{`CREATE INDEX idx_user_id 
-ON conversations(user_id);`}
-            </pre>
+            <div className="rounded bg-slate-950 p-3 font-mono text-xs text-indigo-300 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+              <div><code>CREATE INDEX idx_user_id</code></div>
+              <div><code>ON conversations(user_id);</code></div>
+            </div>
           </div>
 
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3">
-            <span className="rounded bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-900 border border-emerald-300">
-              Index Unique (UNIQUE INDEX)
-            </span>
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <div>
+              <span className="inline-block rounded bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-900 border border-emerald-300">
+                Index Unique (UNIQUE INDEX)
+              </span>
+            </div>
             <h3 className="text-sm sm:text-base font-bold text-slate-900">Performance + Règle d&apos;intégrité</h3>
             <p className="text-sm text-slate-800 leading-relaxed font-medium">
               Interdit formellement toute insertion de valeur dupliquée. Rejette la requête avec l&apos;erreur <em>Duplicate entry</em>.
             </p>
-            <pre className="rounded bg-slate-950 p-3 font-mono text-xs text-emerald-300">
-{`CREATE UNIQUE INDEX idx_email_unique 
-ON utilisateurs(email);`}
-            </pre>
+            <div className="rounded bg-slate-950 p-3 font-mono text-xs text-emerald-300 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+              <div><code>CREATE UNIQUE INDEX idx_email_unique</code></div>
+              <div><code>ON utilisateurs(email);</code></div>
+            </div>
           </div>
         </div>
 

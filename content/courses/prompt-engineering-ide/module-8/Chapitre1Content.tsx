@@ -3,170 +3,277 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { Icon } from '@/components/common/Icon';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Prompt Engineering IDE</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-purple-700" />
+          <span>Module 8 — Projet Final &amp; Système Multi-Agents</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Définir le projet final et son cahier des charges
         </h1>
+        <p className="text-slate-600 text-xs sm:text-sm mt-2">
+          Pourquoi tout système multi-agents exige un cahier des charges strict avant d&apos;écrire la moindre ligne de code, et comment poser les fondations de l&apos;application PlanIQ (React, Node.js, Express, MySQL) sous Google Antigravity.
+        </p>
       </div>
 
-      {/* 1. Pourquoi commencer par le cahier des charges */}
+      {/* 1. L'analogie du chantier de construction */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Pourquoi définir le projet avant de créer les agents ?
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <span>1. L&apos;analogie du chantier de construction : Pourquoi pas de code sans plan</span>
         </h2>
-        <p className="text-slate-700">
-          Un système multi-agents ne démarre jamais par l&apos;écriture de prompts isolés. Pour qu&apos;un coordinateur IA puisse distribuer des tâches sans ambiguïté et pour que les agents spécialisés ne se marchent pas sur les pieds, ils doivent partager <strong>un référentiel commun et indiscutable</strong> :
+        <p className="text-slate-700 text-xs sm:text-sm">
+          Imaginez un terrain vague sur lequel débarquent cinq artisans le même matin : un maçon, un électricien, un plombier, un menuisier et un peintre. Si personne ne leur fournit de <strong>plan d&apos;architecte</strong> ni de <strong>cahier des charges</strong>, le peintre peindra sur de la terre battue, le plombier percera des tranchées là où le maçon comptait couler les fondations, et chacun accusera l&apos;autre d&apos;avoir gâché son travail.
         </p>
-        <ul className="list-disc pl-5 space-y-1 text-sm sm:text-base text-slate-700 font-medium">
-          <li>Le périmètre précis de l&apos;application et ses frontières techniques.</li>
-          <li>Les 5 fonctionnalités autorisées et celles volontairement exclues.</li>
-          <li>La stack technique retenue (React 19, Node.js 22, Express, MySQL).</li>
-          <li>Les rôles, responsabilités et livrables exigés pour chaque agent.</li>
-          <li>Les règles de gouvernance et les points d&apos;arrêt obligatoires (Human-in-the-Loop).</li>
-        </ul>
-      </section>
-
-      {/* 2. Présentation du projet support */}
-      <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Présentation de l&apos;application support : PlanIQ Project Manager
-        </h2>
-        <p className="text-slate-700">
-          Nous pilotons le développement d&apos;une application web complète de gestion de projets et de tâches d&apos;équipe :
+        <p className="text-slate-700 text-xs sm:text-sm">
+          Avec un système multi-agents dans un IDE, le danger est identique : si vous lancez vos agents IA sans un contrat fonctionnel et technique indiscutable, le développeur créera des routes API incompatibles avec les composants React, l&apos;auditeur de sécurité bloquera des fichiers imaginaires, et le testeur vérifiera des fonctionnalités exclues du projet.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
-          <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <span className="font-bold text-purple-800 uppercase tracking-wide text-xs">Architecture Technique</span>
-            <ul className="space-y-1 text-slate-700">
-              <li>• <strong>Frontend :</strong> React.js (Composants fonctionnels, state local, formulaires réactifs).</li>
-              <li>• <strong>Backend :</strong> Node.js + Express.js (API REST, middlewares de validation).</li>
-              <li>• <strong>Persistance :</strong> MySQL (Tables relationnelles utilisateurs, projets, tâches).</li>
-              <li>• <strong>IDE &amp; Agents :</strong> Google Antigravity (Coordination multi-agents).</li>
-            </ul>
+          <div className="p-4 bg-rose-50/80 border border-rose-200 rounded-2xl space-y-2">
+            <span className="font-bold text-rose-800">Le démarrage anarchique (À bannir)</span>
+            <p className="text-slate-600">
+              Lancer 5 agents avec des prompts vagues du type : <em>&quot;Développeur, code l&apos;application ; Sécurité, vérifie tout ; Testeur, teste ce que tu peux.&quot;</em>
+            </p>
+            <p className="text-rose-900 font-semibold text-xs">
+              Résultat : Conflits de réécriture, hallucination de routes inexistantes et saturation de contexte en 15 minutes.
+            </p>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <span className="font-bold text-purple-800 uppercase tracking-wide text-xs">Les 5 Ensembles Fonctionnels</span>
-            <ul className="space-y-1 text-slate-700">
-              <li>1. <strong>Authentification :</strong> Inscription, connexion sécurisée, session utilisateur.</li>
-              <li>2. <strong>Gestion des projets :</strong> CRUD complet (Créer, lister, éditer, supprimer).</li>
-              <li>3. <strong>Gestion des tâches :</strong> Assignation, priorités (Basse, Moyenne, Haute), statut.</li>
-              <li>4. <strong>Tableau de bord :</strong> Statistiques d&apos;avancement et métriques en temps réel.</li>
-              <li>5. <strong>Documentation :</strong> Spécifications d&apos;API OpenAPI et guides d&apos;installation.</li>
-            </ul>
+          <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-2">
+            <span className="font-bold text-emerald-800">Le cadrage méthodique (Recommandé)</span>
+            <p className="text-slate-600">
+              Établir un cahier des charges officiel qui fige la stack technique, délimite les 5 modules fonctionnels et affecte un mandat exclusif à chaque agent.
+            </p>
+            <p className="text-emerald-900 font-semibold text-xs">
+              Résultat : Des agents disciplinés, zéro écrasement de fichier et une traçabilité totale sous contrôle humain.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* 3. Délimitation des responsabilités des 5 agents */}
+      {/* 2. Présentation du projet support PlanIQ */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Responsabilités respectives des 5 agents
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <span>2. Présentation de l&apos;application support : PlanIQ Project Manager</span>
         </h2>
+        <p className="text-slate-700 text-xs sm:text-sm">
+          Pour notre projet de synthèse du cursus, nous pilotons la conception d&apos;une application web professionnelle de gestion de projets d&apos;équipe :
+        </p>
 
-        <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-3">
+            <span className="font-bold text-purple-900 uppercase tracking-wide text-xs">Architecture Technique Imposée</span>
+            <ul className="space-y-2 text-slate-700 text-xs">
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-slate-900 shrink-0">• Frontend :</span>
+                <span>React.js (Composants fonctionnels, state local réactif, formulaires contrôlés, Tailwind CSS).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-slate-900 shrink-0">• Backend :</span>
+                <span>Node.js + Express (API RESTful, middlewares de sécurité, validation des requêtes).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-slate-900 shrink-0">• Persistance :</span>
+                <span>MySQL (Tables relationnelles : <code>utilisateurs</code>, <code>projets</code>, <code>taches</code>).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-slate-900 shrink-0">• IDE &amp; Agents :</span>
+                <span>Google Antigravity (Orchestration multi-agents sous gouvernance humaine HITL).</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs space-y-3">
+            <span className="font-bold text-purple-900 uppercase tracking-wide text-xs">Les 5 Modules Fonctionnels Autorisés</span>
+            <ul className="space-y-1.5 text-slate-700 text-xs">
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-indigo-700 shrink-0">1.</span>
+                <span><strong>Authentification :</strong> Inscription, connexion sécurisée et vérification de session utilisateur.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-indigo-700 shrink-0">2.</span>
+                <span><strong>Gestion des Projets :</strong> CRUD complet (Créer, lister, modifier le statut, archiver).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-indigo-700 shrink-0">3.</span>
+                <span><strong>Gestion des Tâches :</strong> Assignation aux membres, priorités (Basse, Moyenne, Haute), statuts d&apos;avancement.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-indigo-700 shrink-0">4.</span>
+                <span><strong>Tableau de Bord :</strong> Métriques en temps réel (taux de complétion, tâches en retard).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="font-bold text-indigo-700 shrink-0">5.</span>
+                <span><strong>Documentation :</strong> Spécifications d&apos;API OpenAPI/Swagger et guides d&apos;installation.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <Callout type="note" title="Limites volontaires du périmètre (Scope Bounding)">
+          Pour maintenir une rigueur pédagogique absolue, les paiements bancaires par carte, l&apos;envoi de SMS et les intégrations tierces superflues sont délibérément <strong>exclus du périmètre</strong>. Aucun agent n&apos;a le droit de proposer ces fonctionnalités sans demande formelle de l&apos;utilisateur.
+        </Callout>
+      </section>
+
+      {/* 3. Répartition des responsabilités des 5 agents */}
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <span>3. Répartition stricte des responsabilités de l&apos;escouade</span>
+        </h2>
+        <p className="text-slate-700 text-xs sm:text-sm">
+          Chaque agent possède une mission spécialisée et un livrable obligatoire. Aucun agent ne peut empiéter sur le rôle d&apos;un autre :
+        </p>
+
+        {/* Table Desktop / Tablet */}
+        <div className="hidden sm:block overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
           <table className="w-full text-left text-xs sm:text-sm">
             <thead className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
               <tr>
                 <th className="p-3">Agent</th>
-                <th className="p-3">Mission principale</th>
+                <th className="p-3">Mandat exclusif</th>
                 <th className="p-3">Livrable obligatoire</th>
+                <th className="p-3">Interdiction absolue</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
               <tr>
-                <td className="p-3 font-bold text-purple-900">Coordinateur</td>
-                <td className="p-3">Analyse la demande humaine, décompose en tâches et supervise l&apos;escouade</td>
-                <td className="p-3 font-mono text-xs">Plan global et rapport de synthèse</td>
+                <td className="p-3 font-bold text-purple-950">1. Coordinateur</td>
+                <td className="p-3">Analyse la demande humaine, planifie et supervise les 4 spécialistes.</td>
+                <td className="p-3 font-mono text-xs text-purple-800">Ordres de mission et synthèse finale</td>
+                <td className="p-3 text-rose-700 text-xs">Ne code jamais et ne modifie aucun fichier.</td>
               </tr>
               <tr>
-                <td className="p-3 font-bold text-blue-900">Développeur</td>
-                <td className="p-3">Conçoit et développe les interfaces React et routes Express autorisées</td>
-                <td className="p-3 font-mono text-xs">Code source, diffs unifiés et composants</td>
+                <td className="p-3 font-bold text-blue-950">2. Développeur</td>
+                <td className="p-3">Conçoit les composants React et les routes Express autorisées.</td>
+                <td className="p-3 font-mono text-xs text-blue-800">Diffs de code unifiés</td>
+                <td className="p-3 text-rose-700 text-xs">Aucune écriture sur le disque sans accord HITL.</td>
               </tr>
               <tr>
-                <td className="p-3 font-bold text-rose-900">Sécurité</td>
-                <td className="p-3">Analyse les risques (SQLi, XSS, auth), sans modifier le code par défaut</td>
-                <td className="p-3 font-mono text-xs">Rapport d&apos;audit et recommandations</td>
+                <td className="p-3 font-bold text-rose-950">3. Sécurité</td>
+                <td className="p-3">Audite les risques (injections SQL, failles XSS, gestion des tokens).</td>
+                <td className="p-3 font-mono text-xs text-rose-800">Rapport d&apos;audit et préconisations</td>
+                <td className="p-3 text-rose-700 text-xs">Mode lecture seule strict : ne modifie aucun code.</td>
               </tr>
               <tr>
-                <td className="p-3 font-bold text-amber-900">Testeur</td>
-                <td className="p-3">Prépare les scénarios et vérifie la conformité avec preuves matérielles</td>
-                <td className="p-3 font-mono text-xs">Plan de tests et matrice de résultats</td>
+                <td className="p-3 font-bold text-amber-950">4. Testeur</td>
+                <td className="p-3">Prépare les scénarios de test et vérifie les résultats d&apos;exécution.</td>
+                <td className="p-3 font-mono text-xs text-amber-800">Plan de test et matrice de preuves</td>
+                <td className="p-3 text-rose-700 text-xs">Ne jamais déclarer un test réussi sans exécution réelle.</td>
               </tr>
               <tr>
-                <td className="p-3 font-bold text-emerald-900">Documentaliste</td>
-                <td className="p-3">Rédige la documentation technique fondée sur les éléments confirmés</td>
-                <td className="p-3 font-mono text-xs">Documentation API et guides d&apos;exploitation</td>
+                <td className="p-3 font-bold text-emerald-950">5. Documentaliste</td>
+                <td className="p-3">Rédige la spécification OpenAPI et les guides techniques d&apos;API.</td>
+                <td className="p-3 font-mono text-xs text-emerald-800">Fiches de documentation vérifiées</td>
+                <td className="p-3 text-rose-700 text-xs">Ne jamais inventer une route ou un paramètre.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <Callout type="note" title="Limites volontaires du projet">
-          Pour concentrer l&apos;effort pédagogique sur l&apos;ingénierie de prompt et la coordination multi-agents, nous excluons délibérément les passerelles de paiement bancaire, l&apos;envoi de SMS et les fonctionnalités d&apos;IA dans l&apos;application finale.
-        </Callout>
+        {/* Mobile Card Stack */}
+        <div className="sm:hidden space-y-3">
+          <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-2">
+            <div className="flex items-center justify-between border-b pb-2">
+              <span className="font-bold text-purple-950 text-xs">1. Coordinateur</span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-100 text-purple-900">Supervision</span>
+            </div>
+            <p className="text-slate-600 text-xs">Planifie et supervise. Ne code jamais et ne touche à aucun fichier sur le disque.</p>
+            <div className="flex items-center justify-between border-b pt-2 pb-1">
+              <span className="font-bold text-blue-950 text-xs">2. Développeur</span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-900">Code &amp; Diffs</span>
+            </div>
+            <p className="text-slate-600 text-xs">Conçoit React/Express. Aucune écriture sans diff approuvé par l&apos;humain.</p>
+            <div className="flex items-center justify-between border-b pt-2 pb-1">
+              <span className="font-bold text-rose-950 text-xs">3. Sécurité</span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-900">Audit Seul</span>
+            </div>
+            <p className="text-slate-600 text-xs">Mode lecture seule strict : audite les risques sans modifier le moindre fichier.</p>
+            <div className="flex items-center justify-between border-b pt-2 pb-1">
+              <span className="font-bold text-amber-950 text-xs">4. Testeur</span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-900">Preuves QA</span>
+            </div>
+            <p className="text-slate-600 text-xs">Prépare et vérifie les tests. Interdiction formelle d&apos;inventer les résultats.</p>
+            <div className="flex items-center justify-between border-b pt-2 pb-1">
+              <span className="font-bold text-emerald-950 text-xs">5. Documentaliste</span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-900">Docs API</span>
+            </div>
+            <p className="text-slate-600 text-xs">Rédige les spécifications d&apos;après les preuves directes uniquement.</p>
+          </div>
+        </div>
       </section>
 
-      {/* 4. Le Cahier des charges officiel */}
+      {/* 4. Le Cahier des Charges officiel */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          4. Le Cahier des Charges Officiel du Projet
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <span>4. Le Cahier des Charges Officiel régissant l&apos;escouade</span>
         </h2>
+        <p className="text-slate-700 text-xs sm:text-sm">
+          Voici le document contractuel de référence que chaque agent doit respecter scrupuleusement :
+        </p>
 
-        <div className="bg-slate-900 text-slate-100 p-5 rounded-2xl font-mono text-xs overflow-x-auto shadow-inner space-y-2 leading-relaxed">
+        <div className="bg-slate-900 text-slate-100 p-5 rounded-2xl font-mono text-xs shadow-inner space-y-2 break-words min-w-0 max-w-full">
           <div className="text-purple-400 font-bold border-b border-slate-800 pb-1">
-            # =====================================================================<br />
-            # CAHIER DES CHARGES — SYSTÈME MULTI-AGENTS IA (PROJET FINAL)<br />
-            # =====================================================================
+            # =========================================================================<br />
+            # CAHIER DES CHARGES OFFICIEL — SYSTÈME MULTI-AGENTS PLANIQ (PROJET FINAL)<br />
+            # =========================================================================
           </div>
-          <p className="text-slate-300">1. OBJET : Piloter le développement complet d&apos;une application de gestion de tâches par une équipe de 5 agents IA sous contrôle d&apos;un développeur humain.</p>
-          <p className="text-slate-300">2. TECHNOLOGIES IMPOSÉES : React.js (Frontend), Node.js / Express (Backend REST), MySQL (Base relationnelle), Google Antigravity (IDE agentique).</p>
-          <p className="text-slate-300">3. RÈGLE DE GOUVERNANCE STRICTE : Mode lecture seule par défaut pour tous les agents. Aucune écriture, création ou suppression de fichier sans présentation préalable du diff et validation humaine formelle.</p>
-          <p className="text-slate-300">4. SANCTUARISATION DES SECRETS : Interdiction absolue d&apos;accès aux fichiers .env et aux clés privées. Traçabilité des actions sans secrets dans les logs.</p>
-          <p className="text-slate-300">5. CRITÈRE D&apos;ACHÈVEMENT : Le projet est validé lorsque les 5 ensembles fonctionnels sont codés, audités sans faille critique, couverts par des tests avec preuves et documentés.</p>
+          <p className="text-slate-300">1. OBJET DU PROJET : Développer l&apos;application PlanIQ sous la gouvernance exclusive du développeur humain.</p>
+          <p className="text-slate-300">2. TECHNOLOGIES EXCLUSIVES : React.js (Frontend), Node.js / Express (Backend REST), MySQL (Base de données), Google Antigravity.</p>
+          <p className="text-slate-300">3. POLITIQUE DE LECTURE SEULE : Tous les agents démarrent en mode LECTURE SEULE strict. Seul l&apos;agent développeur peut soumettre des diffs d&apos;écriture pour validation humaine.</p>
+          <p className="text-slate-300">4. SANCTUARISATION DE LA CONFIGURATION : Interdiction absolue d&apos;accéder aux fichiers .env, aux clés API secrètes ou de remonter dans les répertoires parents.</p>
+          <p className="text-slate-300">5. DEFINITION OF DONE GLOBALE : Une fonctionnalité n&apos;est validée que lorsqu&apos;elle est implémentée en code propre, auditée par la Sécurité (zéro faille critique), couverte par des tests avec preuves et documentée.</p>
         </div>
       </section>
 
       {/* QuickQuiz */}
       <section className="space-y-4 pt-4 border-t border-slate-200">
-        <h2 className="text-[19px] font-bold text-slate-900">
-          Validation des acquis : Cahier des charges
+        <h2 className="text-[19px] font-bold text-slate-900 flex items-center gap-2">
+          <Icon name="academic-cap" className="w-5 h-5 text-purple-700" />
+          <span>Validation des acquis : Cahier des charges</span>
         </h2>
         <QuickQuiz
           questions={[
             {
               id: 1,
-              question: "Quel agent est spécifiquement chargé d'analyser la demande humaine et de répartir les missions dans l'équipe ?",
+              question: "Pourquoi est-il impératif de définir un cahier des charges officiel avant de lancer les agents IA ?",
               options: [
-                "L'agent développeur",
-                "L'agent coordinateur",
-                "L'agent testeur",
-                "L'agent documentaliste"
+                "Pour fournir un référentiel commun et indiscutable évitant que les agents ne se marchent sur les pieds ou n'inventent des fonctionnalités hors périmètre",
+                "Pour que le système d'exploitation Windows accepte de créer les dossiers",
+                "Pour augmenter automatiquement la mémoire vive de l'ordinateur",
+                "Pour permettre à l'agent sécurité de modifier le code sans prévenir"
               ],
-              correctIndex: 1,
-              explanation: "Le coordinateur est le pivot organisationnel : il comprend le besoin global, le découpe en tâches et orchestre les interventions."
+              correctIndex: 0,
+              explanation: "Le cahier des charges constitue le contrat technique universel de l'escouade. Sans lui, chaque agent interprète la mission selon ses biais statistiques, provoquant chaos et réécritures contradictoires."
             },
             {
               id: 2,
-              question: "Un agent détectant une faille de sécurité critique a-t-il le droit de modifier immédiatement le code sans accord préalable ?",
+              question: "Un agent de sécurité détectant une faille critique d'injection SQL a-t-il le droit de modifier le fichier de route Express de sa propre initiative ?",
               options: [
-                "Oui, car la sécurité est prioritaire",
-                "Non, il doit rédiger un rapport avec preuve et recommandation, et laisser le développeur appliquer la correction après validation humaine",
-                "Oui, s'il fait une copie de sauvegarde",
-                "Non, il doit supprimer le projet entier"
+                "Oui, car l'urgence d'une faille critique prime sur toute procédure",
+                "Non, il doit consigner la faille dans son rapport d'audit avec la preuve matérielle et laisser le développeur appliquer le diff après accord humain",
+                "Oui, s'il a déjà prévenu le testeur",
+                "Non, il doit supprimer le fichier du disque"
               ],
               correctIndex: 1,
-              explanation: "Pour éviter les conflits d'écriture et préserver la gouvernance, l'agent sécurité audite et recommande ; le développeur applique après validation humaine."
+              explanation: "L'agent sécurité a un mandat exclusif d'audit en lecture seule. Pour éviter les conflits d'édition, seul l'agent développeur prépare le diff, validé par l'humain avant écriture."
+            },
+            {
+              id: 3,
+              question: "Quelles technologies forment l'architecture technique imposée pour l'application support PlanIQ ?",
+              options: [
+                "React.js (Frontend), Node.js + Express (Backend REST), MySQL (Persistance) sous Google Antigravity",
+                "PHP WordPress, SQLite et Docker",
+                "Python Django, MongoDB et Ruby on Rails",
+                "Java Spring Boot et base de données Microsoft Access"
+              ],
+              correctIndex: 0,
+              explanation: "Le cahier des charges fige la stack technique sur React.js, Node.js avec Express et MySQL, orchestrée dans l'IDE agentique Google Antigravity."
             }
           ]}
         />
@@ -174,4 +281,3 @@ export const Chapitre1Content: React.FC = () => {
     </div>
   );
 };
-

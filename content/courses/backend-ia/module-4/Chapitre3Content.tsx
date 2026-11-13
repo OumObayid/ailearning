@@ -12,13 +12,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre3Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Bases de données &amp; Indexation</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 3 — Analyse approfondie des requêtes avec EXPLAIN et EXPLAIN ANALYZE
         </h1>
       </div>
@@ -166,20 +167,20 @@ export const Chapitre3Content: React.FC = () => {
           </div>
 
           <h3 className="text-base font-black text-indigo-950 pt-2">B. La colonne &apos;Extra&apos; et ses signaux d&apos;alerte</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div className="rounded-xl border border-emerald-300 bg-emerald-50/60 p-3.5 space-y-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs min-w-0">
+            <div className="rounded-xl border border-emerald-300 bg-emerald-50/60 p-3.5 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="font-black text-emerald-900 block">Using index (Covering)</span>
               <p className="text-slate-800 font-semibold">
                 Graal de l&apos;optimisation ! Toutes les colonnes demandées figurent dans l&apos;index. InnoDB n&apos;a même pas besoin de toucher au Clustered Index de la table.
               </p>
             </div>
-            <div className="rounded-xl border border-rose-300 bg-rose-50/60 p-3.5 space-y-1">
+            <div className="rounded-xl border border-rose-300 bg-rose-50/60 p-3.5 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="font-black text-rose-900 block">Using filesort</span>
               <p className="text-slate-800 font-semibold">
                 Alerte performance ! L&apos;ordre demandé dans <code>ORDER BY</code> n&apos;étant pas fourni par l&apos;index, MySQL doit stocker les résultats et les trier en mémoire ou sur disque.
               </p>
             </div>
-            <div className="rounded-xl border border-amber-300 bg-amber-50/60 p-3.5 space-y-1">
+            <div className="rounded-xl border border-amber-300 bg-amber-50/60 p-3.5 space-y-1 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
               <span className="font-black text-amber-900 block">Using temporary</span>
               <p className="text-slate-800 font-semibold">
                 MySQL doit créer une table temporaire pour résoudre un GROUP BY ou un DISTINCT complexe.

@@ -12,14 +12,15 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre2Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Caching &amp; Performance Redis</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-          Chapitre 2 — Redis —— Installation, commandes clés et connexion Node.js
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
+          Chapitre 2 — Redis : Installation, commandes clés et connexion Node.js
         </h1>
       </div>
 
@@ -57,8 +58,9 @@ export const Chapitre2Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           2. Qu&apos;est-ce que Redis et quelle est sa différence avec MySQL ?
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center my-4">
-          <div className="rounded-2xl border-2 border-slate-300 bg-white p-4 shadow-sm flex flex-col items-center justify-center text-center">
+        <div className="space-y-4 my-4 min-w-0 max-w-full">
+          {/* Bloc 1 : Logo & présentation Redis */}
+          <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm flex flex-col items-center justify-center text-center break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             <div className="relative aspect-square w-32 overflow-hidden rounded-xl bg-slate-50">
               <Image
                 src="/images/cours/backend-ia/module-5/redis-logo-cube.jpg"
@@ -71,40 +73,41 @@ export const Chapitre2Content: React.FC = () => {
             <p className="mt-1 text-xs text-slate-700 font-medium">Remote Dictionary Server — Structure Clé-Valeur en RAM</p>
           </div>
 
-          <div className="md:col-span-2 overflow-x-auto rounded-xl border border-slate-300">
-            <table className="w-full text-left text-xs font-medium">
+          {/* Bloc 2 : Tableau comparatif Redis vs MySQL */}
+          <div className="overflow-x-auto rounded-xl border border-slate-300 min-w-0 max-w-full bg-white shadow-sm">
+            <table className="w-full text-left text-xs font-medium table-auto break-words [overflow-wrap:anywhere]">
               <thead className="border-b border-slate-300 bg-slate-100 text-slate-900 font-black">
                 <tr>
-                  <th className="p-2.5">Critère</th>
-                  <th className="p-2.5">Redis</th>
-                  <th className="p-2.5">MySQL (InnoDB)</th>
+                  <th className="p-3">Critère</th>
+                  <th className="p-3">Redis</th>
+                  <th className="p-3">MySQL (InnoDB)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white text-slate-950">
                 <tr>
-                  <td className="p-2.5 font-bold">Emplacement primaire</td>
-                  <td className="p-2.5 font-black text-emerald-700">Mémoire vive (RAM)</td>
-                  <td className="p-2.5 font-semibold">Disque dur (SSD / NVMe)</td>
+                  <td className="p-3 font-bold">Emplacement primaire</td>
+                  <td className="p-3 font-black text-emerald-700">Mémoire vive (RAM)</td>
+                  <td className="p-3 font-semibold">Disque dur (SSD / NVMe)</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold">Latence d&apos;accès</td>
-                  <td className="p-2.5 font-black text-emerald-700">&lt; 1 milliseconde</td>
-                  <td className="p-2.5 font-semibold">1 à 50 millisecondes</td>
+                  <td className="p-3 font-bold">Latence d&apos;accès</td>
+                  <td className="p-3 font-black text-emerald-700">&lt; 1 milliseconde</td>
+                  <td className="p-3 font-semibold">1 à 50 millisecondes</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold">Modèle de données</td>
-                  <td className="p-2.5">Clés, chaînes, listes, sets, hash</td>
-                  <td className="p-2.5">Tables relationnelles, schémas typés</td>
+                  <td className="p-3 font-bold">Modèle de données</td>
+                  <td className="p-3">Clés, chaînes, listes, sets, hash</td>
+                  <td className="p-3">Tables relationnelles, schémas typés</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold">Requêtes complexes</td>
-                  <td className="p-2.5 text-amber-700">Accès direct par clé (Pas de SQL)</td>
-                  <td className="p-2.5 font-black text-emerald-700">SQL complet, JOIN, agrégations</td>
+                  <td className="p-3 font-bold">Requêtes complexes</td>
+                  <td className="p-3 text-amber-700">Accès direct par clé (Pas de SQL)</td>
+                  <td className="p-3 font-black text-emerald-700">SQL complet, JOIN, agrégations</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold">Rôle dans le projet</td>
-                  <td className="p-2.5 font-black text-indigo-700">Cache accélérateur &amp; Rate Limiting</td>
-                  <td className="p-2.5 font-black text-indigo-700">Source de vérité permanente (BDD)</td>
+                  <td className="p-3 font-bold">Rôle dans le projet</td>
+                  <td className="p-3 font-black text-indigo-700">Cache accélérateur &amp; Rate Limiting</td>
+                  <td className="p-3 font-black text-indigo-700">Source de vérité permanente (BDD)</td>
                 </tr>
               </tbody>
             </table>

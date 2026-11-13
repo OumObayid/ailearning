@@ -220,7 +220,7 @@ export const Chapitre2Content: React.FC = () => {
             Memory Leak Engineering
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Détecter et éradiquer les fuites mémoire (Memory Leaks) : Moteur V8, Garbage Collector et Heap Snapshots
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

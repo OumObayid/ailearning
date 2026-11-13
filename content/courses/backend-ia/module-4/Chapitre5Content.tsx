@@ -12,13 +12,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre5Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Bases de données &amp; Indexation</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 5 — Gestion des connexions, pool de connexions et transactions SQL
         </h1>
       </div>
@@ -235,16 +236,16 @@ module.exports = pool;`}
 
         <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3">
           <h3 className="text-base font-black text-slate-950">Le bon pipeline temporel en 3 phases distinctes :</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-1">
-            <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1 min-w-0">
+            <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-3 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="font-black text-indigo-900 block">Phase 1 : Lecture SQL (~2 ms)</span>
               Lecture des crédits ou du contexte de conversation. Restitution immédiate au pool.
             </div>
-            <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-3">
+            <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-3 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="font-black text-purple-900 block">Phase 2 : Streaming IA (~4 000 ms)</span>
               Échange réseau pur avec l&apos;API Google Gemini en streaming SSE. <strong>0 connexion MySQL réservée</strong>.
             </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
               <span className="font-black text-emerald-900 block">Phase 3 : Écriture SQL (~2 ms)</span>
               Une fois le streaming achevé, un socket est ré-emprunté 2 millisecondes pour enregistrer la réponse dans la table.
             </div>

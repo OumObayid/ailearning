@@ -97,27 +97,27 @@ export const WorkerThreadsLab: React.FC = () => {
   return (
     <div className="my-8 rounded-3xl border-2 border-slate-300 bg-white p-6 sm:p-8 shadow-sm">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b-2 border-slate-200 pb-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-800">
+      <div className="flex flex-col gap-4 border-b-2 border-slate-200 pb-5">
+        <div className="flex items-start gap-3.5 w-full">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-800">
             <Icon name="cpu" className="w-6 h-6" />
           </div>
-          <div>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-950">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-950 leading-tight">
               Laboratoire Interactif : Threads &amp; Concurrence
             </h3>
-            <p className="text-base text-slate-800 font-semibold">
+            <p className="mt-1 text-sm sm:text-base text-slate-800 font-semibold leading-normal">
               Observez en direct l&apos;impact d&apos;un Worker sur la réactivité et la synchronisation avec Atomics
             </p>
           </div>
         </div>
 
         {/* Tab switch */}
-        <div className="flex rounded-xl bg-slate-100 p-1 border-2 border-slate-200">
+        <div className="flex flex-wrap rounded-xl bg-slate-100 p-1.5 border-2 border-slate-200 gap-1.5 self-start">
           <button
             type="button"
             onClick={() => setActiveTab('blocking')}
-            className={`rounded-lg px-3.5 py-2 text-sm font-black transition ${
+            className={`rounded-lg px-4 py-2 text-sm font-black transition ${
               activeTab === 'blocking'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-800 hover:text-slate-950'
@@ -128,7 +128,7 @@ export const WorkerThreadsLab: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('raceCondition')}
-            className={`rounded-lg px-3.5 py-2 text-sm font-black transition ${
+            className={`rounded-lg px-4 py-2 text-sm font-black transition ${
               activeTab === 'raceCondition'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-800 hover:text-slate-950'
@@ -142,23 +142,23 @@ export const WorkerThreadsLab: React.FC = () => {
       {/* Tab 1: Blocking vs Worker */}
       {activeTab === 'blocking' && (
         <div className="mt-6 space-y-6">
-          {/* UI Responsiveness Indicator */}
-          <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4.5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="relative flex h-3.5 w-3.5">
+          {/* UI Responsiveness Indicator - Partagé 50/50 */}
+          <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4.5 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="relative flex h-3.5 w-3.5 shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500" />
               </span>
-              <div>
-                <span className="text-sm font-bold text-slate-700 uppercase">Indicateur de réactivité du thread</span>
+              <div className="min-w-0">
+                <span className="text-xs sm:text-sm font-bold text-slate-700 uppercase block">Indicateur de réactivité du thread</span>
                 <p className="text-base font-extrabold text-slate-950">
                   Battement d&apos;Event Loop : <span className="font-mono text-indigo-700">{pingCounter}</span>
                 </p>
               </div>
             </div>
-            <span className="text-xs font-semibold text-slate-600 max-w-xs text-center sm:text-right">
+            <div className="text-xs sm:text-sm font-semibold text-slate-700 break-words [overflow-wrap:anywhere] min-w-0 sm:border-l-2 sm:border-slate-300 sm:pl-4">
               Si ce compteur se fige, cela signifie que le thread principal JavaScript est bloqué.
-            </span>
+            </div>
           </div>
 
           {/* Action buttons */}

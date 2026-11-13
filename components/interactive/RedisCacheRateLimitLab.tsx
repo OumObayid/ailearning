@@ -232,22 +232,22 @@ export const RedisCacheRateLimitLab: React.FC<RedisCacheRateLimitLabProps> = ({
             </button>
           </div>
 
-          {/* Metrics bar */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Source de la réponse</span>
+          {/* Metrics bar - Max 2 cartes par ligne */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Source de la réponse</span>
               <p className={`text-xl font-black ${cacheStatus.status === 'hit' ? 'text-emerald-700' : 'text-amber-700'}`}>
                 {cacheStatus.source || 'En attente'}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Temps de réponse total</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Temps de réponse total</span>
               <p className={`text-2xl font-black ${cacheStatus.timeMs < 10 ? 'text-emerald-700' : 'text-slate-950'}`}>
                 {cacheStatus.timeMs > 0 ? `${cacheStatus.timeMs} ms` : '-'}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">TTL restant de la clé</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
+              <span className="text-xs font-bold uppercase text-slate-600 block">TTL restant de la clé</span>
               <p className="text-2xl font-black text-indigo-700">
                 {cacheStorage[promptInput.trim().toLowerCase()]
                   ? `${cacheStorage[promptInput.trim().toLowerCase()].ttl} s`
@@ -280,8 +280,8 @@ export const RedisCacheRateLimitLab: React.FC<RedisCacheRateLimitLabProps> = ({
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="space-y-2 min-w-0">
               <label className="text-xs font-black uppercase text-slate-800 block">Prompt</label>
               <input
                 type="text"
@@ -290,7 +290,7 @@ export const RedisCacheRateLimitLab: React.FC<RedisCacheRateLimitLabProps> = ({
                 className="w-full rounded-lg border-2 border-slate-900 px-3 py-2 text-sm font-semibold text-slate-950"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <label className="text-xs font-black uppercase text-slate-800 block">Modèle LLM</label>
               <select
                 value={hashModel}
@@ -302,7 +302,7 @@ export const RedisCacheRateLimitLab: React.FC<RedisCacheRateLimitLabProps> = ({
                 <option value="gemini-1.5-pro">gemini-1.5-pro</option>
               </select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0 sm:col-span-2">
               <label className="text-xs font-black uppercase text-slate-800 block">Température : {hashTemp}</label>
               <input
                 type="range"
@@ -340,20 +340,20 @@ export const RedisCacheRateLimitLab: React.FC<RedisCacheRateLimitLabProps> = ({
             </p>
           </div>
 
-          {/* Status bar */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Requêtes consommées</span>
+          {/* Status bar - Max 2 cartes par ligne */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Requêtes consommées</span>
               <p className={`text-3xl font-black ${requestsUsed >= quotaLimit ? 'text-rose-600' : 'text-slate-950'}`}>
                 {requestsUsed} / {quotaLimit}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">RateLimit-Remaining</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">RateLimit-Remaining</span>
               <p className="text-3xl font-black text-emerald-700">{Math.max(0, quotaLimit - requestsUsed)}</p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Réinitialisation (Reset TTL)</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Réinitialisation (Reset TTL)</span>
               <p className="text-3xl font-black text-indigo-700">{rateLimitTtl} s</p>
             </div>
           </div>

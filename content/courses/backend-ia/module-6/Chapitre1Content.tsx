@@ -11,13 +11,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — WebAssembly &amp; Accélération Matérielle</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Comprendre WebAssembly (WASM) et son exécution binaire
         </h1>
       </div>
@@ -93,23 +94,23 @@ export const Chapitre1Content: React.FC = () => {
           <div className="text-sm font-bold text-slate-950 uppercase tracking-wider">
             Chaîne de transformation d&apos;un module WASM
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm min-w-0">
+            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-700 text-white font-bold text-xs">1</span>
               <h3 className="font-bold text-slate-950">Code Source C / Rust</h3>
               <p className="text-xs text-slate-700">Le développeur écrit son algorithme optimisé avec types stricts (int32, float64).</p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1">
+            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-700 text-white font-bold text-xs">2</span>
               <h3 className="font-bold text-slate-950">Compilation AOT</h3>
               <p className="text-xs text-slate-700">Le compilateur (Emscripten, clang, rustc) transforme le code en bytecode <code className="font-mono">.wasm</code>.</p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1">
+            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-700 text-white font-bold text-xs">3</span>
               <h3 className="font-bold text-slate-950">Moteur V8 / Hôte</h3>
               <p className="text-xs text-slate-700">Le navigateur ou Node.js charge les octets et vérifie l&apos;intégrité binaire en sandbox.</p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1">
+            <div className="rounded-xl border border-slate-300 bg-white p-4 space-y-1 break-words [overflow-wrap:anywhere] min-w-0">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-700 text-white font-bold text-xs">4</span>
               <h3 className="font-bold text-slate-950">Appel JavaScript</h3>
               <p className="text-xs text-slate-700">JavaScript appelle les fonctions exportées via <code className="font-mono">instance.exports</code> en toute transparence.</p>

@@ -154,7 +154,7 @@ export const Chapitre11Content: React.FC = () => {
             API Isolation with Postman
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Utilisation de Postman pour isoler les problèmes : Méthodologie binaire Front/Back, variables et tests automatisés
         </h1>
         <p className="mt-3 text-sm sm:text-base text-slate-700 leading-relaxed">

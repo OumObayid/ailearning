@@ -6,13 +6,13 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre9Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 9 — Demander une réponse ou demander une action
         </h1>
       </div>
@@ -115,7 +115,7 @@ export const Chapitre9Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. Le workflow professionnel à validation humaine (Human-in-the-Loop)
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-center">
+        <div className="grid gap-3 text-center grid-cols-1 sm:grid-cols-2">
           <div className="p-3.5 rounded-2xl border-2 border-slate-200 bg-white space-y-1">
             <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-900 font-black text-xs inline-flex items-center justify-center">1</span>
             <p className="text-xs font-black text-slate-950">Analyse</p>

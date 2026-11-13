@@ -6,6 +6,7 @@ import { ProgressionTabs, type ProgressionTabKey } from './ProgressionTabs';
 import { OverviewSection } from './OverviewSection';
 import { ReadingProgressSection } from './ReadingProgressSection';
 import { ExamProgressSection } from './ExamProgressSection';
+import { CertificationsAndBadgesSection } from './CertificationsAndBadgesSection';
 
 interface UserProgressionViewProps {
   data: UserProgressionResponse;
@@ -21,7 +22,7 @@ export function UserProgressionView({
   const [activeTab, setActiveTab] = useState<ProgressionTabKey>(initialTab);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3.5">
       {/* Barre de navigation modulaire par onglets */}
       <ProgressionTabs
         activeTab={activeTab}
@@ -41,7 +42,12 @@ export function UserProgressionView({
         />
       )}
 
-      {/* 2. Espace Progression des Lectures & Historique des Chapitres */}
+      {/* 2. Espace Certifications & Badges */}
+      {activeTab === 'badges' && (
+        <CertificationsAndBadgesSection />
+      )}
+
+      {/* 3. Espace Progression des Lectures & Historique des Chapitres */}
       {activeTab === 'reading' && (
         <ReadingProgressSection
           readingProgress={data.readingProgress}
@@ -49,7 +55,7 @@ export function UserProgressionView({
         />
       )}
 
-      {/* 3. Espace Examens, Schémas des Modules & Épreuves */}
+      {/* 4. Espace Examens, Schémas des Modules & Épreuves */}
       {activeTab === 'exams' && (
         <ExamProgressSection
           courses={data.courses}

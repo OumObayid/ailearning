@@ -3,16 +3,17 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { CodeBlock } from '@/components/courses/CodeBlock';
 
 export const Chapitre6Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 6 — Gestion des ambiguïtés
         </h1>
       </div>
@@ -116,14 +117,15 @@ export const Chapitre6Content: React.FC = () => {
       </section>
 
       {/* 4. Bloc réutilisable Antigravity */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-w-0 max-w-full">
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. Règle réutilisable pour vos instructions d&apos;agent
         </h2>
-        <div className="rounded-2xl border-2 border-indigo-200 bg-slate-900 text-slate-100 p-6 space-y-3 font-mono text-sm">
-          <p className="text-xs uppercase font-extrabold text-indigo-400 tracking-wider">[GESTION SYSTÉMATIQUE DES AMBIGUÏTÉS]</p>
-          <pre className="whitespace-pre-wrap leading-relaxed text-slate-200">
-{`Avant de commencer toute tâche :
+        <CodeBlock
+          filename="GESTION SYSTÉMATIQUE DES AMBIGUÏTÉS"
+          language="markdown"
+          wrap={true}
+          code={`Avant de commencer toute tâche :
 1. Analyse toutes les consignes reçues.
 2. Identifie les informations manquantes et les termes à double sens.
 3. Vérifie que le périmètre et les autorisations sont explicites.
@@ -134,8 +136,7 @@ Si une ambiguïté concerne le périmètre ou les autorisations de modification 
 - Pose une question précise et attends ma réponse avant d'agir.
 
 Ne considère jamais une absence d'interdiction comme une autorisation automatique.`}
-          </pre>
-        </div>
+        />
       </section>
 
       {/* 5. TP & Quiz */}

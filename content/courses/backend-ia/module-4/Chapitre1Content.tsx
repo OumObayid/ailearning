@@ -12,13 +12,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre1Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Bases de données &amp; Indexation</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 1 — Fonctionnement des index SQL et structures B+Tree
         </h1>
       </div>
@@ -65,25 +66,29 @@ export const Chapitre1Content: React.FC = () => {
           Imaginez que vous cherchez les occurrences du terme « JavaScript » dans un manuel de 1 000 pages. Sans index, vous devez lire les 1 000 pages du début à la fin (c&apos;est le <em>Full Table Scan</em>). Avec un index alphabétique à la fin du livre, vous repérez directement les pages [42, 118, 305] en 2 secondes.
         </Callout>
 
-        <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-3">
+        <div className="rounded-2xl border-2 border-slate-300 bg-white p-5 shadow-sm space-y-4 min-w-0 max-w-full">
           <h3 className="text-sm sm:text-base font-bold text-slate-900">Exemple concret : Table de 100 000 conversations IA</h3>
           <p className="text-sm font-semibold text-slate-800">
-            Considérons une table <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-indigo-700">conversations</code> stockant l&apos;historique des échanges avec Gemini :
+            Considérons une table <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-indigo-700 break-all">conversations</code> stockant l&apos;historique des échanges avec Gemini :
           </p>
-          <pre className="rounded bg-slate-950 p-3 font-mono text-xs text-emerald-300">
-{`SELECT * FROM conversations WHERE user_id = 12;`}
-          </pre>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-4">
-              <span className="font-black text-rose-900 text-sm">Sans Index (Full Table Scan)</span>
-              <p className="mt-1 text-xs text-slate-800 leading-relaxed">
+
+          <div className="rounded-xl bg-slate-950 p-3 font-mono text-xs text-emerald-300 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+            <code>SELECT * FROM conversations WHERE user_id = 12;</code>
+          </div>
+
+          {/* Les deux blocs l'un sur l'autre pour une lisibilité totale sans écrasement */}
+          <div className="space-y-3 pt-1 min-w-0">
+            <div className="rounded-xl border-2 border-rose-200 bg-rose-50/50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="font-black text-rose-950 text-sm block mb-1">Sans Index (Full Table Scan)</span>
+              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed">
                 MySQL parcourt les <strong>100 000 lignes une par une</strong> depuis le disque dur. Le processeur sature à 100%, l&apos;I/O bloque le serveur et la requête prend ~250 ms.
               </p>
             </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
-              <span className="font-black text-emerald-900 text-sm">Avec Index (Index Lookup)</span>
-              <p className="mt-1 text-xs text-slate-800 leading-relaxed">
-                MySQL consulte l&apos;arborescence B+Tree de <code className="font-mono">idx_conversations_user_id</code> et atteint les pointeurs des 100 conversations en <strong>0.8 ms</strong>.
+
+            <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/50 p-4 break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="font-black text-emerald-950 text-sm block mb-1">Avec Index (Index Lookup)</span>
+              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed">
+                MySQL consulte l&apos;arborescence B+Tree de <code className="font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-950 break-all font-bold">idx_conversations_user_id</code> et atteint les pointeurs des 100 conversations en <strong>0.8 ms</strong>.
               </p>
             </div>
           </div>

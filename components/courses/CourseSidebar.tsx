@@ -155,7 +155,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
         <div className="flex items-center gap-2 min-w-0">
           <Icon name="book-open" className={cn('w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0', currentTheme.headerIcon)} />
           <h3 className="text-sm sm:text-base font-black text-slate-950 truncate">
-            Sommaire du cours
+            Sommaire
           </h3>
         </div>
         <span className="text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 shrink-0">
@@ -199,19 +199,48 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
               )}
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span
-                  className={cn(
-                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-black transition-all',
-                    isCompleted
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : isActive
+                {isCompleted ? (
+                  <span
+                    className="flex h-6 w-6 shrink-0 items-center justify-center select-none"
+                    title="Chapitre validé"
+                  >
+                    <svg
+                      className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_1px_2px_rgba(217,119,6,0.35)] shrink-0 transition-transform duration-200 group-hover:scale-115"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      {/* Face ombrée — nuance ambre profond pour le relief 2D */}
+                      <path
+                        d="M12 12L14.47 8.6L21.04 9.06ZM12 12L15.99 13.3L17.58 19.69ZM12 12L12 16.2L6.42 19.69ZM12 12L8.01 13.3L2.96 9.06ZM12 12L9.53 8.6L12 2.5Z"
+                        fill="#D97706"
+                      />
+                      {/* Face éclairée — nuance or ambré éclatant */}
+                      <path
+                        d="M12 12L12 2.5L14.47 8.6ZM12 12L21.04 9.06L15.99 13.3ZM12 12L17.58 19.69L12 16.2ZM12 12L6.42 19.69L8.01 13.3ZM12 12L2.96 9.06L9.53 8.6Z"
+                        fill="#FBBF24"
+                      />
+                      {/* Liseré extérieur fin pour un fini orfèvre net */}
+                      <path
+                        d="M12 2.5L14.47 8.6L21.04 9.06L15.99 13.3L17.58 19.69L12 16.2L6.42 19.69L8.01 13.3L2.96 9.06L9.53 8.6Z"
+                        stroke="#B45309"
+                        strokeWidth="0.6"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                ) : (
+                  <span
+                    className={cn(
+                      'flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-black transition-all',
+                      isActive
                         ? currentTheme.numberActive
                         : currentTheme.numberInactive
-                  )}
-                  title={isCompleted ? "Chapitre terminé" : undefined}
-                >
-                  {isCompleted ? '✓' : chapter.number ? chapter.number : '•'}
-                </span>
+                    )}
+                  >
+                    {chapter.number ? chapter.number : '•'}
+                  </span>
+                )}
                 <span className="line-clamp-2 leading-snug break-words" title={displayTitle}>
                   {displayTitle}
                 </span>

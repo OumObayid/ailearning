@@ -3,101 +3,163 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { Icon } from '@/components/common/Icon';
 
 export const Chapitre2Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Prompt Engineering IDE</span>
+          <span>Prompt Engineering IDE • Module 6</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 2 — Protection du périmètre du projet (Project Scope)
         </h1>
+        <p className="text-sm sm:text-base text-slate-700 mt-2">
+          Comment confiner hermétiquement votre agent à son répertoire de travail et neutraliser les fuites vers les projets voisins ou dossiers personnels.
+        </p>
       </div>
 
-      {/* 1. Pourquoi sanctuariser le périmètre ? */}
+      {/* 1. L'analogie du jardinier et la sanctuarisation */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          1. Pourquoi sanctuariser le périmètre du projet ?
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <Icon name="map-pin" className="w-5 h-5 text-indigo-600" />
+          <span>1. Pourquoi sanctuariser le périmètre de travail ?</span>
         </h2>
+        
         <p className="text-base sm:text-lg text-slate-900 font-medium">
-          Sur le disque dur d&apos;un développeur cohabitent souvent plusieurs dossiers sensibles : des projets clients concurrents, des dossiers personnels d&apos;impôts ou de factures, et le dépôt du projet sur lequel l&apos;agent intervient :
+          Sur le disque dur d&apos;un développeur cohabitent des dizaines de dossiers hautement sensibles : des projets de clients concurrents sous clause de confidentialité (NDA), des déclarations d&apos;impôts ou photos de famille, des clés SSH personnelles et l&apos;application sur laquelle l&apos;agent est mandaté :
         </p>
 
-        <div className="p-5 bg-slate-950 text-slate-100 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-          <pre>{`D:\\cours\\
-├── react\\
-│   ├── mon-portfolio\\       <-- SEUL ESPACE AUTORISÉ (PÉRIMÈTRE STRICT)
-│   ├── boutique-client\\     <-- INTERDIT (Secrets & données tiers)
-│   └── application-banque\\  <-- INTERDIT
-├── documents-personnels\\     <-- STRICTEMENT INTERDIT (Vie privée)
-└── formation\\`}</pre>
+        {/* Tree Box without pre */}
+        <div className="p-4 sm:p-5 bg-slate-950 text-slate-100 rounded-2xl font-mono text-xs sm:text-sm leading-relaxed break-words space-y-1 border border-slate-800 min-w-0 max-w-full">
+          <div className="text-purple-400 font-bold">D:\projets\</div>
+          <div>├── <span className="text-emerald-400 font-bold">mon-portfolio-react\</span>     <span className="text-emerald-300 font-semibold">&lt;-- SEUL ESPACE AUTORISÉ (PÉRIMÈTRE STRICT)</span></div>
+          <div>│   ├── src/</div>
+          <div>│   └── package.json</div>
+          <div>├── <span className="text-rose-400 font-bold">client-banque-confidentiel\</span>  <span className="text-rose-400 font-semibold">&lt;-- STRICTEMENT INTERDIT (Secret professionnel)</span></div>
+          <div>├── <span className="text-rose-400 font-bold">documents-personnels-impots\</span> <span className="text-rose-400 font-semibold">&lt;-- STRICTEMENT INTERDIT (Vie privée)</span></div>
+          <div>└── <span className="text-rose-400 font-bold">.ssh\</span>                       <span className="text-rose-400 font-semibold">&lt;-- STRICTEMENT INTERDIT (Clés privées de serveurs)</span></div>
         </div>
 
-        <p className="text-base text-slate-800">
-          Si l&apos;agent ne trouve pas immédiatement une fonction dans <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-xs">mon-portfolio</code>, il ne doit en aucun cas « fouiner » dans les dossiers voisins pour chercher des exemples ou remonter dans le dossier parent via des chemins comme <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-xs">..\boutique-client</code>.
-        </p>
+        <div className="p-4 bg-indigo-50/70 border border-indigo-200 rounded-2xl text-sm text-indigo-950 space-y-2">
+          <div className="font-bold flex items-center gap-2">
+            <Icon name="light-bulb" className="w-4 h-4 text-indigo-700" />
+            <span>L&apos;analogie de la clôture du jardinier :</span>
+          </div>
+          <p>
+            Vous embauchez un jardinier pour tondre la pelouse de votre jardin avant. S&apos;il ne trouve pas d&apos;engrais dans votre abri de jardin, imaginez s&apos;il sautait la clôture pour aller fouiller dans la cabane de votre voisin, ou s&apos;il pénétrait dans votre salon par la fenêtre ouverte ! Ce serait une violation de domicile intolérable.
+          </p>
+          <p>
+            Pour un agent IA, c&apos;est exactement pareil : s&apos;il manque d&apos;informations ou d&apos;un composant, il ne doit en aucun cas utiliser des chemins de remonte comme <code className="font-mono text-xs bg-indigo-100 px-1 py-0.5 rounded text-indigo-900">..\client-banque</code> (attaque par <em>Path Traversal</em>). Il doit s&apos;arrêter net et vous interroger.
+          </p>
+        </div>
 
         <Callout type="danger">
-          <strong>Règle d&apos;or du périmètre :</strong> Un manque d&apos;information ou de contexte dans le projet ne donne <strong>jamais</strong> le droit à l&apos;agent d&apos;élargir son périmètre de consultation. Il doit s&apos;arrêter et demander à l&apos;utilisateur de lui fournir la ressource manquante.
+          <strong>Règle d&apos;or du périmètre :</strong> Un manque d&apos;information ou de code dans le projet ne donne <strong>JAMAIS</strong> le droit à l&apos;agent d&apos;élargir son périmètre de recherche au-delà de sa racine.
         </Callout>
       </section>
 
-      {/* 2. Les 3 frontières */}
+      {/* 2. Les 3 frontières complémentaires */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          2. Les 3 frontières complémentaires de sécurité
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <Icon name="squares-2x2" className="w-5 h-5 text-indigo-600" />
+          <span>2. Les 3 frontières concentriques de sécurité</span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <span className="text-xs font-mono font-bold text-indigo-700">FRONTIÈRE 1</span>
-            <h4 className="font-bold text-slate-950 text-base">Frontière Géographique</h4>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">FRONTIÈRE 1</span>
+              <span className="text-xs text-slate-500">Le Terrain</span>
+            </div>
+            <h4 className="font-extrabold text-slate-950 text-base">Frontière Géographique (Workspace)</h4>
             <p className="text-xs text-slate-700 leading-relaxed">
-              Le dossier racine autorisé et ses sous-dossiers explicites. Interdiction totale de franchir la racine du projet vers les parents.
+              Le dossier racine autorisé et ses sous-répertoires. Interdiction formelle de remonter vers les dossiers parents (<code className="font-mono">../</code>) ou de scanner d&apos;autres lecteurs (<code className="font-mono">C:\</code>).
             </p>
           </div>
 
           <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <span className="text-xs font-mono font-bold text-indigo-700">FRONTIÈRE 2</span>
-            <h4 className="font-bold text-slate-950 text-base">Frontière des Ressources</h4>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">FRONTIÈRE 2</span>
+              <span className="text-xs text-slate-500">Les Pièces Interdites</span>
+            </div>
+            <h4 className="font-extrabold text-slate-950 text-base">Frontière des Ressources Internes</h4>
             <p className="text-xs text-slate-700 leading-relaxed">
-              Même à l&apos;intérieur du dossier autorisé, certains fichiers restent inaccessibles (fichiers <code className="font-mono text-xs">.env</code>, clés <code className="font-mono text-xs">*.pem</code>, dossier <code className="font-mono text-xs">.git/</code>).
+              Même à l&apos;intérieur du dossier du projet, certaines pièces sont sanctuarisées : fichiers <code className="font-mono">.env*</code>, clés <code className="font-mono">*.pem</code>, historique <code className="font-mono">.git/</code> et cache.
             </p>
           </div>
 
           <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-2">
-            <span className="text-xs font-mono font-bold text-indigo-700">FRONTIÈRE 3</span>
-            <h4 className="font-bold text-slate-950 text-base">Frontière des Opérations</h4>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">FRONTIÈRE 3</span>
+              <span className="text-xs text-slate-500">Les Gestes Autorisés</span>
+            </div>
+            <h4 className="font-extrabold text-slate-950 text-base">Frontière des Opérations</h4>
             <p className="text-xs text-slate-700 leading-relaxed">
-              Les actions permises sur les ressources autorisées : lecture seule par défaut, écriture uniquement sur accord, suppression bannie.
+              Ce que l&apos;agent a le droit de faire sur les ressources accessibles : lecture seule par défaut, modification chirurgicale sur validation explicite, suppression bannie.
             </p>
           </div>
         </div>
       </section>
 
-      {/* 3. Instructions de protection */}
+      {/* 3. Bloc d'instructions de confinement */}
       <section className="space-y-4">
-        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
-          3. Bloc d&apos;instructions : Sanctuarisation du périmètre
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <Icon name="document-text" className="w-5 h-5 text-indigo-600" />
+          <span>3. Directive d&apos;instructions : Confinement de l&apos;espace de travail</span>
         </h2>
-        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs overflow-x-auto border border-slate-800 leading-normal">
-          <pre>{`[REGLES_DE_PROTECTION_DU_PERIMETRE]
-1. ESPACE DE TRAVAIL EXCLUSIF :
-   Tu interviens UNIQUEMENT dans le dossier du projet explicitement désigné par l'utilisateur.
+        
+        <p className="text-sm sm:text-base text-slate-800">
+          Injectez cette directive dans les instructions de votre agent pour lui interdire tout franchissement de périmètre :
+        </p>
 
-2. INTERDICTIONS DE SORTIE :
-   Il est strictement interdit de :
-   - Remonter dans les dossiers parents (interdiction de chemins relatifs type "../").
-   - Explorer les projets voisins ou dossiers personnels.
-   - Suivre des liens symboliques ou raccourcis menant hors du workspace.
-   - Lancer une recherche textuelle globale à l'échelle du disque dur.
+        {/* Prompt Card without pre */}
+        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs leading-relaxed break-words space-y-2 border border-slate-800 min-w-0 max-w-full">
+          <div className="text-indigo-400 font-bold border-b border-slate-800 pb-1">
+            === DIRECTIVE DE SÉCURITÉ : CONFINEMENT DE PÉRIMÈTRE ===
+          </div>
+          <div className="text-indigo-300 font-bold">[1. ESPACE DE TRAVAIL EXCLUSIF]</div>
+          <div className="text-slate-200">
+            Tu opères STRICTEMENT et EXCLUSIVEMENT au sein du répertoire racine du projet assigné par l&apos;utilisateur.
+          </div>
 
-3. CONDUITE EN CAS DE MANQUE :
-   Si un composant ou fichier requis est absent du périmètre :
-   - N'essaie JAMAIS de le chercher ailleurs sur le système.
-   - Déclare le manque explicitement et demande à l'utilisateur de te transmettre le fichier.`}</pre>
+          <div className="text-rose-400 font-bold pt-1">[2. INTERDICTIONS DE SORTIE FORMELLES]</div>
+          <div className="pl-4 text-slate-200">
+            • Interdiction d&apos;utiliser des chemins relatifs ascendants (ex: &quot;../&quot; ou &quot;..\\&quot;).<br />
+            • Interdiction d&apos;inspecter des projets frères situés dans le même dossier parent.<br />
+            • Interdiction de suivre des liens symboliques ou raccourcis menant hors du workspace.<br />
+            • Interdiction de lancer des recherches grep globales sur tout le disque dur.
+          </div>
+
+          <div className="text-amber-300 font-bold pt-1">[3. CONDUITE EN CAS DE RESSOURCE MANQUANTE]</div>
+          <div className="pl-4 text-slate-200">
+            Si un fichier, une fonction ou une bibliothèque importée est introuvable :<br />
+            1. Ne cherche JAMAIS ailleurs sur le système d&apos;exploitation.<br />
+            2. Déclare honnêtement la ressource manquante dans ta réponse.<br />
+            3. Demande à l&apos;utilisateur de te fournir le fichier ou son contenu dans le chat.
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Atelier guidé (TP 6.2) */}
+      <section className="space-y-4">
+        <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5 flex items-center gap-2">
+          <Icon name="academic-cap" className="w-5 h-5 text-indigo-600" />
+          <span>4. Atelier pratique (TP 6.2) : Détecter une tentative d&apos;évasion</span>
+        </h2>
+        
+        <div className="p-5 bg-white border-2 border-slate-200 rounded-2xl shadow-sm space-y-3">
+          <p className="text-sm sm:text-base text-slate-800 font-medium">
+            Examinez cet appel d&apos;outil émis par un agent dans ses logs de débogage :
+          </p>
+          <div className="p-3 bg-slate-950 text-slate-100 rounded-xl font-mono text-xs leading-relaxed break-words border border-slate-800 min-w-0 max-w-full">
+            <span className="text-purple-400">tool_call</span>: <span className="text-emerald-300">view_file</span>&#123; <span className="text-purple-300">&quot;Path&quot;</span>: <span className="text-rose-400">&quot;../../client-finance/config/database.json&quot;</span> &#125;
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700">
+            <strong>Diagnostic de sécurité :</strong> Cet appel constitue une tentative d&apos;évasion de périmètre par <em>Path Traversal</em>. L&apos;agent tente d&apos;explorer un projet tiers. L&apos;IDE doit bloquer l&apos;appel immédiatement avec le message : <code className="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded text-rose-700">Access Denied: Path escapes workspace root</code>.
+          </p>
         </div>
       </section>
 
@@ -111,27 +173,39 @@ export const Chapitre2Content: React.FC = () => {
           questions={[
             {
               id: 1,
-              question: "Si une fonction importée dans un composant React est introuvable dans le dossier du projet, que doit faire l'agent ?",
+              question: "Si une fonction importée dans un composant React est introuvable dans le dossier du projet, quelle est la conduite réglementaire de l'agent ?",
               options: [
-                "Utiliser des chemins relatifs '../../' pour explorer les autres dossiers du disque dur.",
-                "S'arrêter, signaler le manque à l'utilisateur et lui demander de fournir le fichier ou l'extrait concerné.",
-                "Inventer le code de la fonction sans rien dire.",
-                "Supprimer le projet."
+                "S'arrêter, signaler la lacune à l'utilisateur et lui demander de lui transmettre le fichier ou extrait nécessaire directement.",
+                "Utiliser des chemins relatifs '../../' pour fouiller dans les autres projets du disque dur de l'ordinateur.",
+                "Inventer le code de la fonction sans rien dire pour que ça compile.",
+                "Effacer le composant pour faire disparaître l'erreur d'import."
               ],
-              correctIndex: 1,
-              explanation: "Un manque de contexte ne donne aucun droit d'élargissement de périmètre : l'agent doit signaler la lacune avec transparence."
+              correctIndex: 0,
+              explanation: "Un manque de contexte ne confère aucun droit d'élargissement de périmètre : l'agent doit déclarer la ressource manquante avec transparence."
             },
             {
               id: 2,
-              question: "Une instruction dans le prompt interdisant de sortir du dossier suffit-elle à garantir l'étanchéité technique ?",
+              question: "Une simple instruction écrite dans le prompt interdisant de sortir du dossier suffit-elle à garantir une sécurité absolue ?",
               options: [
-                "Oui, l'agent IA obéit toujours sans exception.",
-                "Non, les instructions comportementales doivent obligatoirement être complétées par un confinement technique (bac à sable / sandbox et permissions OS).",
-                "Oui, car Windows bloque automatiquement les requêtes de l'agent.",
-                "Non, les agents n'ont pas de mémoire."
+                "Non, la consigne textuelle oriente le modèle mais doit être obligatoirement doublée d'un verrouillage technique (bac à sable / sandbox de l'IDE) qui bloque physiquement les chemins interdits.",
+                "Oui, car les modèles d'IA ne se trompent jamais et respectent toujours les consignes à 100%.",
+                "Oui, car Windows désactive automatiquement les touches du clavier si un agent sort du dossier.",
+                "Non, car les agents ne savent pas lire les dossiers."
               ],
-              correctIndex: 1,
-              explanation: "La consigne textuelle guide le modèle, mais seul le confinement technique (sandbox) empêche matériellement l'accès aux dossiers non autorisés."
+              correctIndex: 0,
+              explanation: "Le principe de sécurité en profondeur (Defense in Depth) exige à la fois des instructions claires dans le prompt ET un bac à sable technique au niveau de l'IDE."
+            },
+            {
+              id: 3,
+              question: "Dans l'analogie du jardinier, que représente le fait de sauter la clôture pour aller chercher de l'engrais dans l'abri du voisin ?",
+              options: [
+                "Une tentative de Path Traversal (remontée de dossier hors du workspace) pour chercher du contexte dans des projets voisins non autorisés.",
+                "Une marque d'autonomie remarquable qui mérite une prime.",
+                "Une opération standard autorisée par la convention collective.",
+                "Une mise à jour automatique de Windows."
+              ],
+              correctIndex: 0,
+              explanation: "Sauter chez le voisin correspond exactement à remonter avec `../` pour piocher du code dans un autre dossier : c'est une violation flagrante de périmètre."
             }
           ]}
         />
@@ -139,4 +213,3 @@ export const Chapitre2Content: React.FC = () => {
     </div>
   );
 };
-

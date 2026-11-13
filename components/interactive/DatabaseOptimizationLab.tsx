@@ -238,22 +238,22 @@ export const DatabaseOptimizationLab: React.FC = () => {
             )}
           </div>
 
-          {/* Metric gauges */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Temps SQL Estimé</span>
+          {/* Metric gauges - Max 2 cartes par ligne */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Temps SQL Estimé</span>
               <p className={`text-2xl font-black ${explainResult.timeMs > 50 ? 'text-rose-600' : 'text-emerald-600'}`}>
                 {explainResult.timeMs} ms
               </p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Lignes Balayées</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Lignes Balayées</span>
               <p className={`text-2xl font-black ${explainResult.rows > 1000 ? 'text-rose-600' : 'text-emerald-600'}`}>
                 {explainResult.rows.toLocaleString()}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Verdict Performance</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-center break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Verdict Performance</span>
               <p className={`text-2xl font-black uppercase ${explainResult.status === 'slow' ? 'text-rose-600' : 'text-emerald-600'}`}>
                 {explainResult.status === 'slow' ? 'Full Scan (Lent)' : 'Optimal (Index)'}
               </p>
@@ -315,24 +315,24 @@ export const DatabaseOptimizationLab: React.FC = () => {
             </div>
           </div>
 
-          {/* Simulation stats comparison */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Lignes parcourues puis jetées</span>
+          {/* Simulation stats comparison - Max 2 cartes par ligne */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Lignes parcourues puis jetées</span>
               <p className="text-3xl font-black text-rose-600">
                 {paginationMethod === 'offset' ? ((pageDepth - 1) * 10).toLocaleString() : '0 (saut B+Tree)'}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Temps de réponse SQL</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center break-words [overflow-wrap:anywhere] min-w-0">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Temps de réponse SQL</span>
               <p className="text-3xl font-black text-slate-950">
                 {paginationMethod === 'offset'
                   ? `${Math.max(1, Math.round(pageDepth * 0.055 * 10) / 10)} ms`
                   : '1.2 ms'}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center">
-              <span className="text-xs font-bold uppercase text-slate-600">Impact Mémoire &amp; CPU</span>
+            <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center break-words [overflow-wrap:anywhere] min-w-0 sm:col-span-2">
+              <span className="text-xs font-bold uppercase text-slate-600 block">Impact Mémoire &amp; CPU</span>
               <p className={`text-3xl font-black ${paginationMethod === 'offset' && pageDepth > 500 ? 'text-rose-600' : 'text-emerald-600'}`}>
                 {paginationMethod === 'offset' && pageDepth > 500 ? 'Élevé (Gaspillage)' : 'Optimal O(1)'}
               </p>

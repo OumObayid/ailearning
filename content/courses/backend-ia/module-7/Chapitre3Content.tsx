@@ -8,13 +8,14 @@ import { Icon } from '@/components/common/Icon';
 
 export const Chapitre3Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed font-sans">
+    <div className="space-y-10 text-slate-900 leading-relaxed font-sans min-w-0 w-full max-w-full">
       {/* Header Title Card */}
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8">
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50/80 p-6 sm:p-8 mb-8 break-words [overflow-wrap:anywhere] min-w-0">
         <div className="flex items-center gap-2 text-amber-900 font-extrabold text-xs uppercase tracking-wider mb-2">
-          <span>Backend IA</span>
+          <Icon name="academic-cap" className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>Backend IA — Projet Fil Rouge d&apos;Intégration</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 3 — Conception et intégration de la base de données MySQL
         </h1>
       </div>
@@ -199,18 +200,20 @@ export const pool = mysql.createPool({
         <p className="text-base text-slate-900 leading-relaxed">
           Sans pool, l&apos;application devrait négocier une nouvelle connexion TCP et authentification pour chaque requête HTTP. Avec un pool, les connexions sont réutilisées instantanément :
         </p>
-        <div className="p-4 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs overflow-x-auto space-y-1">
+        <div className="p-4 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs overflow-x-auto space-y-1 min-w-0 max-w-full">
           <p className="text-amber-400">{'// Fonctionnement d\'un Pool MySQL :'}</p>
-          <p>           Backend Node.js</p>
-          <p>                  |</p>
-          <p>                  v</p>
-          <p>           Pool MySQL (10 connexions)</p>
-          <p>            /     |     \\</p>
-          <p>           v      v      v</p>
-          <p>      Conn. 1  Conn. 2  Conn. 3</p>
-          <p>           \\      |      /</p>
-          <p>                  v</p>
-          <p>             Serveur MySQL</p>
+          <pre className="font-mono text-xs text-slate-200 whitespace-pre leading-relaxed m-0 p-0 bg-transparent">
+{`           Backend Node.js
+                  |
+                  v
+           Pool MySQL (10 connexions)
+            /     |     \\
+           v      v      v
+      Conn. 1  Conn. 2  Conn. 3
+           \\      |      /
+                  v
+             Serveur MySQL`}
+          </pre>
         </div>
       </section>
 

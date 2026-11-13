@@ -3,17 +3,18 @@
 import React from 'react';
 import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
+import { InteractiveChecklist } from '@/components/courses/InteractiveChecklist';
 import { Icon } from '@/components/common/Icon';
 
 export const Chapitre11Content: React.FC = () => {
   return (
-    <div className="space-y-10 text-slate-900 leading-relaxed">
+    <div className="space-y-10 text-slate-900 leading-relaxed min-w-0 max-w-full">
       {/* Header Title Card */}
       <div className="rounded-3xl border-2 border-purple-200 bg-purple-50/80 p-6 sm:p-8 mb-8">
         <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-2">
           <span>Prompt Engineering IDE</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight break-words [overflow-wrap:anywhere]">
           Chapitre 11 — Gestion des erreurs et des incertitudes
         </h1>
       </div>
@@ -23,7 +24,7 @@ export const Chapitre11Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           1. Distinguer Erreur, Incertitude et Limitation
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           <div className="p-5 bg-white border-2 border-rose-200 rounded-2xl">
             <div className="text-rose-700 font-black text-base flex items-center gap-2 mb-2">
               <Icon name="x-circle" className="w-5 h-5" />
@@ -120,7 +121,7 @@ export const Chapitre11Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           3. La méthode de gestion en 5 étapes
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
           <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
             <span className="font-mono text-indigo-700 font-black text-xs block mb-1">ÉTAPE 1</span>
             <div className="font-bold text-slate-950 text-sm">Détecter</div>
@@ -154,36 +155,42 @@ export const Chapitre11Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           4. Prompt professionnel : Directive stricte d&apos;intégrité
         </h2>
-        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-          <pre>{`[DIRECTIVE_STRICTE_INTEGRITE]
-1. INTERDICTION FORMELLE D'INVENTER :
-   Si une information technique n'apparaît pas expressément dans le code ou le document source,
-   tu as l'interdiction de la déduire ou de supposer son contenu sans le signaler.
+        <div className="bg-slate-950 text-slate-100 p-4 sm:p-6 rounded-2xl font-mono text-xs sm:text-sm border border-slate-800 shadow-inner space-y-3 break-words min-w-0 max-w-full">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span className="text-indigo-400 font-bold uppercase text-[11px] tracking-wider">[DIRECTIVE STRICTE D&apos;INTÉGRITÉ]</span>
+            <span className="text-slate-400 text-xs font-sans">Anti-hallucination</span>
+          </div>
 
-2. CLASSIFICATION DES CONSTATS :
-   Pour chaque observation, assigne un niveau de certitude :
-   - [CERTITUDE_ELEVEE] : Vérifié directement par une ligne de code visible.
-   - [HYPOTHESE_PROBABLE] : Forte probabilité mais dépend d'un composant non inspecté.
-   - [INCERTITUDE] : Manque d'information ou contradiction évidente.
+          <div className="space-y-2.5 text-slate-300">
+            <div className="p-2.5 rounded-lg bg-rose-950/40 border border-rose-900/60">
+              <strong className="text-rose-400 uppercase text-[11px] block">1. INTERDICTION FORMELLE D&apos;INVENTER :</strong>
+              <span className="text-rose-200 text-xs">
+                Si une information n&apos;apparaît pas expressément dans le code ou la doc source, interdiction de la déduire sans le signaler formellement.
+              </span>
+            </div>
 
-3. CONDUITE EN CAS DE DONNEES MANQUANTES :
-   N'invente pas de fausses signatures de fonctions. Déclare explicitement :
-   "Donnée manquante : Le fichier <nom> est requis pour valider ce point."
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+              <strong className="text-amber-400 uppercase text-[11px] block">2. CLASSIFICATION DES CONSTATS :</strong>
+              <div className="grid gap-2 text-xs pt-0.5 grid-cols-1 sm:grid-cols-2">
+                <div className="p-2 rounded bg-slate-950 border border-emerald-900/60 text-emerald-300">
+                  <strong>[CERTITUDE_ELEVEE]</strong> : Vérifié directement par une ligne de code visible.
+                </div>
+                <div className="p-2 rounded bg-slate-950 border border-amber-900/60 text-amber-300">
+                  <strong>[HYPOTHESE_PROBABLE]</strong> : Dépend d&apos;un composant non inspecté.
+                </div>
+                <div className="p-2 rounded bg-slate-950 border border-rose-900/60 text-rose-300">
+                  <strong>[INCERTITUDE]</strong> : Manque d&apos;information ou contradiction.
+                </div>
+              </div>
+            </div>
 
-4. FORMAT DE RESTITUTION JSON :
-{
-  "statut": "SUCCES" | "INCOMPLET" | "BLOCAGE",
-  "certitude_globale": "ELEVEE" | "MOYENNE" | "FAIBLE",
-  "points_verifies": [...],
-  "incertitudes_et_manques": [
-    {
-      "element_douteux": "string",
-      "nature": "MANQUE" | "CONTRADICTION" | "AMBIGUITE",
-      "impact": "BLOQUANT" | "MINEUR",
-      "action_recommandee": "string"
-    }
-  ]
-}`}</pre>
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+              <strong className="text-emerald-400 uppercase text-[11px] block">3. FORMAT DE RESTITUTION JSON :</strong>
+              <div className="bg-slate-950 p-2 rounded text-emerald-300 font-semibold break-all text-xs">
+                &#123; &quot;statut&quot;: &quot;SUCCES&quot; | &quot;INCOMPLET&quot; | &quot;BLOCAGE&quot;, &quot;certitude_globale&quot;: &quot;ELEVEE&quot; | &quot;MOYENNE&quot; | &quot;FAIBLE&quot;, &quot;points_verifies&quot;: [...], &quot;incertitudes_et_manques&quot;: [...] &#125;
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -192,48 +199,118 @@ export const Chapitre11Content: React.FC = () => {
         <h2 className="text-[19px] font-bold text-slate-900 border-b-2 border-slate-200 pb-1.5">
           5. Implémentation : Retry exponentiel et validation Zod
         </h2>
-        <div className="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
-          <pre>{`import { GoogleGenAI } from '@google/genai';
-import { z } from 'zod';
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-6 font-mono text-xs sm:text-sm text-slate-200 shadow-xl min-w-0 max-w-full break-words [overflow-wrap:anywhere]">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800 text-xs text-slate-400">
+            <span className="font-semibold text-indigo-400 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+              services/geminiRetry.ts
+            </span>
+            <span className="bg-slate-800/80 px-2 py-0.5 rounded text-[11px] text-slate-300">Retry + Backoff + Zod</span>
+          </div>
 
-const ai = new GoogleGenAI();
+          <div className="space-y-1.5 leading-relaxed break-words">
+            <div>
+              <span className="text-purple-400 font-semibold">import</span> &#123; GoogleGenAI &#125; <span className="text-purple-400 font-semibold">from</span> <span className="text-emerald-400">&apos;@google/genai&apos;</span>;
+            </div>
+            <div>
+              <span className="text-purple-400 font-semibold">import</span> &#123; z &#125; <span className="text-purple-400 font-semibold">from</span> <span className="text-emerald-400">&apos;zod&apos;</span>;
+            </div>
+            <div className="py-1"></div>
+            <div>
+              <span className="text-purple-400 font-semibold">const</span> ai = <span className="text-purple-400 font-semibold">new</span> <span className="text-yellow-300 font-semibold">GoogleGenAI</span>();
+            </div>
+            <div className="py-1"></div>
+            <div className="text-slate-500 italic">// Schéma avec niveaux d&apos;incertitude obligatoires</div>
+            <div>
+              <span className="text-purple-400 font-semibold">const</span> RapportSchema = z.object(&#123;
+              <div className="pl-3 sm:pl-4">
+                certitude: z.enum([<span className="text-emerald-400">&apos;ELEVEE&apos;</span>, <span className="text-emerald-400">&apos;MOYENNE&apos;</span>, <span className="text-emerald-400">&apos;FAIBLE&apos;</span>]),
+              </div>
+              <div className="pl-3 sm:pl-4">
+                constats: z.array(z.string()),
+              </div>
+              <div className="pl-3 sm:pl-4">
+                incertitudes: z.array(z.object(&#123;
+                <div className="pl-3 sm:pl-4">
+                  nature: z.string(),
+                </div>
+                <div className="pl-3 sm:pl-4">
+                  description: z.string(),
+                </div>
+                <div className="pl-3 sm:pl-4">
+                  bloquant: z.boolean(),
+                </div>
+                &#125;)),
+              </div>
+              &#125;);
+            </div>
+            <div className="py-1"></div>
+            <div className="text-slate-500 italic">// Fonction d&apos;appel résiliente avec Retry et Exponential Backoff</div>
+            <div>
+              <span className="text-purple-400 font-semibold">async function</span> <span className="text-blue-400">appelerGeminiAvecRetry</span>(prompt: string, maxRetries = <span className="text-amber-300">3</span>) &#123;
+            </div>
+            <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+              <div>
+                <span className="text-purple-400 font-semibold">let</span> tentative = <span className="text-amber-300">0</span>;
+              </div>
+              <div>
+                <span className="text-purple-400 font-semibold">let</span> delai = <span className="text-amber-300">1000</span>; <span className="text-slate-500 italic">// 1 seconde</span>
+              </div>
+              <div className="py-1"></div>
+              <div>
+                <span className="text-purple-400 font-semibold">while</span> (tentative &lt; maxRetries) &#123;
+              </div>
+              <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+                <div>
+                  <span className="text-purple-400 font-semibold">try</span> &#123;
+                </div>
+                <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+                  <div>
+                    <span className="text-purple-400 font-semibold">const</span> response = <span className="text-purple-400 font-semibold">await</span> ai.models.generateContent(&#123;
+                    <div className="pl-3 sm:pl-4">
+                      model: <span className="text-emerald-400">&apos;gemini-3.5-flash-lite&apos;</span>,
+                    </div>
+                    <div className="pl-3 sm:pl-4">
+                      contents: prompt,
+                    </div>
+                    <div className="pl-3 sm:pl-4">
+                      config: &#123; responseMimeType: <span className="text-emerald-400">&apos;application/json&apos;</span> &#125;,
+                    </div>
+                    &#125;);
+                  </div>
 
-// Schéma avec niveaux d'incertitude obligatoires
-const RapportSchema = z.object({
-  certitude: z.enum(['ELEVEE', 'MOYENNE', 'FAIBLE']),
-  constats: z.array(z.string()),
-  incertitudes: z.array(z.object({
-    nature: z.string(),
-    description: z.string(),
-    bloquant: z.boolean(),
-  })),
-});
-
-// Fonction d'appel résiliente avec Retry et Exponential Backoff
-async function appelerGeminiAvecRetry(prompt, maxRetries = 3) {
-  let tentative = 0;
-  let delai = 1000; // 1 seconde
-
-  while (tentative < maxRetries) {
-    try {
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-        config: { responseMimeType: 'application/json' },
-      });
-
-      // Validation Zod de la réponse générée
-      const donnees = RapportSchema.parse(JSON.parse(response.text));
-      return donnees;
-    } catch (err) {
-      tentative++;
-      console.warn(\`Tentative \${tentative}/\${maxRetries} échouée : \${err.message}\`);
-      if (tentative >= maxRetries) throw new Error('Échec définitif du service IA.');
-      await new Promise(resolve => setTimeout(resolve, delai));
-      delai *= 2; // Double le délai (Backoff exponentiel)
-    }
-  }
-}`}</pre>
+                  <div className="pt-1 text-slate-500 italic">// Validation Zod de la réponse générée</div>
+                  <div>
+                    <span className="text-purple-400 font-semibold">const</span> donnees = RapportSchema.parse(JSON.parse(response.text!));
+                  </div>
+                  <div>
+                    <span className="text-purple-400 font-semibold">return</span> donnees;
+                  </div>
+                </div>
+                <div>
+                  &#125; <span className="text-purple-400 font-semibold">catch</span> (err) &#123;
+                </div>
+                <div className="pl-3 sm:pl-4 border-l border-slate-800/60 ml-1 space-y-1.5">
+                  <div>tentative++;</div>
+                  <div>
+                    console.warn(<span className="text-emerald-400">`Tentative $&#123;tentative&#125;/$&#123;maxRetries&#125; échouée : $&#123;(err <span className="text-purple-400 font-semibold">as</span> Error).message&#125;`</span>);
+                  </div>
+                  <div>
+                    <span className="text-purple-400 font-semibold">if</span> (tentative &gt;= maxRetries) <span className="text-purple-400 font-semibold">throw new</span> Error(<span className="text-emerald-400">&apos;Échec définitif du service IA.&apos;</span>);
+                  </div>
+                  <div>
+                    <span className="text-purple-400 font-semibold">await new</span> Promise(resolve =&gt; setTimeout(resolve, delai));
+                  </div>
+                  <div>
+                    delai *= <span className="text-amber-300">2</span>; <span className="text-slate-500 italic">// Double le délai (Backoff exponentiel)</span>
+                  </div>
+                </div>
+                <div>&#125;</div>
+              </div>
+              <div>&#125;</div>
+            </div>
+            <div>&#125;</div>
+          </div>
         </div>
       </section>
 
@@ -272,6 +349,20 @@ async function appelerGeminiAvecRetry(prompt, maxRetries = 3) {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* Checklist interactive */}
+      <section className="space-y-4">
+        <InteractiveChecklist
+          title="Auto-évaluation : Vos acquis sur la Gestion des Incertitudes"
+          items={[
+            "Je distingue clairement une Erreur (faute), une Incertitude (doute) et une Limitation (frontière système).",
+            "J'interdis formellement à l'IA d'extrapoler ou de deviner des signatures de fonctions manquantes.",
+            "J'exige une qualification explicite du niveau de certitude pour chaque observation technique.",
+            "Je mets en place un mécanisme de retry avec backoff exponentiel pour parer aux erreurs 429 et aux timeouts.",
+            "Je sais que reconnaître honnêtement un doute est la marque d'un agent professionnel fiable."
+          ]}
+        />
       </section>
 
       {/* Quiz */}
