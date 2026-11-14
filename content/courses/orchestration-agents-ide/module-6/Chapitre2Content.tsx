@@ -48,7 +48,7 @@ export const Chapitre2Content: React.FC = () => {
             Décomposition WBS & Granularité
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.2 — Décomposer un projet en tâches
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -66,9 +66,7 @@ export const Chapitre2Content: React.FC = () => {
       {/* Section 2.2 : Objectif, Tâche et Mission */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="layers" className="w-5 h-5 text-primary-600 shrink-0" />
-          2.2 — Distinguer l'Objectif, la Tâche et la Mission
-        </h2>
+          <Icon name="layers" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer l'Objectif, la Tâche et la Mission</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Ces trois notions articulent l'organisation du projet à des niveaux de détail complémentaires :
         </p>
@@ -110,9 +108,7 @@ export const Chapitre2Content: React.FC = () => {
       {/* Section 2.3 : Les 3 Méthodes de Décomposition */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="squares-plus" className="w-5 h-5 text-indigo-600 shrink-0" />
-          2.3 — Les 3 Méthodes de Décomposition d'un Projet
-        </h2>
+          <Icon name="squares-plus" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Les 3 Méthodes de Décomposition d'un Projet</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Selon la phase du projet, le Team Leader peut appréhender le découpage sous trois angles complémentaires :
         </p>
@@ -202,9 +198,7 @@ export const Chapitre2Content: React.FC = () => {
       {/* Section 2.7 : Liste structurée des 19 tâches TaskFlow */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="clipboard-document-list" className="w-5 h-5 text-emerald-600 shrink-0" />
-          2.7 — La Décomposition Structurée des Tâches TaskFlow
-        </h2>
+          <Icon name="clipboard-document-list" className="w-5 h-5 text-emerald-600 shrink-0" /> 3. La Décomposition Structurée des Tâches TaskFlow</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Le périmètre initial de TaskFlow est découpé en 19 tâches cohérentes réparties sur 4 domaines techniques :
         </p>
@@ -247,7 +241,7 @@ export const Chapitre2Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.2
+            Quiz de validation du Chapitre 2
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Testez votre compréhension de la décomposition des tâches, des méthodes WBS et du calibrage optimal de granularité.

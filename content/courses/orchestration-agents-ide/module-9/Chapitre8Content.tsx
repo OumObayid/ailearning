@@ -28,7 +28,7 @@ export const Chapitre8Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">1 h de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Préparer la livraison du projet
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -48,7 +48,7 @@ export const Chapitre8Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="package" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.8.1 & 9.8.2 — Distinguer Intégration et Livraison</span>
+          <span>1. Distinguer Intégration et Livraison</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 text-xs leading-relaxed">
@@ -70,20 +70,20 @@ export const Chapitre8Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="tag" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.8.6 — Versionnement sémantique et tags immuables</span>
+          <span>2. Versionnement sémantique et tags immuables</span>
         </h2>
-        <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        <div className="p-5 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 min-w-0 max-w-full">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
             Pour identifier de façon certaine l'état du code remis, l'équipe applique la convention SemVer (<code>MAJOR.MINOR.PATCH</code>) combinée aux tags annotés Git :
           </p>
-          <div className="grid grid-cols-1 gap-2 font-mono text-xs">
-            <div className="p-2.5 rounded bg-black/40 border border-border">
-              <span className="text-sky-300">git rev-parse HEAD</span>
-              <p className="text-muted-foreground font-sans mt-0.5 text-[11px]">Identifie le hash SHA unique du commit servant de référence absolue au livrable.</p>
+          <div className="grid grid-cols-1 gap-2.5 font-mono text-xs min-w-0 max-w-full">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+              <span className="text-sky-400 font-bold text-xs sm:text-sm break-words [overflow-wrap:anywhere]">git rev-parse HEAD</span>
+              <p className="text-slate-300 font-sans mt-0.5 text-xs leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">Identifie le hash SHA unique du commit servant de référence absolue au livrable.</p>
             </div>
-            <div className="p-2.5 rounded bg-black/40 border border-border">
-              <span className="text-emerald-300">git tag -a v1.0.0 -m "Release initiale TaskFlow"</span>
-              <p className="text-muted-foreground font-sans mt-0.5 text-[11px]">Associe un tag annoté immuable au commit sans risque de dérive future.</p>
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+              <span className="text-emerald-400 font-bold text-xs sm:text-sm break-words [overflow-wrap:anywhere]">git tag -a v1.0.0 -m "Release initiale TaskFlow"</span>
+              <p className="text-slate-300 font-sans mt-0.5 text-xs leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">Associe un tag annoté immuable au commit sans risque de dérive future.</p>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@ export const Chapitre8Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="file-text" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.8.5 — Le dossier documentaire : Expliciter les limites connues</span>
+          <span>3. Le dossier documentaire : Expliciter les limites connues</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 text-xs leading-relaxed">
           <p className="text-muted-foreground">
@@ -112,87 +112,87 @@ export const Chapitre8Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Générateur de Dossier de Release & Checklist</span>
+          <span>4. Atelier Interactif — Générateur de Dossier de Release & Checklist</span>
         </h2>
-        <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        <div className="p-5 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-4 min-w-0 max-w-full">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
             Configurez la release de TaskFlow. Cochez les critères d'acceptation requis pour soumettre la demande de livraison au Project Manager.
           </p>
 
-          <div className="grid grid-cols-1 gap-2 text-xs">
-            <div className="p-3 rounded-lg bg-muted/30 border border-border flex items-center justify-between">
-              <span className="font-semibold text-foreground">Tag de version SemVer proposé :</span>
+          <div className="grid grid-cols-1 gap-2 text-xs min-w-0 max-w-full">
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+              <span className="font-semibold text-white text-xs sm:text-sm">Tag de version SemVer proposé :</span>
               <input
                 type="text"
                 value={releaseVersion}
                 onChange={(e) => setReleaseVersion(e.target.value)}
-                className="px-2 py-1 rounded border border-border bg-background font-mono text-xs text-foreground font-bold w-24 text-center"
+                className="px-3 py-1.5 rounded-lg border border-slate-700 bg-black font-mono text-xs text-white font-bold w-28 text-center focus:outline-none focus:border-indigo-500 transition-colors shrink-0"
               />
             </div>
           </div>
 
           {/* Checklist de livraison */}
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-2.5 text-xs">
-            <span className="font-bold text-foreground text-sm">Checklist de Validation Finale de Livraison :</span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <span className="font-bold text-white text-sm">Checklist de Validation Finale de Livraison :</span>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-start sm:items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={checklist.codeClean}
                 onChange={(e) => setChecklist({ ...checklist, codeClean: e.target.checked })}
-                className="rounded border-border"
+                className="rounded border-slate-700 mt-0.5 sm:mt-0 accent-indigo-600 shrink-0"
               />
-              <span className="text-foreground">Dépôt propre : 0 fichier non suivi, build TypeScript sans erreur</span>
+              <span className="text-slate-200 text-xs sm:text-sm leading-relaxed">Dépôt propre : 0 fichier non suivi, build TypeScript sans erreur</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-start sm:items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={checklist.testsPass}
                 onChange={(e) => setChecklist({ ...checklist, testsPass: e.target.checked })}
-                className="rounded border-border"
+                className="rounded border-slate-700 mt-0.5 sm:mt-0 accent-indigo-600 shrink-0"
               />
-              <span className="text-foreground">Campagne de tests complète au vert (unitaires + Supertest + non-régression)</span>
+              <span className="text-slate-200 text-xs sm:text-sm leading-relaxed">Campagne de tests complète au vert (unitaires + Supertest + non-régression)</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-start sm:items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={checklist.docComplete}
                 onChange={(e) => setChecklist({ ...checklist, docComplete: e.target.checked })}
-                className="rounded border-border"
+                className="rounded border-slate-700 mt-0.5 sm:mt-0 accent-indigo-600 shrink-0"
               />
-              <span className="text-foreground">README complet (prérequis, installation npm ci, limites mémoire documentées)</span>
+              <span className="text-slate-200 text-xs sm:text-sm leading-relaxed">README complet (prérequis, installation npm ci, limites mémoire documentées)</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-start sm:items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={checklist.secretsExcluded}
                 onChange={(e) => setChecklist({ ...checklist, secretsExcluded: e.target.checked })}
-                className="rounded border-border"
+                className="rounded border-slate-700 mt-0.5 sm:mt-0 accent-indigo-600 shrink-0"
               />
-              <span className="text-foreground">Sécurité : Aucun secret ni .env commité dans le dossier de livraison</span>
+              <span className="text-slate-200 text-xs sm:text-sm leading-relaxed">Sécurité : Aucun secret ni .env commité dans le dossier de livraison</span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-start sm:items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={checklist.pmApproved}
                 onChange={(e) => setChecklist({ ...checklist, pmApproved: e.target.checked })}
-                className="rounded border-border"
+                className="rounded border-slate-700 mt-0.5 sm:mt-0 accent-indigo-600 shrink-0"
               />
-              <span className="text-foreground font-bold text-indigo-400">Autorisation souveraine accordée par le Project Manager humain</span>
+              <span className="text-indigo-400 font-bold text-xs sm:text-sm leading-relaxed">Autorisation souveraine accordée par le Project Manager humain</span>
             </label>
           </div>
 
-          <div className={`p-3 rounded-lg border text-xs flex items-center justify-between ${
-            allChecksPass ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+          <div className={`p-3.5 rounded-xl border text-xs sm:text-sm flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 ${
+            allChecksPass ? 'bg-emerald-950/80 border-emerald-700/80 text-emerald-200' : 'bg-amber-950/80 border-amber-700/80 text-amber-200'
           }`}>
-            <span className="font-bold">
+            <span className="font-bold leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
               {allChecksPass ? `🎉 Dossier ${releaseVersion} validé et autorisé pour livraison !` : '⚠️ En attente des conditions de livraison obligatoires'}
             </span>
-            <span className="font-mono text-[11px]">
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-md bg-black/50 border border-current shrink-0">
               {allChecksPass ? 'STATUT: LIVRÉ' : 'STATUT: EN PRÉPARATION'}
             </span>
           </div>
@@ -203,7 +203,7 @@ export const Chapitre8Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.8.11 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 8 : Préparer la livraison du projet"

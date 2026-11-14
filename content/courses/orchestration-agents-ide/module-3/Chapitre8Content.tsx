@@ -25,7 +25,7 @@ export const Chapitre8Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 8 — Contrôler les modifications réalisées par les agents
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -75,9 +75,7 @@ export const Chapitre8Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              8.5
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Examiner les modifications entre deux branches : La notation triple-points
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -103,8 +101,8 @@ export const Chapitre8Content: React.FC = () => {
               Compare la branche de travail avec son <strong>point de divergence</strong> (l'ancêtre commun) par rapport à <code>main</code>. Elle n'affiche que les modifications apportées par l'agent, ignorant les commits ajoutés sur <code>main</code> par les autres membres de l'équipe entre-temps.
             </p>
             <div className="p-3 bg-slate-900 rounded-lg text-xs font-mono text-slate-300">
-              $ git log main..feature/task-api --oneline<br/>
-              <span className="text-emerald-400">a8f31c2 feat(backend): add task creation controller</span><br/>
+              $ git log main..feature/task-api --oneline<br />
+              <span className="text-emerald-400">a8f31c2 feat(backend): add task creation controller</span><br />
               <span className="text-emerald-400">7c21d90 test(api): add task endpoint tests</span>
             </div>
           </div>
@@ -136,25 +134,22 @@ export const Chapitre8Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setActiveTab('diff')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'diff' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'diff' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. git diff main...feature (Code)
             </button>
             <button
               onClick={() => setActiveTab('scope')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'scope' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'scope' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. Périmètre des fichiers touchés
             </button>
             <button
               onClick={() => setActiveTab('tests')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'tests' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'tests' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. Résultats des vérifications (Tests & Build)
             </button>
@@ -247,7 +242,7 @@ export const Chapitre8Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 8
+            Quiz d'évaluation — Chapitre 8
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Validez votre méthodologie de contrôle des contributions d'agents IA (10 questions)

@@ -20,7 +20,7 @@ export const Chapitre10Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">1 h 30 d'atelier pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           TP — Organiser l'intégration contrôlée et préparer la livraison de TaskFlow
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -71,7 +71,7 @@ export const Chapitre10Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="list" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Déroulé des 11 Missions de Clôture</span>
+          <span>1. Atelier Interactif — Déroulé des 11 Missions de Clôture</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           {/* Navigation flexible entre les 11 missions */}
@@ -95,114 +95,114 @@ export const Chapitre10Content: React.FC = () => {
           </div>
 
           {/* Détails de la mission active */}
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs leading-relaxed">
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs leading-relaxed min-w-0 max-w-full">
             {activeMission === 1 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 1 — Examiner l'état initial du dépôt</span>
-                <p className="text-muted-foreground">
-                  Établissez la situation de référence sans modifier le dépôt. Utilisez <code>git status</code>, <code>git branch -vv</code>, <code>git log --oneline --graph --decorate --all</code> et <code>git fetch</code>.
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 1 — Examiner l'état initial du dépôt</span>
+                <p className="text-slate-300">
+                  Établissez la situation de référence sans modifier le dépôt. Utilisez <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git status</code>, <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git branch -vv</code>, <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git log --oneline --graph --decorate --all</code> et <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git fetch</code>.
                 </p>
-                <div className="p-3 rounded bg-black/60 font-mono text-[11px] text-sky-300">
-                  $ git status<br />
-                  On branch develop (Branche cible confirmée)<br />
-                  Your branch is up to date with 'origin/develop'.<br />
-                  nothing to commit, working tree clean
+                <div className="p-3 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
+{`$ git status
+On branch develop (Branche cible confirmée)
+Your branch is up to date with 'origin/develop'.
+nothing to commit, working tree clean`}
                 </div>
               </div>
             )}
 
             {activeMission === 2 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 2 — Examiner les contributions et leurs dépendances</span>
-                <p className="text-muted-foreground">
-                  Analysez les diffs avec <code>git diff develop...feature/xxx</code>. Déterminez l'ordre logique d'intégration :
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 2 — Examiner les contributions et leurs dépendances</span>
+                <p className="text-slate-300">
+                  Analysez les diffs avec <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git diff develop...feature/xxx</code>. Déterminez l'ordre logique d'intégration :
                 </p>
-                <div className="p-3 rounded bg-black/60 font-mono text-[11px] text-emerald-400">
-                  Séquencement retenu :<br />
-                  1. Backend (Fournit le contrat REST)<br />
-                  2. Frontend (Consomme l'API)<br />
-                  3. QA (Valide les interactions combinées)<br />
-                  4. Documentation (Finalise le README sur la base stabilisée)
+                <div className="p-3 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
+{`Séquencement retenu :
+1. Backend (Fournit le contrat REST)
+2. Frontend (Consomme l'API)
+3. QA (Valide les interactions combinées)
+4. Documentation (Finalise le README sur la base stabilisée)`}
                 </div>
               </div>
             )}
 
             {activeMission === 3 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 3 — Organiser les demandes de fusion</span>
-                <p className="text-muted-foreground">
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 3 — Organiser les demandes de fusion</span>
+                <p className="text-slate-300">
                   Formalisez les fiches de Pull Request avec le rapport de relecture de l'agent Reviewer et le procès-verbal de test de l'agent QA.
                 </p>
               </div>
             )}
 
             {activeMission === 4 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 4 — Gérer le conflit d'intégration sur src/types/task.ts</span>
-                <p className="text-muted-foreground">
-                  Les deux branches modifient la définition de <code>TaskStatus</code>. Vous arbitrez en faveur du contrat officiel de TaskFlow : <code>"todo" | "in_progress" | "done"</code>. Vous nettoyez les marqueurs et vérifiez avec <code>{"git grep -n -E '^(<<<<<<<|=======|>>>>>>>)'"}</code>.
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 4 — Gérer le conflit d'intégration sur src/types/task.ts</span>
+                <p className="text-slate-300">
+                  Les deux branches modifient la définition de <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">TaskStatus</code>. Vous arbitrez en faveur du contrat officiel de TaskFlow : <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">"todo" | "in_progress" | "done"</code>. Vous nettoyez les marqueurs et vérifiez avec <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">{"git grep -n -E '^(<<<<<<<|=======|>>>>>>>)'"}</code>.
                 </p>
               </div>
             )}
 
             {activeMission === 5 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 5 — Contrôler le dépôt après intégration</span>
-                <p className="text-muted-foreground">
-                  Vérifiez la structure du dépôt post-merge avec <code>git log -10 --oneline --graph</code> et <code>git diff --check</code> pour écarter tout artefact parasite.
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 5 — Contrôler le dépôt après intégration</span>
+                <p className="text-slate-300">
+                  Vérifiez la structure du dépôt post-merge avec <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git log -10 --oneline --graph</code> et <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git diff --check</code> pour écarter tout artefact parasite.
                 </p>
               </div>
             )}
 
             {activeMission === 6 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 6 — Exécuter les tests techniques et fonctionnels</span>
-                <p className="text-muted-foreground">
-                  Lancez la vérification complète : <code>npx tsc --noEmit</code>, <code>npm run lint</code>, <code>npx vitest run</code> et parcourez les 6 fonctionnalités TaskFlow (Création, Affichage, Modification, Suppression, Statut, Comptage).
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 6 — Exécuter les tests techniques et fonctionnels</span>
+                <p className="text-slate-300">
+                  Lancez la vérification complète : <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">npx tsc --noEmit</code>, <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">npm run lint</code>, <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">npx vitest run</code> et parcourez les 6 fonctionnalités TaskFlow (Création, Affichage, Modification, Suppression, Statut, Comptage).
                 </p>
               </div>
             )}
 
             {activeMission === 7 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 7 — Contrôler les permissions et les secrets</span>
-                <p className="text-muted-foreground">
-                  Auditez les règles <code>.gitignore</code> (présence de <code>.env*</code>), vérifiez qu'aucun token d'API n'a fuité dans l'historique et verrouillez les branches protégées.
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 7 — Contrôler les permissions et les secrets</span>
+                <p className="text-slate-300">
+                  Auditez les règles <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">.gitignore</code> (présence de <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">.env*</code>), vérifiez qu'aucun token d'API n'a fuité dans l'historique et verrouillez les branches protégées.
                 </p>
               </div>
             )}
 
             {activeMission === 8 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 8 — Identifier la version à livrer</span>
-                <p className="text-muted-foreground">
-                  Capturez le hash SHA du commit de tête avec <code>git rev-parse HEAD</code> et préparez la proposition de tag annoté <code>v1.0.0</code>.
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 8 — Identifier la version à livrer</span>
+                <p className="text-slate-300">
+                  Capturez le hash SHA du commit de tête avec <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">git rev-parse HEAD</code> et préparez la proposition de tag annoté <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">v1.0.0</code>.
                 </p>
               </div>
             )}
 
             {activeMission === 9 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 9 — Préparer le dossier de livraison</span>
-                <p className="text-muted-foreground">
-                  Rédigez le <code>README.md</code> exhaustif : commandes d'installation <code>npm ci</code>, démarrage en parallèle, et avertissement explicite sur le stockage mémoire volatile.
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 9 — Préparer le dossier de livraison</span>
+                <p className="text-slate-300">
+                  Rédigez le <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">README.md</code> exhaustif : commandes d'installation <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded">npm ci</code>, démarrage en parallèle, et avertissement explicite sur le stockage mémoire volatile.
                 </p>
               </div>
             )}
 
             {activeMission === 10 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 10 — Organiser la rétrospective d'équipe</span>
-                <p className="text-muted-foreground">
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 10 — Organiser la rétrospective d'équipe</span>
+                <p className="text-slate-300">
                   Identifiez les points forts et difficultés, remontez aux causes racines et formulez le plan d'amélioration pour le sprint suivant.
                 </p>
               </div>
             )}
 
             {activeMission === 11 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-bold text-foreground text-sm">Mission 11 — Préparer la décision de livraison pour le PM</span>
-                <p className="text-muted-foreground">
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
+                <span className="font-bold text-white text-sm">Mission 11 — Préparer la décision de livraison pour le PM</span>
+                <p className="text-slate-300">
                   Consolidez l'ensemble des 10 fiches de preuves et soumettez la recommandation formelle d'arbitrage au Project Manager humain.
                 </p>
               </div>
@@ -330,34 +330,34 @@ export const Chapitre10Content: React.FC = () => {
             <h3 className="font-bold text-base text-foreground">Dossier de Recette Final — Recommandation du Team Leader pour TaskFlow v1.0.0</h3>
 
             <div className="flex flex-col gap-3">
-              <div className="p-3 rounded-lg bg-muted/40 border border-border flex flex-col gap-1">
-                <span className="font-bold text-foreground">1. État d'intégration des branches</span>
-                <p className="text-muted-foreground">
-                  Les contributions Backend (API) et Frontend (UI) ont été réunies sur la branche <code>develop</code> selon l'ordonnancement validé. Le conflit sur <code>src/types/task.ts</code> a été résolu conformément au contrat officiel (<code>todo | in_progress | done</code>).
+              <div className="p-3.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+                <span className="font-bold text-white text-xs sm:text-sm">1. État d'intégration des branches</span>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  Les contributions Backend (API) et Frontend (UI) ont été réunies sur la branche <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">develop</code> selon l'ordonnancement validé. Le conflit sur <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">src/types/task.ts</code> a été résolu conformément au contrat officiel (<code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">todo | in_progress | done</code>).
                 </p>
               </div>
 
-              <div className="p-3 rounded-lg bg-muted/40 border border-border flex flex-col gap-1">
-                <span className="font-bold text-foreground">2. Preuves de vérification post-intégration</span>
-                <p className="text-muted-foreground">
-                  - <strong>TypeScript :</strong> <code>npx tsc --noEmit</code> &rarr; 0 erreur.<br />
-                  - <strong>Vitest :</strong> 100% de succès sur les suites unitaires, d'intégration et de non-régression (0 échec).<br />
-                  - <strong>Sécurité :</strong> Contrôle <code>.gitignore</code> validé, 0 secret commité.
+              <div className="p-3.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+                <span className="font-bold text-white text-xs sm:text-sm">2. Preuves de vérification post-intégration</span>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  - <strong className="text-white">TypeScript :</strong> <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">npx tsc --noEmit</code> &rarr; 0 erreur.<br />
+                  - <strong className="text-white">Vitest :</strong> 100% de succès sur les suites unitaires, d'intégration et de non-régression (0 échec).<br />
+                  - <strong className="text-white">Sécurité :</strong> Contrôle <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">.gitignore</code> validé, 0 secret commité.
                 </p>
               </div>
 
-              <div className="p-3 rounded-lg bg-muted/40 border border-border flex flex-col gap-1">
-                <span className="font-bold text-foreground">3. Version et documentation</span>
-                <p className="text-muted-foreground">
-                  Commit de référence identifié : SHA figé. Tag proposé : <code>v1.0.0</code>.<br />
-                  Fichier <code>README.md</code> rédigé avec mention explicite du stockage volatil en mémoire.
+              <div className="p-3.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+                <span className="font-bold text-white text-xs sm:text-sm">3. Version et documentation</span>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  Commit de référence identifié : SHA figé. Tag proposé : <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">v1.0.0</code>.<br />
+                  Fichier <code className="text-emerald-400 bg-slate-950 px-1 py-0.5 rounded">README.md</code> rédigé avec mention explicite du stockage volatil en mémoire.
                 </p>
               </div>
 
-              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex flex-col gap-1 text-emerald-300">
-                <span className="font-bold">4. Proposition de décision souveraine</span>
-                <p className="leading-relaxed">
-                  <strong>Recommandation du Team Leader :</strong> Avis Favorable pour la livraison de la version 1.0.0 de TaskFlow. Le dossier de recette est transmis pour décision finale et signature au <strong>Project Manager humain</strong>.
+              <div className="p-3.5 rounded-lg bg-slate-900 border border-emerald-500/40 flex flex-col gap-1 text-slate-200">
+                <span className="font-bold text-emerald-400 text-xs sm:text-sm">4. Proposition de décision souveraine</span>
+                <p className="leading-relaxed text-xs">
+                  <strong className="text-white">Recommandation du Team Leader : </strong>Avis Favorable pour la livraison de la version 1.0.0 de TaskFlow. Le dossier de recette est transmis pour décision finale et signature au <strong className="text-white">Project Manager humain</strong>.
                 </p>
               </div>
             </div>

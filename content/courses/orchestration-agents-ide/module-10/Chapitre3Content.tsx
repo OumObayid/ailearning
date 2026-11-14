@@ -86,7 +86,7 @@ export const taskRepository = {
           </span>
           <span className="text-xs text-muted-foreground">1 h de lecture & architecture</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Définir l'architecture technique de TaskFlow
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -106,7 +106,7 @@ export const taskRepository = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>10.3.1 à 10.3.4 — L'organisation Client-Serveur et le contrat REST</span>
+          <span>1. L'organisation Client-Serveur et le contrat REST</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -135,7 +135,7 @@ export const taskRepository = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="globe" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>10.3.6 — Les 6 routes officielles de l'API REST TaskFlow</span>
+          <span>2. Les 6 routes officielles de l'API REST TaskFlow</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 text-xs leading-relaxed">
           <div className="grid grid-cols-1 gap-2">
@@ -194,7 +194,7 @@ export const taskRepository = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Découpage Architectural en 5 Couches</span>
+          <span>3. Atelier Interactif — Découpage Architectural en 5 Couches</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -223,9 +223,9 @@ export const taskRepository = {
 
             <p className="text-foreground font-medium">{current.role}</p>
 
-            <pre className="p-3 rounded bg-black/60 font-mono text-xs text-emerald-300 overflow-x-auto whitespace-pre-wrap leading-relaxed">
+            <div className="p-3 rounded bg-black border border-slate-800 font-mono text-xs text-white whitespace-pre-wrap leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
               {current.snippet}
-            </pre>
+            </div>
 
             <div className="p-2.5 rounded bg-muted/40 border border-border text-xs text-muted-foreground font-sans">
               <strong>Règle d'architecture :</strong> {current.notes}

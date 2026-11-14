@@ -5,10 +5,14 @@ import { Callout } from '@/components/courses/Callout';
 import { QuickQuiz } from '@/components/interactive/QuickQuiz';
 import { Icon } from '@/components/common/Icon';
 import { CodeBlock } from '@/components/courses/CodeBlock';
+import { useCourseDisplay } from '@/context/CourseDisplayContext';
+import { cn } from '@/lib/utils';
 
 export const Chapitre1Content: React.FC = () => {
-  // Simulateur interactif de l'anatomie d'un IDE avec Agent IA
-  const [activePane, setActivePane] = useState<'editor' | 'tree' | 'chat' | 'terminal' | 'vcs'>('chat');
+  const { isFullWidth } = useCourseDisplay();
+
+  // Simulateur interactif de l'anatomie d'un IDE avec Agent IA (démarré sur le composant 1)
+  const [activePane, setActivePane] = useState<'editor' | 'tree' | 'chat' | 'terminal' | 'vcs'>('editor');
 
   const paneDetails = {
     editor: {
@@ -75,7 +79,7 @@ export const Chapitre1Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           Chapitre 1 — Découvrir les IDE intégrant des agents IA
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -104,10 +108,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">1</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.1 & 1.2 — Qu&apos;est-ce qu&apos;un IDE et pourquoi évolue-t-il avec l&apos;IA ?
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 1 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Qu&apos;est-ce qu&apos;un IDE et pourquoi évolue-t-il avec l&apos;IA ?</h2>
         </div>
 
         <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -247,10 +249,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">2</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.4 — Les 5 composants fondamentaux d&apos;un environnement à agents
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 2 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Les 5 composants fondamentaux d&apos;un environnement à agents</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -258,7 +258,10 @@ export const Chapitre1Content: React.FC = () => {
         </p>
 
         {/* Simulateur interactif de poste de travail IDE */}
-        <div className="rounded-3xl border-2 border-slate-300 bg-slate-900 p-4 sm:p-6 shadow-md text-white space-y-5">
+        <div
+          className="@container rounded-3xl border-2 border-slate-300 bg-slate-900 p-4 sm:p-6 shadow-md text-white space-y-5"
+          style={{ containerType: 'inline-size' }}
+        >
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-red-500 inline-block"></span>
@@ -271,9 +274,14 @@ export const Chapitre1Content: React.FC = () => {
             </span>
           </div>
 
-          {/* Boutons sélecteurs de composants — 1 seule colonne en conteneur étroit, puis 2 et 5 colonnes */}
-          <div className="flex flex-col gap-2 min-w-0 max-w-full">
-            {(['chat', 'editor', 'tree', 'terminal', 'vcs'] as const).map((key) => {
+          {/* Boutons sélecteurs de composants — Ordonnés 1 à 5, 1 colonne sur petite largeur, 2 colonnes si sidebar replié ou plein écran */}
+          <div
+            className={cn(
+              "grid grid-cols-1 ide-components-2col gap-2.5 min-w-0 max-w-full",
+              isFullWidth && "sm:grid-cols-2"
+            )}
+          >
+            {(['editor', 'tree', 'chat', 'terminal', 'vcs'] as const).map((key) => {
               const item = paneDetails[key];
               const isSelected = activePane === key;
               return (
@@ -349,10 +357,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">3</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.5 — Panorama comparatif : Antigravity, VS Code, Cursor & Windsurf
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 3 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Panorama comparatif : Antigravity, VS Code, Cursor & Windsurf</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -416,10 +422,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">4</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.6 & 1.7 — Avantages clés et limites incontournables
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 4 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Avantages clés et limites incontournables</h2>
         </div>
 
         <div className="flex flex-col gap-5 w-full min-w-0 max-w-full">
@@ -552,9 +556,7 @@ export const Chapitre1Content: React.FC = () => {
       <section className="space-y-6 pt-4 border-t-2 border-slate-200">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">✓</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.10 — Quiz de compréhension (9 questions)
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Quiz de compréhension (9 questions)</h2>
         </div>
 
         <QuickQuiz

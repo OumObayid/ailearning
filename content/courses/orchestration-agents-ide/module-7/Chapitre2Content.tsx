@@ -50,7 +50,7 @@ export const Chapitre2Content: React.FC = () => {
             Passage de Relais & Cadrage
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.2 — Déléguer les missions aux agents spécialisés
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -68,9 +68,7 @@ export const Chapitre2Content: React.FC = () => {
       {/* Section 2.1 & 2.4 : Les piliers d'une délégation structurée */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="arrow-right-circle" className="w-5 h-5 text-primary-600 shrink-0" />
-          2.1 & 2.4 — Les Informations Clés à Transmettre lors de la Délégation
-        </h2>
+          <Icon name="arrow-right-circle" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Les Informations Clés à Transmettre lors de la Délégation</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Un agent ne dispose pas automatiquement de l'historique des autres conversations. Chaque passage de relais doit réunir :
         </p>
@@ -110,9 +108,7 @@ export const Chapitre2Content: React.FC = () => {
       {/* Section 2.7 : Délégation Complète vs Délégation Partielle */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="scale" className="w-5 h-5 text-indigo-600 shrink-0" />
-          2.7 — Délégation Complète vs Délégation Partielle
-        </h2>
+          <Icon name="scale" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Délégation Complète vs Délégation Partielle</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50/50 dark:bg-emerald-950/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-bold text-sm text-emerald-800 dark:text-emerald-300">Délégation Complète : Autonomie Totale dans le Périmètre</span>
@@ -187,7 +183,7 @@ export const Chapitre2Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.2
+            Quiz de validation du Chapitre 2
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise du processus de délégation, de la transmission des informations et du contrôle de prise en charge.

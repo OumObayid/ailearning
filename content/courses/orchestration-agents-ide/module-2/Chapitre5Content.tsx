@@ -84,7 +84,7 @@ export const Chapitre5Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           Chapitre 5 — Organiser les responsabilités et les limites de chaque agent
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -113,10 +113,8 @@ export const Chapitre5Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">1</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            5.1 & 5.2 — Les 4 concepts clés de l&apos;encadrement d&apos;agent
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 1 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Les 4 concepts clés de l&apos;encadrement d&apos;agent</h2>
         </div>
 
         <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -203,10 +201,8 @@ export const Chapitre5Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">2</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            5.3 à 5.5 — Simulateur : Contrôle d&apos;accès et périmètres de fichiers
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 2 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Simulateur : Contrôle d&apos;accès et périmètres de fichiers</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -289,10 +285,8 @@ export const Chapitre5Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">3</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            5.8 & 5.9 — Protocole d&apos;escalade : Que faire hors périmètre ?
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 3 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Protocole d&apos;escalade : Que faire hors périmètre ?</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -364,9 +358,7 @@ export const Chapitre5Content: React.FC = () => {
       <section className="space-y-6 pt-4 border-t-2 border-slate-200">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">✓</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            5.12 — Quiz de validation des connaissances (10 questions)
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Quiz de validation des connaissances (10 questions)</h2>
         </div>
 
         <QuickQuiz

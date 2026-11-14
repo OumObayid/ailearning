@@ -21,7 +21,7 @@ export const Chapitre4Content: React.FC = () => {
             Graphes DAG & Dépendances
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.4 — Identifier les dépendances entre les tâches
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -39,9 +39,7 @@ export const Chapitre4Content: React.FC = () => {
       {/* Section 4.1 & 4.3 : Les 4 types de dépendances */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="arrows-right-left" className="w-5 h-5 text-primary-600 shrink-0" />
-          4.3 — Les 4 Familles de Dépendances
-        </h2>
+          <Icon name="arrows-right-left" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Les 4 Familles de Dépendances</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour planifier judicieusement le travail d'une escouade d'agents, classez chaque lien de dépendance :
         </p>
@@ -135,11 +133,13 @@ export const Chapitre4Content: React.FC = () => {
               <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
                 Graphe Dirigé Acyclique (DAG) — Flux d'exécution fluide :
               </span>
-              <div className="p-3 rounded-lg bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto">
-                <pre>{`T1 (Modèle Task) &rarr; T2 (Contrat API REST)
-                       &boxur;&boxdr;&boxh;&boxh; T3 (Backend API)  &boxdr;&boxh;&boxh;&gt; T6 (Tests Intégration QA)
-                       &boxur;&boxdl;&boxh;&boxh; T4 (Frontend UI)  &boxdl;
-T2 (Contrat API) &boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&gt; T5 (Plan de tests QA)`}</pre>
+              <div className="p-3 rounded-lg bg-slate-900 text-slate-100 font-mono text-xs min-w-0 max-w-full">
+                <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`T1 (Modèle Task) → T2 (Contrat API REST)
+                       └┬── T3 (Backend API)  ┌──> T6 (Tests Intégration QA)
+                       └┴── T4 (Frontend UI)  ┘
+T2 (Contrat API) ──────────> T5 (Plan de tests QA)`}
+                </div>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 whitespace-normal break-words [overflow-wrap:anywhere]">
                 Grâce au contrat d'interface <strong>T2</strong>, le Backend et le Frontend avancent en parallèle sans se bloquer mutuellement. L'intégration <strong>T6</strong> ne s'exécute qu'une fois les deux briques disponibles.
@@ -150,10 +150,12 @@ T2 (Contrat API) &boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&gt
               <span className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wide">
                 Boucle de blocage circulaire détectée :
               </span>
-              <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-800/40 text-rose-200 font-mono text-xs overflow-x-auto">
-                <pre>{`T_Backend attend le formulaire Frontend pour connaître les noms de champs.
-   &uarr;                                                                 &darr;
-   &boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh; T_Frontend attend la route Backend pour coder l'appel &boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxj;`}</pre>
+              <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-800/40 text-rose-200 font-mono text-xs min-w-0 max-w-full">
+                <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`T_Backend attend le formulaire Frontend pour connaître les noms de champs.
+   ↑                                                                 ↓
+   └───────── T_Frontend attend la route Backend pour coder l'appel ─┘`}
+                </div>
               </div>
               <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
                 <strong>Solution du Team Leader :</strong> Briser la boucle en introduisant une tâche préalable d'Architecte (T_Contrat). Dès que le contrat est validé, la dépendance circulaire disparaît.
@@ -166,18 +168,56 @@ T2 (Contrat API) &boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&gt
       {/* Section 4.6 : Tableau des dépendances TaskFlow */}
       <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="table-cells" className="w-5 h-5 text-indigo-600 shrink-0" />
-          4.6 — Matrice des Dépendances de Référence TaskFlow
-        </h2>
-        <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
-          <pre>{`| ID  | Tâche                                | Dépend de   | Justification technique                      |
-|-----|--------------------------------------|-------------|----------------------------------------------|
-| T1  | Définir le modèle TypeScript Task    | Aucune      | Tâche racine : structure fondamentale        |
-| T2  | Définir le contrat REST (API)        | T1          | Le contrat référence les types Task          |
-| T3  | Développer l'API REST de création    | T1, T2      | Requiert les types et les endpoints validés  |
-| T4  | Créer le formulaire React            | T2          | Requiert le contrat API (routes et payload)  |
-| T5  | Préparer les scénarios de test QA   | T1, T2      | Se base sur les spécifications du contrat    |
-| T6  | Exécuter les tests d'intégration    | T3, T4, T5  | Requiert le backend, l'UI et les tests       |`}</pre>
+          <Icon name="table-cells" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Matrice des Dépendances de Référence TaskFlow</h2>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 sm:p-4 min-w-0 max-w-full overflow-hidden">
+          <table className="w-full text-left text-xs sm:text-sm">
+            <thead className="border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 font-bold">
+              <tr>
+                <th className="pb-3 pr-2 w-12 font-mono">ID</th>
+                <th className="pb-3 pr-3 font-semibold">Tâche</th>
+                <th className="pb-3 pr-3 font-semibold">Dépend de</th>
+                <th className="pb-3 font-semibold">Justification technique</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+              <tr>
+                <td className="py-2.5 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">T1</td>
+                <td className="py-2.5 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Définir le modèle TypeScript Task</td>
+                <td className="py-2.5 pr-3 text-slate-500 dark:text-slate-400">Aucune</td>
+                <td className="py-2.5 break-words [overflow-wrap:anywhere] leading-relaxed">Tâche racine : structure fondamentale</td>
+              </tr>
+              <tr>
+                <td className="py-2.5 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">T2</td>
+                <td className="py-2.5 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Définir le contrat REST (API)</td>
+                <td className="py-2.5 pr-3 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">T1</td>
+                <td className="py-2.5 break-words [overflow-wrap:anywhere] leading-relaxed">Le contrat référence les types Task</td>
+              </tr>
+              <tr>
+                <td className="py-2.5 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">T3</td>
+                <td className="py-2.5 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Développer l'API REST de création</td>
+                <td className="py-2.5 pr-3 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">T1, T2</td>
+                <td className="py-2.5 break-words [overflow-wrap:anywhere] leading-relaxed">Requiert les types et les endpoints validés</td>
+              </tr>
+              <tr>
+                <td className="py-2.5 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">T4</td>
+                <td className="py-2.5 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Créer le formulaire React</td>
+                <td className="py-2.5 pr-3 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">T2</td>
+                <td className="py-2.5 break-words [overflow-wrap:anywhere] leading-relaxed">Requiert le contrat API (routes et payload)</td>
+              </tr>
+              <tr>
+                <td className="py-2.5 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">T5</td>
+                <td className="py-2.5 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Préparer les scénarios de test QA</td>
+                <td className="py-2.5 pr-3 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">T1, T2</td>
+                <td className="py-2.5 break-words [overflow-wrap:anywhere] leading-relaxed">Se base sur les spécifications du contrat</td>
+              </tr>
+              <tr>
+                <td className="py-2.5 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">T6</td>
+                <td className="py-2.5 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Exécuter les tests d'intégration</td>
+                <td className="py-2.5 pr-3 font-mono text-indigo-600 dark:text-indigo-400 font-semibold">T3, T4, T5</td>
+                <td className="py-2.5 break-words [overflow-wrap:anywhere] leading-relaxed">Requiert le backend, l'UI et les tests</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -188,7 +228,7 @@ T2 (Contrat API) &boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&gt
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.4
+            Quiz de validation du Chapitre 4
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise de la cartographie des dépendances, de la distinction obligatoire/organisationnelle et de la résolution des blocages.

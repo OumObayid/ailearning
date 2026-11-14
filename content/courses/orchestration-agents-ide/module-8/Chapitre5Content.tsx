@@ -181,7 +181,7 @@ describe('taskService avec Mock Store', () => {
           </span>
           <span className="text-xs text-muted-foreground">1 h de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Comprendre et exécuter les tests unitaires
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -201,7 +201,7 @@ describe('taskService avec Mock Store', () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>5.1 à 5.4 — Le rôle fondamental du test unitaire et Vitest</span>
+          <span>1. Le rôle fondamental du test unitaire et Vitest</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -239,7 +239,7 @@ describe('taskService avec Mock Store', () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>5.5 — Le modèle Arrange, Act, Assert (AAA)</span>
+          <span>2. Le modèle Arrange, Act, Assert (AAA)</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -283,7 +283,7 @@ describe('taskService avec Mock Store', () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="code" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>5.6 — toBe() vs toEqual() : Éviter le piège classique des agents IA</span>
+          <span>3. toBe() vs toEqual() : Éviter le piège classique des agents IA</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3 text-xs">
@@ -315,7 +315,7 @@ describe('taskService avec Mock Store', () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Banc d'Exécution & Assertions Vitest</span>
+          <span>4. Atelier Interactif — Banc d'Exécution & Assertions Vitest</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -397,37 +397,37 @@ describe('taskService avec Mock Store', () => {
           </div>
 
           {/* Affichage du test et du code */}
-          <div className="grid grid-cols-1 gap-3">
-            <div className="p-3 rounded-lg bg-black/40 border border-border flex flex-col gap-1.5">
-              <span className="text-[11px] font-mono text-muted-foreground font-semibold">Fichier de test Vitest :</span>
-              <pre className="font-mono text-xs text-sky-300 overflow-x-auto leading-relaxed">
+          <div className="grid grid-cols-1 gap-3 min-w-0 max-w-full">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
+              <span className="text-[11px] font-mono text-slate-400 font-semibold">Fichier de test Vitest :</span>
+              <div className="font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
                 {current.testCode}
-              </pre>
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-black/40 border border-border flex flex-col gap-1.5">
-              <span className="text-[11px] font-mono text-muted-foreground font-semibold">Implémentation exécutée :</span>
-              <pre className="font-mono text-xs text-foreground overflow-x-auto leading-relaxed">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
+              <span className="text-[11px] font-mono text-slate-400 font-semibold">Implémentation exécutée :</span>
+              <div className="font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
                 {implementationVariant === 'buggy' ? current.buggyImpl : current.fixedImpl}
-              </pre>
+              </div>
             </div>
           </div>
 
           {/* Terminal Vitest */}
-          <div className="p-4 rounded-xl border border-border bg-black/80 font-mono text-xs flex flex-col gap-2">
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground border-b border-border/40 pb-1.5">
-              <span>Résultat Vitest (npx vitest run)</span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-black font-mono text-xs flex flex-col gap-2 min-w-0 max-w-full">
+            <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-400 border-b border-slate-800 pb-1.5">
+              <span className="text-white font-semibold">Résultat Vitest (npx vitest run)</span>
               <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                implementationVariant === 'buggy' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'
+                implementationVariant === 'buggy' ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'
               }`}>
                 {implementationVariant === 'buggy' ? current.buggyResult.status : current.fixedResult.status}
               </span>
             </div>
-            <pre className={`whitespace-pre-wrap leading-relaxed ${
-              implementationVariant === 'buggy' ? 'text-rose-400' : 'text-emerald-400'
+            <div className={`whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full ${
+              implementationVariant === 'buggy' ? 'text-rose-300' : 'text-white'
             }`}>
               {implementationVariant === 'buggy' ? current.buggyResult.error : current.fixedResult.output}
-            </pre>
+            </div>
           </div>
         </div>
       </div>
@@ -436,7 +436,7 @@ describe('taskService avec Mock Store', () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>5.18 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 5 : Tests unitaires"

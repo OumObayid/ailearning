@@ -83,7 +83,7 @@ La mutation en mémoire fusionne correctement l'objet existant. Le test d'intég
           </span>
           <span className="text-xs text-muted-foreground">1 h de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Identifier les erreurs et demander des corrections
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -103,7 +103,7 @@ La mutation en mémoire fusionne correctement l'objet existant. Le test d'intég
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="search" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>8.1 & 8.2 — Symptôme vs Cause racine : Ne pas soigner le thermomètre</span>
+          <span>1. Symptôme vs Cause racine : Ne pas soigner le thermomètre</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -136,7 +136,7 @@ La mutation en mémoire fusionne correctement l'objet existant. Le test d'intég
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="alert-triangle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>8.5 — Gravité (Sévérité) vs Priorité : Ne pas confondre impact et urgence</span>
+          <span>2. Gravité (Sévérité) vs Priorité : Ne pas confondre impact et urgence</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-2">
@@ -165,7 +165,7 @@ La mutation en mémoire fusionne correctement l'objet existant. Le test d'intég
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="file-text" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>8.8 — Les 6 composantes d'un prompt de correction actionnable</span>
+          <span>3. Les 6 composantes d'un prompt de correction actionnable</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 text-xs">
           <div className="grid grid-cols-1 gap-2">
@@ -195,7 +195,7 @@ La mutation en mémoire fusionne correctement l'objet existant. Le test d'intég
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Générateur de Prompts de Correction Ciblée</span>
+          <span>4. Atelier Interactif — Générateur de Prompts de Correction Ciblée</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -260,37 +260,37 @@ La mutation en mémoire fusionne correctement l'objet existant. Le test d'intég
           </div>
 
           {/* Fiche anomalie */}
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2">
-              <span className="font-bold text-foreground">{currentAno.id} — {currentAno.title}</span>
-              <div className="flex gap-2">
-                <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold text-[10px]">{currentAno.severity}</span>
-                <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px]">{currentAno.priority}</span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between border-b border-slate-800 pb-2.5 gap-2">
+              <span className="font-bold text-white text-sm">{currentAno.id} — {currentAno.title}</span>
+              <div className="flex gap-2 shrink-0">
+                <span className="px-2.5 py-1 rounded-md bg-rose-950/80 text-rose-300 border border-rose-700/60 font-bold text-xs">{currentAno.severity}</span>
+                <span className="px-2.5 py-1 rounded-md bg-amber-950/80 text-amber-300 border border-amber-700/60 font-bold text-xs">{currentAno.priority}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Symptôme constaté :</span>
-                <p className="text-muted-foreground mt-0.5">{currentAno.symptom}</p>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Symptôme constaté :</span>
+                <p className="text-white mt-0.5 font-medium">{currentAno.symptom}</p>
               </div>
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Cause racine identifiée :</span>
-                <p className="text-emerald-400 mt-0.5 font-medium">{currentAno.rootCause}</p>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Cause racine identifiée :</span>
+                <p className="text-emerald-400 mt-0.5 font-semibold">{currentAno.rootCause}</p>
               </div>
             </div>
 
             {/* Prompt et résultat */}
-            <div className="flex flex-col gap-2 mt-1">
-              <span className="text-[11px] text-muted-foreground font-semibold">
+            <div className="flex flex-col gap-2 mt-1 min-w-0 max-w-full">
+              <span className="text-[11px] text-slate-400 font-semibold">
                 {promptView === 'vague' ? 'Prompt soumis (Vague) :' : 'Prompt soumis (Structuré & Confiné) :'}
               </span>
-              <pre className="p-3 rounded-lg bg-black/60 border border-border font-mono text-xs text-sky-300 overflow-x-auto whitespace-pre-wrap leading-relaxed">
+              <div className="p-3 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
                 {promptView === 'vague' ? currentAno.vaguePrompt : currentAno.structuredPrompt}
-              </pre>
+              </div>
 
-              <div className={`p-3 rounded-lg border font-mono text-xs whitespace-pre-wrap leading-relaxed ${
-                promptView === 'vague' ? 'bg-rose-500/10 border-rose-500/30 text-rose-300' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              <div className={`p-3 rounded-lg border font-mono text-xs whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full ${
+                promptView === 'vague' ? 'bg-rose-950/40 border-rose-800/40 text-rose-300' : 'bg-black border-slate-800 text-white'
               }`}>
                 {promptView === 'vague' ? currentAno.vagueResult : currentAno.structuredResult}
               </div>
@@ -303,7 +303,7 @@ La mutation en mémoire fusionne correctement l'objet existant. Le test d'intég
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>8.16 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 8 : Identifier les erreurs et demander des corrections"

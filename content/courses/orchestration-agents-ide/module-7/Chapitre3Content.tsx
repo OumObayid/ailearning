@@ -68,7 +68,7 @@ export const Chapitre3Content: React.FC = () => {
             Checklist de Démarrage & Déclenchement
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.3 — Organiser le lancement des missions
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -86,9 +86,7 @@ export const Chapitre3Content: React.FC = () => {
       {/* Section 3.2 : Les 6 conditions de démarrage */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="clipboard-document-check" className="w-5 h-5 text-primary-600 shrink-0" />
-          3.2 — La Checklist des 6 Conditions Indispensables de Démarrage
-        </h2>
+          <Icon name="clipboard-document-check" className="w-5 h-5 text-primary-600 shrink-0" /> 1. La Checklist des 6 Conditions Indispensables de Démarrage</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Avant de transmettre le prompt et de passer l'état à « En cours », le Team Leader valide systématiquement :
         </p>
@@ -216,7 +214,7 @@ export const Chapitre3Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.3
+            Quiz de validation du Chapitre 3
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise de la procédure de lancement, de la commande /plan et de la gestion des missions bloquées.

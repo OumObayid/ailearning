@@ -24,7 +24,7 @@ export const Chapitre7Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 7 — Comprendre le rebase et les conflits
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -74,9 +74,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.2
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Le principe du rebase : Changer la base d'une branche
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -109,25 +107,22 @@ export const Chapitre7Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setStrategy('original')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                strategy === 'original' ? 'bg-indigo-600 text-white ring-2 ring-indigo-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${strategy === 'original' ? 'bg-indigo-600 text-white ring-2 ring-indigo-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. Situation de départ (Divergence)
             </button>
             <button
               onClick={() => setStrategy('merge')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                strategy === 'merge' ? 'bg-purple-600 text-white ring-2 ring-purple-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${strategy === 'merge' ? 'bg-purple-600 text-white ring-2 ring-purple-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. Résultat avec git merge
             </button>
             <button
               onClick={() => setStrategy('rebase')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                strategy === 'rebase' ? 'bg-emerald-600 text-white ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${strategy === 'rebase' ? 'bg-emerald-600 text-white ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. Résultat avec git rebase
             </button>
@@ -139,8 +134,8 @@ export const Chapitre7Content: React.FC = () => {
               <div>
                 <span className="text-slate-400 block mb-2"># Les deux branches partagent A et B, puis main avance avec C et feature avec D, E :</span>
                 <div className="text-indigo-300">
-                  A --- B --- C  (main)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<br/>
+                  A --- B --- C  (main)<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<br />
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D --- E  (feature/task-api)
                 </div>
                 <p className="text-xs text-slate-400 mt-3 font-sans">
@@ -153,12 +148,12 @@ export const Chapitre7Content: React.FC = () => {
               <div>
                 <span className="text-purple-300 font-bold block mb-2"># git switch main && git merge feature/task-api :</span>
                 <div className="text-slate-200">
-                  A --- B --- C --------- M (Commit de Merge)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/<br/>
+                  A --- B --- C --------- M (Commit de Merge)<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/<br />
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D --------- E (feature/task-api)
                 </div>
                 <div className="mt-3 p-3 rounded-lg bg-purple-950/60 border border-purple-800/40 text-purple-200 font-sans text-xs">
-                  ✓ Les commits d'origine D et E conservent leurs identifiants SHA stricts.<br/>
+                  ✓ Les commits d'origine D et E conservent leurs identifiants SHA stricts.<br />
                   ✓ Un commit explicite M documente le moment où la fonctionnalité a rejoint la branche principale.
                 </div>
               </div>
@@ -168,12 +163,12 @@ export const Chapitre7Content: React.FC = () => {
               <div>
                 <span className="text-emerald-300 font-bold block mb-2"># git switch feature/task-api && git rebase main :</span>
                 <div className="text-slate-200">
-                  A --- B --- C  (main)<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<br/>
+                  A --- B --- C  (main)<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<br />
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D' --- E'  (feature/task-api réécrite)
                 </div>
                 <div className="mt-3 p-3 rounded-lg bg-emerald-950/60 border border-emerald-800/40 text-emerald-200 font-sans text-xs">
-                  ✓ Historique 100% linéaire sans embranchement visible.<br/>
+                  ✓ Historique 100% linéaire sans embranchement visible.<br />
                   ⚠️ <strong>ATTENTION :</strong> D' et E' sont de <em>nouveaux commits</em> avec des hashs SHA modifiés. Si un autre agent utilisait l'ancien D, sa branche devient désynchronisée.
                 </div>
               </div>
@@ -228,9 +223,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.8
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Gestion des conflits pendant un rebase : continue, abort et skip
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -300,7 +293,7 @@ export const Chapitre7Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 7
+            Quiz d'évaluation — Chapitre 7
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez votre maîtrise du rebase et des techniques de gestion des conflits (10 questions)

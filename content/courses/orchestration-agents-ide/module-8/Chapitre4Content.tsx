@@ -89,7 +89,7 @@ npm error code 2`,
           </span>
           <span className="text-xs text-muted-foreground">1 h de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Vérifier le code produit par les agents
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -109,7 +109,7 @@ npm error code 2`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-square" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>4.1 & 4.2 — Préparer méthodiquement la vérification</span>
+          <span>1. Préparer méthodiquement la vérification</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -144,7 +144,7 @@ npm error code 2`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>4.3 — Les commandes Git fondamentales de l'auditeur</span>
+          <span>2. Les commandes Git fondamentales de l'auditeur</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-2">
@@ -193,7 +193,7 @@ npm error code 2`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>4.9 — Outillage de vérification statique et de compilation</span>
+          <span>3. Outillage de vérification statique et de compilation</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -231,7 +231,7 @@ npm error code 2`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Console d'Audit & Diagnostic de Code</span>
+          <span>4. Atelier Interactif — Console d'Audit & Diagnostic de Code</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -297,18 +297,18 @@ npm error code 2`,
           </div>
 
           {/* Console Output */}
-          <div className="p-4 rounded-xl border border-border bg-black/60 flex flex-col gap-3 font-mono">
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground border-b border-border/40 pb-2">
-              <span>Terminal d'Audit Quality Gate</span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-black flex flex-col gap-3 font-mono min-w-0 max-w-full">
+            <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-400 border-b border-slate-800 pb-2">
+              <span className="font-semibold text-white">Terminal d'Audit Quality Gate</span>
               <span>{currentCmd.description}</span>
             </div>
 
-            <pre className="text-xs text-emerald-400 overflow-x-auto whitespace-pre-wrap leading-relaxed">
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-xs text-white leading-relaxed min-w-0 max-w-full font-mono">
               {currentCmd.output}
-            </pre>
+            </div>
 
-            <div className="mt-2 p-3 rounded bg-muted/20 border border-border/40 text-xs text-muted-foreground font-sans">
-              <strong className="text-foreground">Diagnostic de l'auditeur :</strong> {currentCmd.analysis}
+            <div className="mt-2 p-3 rounded bg-slate-900 border border-slate-800 text-xs text-slate-300 font-sans whitespace-normal break-words [overflow-wrap:anywhere]">
+              <strong className="text-white">Diagnostic de l'auditeur :</strong> {currentCmd.analysis}
             </div>
           </div>
         </div>
@@ -318,7 +318,7 @@ npm error code 2`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>4.15 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 4 : Vérifier le code produit par les agents"

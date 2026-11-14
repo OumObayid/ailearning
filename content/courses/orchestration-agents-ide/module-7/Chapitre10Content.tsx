@@ -22,7 +22,7 @@ export const Chapitre10Content: React.FC = () => {
             Pilotage & Orchestration de Sprint en Direct
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           TP de fin de module : Orchestrer une équipe d'agents sur un ensemble de tâches interdépendantes
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -137,11 +137,13 @@ export const Chapitre10Content: React.FC = () => {
               {showSolution && (
                 <div className="flex flex-col gap-2 mt-2 w-full min-w-0 max-w-full">
                   <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Extrait du livrable 01-analyse-besoin.md :</span>
-                  <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs bg-slate-900 text-slate-100 max-w-full min-w-0">
-                    <pre>{`- Fonctionnalité : Modification du statut d'une tâche existante depuis l'interface.
+                  <div className="p-4 rounded-xl font-mono text-xs bg-slate-900 text-slate-100 max-w-full min-w-0">
+                    <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`- Fonctionnalité : Modification du statut d'une tâche existante depuis l'interface.
 - Règles de calcul : Déplacement unitaire entre catégories de statut (total constant).
 - Inclus : Route PATCH serveur, sélection UI React, gestion erreurs 400/404, recalcul compteurs.
-- Exclus : Pas d'authentification, pas de persistance SQL, pas de websockets.`}</pre>
+- Exclus : Pas d'authentification, pas de persistance SQL, pas de websockets.`}
+                    </div>
                   </div>
                 </div>
               )}
@@ -163,14 +165,49 @@ export const Chapitre10Content: React.FC = () => {
               {showSolution && (
                 <div className="flex flex-col gap-2 mt-2 w-full min-w-0 max-w-full">
                   <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Attribution des 5 missions :</span>
-                  <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs bg-slate-900 text-slate-100 max-w-full min-w-0">
-                    <pre>{`| ID | Mission              | Agent     | Livrable attendu                    |
-|----|----------------------|-----------|-------------------------------------|
-| M1 | Contrat technique    | Architect | docs/architecture/api-contracts.md  |
-| M2 | Modification statut  | Backend   | backend/src/routes/ + tests unitaires|
-| M3 | Interface sélection  | Frontend  | frontend/src/components/TaskItem.tsx|
-| M4 | Recette d'intégration| QA        | reports/qa-report.md (QA-01 à QA-08)|
-| M5 | Audit de conformité  | Reviewer  | reports/reviews/reviewer-report.md  |`}</pre>
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 sm:p-4 min-w-0 max-w-full overflow-hidden">
+                    <table className="w-full text-left text-xs sm:text-sm">
+                      <thead className="border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 font-bold">
+                        <tr>
+                          <th className="pb-2.5 pr-2 w-12 font-mono">ID</th>
+                          <th className="pb-2.5 pr-3 font-semibold">Mission</th>
+                          <th className="pb-2.5 pr-3 font-semibold">Agent</th>
+                          <th className="pb-2.5 font-semibold">Livrable attendu</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                        <tr>
+                          <td className="py-2 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">M1</td>
+                          <td className="py-2 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Contrat technique</td>
+                          <td className="py-2 pr-3 text-slate-600 dark:text-slate-400 font-semibold">Architect</td>
+                          <td className="py-2 font-mono text-xs text-indigo-600 dark:text-indigo-400 break-words [overflow-wrap:anywhere]">docs/architecture/api-contracts.md</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">M2</td>
+                          <td className="py-2 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Modification statut</td>
+                          <td className="py-2 pr-3 text-emerald-600 dark:text-emerald-400 font-semibold">Backend</td>
+                          <td className="py-2 font-mono text-xs text-emerald-600 dark:text-emerald-400 break-words [overflow-wrap:anywhere]">backend/src/routes/ + tests unitaires</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">M3</td>
+                          <td className="py-2 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Interface sélection</td>
+                          <td className="py-2 pr-3 text-purple-600 dark:text-purple-400 font-semibold">Frontend</td>
+                          <td className="py-2 font-mono text-xs text-purple-600 dark:text-purple-400 break-words [overflow-wrap:anywhere]">frontend/src/components/TaskItem.tsx</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">M4</td>
+                          <td className="py-2 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Recette d'intégration</td>
+                          <td className="py-2 pr-3 text-amber-600 dark:text-amber-400 font-semibold">QA</td>
+                          <td className="py-2 font-mono text-xs text-amber-600 dark:text-amber-400 break-words [overflow-wrap:anywhere]">reports/qa-report.md (QA-01 à QA-08)</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 pr-2 font-mono font-bold text-indigo-600 dark:text-indigo-400">M5</td>
+                          <td className="py-2 pr-3 font-medium text-slate-900 dark:text-slate-100 break-words [overflow-wrap:anywhere]">Audit de conformité</td>
+                          <td className="py-2 pr-3 text-rose-600 dark:text-rose-400 font-semibold">Reviewer</td>
+                          <td className="py-2 font-mono text-xs text-rose-600 dark:text-rose-400 break-words [overflow-wrap:anywhere]">reports/reviews/reviewer-report.md</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}
@@ -192,11 +229,13 @@ export const Chapitre10Content: React.FC = () => {
               {showSolution && (
                 <div className="flex flex-col gap-2 mt-2 w-full min-w-0 max-w-full">
                   <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Graphe d'ordonnancement de sprint :</span>
-                  <div className="p-3 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto">
-                    <pre>{`M1 (Contrat REST)
-   &boxur;&boxdr;&boxh;&boxh; M2 (Backend API)  &boxdr;&boxh;&boxh;&gt; M4 (Tests Intégration QA) &boxh;&boxh;&gt; M5 (Revue de Code)
-   &boxur;&boxdl;&boxh;&boxh; M3 (Frontend UI)  &boxdl;
-   &boxur;&boxh;&boxh;&boxh;&boxh; M4 (Préparation QA)`}</pre>
+                  <div className="p-3 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs min-w-0 max-w-full">
+                    <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`M1 (Contrat REST)
+   └┬── M2 (Backend API)  ┌──> M4 (Tests Intégration QA) ──> M5 (Revue de Code)
+   └┴── M3 (Frontend UI)  ┘
+   └──── M4 (Préparation QA)`}
+                    </div>
                   </div>
                 </div>
               )}
@@ -218,13 +257,15 @@ export const Chapitre10Content: React.FC = () => {
               {showSolution && (
                 <div className="flex flex-col gap-2 mt-2 w-full min-w-0 max-w-full">
                   <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Contrat acté par l'Architecte :</span>
-                  <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs bg-slate-900 text-slate-100 max-w-full min-w-0">
-                    <pre>{`PATCH /api/tasks/:id/status
+                  <div className="p-4 rounded-xl font-mono text-xs bg-slate-900 text-slate-100 max-w-full min-w-0">
+                    <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`PATCH /api/tasks/:id/status
 Headers: Content-Type: application/json
 Payload: { "status": "in_progress" }  // todo | in_progress | done
 Réponse 200 OK : { "id": "task-1", "title": "...", "status": "in_progress" }
 Erreur 400 : { "error": "Invalid status value" }
-Erreur 404 : { "error": "Task not found" }`}</pre>
+Erreur 404 : { "error": "Task not found" }`}
+                    </div>
                   </div>
                 </div>
               )}
@@ -270,13 +311,15 @@ Erreur 404 : { "error": "Task not found" }`}</pre>
               {showSolution && (
                 <div className="flex flex-col gap-2 mt-2 w-full min-w-0 max-w-full">
                   <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Résultats du rapport QA :</span>
-                  <div className="p-3 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto">
-                    <pre>{`QA-01 (todo &rarr; in_progress) : SUCCÈS
-QA-02 (in_progress &rarr; done) : SUCCÈS
-QA-03 (done &rarr; todo)        : SUCCÈS
+                  <div className="p-3 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs min-w-0 max-w-full">
+                    <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`QA-01 (todo → in_progress) : SUCCÈS
+QA-02 (in_progress → done) : SUCCÈS
+QA-03 (done → todo)        : SUCCÈS
 QA-04 (statut invalide)    : SUCCÈS (HTTP 400 Bad Request retourné)
 QA-05 (id inexistant)      : SUCCÈS (HTTP 404 Not Found retourné)
-QA-06 (compteurs)          : SUCCÈS (déplacement unitaire sans dérive)`}</pre>
+QA-06 (compteurs)          : SUCCÈS (déplacement unitaire sans dérive)`}
+                    </div>
                   </div>
                 </div>
               )}

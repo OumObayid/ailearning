@@ -1,12 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Chapitre1Content } from './Chapitre1Content';
-import { Chapitre2Content } from './Chapitre2Content';
-import { Chapitre3Content } from './Chapitre3Content';
-import { Chapitre4Content } from './Chapitre4Content';
+import dynamic from 'next/dynamic';
 
 export * from './data';
+
+const Chapitre1Content = dynamic(() => import('./Chapitre1Content').then((mod) => mod.Chapitre1Content), { ssr: true });
+const Chapitre2Content = dynamic(() => import('./Chapitre2Content').then((mod) => mod.Chapitre2Content), { ssr: true });
+const Chapitre3Content = dynamic(() => import('./Chapitre3Content').then((mod) => mod.Chapitre3Content), { ssr: true });
+const Chapitre4Content = dynamic(() => import('./Chapitre4Content').then((mod) => mod.Chapitre4Content), { ssr: true });
 
 export const BackendIaModule1Renderer: React.FC<{ slug: string }> = ({ slug }) => {
   switch (slug.toLowerCase()) {

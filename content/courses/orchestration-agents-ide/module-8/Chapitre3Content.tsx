@@ -97,7 +97,7 @@ export const DB_CONFIG = {
           </span>
           <span className="text-xs text-muted-foreground">55 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Définir le rôle de l'agent Reviewer
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -117,7 +117,7 @@ export const DB_CONFIG = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="search" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>3.1 & 3.2 — Les 4 objectifs d'une revue de code par agent</span>
+          <span>1. Les 4 objectifs d'une revue de code par agent</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-2">
@@ -166,7 +166,7 @@ export const DB_CONFIG = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>3.7 — Grille de classification des observations de revue</span>
+          <span>2. Grille de classification des observations de revue</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 flex flex-col gap-1.5">
@@ -215,7 +215,7 @@ export const DB_CONFIG = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-square" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>3.9 — Les 4 conclusions possibles d'un rapport de revue</span>
+          <span>3. Les 4 conclusions possibles d'un rapport de revue</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3 text-xs">
@@ -258,7 +258,7 @@ export const DB_CONFIG = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="code" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Banc d'Analyse de Code Review</span>
+          <span>4. Atelier Interactif — Banc d'Analyse de Code Review</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -325,15 +325,17 @@ export const DB_CONFIG = {
           </div>
 
           {/* Affichage du diff et de l'analyse */}
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 min-w-0 max-w-full">
+            <div className="flex flex-wrap items-center justify-between gap-1">
               <span className="text-xs font-mono font-bold text-foreground">{currentDiff.id} — {currentDiff.title}</span>
               <span className="text-[10px] font-mono text-muted-foreground">{currentDiff.file}</span>
             </div>
 
-            <pre className="p-3 rounded-lg bg-black/40 border border-border font-mono text-xs text-sky-300 overflow-x-auto leading-relaxed">
-              {currentDiff.snippet}
-            </pre>
+            <div className="p-3 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white leading-relaxed min-w-0 max-w-full">
+              <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+                {currentDiff.snippet}
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 gap-2 text-xs">
               <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-1">
@@ -359,15 +361,16 @@ export const DB_CONFIG = {
 
       {/* Section 5 : Modèle d'instruction pour l'Agent Reviewer */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
-        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
           <Icon name="file-text" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>3.11 — Modèle de mission pour l'Agent Reviewer</span>
+          <span>5. Modèle de mission pour l'Agent Reviewer</span>
         </h2>
-        <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 min-w-0 max-w-full">
+          <p className="text-xs text-muted-foreground leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
             Voici le prompt type utilisé dans TaskFlow pour lancer une revue de code rigoureuse et impartiale :
           </p>
-          <pre className="p-4 rounded-lg bg-muted font-mono text-xs text-foreground overflow-x-auto leading-relaxed border border-border">
+          <div className="p-4 rounded-lg bg-black font-mono text-xs text-white leading-relaxed border border-slate-800 min-w-0 max-w-full">
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
 {`Tu es l'agent Reviewer de l'équipe TaskFlow.
 Ta mission :
 1. Examiner les modifications introduites avec git diff origin/main..HEAD
@@ -384,7 +387,8 @@ Règles impératives :
 - Tu ne dois JAMAIS réécrire le code toi-même ni commiter de correctif.
 - Distingue rigoureusement les défauts avérés de tes préférences personnelles.
 - Ne tente aucune opération git merge, git rebase ou git push.`}
-          </pre>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -392,7 +396,7 @@ Règles impératives :
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>3.14 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 3 : Rôle de l'agent Reviewer"

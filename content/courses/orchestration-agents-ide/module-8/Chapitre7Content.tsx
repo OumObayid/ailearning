@@ -150,7 +150,7 @@ Content-Length: 0`,
           </span>
           <span className="text-xs text-muted-foreground">1 h de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Vérifier le fonctionnement des API
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -170,7 +170,7 @@ Content-Length: 0`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="globe" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>7.1 & 7.2 — Le contrat d'API REST de TaskFlow</span>
+          <span>1. Le contrat d'API REST de TaskFlow</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -181,45 +181,45 @@ Content-Length: 0`,
               Pour éviter les ambiguïtés entre l'agent Frontend et l'agent Backend, chaque opération est soumise à un contrat strict :
             </p>
             <div className="grid grid-cols-1 gap-2.5 mt-2 text-xs">
-              <div className="p-3 rounded-lg bg-muted/40 border border-border flex items-center justify-between">
-                <div>
-                  <span className="font-mono font-bold text-sky-400">GET /api/tasks</span>
-                  <p className="text-muted-foreground mt-0.5">Consultation de la liste des tâches</p>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="font-mono font-bold text-sky-400 text-sm">GET /api/tasks</span>
+                  <p className="text-slate-300 mt-0.5 text-xs">Consultation de la liste des tâches</p>
                 </div>
-                <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 font-mono font-bold">200 OK</span>
+                <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-bold text-xs shrink-0">200 OK</span>
               </div>
 
-              <div className="p-3 rounded-lg bg-muted/40 border border-border flex items-center justify-between">
-                <div>
-                  <span className="font-mono font-bold text-emerald-400">POST /api/tasks</span>
-                  <p className="text-muted-foreground mt-0.5">Création d'une nouvelle tâche</p>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="font-mono font-bold text-emerald-400 text-sm">POST /api/tasks</span>
+                  <p className="text-slate-300 mt-0.5 text-xs">Création d'une nouvelle tâche</p>
                 </div>
-                <div className="flex gap-1.5 font-mono text-[11px] font-bold">
-                  <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400">201 Created</span>
-                  <span className="px-2 py-1 rounded bg-amber-500/10 text-amber-400">400 Bad Req</span>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-muted/40 border border-border flex items-center justify-between">
-                <div>
-                  <span className="font-mono font-bold text-amber-400">PATCH /api/tasks/:id</span>
-                  <p className="text-muted-foreground mt-0.5">Modification partielle (statut : todo, in_progress, done)</p>
-                </div>
-                <div className="flex gap-1.5 font-mono text-[11px] font-bold">
-                  <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400">200 OK</span>
-                  <span className="px-2 py-1 rounded bg-amber-500/10 text-amber-400">400</span>
-                  <span className="px-2 py-1 rounded bg-rose-500/10 text-rose-400">404 Not Found</span>
+                <div className="flex flex-wrap gap-1.5 font-mono text-xs font-bold shrink-0">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">201 Created</span>
+                  <span className="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">400 Bad Req</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-muted/40 border border-border flex items-center justify-between">
-                <div>
-                  <span className="font-mono font-bold text-rose-400">DELETE /api/tasks/:id</span>
-                  <p className="text-muted-foreground mt-0.5">Suppression définitive d'une tâche</p>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="font-mono font-bold text-amber-400 text-sm">PATCH /api/tasks/:id</span>
+                  <p className="text-slate-300 mt-0.5 text-xs">Modification partielle (statut : todo, in_progress, done)</p>
                 </div>
-                <div className="flex gap-1.5 font-mono text-[11px] font-bold">
-                  <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400">204 No Content</span>
-                  <span className="px-2 py-1 rounded bg-rose-500/10 text-rose-400">404</span>
+                <div className="flex flex-wrap gap-1.5 font-mono text-xs font-bold shrink-0">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">200 OK</span>
+                  <span className="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">400</span>
+                  <span className="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">404 Not Found</span>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="font-mono font-bold text-rose-400 text-sm">DELETE /api/tasks/:id</span>
+                  <p className="text-slate-300 mt-0.5 text-xs">Suppression définitive d'une tâche</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5 font-mono text-xs font-bold shrink-0">
+                  <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">204 No Content</span>
+                  <span className="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">404</span>
                 </div>
               </div>
             </div>
@@ -231,7 +231,7 @@ Content-Length: 0`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-square" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>7.3 & 7.10 — Les 4 composantes à vérifier obligatoirement</span>
+          <span>2. Les 4 composantes à vérifier obligatoirement</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-1.5">
@@ -268,7 +268,7 @@ Content-Length: 0`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>7.13 — L'outil curl en ligne de commande pour l'audit direct</span>
+          <span>3. L'outil curl en ligne de commande pour l'audit direct</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -299,7 +299,7 @@ Content-Length: 0`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Console d'Audit d'API REST (curl & Supertest)</span>
+          <span>4. Atelier Interactif — Console d'Audit d'API REST (curl & Supertest)</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -376,34 +376,34 @@ Content-Length: 0`,
           </div>
 
           {/* Affichage des détails */}
-          <div className="grid grid-cols-1 gap-3">
-            <div className="p-3 rounded-lg bg-black/40 border border-border flex flex-col gap-1.5">
-              <span className="text-[11px] font-mono text-muted-foreground font-semibold">Commande curl correspondante :</span>
-              <pre className="font-mono text-xs text-sky-300 overflow-x-auto leading-relaxed">
+          <div className="grid grid-cols-1 gap-3 min-w-0 max-w-full">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
+              <span className="text-[11px] font-mono text-slate-300 font-semibold">Commande curl correspondante :</span>
+              <div className="font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
                 {current.curlCmd}
-              </pre>
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-black/40 border border-border flex flex-col gap-1.5">
-              <span className="text-[11px] font-mono text-muted-foreground font-semibold">Test Supertest équivalent :</span>
-              <pre className="font-mono text-xs text-emerald-300 overflow-x-auto leading-relaxed">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
+              <span className="text-[11px] font-mono text-slate-300 font-semibold">Test Supertest équivalent :</span>
+              <div className="font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
                 {current.supertestCode}
-              </pre>
+              </div>
             </div>
 
             {/* Réponse brute */}
-            <div className="p-3.5 rounded-lg bg-black/70 border border-border flex flex-col gap-2 font-mono text-xs">
-              <span className="text-[11px] text-muted-foreground font-semibold">En-têtes HTTP & Réponse du Serveur :</span>
-              <pre className="text-amber-300/90 overflow-x-auto whitespace-pre-wrap leading-relaxed text-[11px]">
+            <div className="p-3.5 rounded-lg bg-black border border-slate-800 flex flex-col gap-2 font-mono text-xs min-w-0 max-w-full">
+              <span className="text-[11px] text-slate-300 font-semibold">En-têtes HTTP & Réponse du Serveur :</span>
+              <div className="text-amber-300 leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-[11px] min-w-0 max-w-full">
                 {current.headers}
-              </pre>
-              <pre className="text-foreground overflow-x-auto whitespace-pre-wrap leading-relaxed text-xs border-t border-border/40 pt-2">
+              </div>
+              <div className="text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-xs border-t border-slate-800 pt-2 min-w-0 max-w-full font-mono">
                 {current.responseBody}
-              </pre>
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-muted/40 border border-border text-xs text-muted-foreground font-sans">
-              <strong className="text-foreground">Règle de conformité contractuelle :</strong> {current.rule}
+            <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-200 font-sans whitespace-normal break-words [overflow-wrap:anywhere]">
+              <strong className="text-white">Règle de conformité contractuelle :</strong> {current.rule}
             </div>
           </div>
         </div>
@@ -413,7 +413,7 @@ Content-Length: 0`,
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>7.18 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 7 : Vérifier le fonctionnement des API"

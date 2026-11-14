@@ -142,7 +142,7 @@ export function Chapitre10Content() {
             Chapitre 10.10
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Développer le backend avec les agents
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -162,9 +162,7 @@ export function Chapitre10Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="layout" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              10.3. Les quatre responsabilités de l&apos;architecture Backend
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Les quatre responsabilités de l&apos;architecture Backend</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -173,43 +171,47 @@ export function Chapitre10Content() {
           </p>
 
           <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
                 <Icon name="code" className="h-4 w-4 text-primary shrink-0" />
-                1. Routes (<code>backend/src/routes/task.routes.ts</code>)
+                <span>1. Routes</span>
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">backend/src/routes/task.routes.ts</code>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-                Associent chaque méthode HTTP et chemin à une fonction de contrôleur. Exemple : <code>router.post(&apos;/api/tasks&apos;, createTask)</code>. Ne contiennent aucune logique métier.
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                Associent chaque méthode HTTP et chemin à une fonction de contrôleur. Exemple : <code className="text-emerald-400 bg-slate-950 px-1 rounded">router.post(&apos;/api/tasks&apos;, createTask)</code>. Ne contiennent aucune logique métier.
               </p>
             </div>
 
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
-                <Icon name="cpu" className="h-4 w-4 text-emerald-500 shrink-0" />
-                2. Contrôleurs (<code>backend/src/controllers/task.controller.ts</code>)
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+                <Icon name="cpu" className="h-4 w-4 text-emerald-400 shrink-0" />
+                <span>2. Contrôleurs</span>
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">backend/src/controllers/task.controller.ts</code>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-                Réceptionnent <code>req.body</code> et <code>req.params</code>, transmettent les données au service, et renvoient les codes de statut HTTP normalisés (200, 201, 204, 400, 404).
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                Réceptionnent <code className="text-emerald-400 bg-slate-950 px-1 rounded">req.body</code> et <code className="text-emerald-400 bg-slate-950 px-1 rounded">req.params</code>, transmettent les données au service, et renvoient les codes de statut HTTP normalisés (200, 201, 204, 400, 404).
               </p>
             </div>
 
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
-                <Icon name="shield-check" className="h-4 w-4 text-amber-500 shrink-0" />
-                3. Services (<code>backend/src/services/task.service.ts</code>)
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+                <Icon name="shield-check" className="h-4 w-4 text-amber-400 shrink-0" />
+                <span>3. Services</span>
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">backend/src/services/task.service.ts</code>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-                Le cœur des règles métier. Vérifient que le titre n&apos;est pas composé uniquement d&apos;espaces (<code>value.trim().length &gt; 0</code>), imposent le statut initial <code>todo</code>, et isolent le changement de statut de la modification textuelle.
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                Le cœur des règles métier. Vérifient que le titre n&apos;est pas composé uniquement d&apos;espaces (<code className="text-emerald-400 bg-slate-950 px-1 rounded">value.trim().length &gt; 0</code>), imposent le statut initial <code className="text-emerald-400 bg-slate-950 px-1 rounded">todo</code>, et isolent le changement de statut de la modification textuelle.
               </p>
             </div>
 
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
-                <Icon name="database" className="h-4 w-4 text-purple-500 shrink-0" />
-                4. Repository (<code>backend/src/repositories/task.repository.ts</code>)
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+                <Icon name="database" className="h-4 w-4 text-purple-400 shrink-0" />
+                <span>4. Repository</span>
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">backend/src/repositories/task.repository.ts</code>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-                Persistance en mémoire via une <code>Map&lt;string, Task&gt;</code>. Fournit <code>findAll</code>, <code>findById</code>, <code>save</code>, <code>delete</code>, <code>countByStatus</code> et <code>clearTasks</code> (réservé aux tests).
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                Persistance en mémoire via une <code className="text-emerald-400 bg-slate-950 px-1 rounded">Map&lt;string, Task&gt;</code>. Fournit <code className="text-emerald-400 bg-slate-950 px-1 rounded">findAll</code>, <code className="text-emerald-400 bg-slate-950 px-1 rounded">findById</code>, <code className="text-emerald-400 bg-slate-950 px-1 rounded">save</code>, <code className="text-emerald-400 bg-slate-950 px-1 rounded">delete</code>, <code className="text-emerald-400 bg-slate-950 px-1 rounded">countByStatus</code> et <code className="text-emerald-400 bg-slate-950 px-1 rounded">clearTasks</code> (réservé aux tests).
               </p>
             </div>
           </div>
@@ -221,9 +223,7 @@ export function Chapitre10Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              10.5 & 10.6. Typage TypeScript et règles de validation
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Typage TypeScript et règles de validation</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -231,7 +231,7 @@ export function Chapitre10Content() {
             Le modèle et les règles de validation garantissent l&apos;intégrité de l&apos;état sans base de données :
           </p>
 
-          <pre className="p-3 rounded-lg bg-muted/30 font-mono text-xs text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+          <div className="p-3 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`// backend/src/types/task.ts
 export type TaskStatus = 'todo' | 'in_progress' | 'done';
 
@@ -251,7 +251,7 @@ export function isValidText(value: unknown): value is string {
 export function isValidStatus(value: unknown): value is TaskStatus {
   return ['todo', 'in_progress', 'done'].includes(value as TaskStatus);
 }`}
-          </pre>
+          </div>
         </CardContent>
       </Card>
 
@@ -260,9 +260,7 @@ export function isValidStatus(value: unknown): value is TaskStatus {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="server" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Banc d&apos;Essai REST & Repository en Mémoire
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Banc d&apos;Essai REST & Repository en Mémoire</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Exécutez des opérations sur l&apos;API Express simulée, observez la validation des règles métier et inspectez le payload JSON retourné avec son code HTTP.
@@ -391,9 +389,9 @@ export function isValidStatus(value: unknown): value is TaskStatus {
                 HTTP {httpLog.status} ({httpLog.method} {httpLog.route})
               </Badge>
             </div>
-            <pre className="p-2.5 rounded bg-background/80 font-mono text-xs text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 font-mono text-xs text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
               {httpLog.response}
-            </pre>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -403,9 +401,7 @@ export function isValidStatus(value: unknown): value is TaskStatus {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

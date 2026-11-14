@@ -179,7 +179,7 @@ Le rapport est consigné dans la documentation du projet sous docs/audit/COMPTE_
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           TP de fin de module : Simulation de contributions Git multi-agents
         </h1>
         <p className="text-sm sm:text-base text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">

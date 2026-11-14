@@ -21,7 +21,7 @@ export const Chapitre5Content: React.FC = () => {
             Supervision & Métriques de Progression
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.5 — Suivre l'avancement des missions
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -39,9 +39,7 @@ export const Chapitre5Content: React.FC = () => {
       {/* Section 5.2 : Avancement, Achèvement et Validation */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="chart-bar" className="w-5 h-5 text-primary-600 shrink-0" />
-          5.2 — Distinguer l'Avancement, l'Achèvement et la Validation
-        </h2>
+          <Icon name="chart-bar" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer l'Avancement, l'Achèvement et la Validation</h2>
         {/* Configuration 1 pure : 1 seule carte par rangée */}
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
@@ -68,9 +66,7 @@ export const Chapitre5Content: React.FC = () => {
       {/* Section 5.6 : Commandes de supervision Antigravity */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="command-line" className="w-5 h-5 text-indigo-600 shrink-0" />
-          5.6 — Outils de Supervision dans Google Antigravity
-        </h2>
+          <Icon name="command-line" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Outils de Supervision dans Google Antigravity</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-xs text-slate-900 dark:text-slate-100">Panneau <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">/agents</code> (CLI)</span>
@@ -172,7 +168,7 @@ export const Chapitre5Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.5
+            Quiz de validation du Chapitre 5
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Vérifiez votre compréhension de la surveillance de progression, des commandes /agents et /tasks, et des indicateurs fiables.

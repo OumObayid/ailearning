@@ -24,7 +24,7 @@ export const Chapitre2Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 2 — Comprendre la différence entre une branche et un Worktree
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -74,9 +74,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              2.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Tableau comparatif : Branche vs Worktree
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -149,25 +147,22 @@ export const Chapitre2Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setActiveTab('branch')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'branch' ? 'bg-indigo-600 text-white shadow-lg ring-2 ring-indigo-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'branch' ? 'bg-indigo-600 text-white shadow-lg ring-2 ring-indigo-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. git branch feature/backend-api
             </button>
             <button
               onClick={() => setActiveTab('worktree')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'worktree' ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'worktree' ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. git worktree add ../taskflow-backend
             </button>
             <button
               onClick={() => setActiveTab('combo')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'combo' ? 'bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'combo' ? 'bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. L'Alliance : 1 Mission = 1 Branche + 1 Worktree
             </button>
@@ -222,7 +217,7 @@ export const Chapitre2Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 2
+            Quiz d'évaluation — Chapitre 2
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez votre compréhension de la distinction entre branche et Worktree (10 questions)

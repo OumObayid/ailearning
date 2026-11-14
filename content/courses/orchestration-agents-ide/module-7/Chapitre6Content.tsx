@@ -47,7 +47,7 @@ export const Chapitre6Content: React.FC = () => {
             Hygiène de Contexte & Communication
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.6 — Gérer les conversations et les informations échangées
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -65,9 +65,7 @@ export const Chapitre6Content: React.FC = () => {
       {/* Section 6.2 : Conversation vs Contexte vs Mémoire de travail */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="chat-bubble-left-right" className="w-5 h-5 text-primary-600 shrink-0" />
-          6.2 — Distinguer Conversation, Contexte et Mémoire de Travail
-        </h2>
+          <Icon name="chat-bubble-left-right" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer Conversation, Contexte et Mémoire de Travail</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-sm text-blue-700 dark:text-blue-400">1. La Conversation (Historique des messages échangés)</span>
@@ -152,7 +150,7 @@ export const Chapitre6Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.6
+            Quiz de validation du Chapitre 6
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez vos compétences sur la gestion du contexte, les références de fichiers (@) et les commandes CLI d'Antigravity.

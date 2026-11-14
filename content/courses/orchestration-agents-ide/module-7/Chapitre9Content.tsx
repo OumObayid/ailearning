@@ -58,7 +58,7 @@ export const Chapitre9Content: React.FC = () => {
             Escalade, Arbitrage & Souveraineté Humaine
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.9 — Déterminer quand le Project Manager doit intervenir
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -76,9 +76,7 @@ export const Chapitre9Content: React.FC = () => {
       {/* Section 9.1 & 9.2 : Décisions autonomes vs coordination vs escalade PM */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="shield-check" className="w-5 h-5 text-primary-600 shrink-0" />
-          9.2 — Les 3 Niveaux de Décision dans l'Orchestration
-        </h2>
+          <Icon name="shield-check" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Les 3 Niveaux de Décision dans l'Orchestration</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-sm text-blue-700 dark:text-blue-400">Niveau 1 — Décisions Autonomes de l'Agent</span>
@@ -135,25 +133,25 @@ export const Chapitre9Content: React.FC = () => {
 
         {/* Diagnostic de l'arbitrage */}
         <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-3 w-full min-w-0 max-w-full">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-semibold text-slate-500 uppercase">Niveau d'autorité :</span>
-            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${currentIncident.badgeColor} shrink-0`}>
+          <div className="flex flex-wrap sm:flex-nowrap justify-between items-start sm:items-center gap-2 min-w-0 max-w-full">
+            <span className="text-xs font-semibold text-slate-500 uppercase shrink-0">Niveau d'autorité :</span>
+            <span className={`px-2.5 py-1 rounded-full text-xs font-bold leading-tight ${currentIncident.badgeColor} max-w-full whitespace-normal break-words [overflow-wrap:anywhere] text-right sm:text-left`}>
               {currentIncident.level}
             </span>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 min-w-0 max-w-full">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Contexte :</span>
-            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
               {currentIncident.situation}
             </p>
           </div>
 
-          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 flex flex-col gap-1">
+          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
               Protocole appliqué par le Team Leader :
             </span>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 whitespace-normal break-words [overflow-wrap:anywhere]">
               {currentIncident.action}
             </p>
           </div>
@@ -163,11 +161,10 @@ export const Chapitre9Content: React.FC = () => {
       {/* Section 9.5 : Fiche d'arbitrage modèle */}
       <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="document-check" className="w-5 h-5 text-emerald-600 shrink-0" />
-          9.5 — Modèle de Fiche d'Arbitrage pour le Project Manager Humain
-        </h2>
-        <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
-          <pre>{`## Fiche d'Arbitrage Décisionnel — TaskFlow
+          <Icon name="document-check" className="w-5 h-5 text-emerald-600 shrink-0" /> 2. Modèle de Fiche d'Arbitrage pour le Project Manager Humain</h2>
+        <div className="p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
+          <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`## Fiche d'Arbitrage Décisionnel — TaskFlow
 - Objet : Proposition d'ajout d'un 4ème statut 'cancelled' (Annulée).
 - Demandeur : Agent Backend.
 - Périmètre initial validé : 3 statuts uniquement (todo, in_progress, done).
@@ -178,7 +175,8 @@ export const Chapitre9Content: React.FC = () => {
 - Options proposées au PM :
   * Option A : Conserver strictement les 3 statuts prévus pour la v1.
   * Option B : Valider l'extension fonctionnelle vers 4 statuts.
-- Décision attendue : Choix souverain du Project Manager humain.`}</pre>
+- Décision attendue : Choix souverain du Project Manager humain.`}
+          </div>
         </div>
       </div>
 
@@ -189,7 +187,7 @@ export const Chapitre9Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.9
+            Quiz de validation du Chapitre 9
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre compréhension des critères d'escalade, des niveaux d'autorité et des autorisations souveraines du PM.

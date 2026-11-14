@@ -196,7 +196,7 @@ export function Chapitre4Content() {
             Chapitre 10.4
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Créer la structure du projet TaskFlow
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -216,9 +216,7 @@ export function Chapitre4Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="folder" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              4.2. Comprendre la structure d&apos;un projet logiciel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Comprendre la structure d&apos;un projet logiciel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -255,9 +253,7 @@ export function Chapitre4Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              4.3 à 4.7. Initialisation des dossiers pas à pas
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Initialisation des dossiers pas à pas</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -273,12 +269,12 @@ export function Chapitre4Content() {
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Racine</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`node -v
 npm -v
 mkdir taskflow
 cd taskflow`}
-            </pre>
+            </div>
           </div>
 
           {/* Étape 2 */}
@@ -289,7 +285,7 @@ cd taskflow`}
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Frontend</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`npm create vite@latest frontend -- --template react-ts
 
 # Création des sous-répertoires fonctionnels (Bash)
@@ -297,7 +293,7 @@ mkdir -p frontend/src/components frontend/src/pages frontend/src/services fronte
 
 # En PowerShell :
 # New-Item -ItemType Directory -Force -Path frontend/src/components, frontend/src/pages, frontend/src/services, frontend/src/types`}
-            </pre>
+            </div>
           </div>
 
           {/* Étape 3 */}
@@ -308,7 +304,7 @@ mkdir -p frontend/src/components frontend/src/pages frontend/src/services fronte
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Backend</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`mkdir backend
 cd backend
 npm init -y
@@ -319,7 +315,7 @@ mkdir -p backend/src/routes backend/src/controllers backend/src/services backend
 
 # En PowerShell :
 # New-Item -ItemType Directory -Force -Path backend/src/routes, backend/src/controllers, backend/src/services, backend/src/repositories, backend/src/types, backend/tests`}
-            </pre>
+            </div>
           </div>
 
           {/* Étape 4 */}
@@ -330,11 +326,11 @@ mkdir -p backend/src/routes backend/src/controllers backend/src/services backend
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Docs</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# Création du fichier README à la racine de taskflow/
 # Bash : touch README.md
 # PowerShell : New-Item -ItemType File -Path README.md`}
-            </pre>
+            </div>
             <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
               Le fichier <code>README.md</code> résume les 6 fonctionnalités de TaskFlow, les technologies (React/Vite/TS et Node/Express/TS) et la structure des répertoires pour guider tous les agents dès leur onboarding.
             </p>
@@ -347,9 +343,7 @@ mkdir -p backend/src/routes backend/src/controllers backend/src/services backend
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="layout" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Explorateur d&apos;Arborescence & Rôles des Répertoires
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Explorateur d&apos;Arborescence & Rôles des Répertoires</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Cliquez sur un dossier ou un fichier de l&apos;arborescence pour examiner son rôle, l&apos;agent responsable, sa technologie et la commande de vérification correspondante.
@@ -431,9 +425,9 @@ mkdir -p backend/src/routes backend/src/controllers backend/src/services backend
                   <span className="font-semibold text-foreground text-xs uppercase tracking-wider text-muted-foreground">
                     Commande de contrôle :
                   </span>
-                  <pre className="p-2 rounded bg-background/80 border border-border/40 font-mono text-xs text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                  <div className="p-2 rounded bg-black border border-slate-800 border border-border/40 font-mono text-xs text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
                     {currentNode.verificationCmd}
-                  </pre>
+                  </div>
                 </div>
               )}
             </div>
@@ -446,9 +440,7 @@ mkdir -p backend/src/routes backend/src/controllers backend/src/services backend
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="server" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              4.6.5. Séparation essentielle : app.ts vs server.ts
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Séparation essentielle : app.ts vs server.ts</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -485,9 +477,7 @@ mkdir -p backend/src/routes backend/src/controllers backend/src/services backend
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">5. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

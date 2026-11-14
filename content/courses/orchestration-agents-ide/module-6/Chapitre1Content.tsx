@@ -54,7 +54,7 @@ export const Chapitre1Content: React.FC = () => {
             Cadrage & Spécification Préalable
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.1 — Analyser un besoin logiciel
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -72,9 +72,7 @@ export const Chapitre1Content: React.FC = () => {
       {/* Section 1.1 : Demande, Besoin et Solution */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="light-bulb" className="w-5 h-5 text-primary-600 shrink-0" />
-          1.1 — Distinguer la Demande, le Besoin et la Solution
-        </h2>
+          <Icon name="light-bulb" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer la Demande, le Besoin et la Solution</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour cadrer efficacement le travail des agents IA, il est essentiel de différencier ces trois niveaux d'abstraction :
         </p>
@@ -116,9 +114,7 @@ export const Chapitre1Content: React.FC = () => {
       {/* Section 1.4 : Besoins fonctionnels vs non fonctionnels */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="adjustments-horizontal" className="w-5 h-5 text-indigo-600 shrink-0" />
-          1.4 — Besoins Fonctionnels vs Besoins Non Fonctionnels
-        </h2>
+          <Icon name="adjustments-horizontal" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Besoins Fonctionnels vs Besoins Non Fonctionnels</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Un projet réussi ne se limite pas à cocher des fonctionnalités : il doit respecter des critères de qualité rigoureux.
         </p>
@@ -143,9 +139,7 @@ export const Chapitre1Content: React.FC = () => {
       {/* Section 1.5 & 1.7 : Contraintes et Périmètre (Inclus vs Hors Périmètre) */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="shield-check" className="w-5 h-5 text-rose-600 shrink-0" />
-          1.5 & 1.7 — Contraintes et Délimitation Stricte du Périmètre
-        </h2>
+          <Icon name="shield-check" className="w-5 h-5 text-rose-600 shrink-0" /> 3. Contraintes et Délimitation Stricte du Périmètre</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Délimiter le périmètre évite que les agents n'ajoutent spontanément du code superflu ou des dépendances non prévues :
         </p>
@@ -241,18 +235,18 @@ export const Chapitre1Content: React.FC = () => {
       {/* Fiche de Synthèse TaskFlow */}
       <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="document-text" className="w-5 h-5 text-emerald-600 shrink-0" />
-          1.8 — Fiche de Synthèse du Besoin TaskFlow
-        </h2>
-        <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
-          <pre>{`## Fiche de Synthèse : TaskFlow v1
+          <Icon name="document-text" className="w-5 h-5 text-emerald-600 shrink-0" /> 4. Fiche de Synthèse du Besoin TaskFlow</h2>
+        <div className="p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
+          <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`## Fiche de Synthèse : TaskFlow v1
 - Problème : Manque de visibilité centralisée sur les tâches quotidiennes et leur état.
 - Utilisateur cible : Développeur ou collaborateur individuel.
 - Besoins fonctionnels : Créer, Lister, Modifier, Supprimer, Changer statut, Compter par statut.
 - Besoins non fonctionnels : Ergonomie réactive, gestion d'erreur 400/404 propre, robustesse des tests.
 - Contraintes techniques : React/Vite/TS (Frontend), Node/Express/TS (Backend), REST, Stockage mémoire.
 - Hors périmètre : Pas d'auth, pas de base de données, pas de websockets.
-- Gouvernance Git : AUCUN merge/push sans l'accord explicite du PM humain.`}</pre>
+- Gouvernance Git : AUCUN merge/push sans l'accord explicite du PM humain.`}
+          </div>
         </div>
       </div>
 
@@ -263,7 +257,7 @@ export const Chapitre1Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.1
+            Quiz de validation du Chapitre 1
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise de l'analyse du besoin, du périmètre et de la distinction fonctionnel/non-fonctionnel.

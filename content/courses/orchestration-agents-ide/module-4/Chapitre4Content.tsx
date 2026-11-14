@@ -48,7 +48,7 @@ export const Chapitre4Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 4 — Créer un Worktree
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -98,9 +98,7 @@ export const Chapitre4Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              4.2
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             La commande git worktree add : Forme générale et variantes
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -155,7 +153,7 @@ export const Chapitre4Content: React.FC = () => {
           SIMULATEUR INTERACTIF DE CRÉATION DE WORKTREES
          ========================================================================= */}
       <section className="space-y-6">
-        <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl">
+        <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl min-w-0 max-w-full overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -176,49 +174,51 @@ export const Chapitre4Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={handleAddBackend}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors text-left whitespace-normal break-words [overflow-wrap:anywhere] max-w-full cursor-pointer"
             >
               $ git worktree add -b feature/backend-api ../taskflow-backend main
             </button>
             <button
               onClick={handleAddFrontend}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white transition-colors"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white transition-colors text-left whitespace-normal break-words [overflow-wrap:anywhere] max-w-full cursor-pointer"
             >
               $ git worktree add -b feature/frontend-ui ../taskflow-frontend main
             </button>
             <button
               onClick={handleReset}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
             >
               ↺ Réinitialiser
             </button>
           </div>
 
           {/* Rendu Terminal */}
-          <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 space-y-3 mb-6">
+          <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 space-y-3 mb-6 min-w-0 max-w-full">
             <div className="text-indigo-400 font-bold">$ Output de la commande :</div>
-            <pre className="whitespace-pre-wrap text-emerald-300">{lastLog}</pre>
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-emerald-300 min-w-0 max-w-full font-mono text-xs sm:text-sm leading-relaxed">
+              {lastLog}
+            </div>
 
             <div className="pt-2 border-t border-slate-800 text-indigo-400 font-bold">$ git worktree list</div>
-            <pre className="whitespace-pre-wrap text-slate-200">
-{`/projects/taskflow             a1b2c3d [main]
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-slate-200 min-w-0 max-w-full font-mono text-xs sm:text-sm leading-relaxed">
+              {`/projects/taskflow             a1b2c3d [main]
 ${createdWorktrees.includes('backend') ? '/projects/taskflow-backend     a1b2c3d [feature/backend-api]\n' : ''}${createdWorktrees.includes('frontend') ? '/projects/taskflow-frontend    a1b2c3d [feature/frontend-ui]\n' : ''}`}
-            </pre>
+            </div>
           </div>
 
           {/* Arborescence résultante */}
-          <div className="p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-2">
+          <div className="p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-2 min-w-0 max-w-full overflow-hidden">
             <span className="text-xs font-bold text-indigo-300 block">
               📁 Arborescence physique sur votre disque :
             </span>
-            <div className="font-mono text-xs text-slate-300 space-y-1">
+            <div className="font-mono text-xs text-slate-300 space-y-1 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
               <div>projects/</div>
-              <div className="pl-4 text-emerald-400">├── taskflow/ (Dépôt Git principal - main)</div>
+              <div className="pl-4 text-emerald-400 whitespace-normal break-words [overflow-wrap:anywhere]">├── taskflow/ (Dépôt Git principal - main)</div>
               {createdWorktrees.includes('backend') && (
-                <div className="pl-4 text-blue-400">├── taskflow-backend/ (Espace Agent Backend)</div>
+                <div className="pl-4 text-blue-400 whitespace-normal break-words [overflow-wrap:anywhere]">├── taskflow-backend/ (Espace Agent Backend)</div>
               )}
               {createdWorktrees.includes('frontend') && (
-                <div className="pl-4 text-purple-400">└── taskflow-frontend/ (Espace Agent Frontend)</div>
+                <div className="pl-4 text-purple-400 whitespace-normal break-words [overflow-wrap:anywhere]">└── taskflow-frontend/ (Espace Agent Frontend)</div>
               )}
             </div>
           </div>
@@ -232,7 +232,7 @@ ${createdWorktrees.includes('backend') ? '/projects/taskflow-backend     a1b2c3d
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 4
+            Quiz d'évaluation — Chapitre 4
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos connaissances sur la création et la gestion des Worktrees (10 questions)

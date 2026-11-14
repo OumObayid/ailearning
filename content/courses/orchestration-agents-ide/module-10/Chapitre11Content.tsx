@@ -113,7 +113,7 @@ export function Chapitre11Content() {
             Chapitre 10.11
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Développer le frontend avec les agents
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -133,9 +133,7 @@ export function Chapitre11Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="layout" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              11.4. Hiérarchie et responsabilités des composants React
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Hiérarchie et responsabilités des composants React</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -144,42 +142,48 @@ export function Chapitre11Content() {
           </p>
 
           <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
                 <Icon name="layout" className="h-4 w-4 text-primary shrink-0" />
-                <code>src/pages/TasksPage.tsx</code> — Coordinateur de la vue
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">src/pages/TasksPage.tsx</code>
+                <span className="text-slate-300">— Coordinateur de la vue</span>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-                Maintient l&apos;état global de la page (<code>tasks</code>, <code>loading</code>, <code>error</code>, <code>counts</code>), déclenche les appels via <code>taskApi.ts</code> et distribue les props aux composants enfants.
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                Maintient l&apos;état global de la page (<code className="text-emerald-400 bg-slate-950 px-1 rounded">tasks</code>, <code className="text-emerald-400 bg-slate-950 px-1 rounded">loading</code>, <code className="text-emerald-400 bg-slate-950 px-1 rounded">error</code>, <code className="text-emerald-400 bg-slate-950 px-1 rounded">counts</code>), déclenche les appels via <code className="text-emerald-400 bg-slate-950 px-1 rounded">taskApi.ts</code> et distribue les props aux composants enfants.
               </p>
             </div>
 
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
-                <Icon name="code" className="h-4 w-4 text-emerald-500 shrink-0" />
-                <code>src/components/TaskCounters.tsx</code> — Compteurs dynamiques
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+                <Icon name="code" className="h-4 w-4 text-emerald-400 shrink-0" />
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">src/components/TaskCounters.tsx</code>
+                <span className="text-slate-300">— Compteurs dynamiques</span>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-                Affiche les totaux par statut calculés par le serveur. Reçoit directement l&apos;objet <code>&#123; todo, in_progress, done &#125;</code> sans refaire de calculs locaux erratiques.
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                Affiche les totaux par statut calculés par le serveur. Reçoit directement l&apos;objet <code className="text-emerald-400 bg-slate-950 px-1 rounded">&#123; todo, in_progress, done &#125;</code> sans refaire de calculs locaux erratiques.
               </p>
             </div>
 
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
-                <Icon name="code" className="h-4 w-4 text-amber-500 shrink-0" />
-                <code>src/components/TaskForm.tsx</code> — Formulaire de saisie
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+                <Icon name="code" className="h-4 w-4 text-amber-400 shrink-0" />
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">src/components/TaskForm.tsx</code>
+                <span className="text-slate-300">— Formulaire de saisie</span>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                 Gère les inputs de titre et description. Valide que les champs ne sont pas vides avant de soumettre la demande au composant parent.
               </p>
             </div>
 
-            <div className="p-3 rounded-lg border border-border/50 bg-muted/20 flex flex-col gap-1 w-full min-w-0 max-w-full">
-              <span className="font-semibold text-foreground text-xs sm:text-sm flex items-center gap-2">
-                <Icon name="layout" className="h-4 w-4 text-purple-500 shrink-0" />
-                <code>src/components/TaskList.tsx</code> & <code>TaskItem.tsx</code> — Affichage des tâches
+            <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <span className="font-semibold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+                <Icon name="layout" className="h-4 w-4 text-purple-400 shrink-0" />
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">src/components/TaskList.tsx</code>
+                <span className="text-slate-400 font-normal">&amp;</span>
+                <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded text-[11px] sm:text-xs font-mono break-all sm:break-normal [overflow-wrap:anywhere]">TaskItem.tsx</code>
+                <span className="text-slate-300">— Affichage des tâches</span>
               </span>
-              <p className="text-xs whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                 Affiche la liste ou un message d&apos;état vide (<em>&quot;Aucune tâche pour le moment&quot;</em>) et les boutons d&apos;action (changer statut, modifier, supprimer).
               </p>
             </div>
@@ -192,9 +196,7 @@ export function Chapitre11Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="server" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              11.6. Centralisation réseau avec taskApi.ts
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Centralisation réseau avec taskApi.ts</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -202,7 +204,7 @@ export function Chapitre11Content() {
             Au lieu d&apos;éparpiller des appels <code>fetch()</code> dans les composants, toutes les requêtes sont isolées dans un service dédié :
           </p>
 
-          <pre className="p-3 rounded-lg bg-muted/30 font-mono text-xs text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+          <div className="p-3 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`// frontend/src/services/taskApi.ts
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -231,7 +233,7 @@ export async function updateTaskStatus(id: string, status: TaskStatus): Promise<
   if (!res.ok) throw new Error('Échec du changement de statut');
   return res.json();
 }`}
-          </pre>
+          </div>
         </CardContent>
       </Card>
 
@@ -240,9 +242,7 @@ export async function updateTaskStatus(id: string, status: TaskStatus): Promise<
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="layout" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Application React TaskFlow en direct
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Application React TaskFlow en direct</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Testez la création, la modification de statut et observez comment l&apos;interface réagit face à une coupure réseau ou un état de chargement.
@@ -422,9 +422,7 @@ export async function updateTaskStatus(id: string, status: TaskStatus): Promise<
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

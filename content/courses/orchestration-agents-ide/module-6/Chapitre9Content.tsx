@@ -22,7 +22,7 @@ export const Chapitre9Content: React.FC = () => {
             Orchestration & Délégation Opérationnelle
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           TP de fin de module : Décomposer une fonctionnalité logicielle et préparer les prompts des agents
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -137,12 +137,14 @@ export const Chapitre9Content: React.FC = () => {
               {showSolution && (
                 <div className="flex flex-col gap-2 mt-2 w-full min-w-0 max-w-full">
                   <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Extrait du corrigé officiel — Fiche d'Analyse du Besoin :</span>
-                  <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs bg-slate-900 text-slate-100 max-w-full min-w-0">
-                    <pre>{`- Problème : L'utilisateur ne peut pas faire évoluer l'état de traitement d'une tâche.
+                  <div className="p-4 rounded-xl font-mono text-xs bg-slate-900 text-slate-100 max-w-full min-w-0">
+                    <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`- Problème : L'utilisateur ne peut pas faire évoluer l'état de traitement d'une tâche.
 - Besoin : Sélectionner un nouveau statut (todo, in_progress, done), enregistrer en mémoire, actualiser l'UI et les compteurs.
 - Inclus : Contrôle React de sélection, endpoint PATCH backend, validation du statut, gestion des erreurs 400 et 404.
 - Hors périmètre : Pas d'auth, pas de base de données, pas de notification, pas d'historique de statut.
-- Contraintes : TypeScript strict, Express, React, REST, Vitest/Supertest.`}</pre>
+- Contraintes : TypeScript strict, Express, React, REST, Vitest/Supertest.`}
+                    </div>
                   </div>
                 </div>
               )}

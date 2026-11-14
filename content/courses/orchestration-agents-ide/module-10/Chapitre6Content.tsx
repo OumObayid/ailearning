@@ -69,7 +69,7 @@ export function Chapitre6Content() {
             Chapitre 10.6
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Initialiser le dépôt Git et organiser les branches
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -89,9 +89,7 @@ export function Chapitre6Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="folder" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              6.2. Les trois zones fondamentales de Git
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Les trois zones fondamentales de Git</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -138,9 +136,7 @@ export function Chapitre6Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              6.4 à 6.6. Initialisation du dépôt et commit initial
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Initialisation du dépôt et commit initial</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -152,12 +148,12 @@ export function Chapitre6Content() {
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">git init</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`cd taskflow
 git init -b main
 # Ou sur anciennes versions de Git :
 # git init && git branch -M main`}
-            </pre>
+            </div>
           </div>
 
           {/* Étape 2 */}
@@ -168,11 +164,11 @@ git init -b main
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">git config</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# Sans le flag --global pour cibler uniquement le projet TaskFlow
 git config user.name "Chef de Projet TaskFlow"
 git config user.email "pm@taskflow.local"`}
-            </pre>
+            </div>
           </div>
 
           {/* Étape 3 */}
@@ -183,7 +179,7 @@ git config user.email "pm@taskflow.local"`}
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">git status</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# 1. Vérifier qu'aucun node_modules/ ni dist/ n'est présent
 git status --short
 
@@ -198,7 +194,7 @@ git commit -m "Initialisation de la structure TaskFlow"
 
 # 5. Contrôler l'historique
 git log --oneline`}
-            </pre>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -208,9 +204,7 @@ git log --oneline`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              6.7. Convention de nommage des branches par mission
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Convention de nommage des branches par mission</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -244,9 +238,7 @@ git log --oneline`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Terminal Git & Garde-Fou de Gouvernance
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Simulateur interactif : Terminal Git & Garde-Fou de Gouvernance</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Basculez entre les branches d&apos;agents pour inspecter leurs missions et testez les actions sensibles (merge/push) pour observer le contrôle de gouvernance.
@@ -364,9 +356,7 @@ git log --oneline`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">5. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

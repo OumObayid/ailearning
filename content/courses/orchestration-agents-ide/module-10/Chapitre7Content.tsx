@@ -81,7 +81,7 @@ export function Chapitre7Content() {
             Chapitre 10.7
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Créer et organiser les Git Worktrees
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -101,9 +101,7 @@ export function Chapitre7Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="folder" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              7.2. Comprendre les Git Worktrees vs Branches classiques
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Comprendre les Git Worktrees vs Branches classiques</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -140,9 +138,7 @@ export function Chapitre7Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              7.4 & 7.5. Création des Git Worktrees pas à pas
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Création des Git Worktrees pas à pas</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -158,7 +154,7 @@ export function Chapitre7Content() {
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Backend</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# Création du dossier ../taskflow-backend et de sa branche
 git worktree add -b feature/backend-task-api ../taskflow-backend main
 
@@ -166,7 +162,7 @@ git worktree add -b feature/backend-task-api ../taskflow-backend main
 cd ../taskflow-backend/backend
 npm ci
 cd ../../taskflow`}
-            </pre>
+            </div>
           </div>
 
           {/* Frontend */}
@@ -177,7 +173,7 @@ cd ../../taskflow`}
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Frontend</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# Création du dossier ../taskflow-frontend et de sa branche
 git worktree add -b feature/frontend-task-list ../taskflow-frontend main
 
@@ -185,7 +181,7 @@ git worktree add -b feature/frontend-task-list ../taskflow-frontend main
 cd ../taskflow-frontend/frontend
 npm ci
 cd ../../taskflow`}
-            </pre>
+            </div>
           </div>
 
           {/* QA */}
@@ -196,7 +192,7 @@ cd ../../taskflow`}
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">QA</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# Création du dossier ../taskflow-qa et de sa branche
 git worktree add -b test/backend-api ../taskflow-qa main
 
@@ -204,7 +200,7 @@ git worktree add -b test/backend-api ../taskflow-qa main
 cd ../taskflow-qa/backend
 npm ci
 cd ../../taskflow`}
-            </pre>
+            </div>
           </div>
 
           {/* Contrôle */}
@@ -215,13 +211,13 @@ cd ../../taskflow`}
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Maintenance</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# Lister tous les espaces de travail actifs
 git worktree list
 
 # Supprimer un worktree une fois la mission achevée et validée (depuis taskflow/)
 git worktree remove ../taskflow-backend`}
-            </pre>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -231,9 +227,7 @@ git worktree remove ../taskflow-backend`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="server" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Gestionnaire des Git Worktrees d&apos;Équipe
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Gestionnaire des Git Worktrees d&apos;Équipe</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Sélectionnez un worktree pour observer son assignation, son isolation de dépendances, et tester la contrainte Git d&apos;unicité de branche.
@@ -354,9 +348,9 @@ git worktree remove ../taskflow-backend`}
                   <Icon name="shield-check" className="h-4 w-4 shrink-0 text-rose-500" />
                   <span>Contrainte Git respectée</span>
                 </div>
-                <pre className="font-mono text-[11px] p-2 rounded bg-background/80 text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                <div className="font-mono text-[11px] p-2 rounded bg-black border border-slate-800 text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
                   {conflictAlert}
-                </pre>
+                </div>
               </div>
             )}
           </div>
@@ -368,9 +362,7 @@ git worktree remove ../taskflow-backend`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

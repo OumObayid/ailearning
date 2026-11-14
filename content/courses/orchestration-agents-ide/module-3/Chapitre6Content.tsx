@@ -25,7 +25,7 @@ export const Chapitre6Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 6 — Comprendre la fusion des branches (merge)
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -75,9 +75,7 @@ export const Chapitre6Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              6.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Les deux types majeurs de fusion : Fast-Forward vs 3-Way Merge
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -103,7 +101,7 @@ export const Chapitre6Content: React.FC = () => {
               Se produit lorsque la branche de destination (<code>main</code>) n'a reçu <strong>aucun nouveau commit</strong> depuis que la branche de fonctionnalité a été créée. Git déplace simplement le pointeur de <code>main</code> vers le dernier commit de la branche source.
             </p>
             <div className="p-3 bg-slate-900 rounded-lg text-xs font-mono text-slate-300">
-              A (main initial) &rarr; B &rarr; C (feature)<br/>
+              A (main initial) &rarr; B &rarr; C (feature)<br />
               Après merge : A &rarr; B &rarr; C (main & feature pointent ici)
             </div>
           </div>
@@ -121,8 +119,8 @@ export const Chapitre6Content: React.FC = () => {
               Se produit lorsque les deux branches ont divergé (<code>main</code> a avancé avec un commit B pendant que la feature avançait avec un commit C). Git réunit les deux historiques en créant un <strong>commit de merge (M)</strong> qui possède deux ancêtres.
             </p>
             <div className="p-3 bg-slate-900 rounded-lg text-xs font-mono text-slate-300">
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; B (main) &mdash;&mdash;&mdash;&mdash;&mdash;\<br/>
-              A &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; M (Commit de Merge)<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; B (main) &mdash;&mdash;&mdash;&mdash;&mdash;\<br />
+              A &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; M (Commit de Merge)<br />
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; C (feature) &mdash;&mdash;&mdash;&mdash;&mdash;/
             </div>
           </div>
@@ -154,33 +152,29 @@ export const Chapitre6Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setMergeState('idle')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                mergeState === 'idle' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${mergeState === 'idle' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. État initial (Divergence)
             </button>
             <button
               onClick={() => setMergeState('conflict')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                mergeState === 'conflict' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${mergeState === 'conflict' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. Déclenchement du conflit
             </button>
             <button
               onClick={() => setMergeState('resolved')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                mergeState === 'resolved' ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${mergeState === 'resolved' ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. Arbitrage & Choix du code
             </button>
             <button
               onClick={() => setMergeState('merged')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                mergeState === 'merged' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${mergeState === 'merged' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               4. Fusion finalisée (Commit M)
             </button>
@@ -201,10 +195,10 @@ export const Chapitre6Content: React.FC = () => {
                 <div className="text-rose-300">CONFLICT (content): Merge conflict in src/types/task.ts</div>
                 <div className="text-slate-400">Automatic merge failed; fix conflicts and then commit the result.</div>
                 <div className="p-3 bg-slate-900 rounded-lg border border-rose-500/40 text-slate-200 mt-2">
-                  <span className="text-rose-400 font-bold">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (main)</span><br/>
-                  <span>const taskStatus = "pending";</span><br/>
-                  <span className="text-slate-500 font-bold">=======</span><br/>
-                  <span>const taskStatus = "todo";</span><br/>
+                  <span className="text-rose-400 font-bold">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (main)</span><br />
+                  <span>const taskStatus = "pending";</span><br />
+                  <span className="text-slate-500 font-bold">=======</span><br />
+                  <span>const taskStatus = "todo";</span><br />
                   <span className="text-blue-400 font-bold">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/task-status</span>
                 </div>
               </div>
@@ -259,8 +253,8 @@ export const Chapitre6Content: React.FC = () => {
               <div className="space-y-2">
                 <div className="text-emerald-400 font-bold">✓ Fusion validée et enregistrée avec succès !</div>
                 <div className="text-slate-300">
-                  Commit de merge : <code>7f1a92e Merge branch 'feature/task-status' into main</code><br/>
-                  Parents : <code>B (main)</code> & <code>C (feature/task-status)</code><br/>
+                  Commit de merge : <code>7f1a92e Merge branch 'feature/task-status' into main</code><br />
+                  Parents : <code>B (main)</code> & <code>C (feature/task-status)</code><br />
                   Répertoire de travail propre (working tree clean).
                 </div>
               </div>
@@ -288,7 +282,7 @@ export const Chapitre6Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 6
+            Quiz d'évaluation — Chapitre 6
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos réflexes sur la fusion des branches et la résolution des conflits (10 questions)

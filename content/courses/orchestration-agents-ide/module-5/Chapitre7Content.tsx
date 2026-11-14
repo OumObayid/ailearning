@@ -119,7 +119,7 @@ export const Chapitre7Content: React.FC = () => {
             Sécurité, Sandbox & Contrôle d'Accès
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           5.7 — Comprendre les autorisations et les accès
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -137,9 +137,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.1 : Accès, Permission, Autorisation */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="shield-check" className="w-5 h-5 text-primary-600 shrink-0" />
-          7.1 — Distinguer Accès, Permission et Autorisation
-        </h2>
+          <Icon name="shield-check" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer Accès, Permission et Autorisation</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Dans l'orchestration d'agents sous IDE, ces trois termes désignent des niveaux de contrôle complémentaires souvent confondus :
         </p>
@@ -193,9 +191,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.2 : Catégories d'accès */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="folder" className="w-5 h-5 text-indigo-600 shrink-0" />
-          7.2 — Les 5 Grandes Catégories d'Accès
-        </h2>
+          <Icon name="folder" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Les 5 Grandes Catégories d'Accès</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Dans un IDE moderne comme Google Antigravity, les interactions des agents sont classées en cinq familles de ressources :
         </p>
@@ -256,9 +252,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.3 : Allow, Ask, Deny & Priorité */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="adjustments-horizontal" className="w-5 h-5 text-emerald-600 shrink-0" />
-          7.3 — Les 3 Décisions et la Priorité Inviolable
-        </h2>
+          <Icon name="adjustments-horizontal" className="w-5 h-5 text-emerald-600 shrink-0" /> 3. Les 3 Décisions et la Priorité Inviolable</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Google Antigravity évalue chaque requête d'outil via trois états décisionnels :
         </p>
@@ -306,9 +300,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.4 : Profils de permissions Antigravity */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="cog-6-tooth" className="w-5 h-5 text-purple-600 shrink-0" />
-          7.4 — Les 4 Profils de Permissions dans Google Antigravity
-        </h2>
+          <Icon name="cog-6-tooth" className="w-5 h-5 text-purple-600 shrink-0" /> 4. Les 4 Profils de Permissions dans Google Antigravity</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Google Antigravity propose quatre profils globaux prédéfinis pour doser l'autonomie des agents selon le contexte du projet :
         </p>
@@ -359,9 +351,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.5 : Le Terminal Sandbox */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="command-line" className="w-5 h-5 text-blue-600 shrink-0" />
-          7.5 — Le Rôle et les Limites du Terminal Sandbox
-        </h2>
+          <Icon name="command-line" className="w-5 h-5 text-blue-600 shrink-0" /> 5. Le Rôle et les Limites du Terminal Sandbox</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Le Terminal Sandbox d'Antigravity crée une bulle d'exécution pour chaque commande shell lancée par un agent :
         </p>
@@ -478,9 +468,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.8 & 7.9 : Permissions de l'équipe TaskFlow et Opérations Sensibles */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="lock-closed" className="w-5 h-5 text-rose-600 shrink-0" />
-          7.8 & 7.9 — Permissions TaskFlow et Protection des Opérations Sensibles
-        </h2>
+          <Icon name="lock-closed" className="w-5 h-5 text-rose-600 shrink-0" /> 6. Permissions TaskFlow et Protection des Opérations Sensibles</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Voici l'attribution des droits techniques par agent au sein de l'équipe TaskFlow :
         </p>
@@ -570,7 +558,7 @@ export const Chapitre7Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            7.13 — Quiz officiel de validation du Chapitre 7
+            Quiz officiel de validation du Chapitre 7
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Testez votre maîtrise des concepts de permissions, de profils de sécurité et du Terminal Sandbox à travers 10 questions officielles.

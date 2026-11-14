@@ -63,7 +63,7 @@ export const Chapitre2Content: React.FC = () => {
     },
     {
       step: 6,
-      title: "6. Compte Rendu (Reporting)",
+      title: "6. Compte Rendu",
       role: "Restitution au PM",
       icon: "file-text",
       color: "border-slate-400 bg-slate-50/90 text-slate-950",
@@ -92,7 +92,7 @@ export const Chapitre2Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           Chapitre 2 — Comprendre ce qu&apos;est un agent IA
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -121,10 +121,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">1</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.1 & 2.2 — Définition : Qu&apos;est-ce qui différencie un agent d&apos;un simple LLM ?
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 1 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Définition : Qu&apos;est-ce qui différencie un agent d&apos;un simple LLM ?</h2>
         </div>
 
         <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -139,7 +137,7 @@ export const Chapitre2Content: React.FC = () => {
             <Icon name="cpu" className="w-5 h-5 text-indigo-600" />
             <span>Formule conceptuelle de l&apos;Agent IA</span>
           </div>
-          <div className="p-3 bg-white rounded-xl border border-indigo-200 font-mono text-xs sm:text-sm text-indigo-950 text-center font-bold">
+          <div className="p-3 bg-white rounded-xl border border-indigo-200 font-mono text-sm sm:text-sm text-red-950 text-center font-bold">
             Agent IA = Moteur IA (LLM) + Instructions (Rôle) + Contexte (Mémoire) + Outils (Actions) + Orchestration
           </div>
           <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
@@ -153,10 +151,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">2</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.3 — Les 5 éléments nécessaires au fonctionnement d&apos;un agent
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 2 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Les 5 éléments nécessaires au fonctionnement d&apos;un agent</h2>
         </div>
 
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
@@ -272,10 +268,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">3</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.4 — Déroulement d&apos;une mission logicielle étape par étape
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 3 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Déroulement d&apos;une mission logicielle étape par étape</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -284,27 +278,35 @@ export const Chapitre2Content: React.FC = () => {
 
         {/* Simulateur interactif du cycle */}
         <div className="rounded-3xl border-2 border-slate-300 bg-white p-5 sm:p-7 shadow-sm space-y-6">
-          {/* Timeline de sélection */}
-          <div className="flex items-center justify-between gap-1 sm:gap-2 overflow-x-auto pb-2">
+          {/* Timeline de sélection : 2 boutons par ligne en petite largeur, 3 boutons par ligne avec sidebar repliée ou en plein écran */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             {missionCycle.map((item) => (
               <button
                 key={item.step}
                 type="button"
                 onClick={() => setCurrentStep(item.step)}
-                className={`flex-1 min-w-[70px] sm:min-w-[100px] py-2 px-2 rounded-xl text-center border-2 transition cursor-pointer ${
+                className={`py-2.5 sm:py-3 px-2 sm:px-3 rounded-2xl text-center border-2 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[68px] sm:min-h-[74px] ${
                   currentStep === item.step
                     ? 'border-indigo-600 bg-indigo-600 text-white font-bold shadow-sm'
-                    : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-400 font-semibold text-xs'
+                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-400 hover:bg-slate-100 font-semibold'
                 }`}
               >
-                <div className="text-xs opacity-80">Étape {item.step}</div>
-                <div className="text-xs sm:text-sm truncate">{item.title.split('.')[1].trim()}</div>
+                <div
+                  className={`text-[11px] font-bold uppercase tracking-wider mb-0.5 ${
+                    currentStep === item.step ? 'text-indigo-100' : 'text-indigo-600'
+                  }`}
+                >
+                  Étape {item.step}
+                </div>
+                <div className="text-xs sm:text-sm font-bold leading-snug">
+                  {item.step === 6 ? 'Compte Rendu' : item.title.split('.')[1].trim()}
+                </div>
               </button>
             ))}
           </div>
 
           {/* Carte de l'étape active */}
-          <div className={`p-5 sm:p-6 rounded-2xl border-2 ${current.color} space-y-4`}>
+          <div className={`p-5 sm:p-6 rounded-2xl border-2 ${current.color} space-y-4 min-w-0 max-w-full overflow-hidden`}>
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-300/60 pb-3">
               <div className="flex items-center gap-2.5">
                 <Icon name={current.icon} className="w-5 h-5 text-indigo-700" />
@@ -315,39 +317,20 @@ export const Chapitre2Content: React.FC = () => {
               </span>
             </div>
 
-            <p className="text-sm sm:text-base font-semibold leading-relaxed">
+            <p className="text-sm sm:text-base font-semibold leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
               {current.action}
             </p>
 
-            <pre className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs sm:text-sm font-mono text-emerald-400 overflow-x-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              {current.code}
-            </pre>
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] sm:text-xs leading-relaxed font-mono text-emerald-400 whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
+              <code>{current.code}</code>
+            </div>
 
-            <div className="text-xs sm:text-sm font-medium text-slate-700 pt-1">
+            <div className="text-xs sm:text-sm font-medium text-slate-700 pt-1 whitespace-normal break-words [overflow-wrap:anywhere]">
               <strong>À retenir :</strong> {current.detail}
             </div>
           </div>
 
-          {/* Boutons de navigation pas à pas */}
-          <div className="flex items-center justify-between pt-2">
-            <button
-              type="button"
-              disabled={currentStep === 1}
-              onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-              className="px-4 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 cursor-pointer"
-            >
-              ← Étape précédente
-            </button>
-            <span className="text-xs font-bold text-slate-500">Étape {currentStep} sur 6</span>
-            <button
-              type="button"
-              disabled={currentStep === 6}
-              onClick={() => setCurrentStep((prev) => Math.min(6, prev + 1))}
-              className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-700 cursor-pointer"
-            >
-              Étape suivante →
-            </button>
-          </div>
+         
         </div>
       </section>
 
@@ -356,10 +339,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">4</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.5 & 2.6 — Mission vs Action & Les 3 degrés d&apos;autonomie
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 4 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Mission vs Action & Les 3 degrés d&apos;autonomie</h2>
         </div>
 
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
@@ -471,9 +452,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6 pt-4 border-t-2 border-slate-200">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">✓</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.10 — Quiz de compréhension (10 questions)
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Quiz de compréhension (10 questions)</h2>
         </div>
 
         <QuickQuiz

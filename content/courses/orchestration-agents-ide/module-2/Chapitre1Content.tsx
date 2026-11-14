@@ -115,7 +115,7 @@ export const Chapitre1Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           Chapitre 1 — Comprendre le principe d&apos;une équipe d&apos;agents IA
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -144,10 +144,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">1</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.1 & 1.2 — Qu&apos;est-ce qu&apos;une équipe d&apos;agents IA ?
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 1 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Qu&apos;est-ce qu&apos;une équipe d&apos;agents IA ?</h2>
         </div>
 
         <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -252,10 +250,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">2</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.3 — Les 4 avantages majeurs d&apos;une organisation multi-agents
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 2 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Les 4 avantages majeurs d&apos;une organisation multi-agents</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -342,10 +338,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">3</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.4 — Les 7 intervenants clés du projet TaskFlow
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 3 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Les 7 intervenants clés du projet TaskFlow</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -427,10 +421,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">4</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.5 & 1.6 — Déroulement d&apos;une fonctionnalité dans TaskFlow
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 4 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Déroulement d&apos;une fonctionnalité dans TaskFlow</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -535,10 +527,8 @@ export const Chapitre1Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">5</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.7 & 1.8 — Conditions d&apos;efficacité et limites à anticiper
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 5 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Conditions d&apos;efficacité et limites à anticiper</h2>
         </div>
 
         <div className="flex flex-col gap-5 w-full min-w-0 max-w-full">
@@ -698,9 +688,7 @@ export const Chapitre1Content: React.FC = () => {
       <section className="space-y-6 pt-4 border-t-2 border-slate-200">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">✓</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            1.11 — Quiz de validation des connaissances (9 questions)
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Quiz de validation des connaissances (9 questions)</h2>
         </div>
 
         <QuickQuiz

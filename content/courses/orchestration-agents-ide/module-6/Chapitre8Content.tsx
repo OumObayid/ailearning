@@ -61,7 +61,7 @@ export const Chapitre8Content: React.FC = () => {
             Ingénierie de Prompt & Délégation
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.8 — Rédiger un prompt de mission complet
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -79,9 +79,7 @@ export const Chapitre8Content: React.FC = () => {
       {/* Section 8.3 : L'anatomie des 10 blocs d'un prompt parfait */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="bars-3-bottom-left" className="w-5 h-5 text-primary-600 shrink-0" />
-          8.3 — L'Anatomie en 10 Sections d'un Prompt de Mission Idéal
-        </h2>
+          <Icon name="bars-3-bottom-left" className="w-5 h-5 text-primary-600 shrink-0" /> 1. L'Anatomie en 10 Sections d'un Prompt de Mission Idéal</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour ne rien omettre et guider l'agent avec une clarté maximale, structurez vos consignes selon cette architecture standardisée :
         </p>
@@ -234,11 +232,10 @@ export const Chapitre8Content: React.FC = () => {
       {/* Exemple complet TaskFlow : Prompt Backend */}
       <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="document-text" className="w-5 h-5 text-emerald-600 shrink-0" />
-          8.6 — Exemple Complet de Prompt de Mission (Agent Backend)
-        </h2>
-        <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
-          <pre>{`## Prompt de Mission — Agent Backend
+          <Icon name="document-text" className="w-5 h-5 text-emerald-600 shrink-0" /> 2. Exemple Complet de Prompt de Mission (Agent Backend)</h2>
+        <div className="p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
+          <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`## Prompt de Mission — Agent Backend
 
 ### 1. Contexte
 TaskFlow est une application de gestion de tâches développée en Node.js, Express et TypeScript.
@@ -275,7 +272,8 @@ TypeScript strict sans 'any', persistance en mémoire exclusive, pas de dépenda
 - Interdiction formelle de git merge, git rebase ou git push sans accord du PM humain.
 
 ### 9. Compte rendu final attendu
-Indique les fichiers modifiés, la commande exacte exécutée pour lancer les tests, le résultat observé et la liste des critères d'acceptation vérifiés.`}</pre>
+Indique les fichiers modifiés, la commande exacte exécutée pour lancer les tests, le résultat observé et la liste des critères d'acceptation vérifiés.`}
+          </div>
         </div>
       </div>
 
@@ -286,7 +284,7 @@ Indique les fichiers modifiés, la commande exacte exécutée pour lancer les te
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.8
+            Quiz de validation du Chapitre 8
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise de la rédaction des prompts de mission, de la structure des consignes et du compte rendu final.

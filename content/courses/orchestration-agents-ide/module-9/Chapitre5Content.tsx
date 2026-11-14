@@ -69,7 +69,7 @@ export const Chapitre5Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">1 h de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Exécuter les tests après intégration
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -89,7 +89,7 @@ export const Chapitre5Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="shield-check" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.5.1 & 9.5.2 — Les 5 niveaux de tests de la campagne post-intégration</span>
+          <span>1. Les 5 niveaux de tests de la campagne post-intégration</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -133,7 +133,7 @@ export const Chapitre5Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.5.4 & 9.5.5 — Commandes d'exécution et analyse des échecs</span>
+          <span>2. Commandes d'exécution et analyse des échecs</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-1.5">
@@ -162,73 +162,75 @@ export const Chapitre5Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Console d'Exécution & Non-Régression</span>
+          <span>3. Atelier Interactif — Console d'Exécution & Non-Régression</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
             Consultez les résultats de la campagne de tests exécutée sur la version commune de TaskFlow après l'intégration du changement de statut. Filtrez par niveau de test.
           </p>
 
-          <div className="flex flex-wrap gap-1.5 text-xs">
+          <div className="flex flex-wrap gap-2 text-xs">
             <button
               onClick={() => setTestFilter('all')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                testFilter === 'all' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                testFilter === 'all' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Tous les tests (5)
             </button>
             <button
               onClick={() => setTestFilter('unit')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                testFilter === 'unit' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                testFilter === 'unit' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Unitaires (1)
             </button>
             <button
               onClick={() => setTestFilter('integration')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                testFilter === 'integration' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                testFilter === 'integration' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Intégration API (2)
             </button>
             <button
               onClick={() => setTestFilter('regression')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                testFilter === 'regression' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                testFilter === 'regression' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Non-Régression (2)
             </button>
           </div>
 
-          <div className="flex flex-col gap-2.5 text-xs">
+          <div className="flex flex-col gap-2.5 text-xs min-w-0 max-w-full">
             {filteredTests.map((test) => (
-              <div key={test.id} className="p-3.5 rounded-lg border border-border bg-card flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-foreground">{test.id}</span>
-                    <span className="font-semibold text-foreground">{test.name}</span>
+              <div key={test.id} className="p-3.5 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-2 min-w-0 max-w-full">
+                <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2 min-w-0">
+                    <span className="font-mono font-bold text-indigo-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-xs shrink-0">{test.id}</span>
+                    <span className="font-semibold text-white text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{test.name}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 font-mono">
-                    <span className="text-[10px] text-muted-foreground">{test.duration}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
+                  <div className="flex items-center gap-2 font-mono shrink-0">
+                    <span className="text-xs text-slate-400">{test.duration}</span>
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-700/60">
                       {test.status}
                     </span>
                   </div>
                 </div>
 
-                <code className="text-[11px] font-mono text-sky-400 bg-black/30 p-1.5 rounded">{test.command}</code>
-                <p className="text-muted-foreground text-[11px]">{test.details}</p>
+                <div className="p-2.5 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
+                  {test.command}
+                </div>
+                <p className="text-slate-300 text-xs leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">{test.details}</p>
               </div>
             ))}
           </div>
 
-          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs">
+          <div className="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-xs sm:text-sm">
             <span className="font-bold text-emerald-400">Bilan de la campagne post-intégration :</span>
-            <span className="font-mono text-emerald-300 font-semibold">5 passés, 0 échec, 0 régression</span>
+            <span className="font-mono text-emerald-300 font-bold">5 passés, 0 échec, 0 régression</span>
           </div>
         </div>
       </div>
@@ -237,7 +239,7 @@ export const Chapitre5Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.5.12 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 5 : Tests après intégration"

@@ -81,7 +81,7 @@ export const Chapitre2Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           Chapitre 2 — Définir le rôle du Project Manager humain
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -110,10 +110,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">1</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.1 & 2.2 — La fonction pivot du Project Manager humain
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 1 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">La fonction pivot du Project Manager humain</h2>
         </div>
 
         <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -179,10 +177,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">2</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.3 — Les 6 responsabilités fondamentales du PM humain
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 2 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Les 6 responsabilités fondamentales du PM humain</h2>
         </div>
 
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
@@ -301,10 +297,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">3</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.4 à 2.6 — Simulateur : Console d&apos;arbitrage et de garde-fous PM
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 3 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Simulateur : Console d&apos;arbitrage et de garde-fous PM</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -370,10 +364,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">4</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.4 — Tableau comparatif : Décisions PM vs Missions d&apos;agents
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 4 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Tableau comparatif : Décisions PM vs Missions d&apos;agents</h2>
         </div>
 
         <div className="overflow-x-auto w-full min-w-0 max-w-full -mx-1 sm:mx-0">
@@ -446,10 +438,8 @@ export const Chapitre2Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">5</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.8 & 2.9 — Erreurs classiques à éviter et bonnes pratiques de pilotage
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 5 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Erreurs classiques à éviter et bonnes pratiques de pilotage</h2>
         </div>
 
         <div className="flex flex-col gap-5 w-full min-w-0 max-w-full">
@@ -570,9 +560,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6 pt-4 border-t-2 border-slate-200">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">✓</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            2.11 — Quiz de validation des connaissances (9 questions)
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Quiz de validation des connaissances (9 questions)</h2>
         </div>
 
         <QuickQuiz

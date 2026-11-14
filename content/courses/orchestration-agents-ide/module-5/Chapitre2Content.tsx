@@ -39,7 +39,7 @@ export const Chapitre2Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 2 — Comprendre le rôle du fichier AGENTS.md
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -89,9 +89,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              2.3
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Emplacement et mécanisme de découverte d'Antigravity
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -125,7 +123,7 @@ export const Chapitre2Content: React.FC = () => {
           SIMULATEUR INTERACTIF DE TEST DE AGENTS.MD
          ========================================================================= */}
       <section className="space-y-6">
-        <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl">
+        <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl min-w-0 max-w-full overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -154,13 +152,13 @@ export const Chapitre2Content: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleTestPrompt}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors cursor-pointer"
               >
                 Simuler l'Ingestion par Antigravity
               </button>
               <button
                 onClick={() => setAgentsContent(agentsContent + "\n- API_KEY = \"sk-123456789\"")}
-                className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-900/60"
+                className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-900/60 cursor-pointer"
               >
                 + Injecter un secret pour tester l'alerte
               </button>
@@ -168,13 +166,14 @@ export const Chapitre2Content: React.FC = () => {
           </div>
 
           {/* Retour de l'agent */}
-          <div className={`p-4 rounded-xl font-mono text-xs border ${
-            hasSecret ? 'bg-rose-950/60 border-rose-800 text-rose-200' : 'bg-slate-950 border-slate-800 text-emerald-300'
-          }`}>
+          <div className={`p-4 rounded-xl font-mono text-xs border min-w-0 max-w-full ${hasSecret ? 'bg-rose-950/60 border-rose-800 text-rose-200' : 'bg-slate-950 border-slate-800 text-emerald-300'
+            }`}>
             <span className="text-indigo-400 font-bold block mb-1">
               $ Réponse de l'Agent au démarrage de session :
             </span>
-            <pre className="whitespace-pre-wrap">{simulatedResponse}</pre>
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono text-xs sm:text-sm">
+              {simulatedResponse}
+            </div>
           </div>
         </div>
       </section>
@@ -186,7 +185,7 @@ export const Chapitre2Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 2
+            Quiz d'évaluation — Chapitre 2
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos connaissances sur l'utilisation et les limites du fichier AGENTS.md (10 questions)

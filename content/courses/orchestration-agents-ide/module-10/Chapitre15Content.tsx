@@ -48,7 +48,7 @@ export function Chapitre15Content() {
             Chapitre 10.15
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Intégrer progressivement les développements
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -68,9 +68,7 @@ export function Chapitre15Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="layout" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              15.4. Séquencement méthodique : Pourquoi intégrer le Backend en premier ?
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Séquencement méthodique : Pourquoi intégrer le Backend en premier ?</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -117,9 +115,7 @@ export function Chapitre15Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              15.5. Fusion traçable avec git merge --no-ff
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Fusion traçable avec git merge --no-ff</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -127,7 +123,7 @@ export function Chapitre15Content() {
             L&apos;option <code>--no-ff</code> (no fast-forward) force la création explicite d&apos;un commit de fusion. Cela permet d&apos;immortaliser la fin d&apos;une mission d&apos;agent dans le graphe Git :
           </p>
 
-          <pre className="p-3 rounded-lg bg-muted/30 font-mono text-xs text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+          <div className="p-3 rounded-lg bg-black border border-slate-800 font-mono text-xs text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# 1. Se positionner sur la branche principale de référence
 git switch main
 
@@ -136,7 +132,7 @@ git merge --no-ff feature/backend-task-api -m "merge(backend): intégration de l
 
 # 3. Contrôler l'historique
 git log --graph --oneline -5`}
-          </pre>
+          </div>
         </CardContent>
       </Card>
 
@@ -145,9 +141,7 @@ git log --graph --oneline -5`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Pipeline d&apos;Intégration & Arbitrage Git
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Pipeline d&apos;Intégration & Arbitrage Git</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Expérimentez le contrôle d&apos;autorité PM, déclenchez l&apos;intégration progressive et arbitrez un conflit Git simulé.
@@ -256,13 +250,13 @@ git log --graph --oneline -5`}
                 <span>Conflit Git dans <code>taskflow/.env.example</code> (Modification concurrente)</span>
               </div>
 
-              <pre className="p-2.5 rounded bg-background/80 font-mono text-[11px] text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+              <div className="p-2.5 rounded bg-black border border-slate-800 font-mono text-[11px] text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`<<<<<<< HEAD (main - Backend)
 PORT=3001
 =======
 VITE_API_URL=http://localhost:3001
 >>>>>>> feature/frontend-task-list`}
-              </pre>
+              </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs text-muted-foreground">
@@ -295,9 +289,7 @@ VITE_API_URL=http://localhost:3001
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

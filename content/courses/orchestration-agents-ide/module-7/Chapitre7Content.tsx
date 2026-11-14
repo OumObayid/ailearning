@@ -54,7 +54,7 @@ export const Chapitre7Content: React.FC = () => {
             Résolution d'Incidents & Arbitrage
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.7 — Identifier et traiter les blocages
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -72,9 +72,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.1.1 : Difficulté vs Blocage vs Échec */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="exclamation-circle" className="w-5 h-5 text-primary-600 shrink-0" />
-          7.1 — Distinguer Difficulté, Blocage et Échec
-        </h2>
+          <Icon name="exclamation-circle" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer Difficulté, Blocage et Échec</h2>
         {/* Configuration 1 pure : 1 seule carte par rangée */}
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
@@ -166,7 +164,7 @@ export const Chapitre7Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.7
+            Quiz de validation du Chapitre 7
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise du diagnostic des blocages, de l'usage des commandes Antigravity et des règles d'escalade.

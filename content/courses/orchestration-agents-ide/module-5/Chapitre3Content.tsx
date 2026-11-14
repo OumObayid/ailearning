@@ -50,7 +50,7 @@ Je rédige le fichier avec l'extension .ts et des interfaces explicites.`,
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 3 — Définir les instructions générales du projet
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -100,9 +100,7 @@ Je rédige le fichier avec l'extension .ts et des interfaces explicites.`,
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              3.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             La stack technique et les principes architecturaux de TaskFlow
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -153,13 +151,13 @@ Je rédige le fichier avec l'extension .ts et des interfaces explicites.`,
       {/* =========================================================================
           SIMULATEUR DE RÉSISTANCE D'UN AGENT BIEN CADRÉ
          ========================================================================= */}
-      <section className="space-y-6">
-        <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl">
+      <section className="space-y-6 min-w-0 max-w-full">
+        <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-5 sm:p-8 shadow-xl min-w-0 max-w-full overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
               <h3 className="text-lg font-bold text-indigo-100">
-                Simulateur — Épreuve de Résistance d'un Agent Cadré
+                Simulateur — Épreuve de Résistance d&apos;un Agent Cadré
               </h3>
             </div>
             <span className="text-xs px-3 py-1 rounded-full bg-indigo-900 text-indigo-300 border border-indigo-700">
@@ -167,48 +165,49 @@ Je rédige le fichier avec l'extension .ts et des interfaces explicites.`,
             </span>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-300 mb-6">
-            Soumettez une requête "piège" à un agent configuré avec le fichier <code>AGENTS.md</code> de TaskFlow pour vérifier sa capacité à refuser fermement toute dérive :
+          <p className="text-xs sm:text-sm text-slate-300 mb-6 whitespace-normal break-words [overflow-wrap:anywhere]">
+            Soumettez une requête &ldquo;piège&rdquo; à un agent configuré avec le fichier <code>AGENTS.md</code> de TaskFlow pour vérifier sa capacité à refuser fermement toute dérive :
           </p>
 
           {/* Boutons de test */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-6 min-w-0 max-w-full">
             <button
               onClick={() => setPromptAttempt('install_db')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                promptAttempt === 'install_db' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${promptAttempt === 'install_db' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`}
             >
               Scénario 1 : Forcer une base SQL
             </button>
             <button
               onClick={() => setPromptAttempt('push_main')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                promptAttempt === 'push_main' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${promptAttempt === 'push_main' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`}
             >
               Scénario 2 : Ordonner un push sauvage sur main
             </button>
             <button
               onClick={() => setPromptAttempt('bypass_ts')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                promptAttempt === 'bypass_ts' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${promptAttempt === 'bypass_ts' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`}
             >
               Scénario 3 : Coder en JavaScript pur (.js)
             </button>
           </div>
 
-          {/* Rendu console */}
-          <div className="rounded-2xl border border-slate-700 bg-slate-950 p-5 font-mono text-xs text-slate-300 space-y-4">
-            <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-              <span className="text-slate-400 font-bold block mb-1">Prompt soumis à l'agent :</span>
-              <span className="text-white">"{currScenario.userPrompt}"</span>
+          {/* Rendu console anti-débordement */}
+          <div className="rounded-2xl border border-slate-700 bg-slate-950 p-4 sm:p-5 font-mono text-xs text-slate-300 space-y-4 min-w-0 max-w-full overflow-hidden">
+            <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 min-w-0 max-w-full overflow-hidden">
+              <span className="text-slate-400 font-bold block mb-1">Prompt soumis à l&apos;agent :</span>
+              <p className="text-white whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
+                &ldquo;{currScenario.userPrompt}&rdquo;
+              </p>
             </div>
 
-            <div className="p-3 bg-slate-900 rounded-lg border border-indigo-800/60">
-              <span className="text-indigo-400 font-bold block mb-1">Réponse de l'agent cadré par AGENTS.md :</span>
-              <pre className="whitespace-pre-wrap text-emerald-300">{currScenario.agentReply}</pre>
+            <div className="p-3.5 bg-slate-900 rounded-lg border border-indigo-800/60 min-w-0 max-w-full overflow-hidden">
+              <span className="text-indigo-400 font-bold block mb-1.5">Réponse de l&apos;agent cadré par AGENTS.md :</span>
+              <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] font-mono text-emerald-300 text-xs sm:text-[13px] leading-relaxed min-w-0 max-w-full">
+                {currScenario.agentReply}
+              </div>
             </div>
 
             <div className="text-right text-xs font-bold text-emerald-400">
@@ -225,7 +224,7 @@ Je rédige le fichier avec l'extension .ts et des interfaces explicites.`,
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 3
+            Quiz d'évaluation — Chapitre 3
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Validez vos compétences sur la rédaction des instructions générales (10 questions)

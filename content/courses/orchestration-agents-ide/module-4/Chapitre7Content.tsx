@@ -24,7 +24,7 @@ export const Chapitre7Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 7 — Gérer les modifications et les conflits entre espaces de travail
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -74,9 +74,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Conflit textuel Git vs Incompatibilité fonctionnelle
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -143,25 +141,22 @@ export const Chapitre7Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setResolutionStep('detected')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                resolutionStep === 'detected' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${resolutionStep === 'detected' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. Conflit détecté lors du merge
             </button>
             <button
               onClick={() => setResolutionStep('arbitrated')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                resolutionStep === 'arbitrated' ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${resolutionStep === 'arbitrated' ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. Arbitrage fonctionnel (PM)
             </button>
             <button
               onClick={() => setResolutionStep('resolved')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                resolutionStep === 'resolved' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${resolutionStep === 'resolved' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. Fichier résolu & Commit scellé
             </button>
@@ -173,10 +168,10 @@ export const Chapitre7Content: React.FC = () => {
               <div className="space-y-3">
                 <div className="text-rose-400 font-bold">CONFLICT (content): Merge conflict in taskflow-contract.md</div>
                 <div className="p-3 bg-slate-900 rounded-lg border border-rose-500/40 text-slate-200">
-                  <span className="text-rose-400 font-bold">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (Backend)</span><br/>
-                  <span>Statuts autorisés : todo, in_progress, done.</span><br/>
-                  <span className="text-slate-500 font-bold">=======</span><br/>
-                  <span>Statuts autorisés : À faire, En cours, Terminée.</span><br/>
+                  <span className="text-rose-400 font-bold">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (Backend)</span><br />
+                  <span>Statuts autorisés : todo, in_progress, done.</span><br />
+                  <span className="text-slate-500 font-bold">=======</span><br />
+                  <span>Statuts autorisés : À faire, En cours, Terminée.</span><br />
                   <span className="text-blue-400 font-bold">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/frontend-ui</span>
                 </div>
                 <p className="text-xs text-slate-400 font-sans">
@@ -194,11 +189,11 @@ export const Chapitre7Content: React.FC = () => {
                   Les deux propositions sont justifiées ! Il faut dissocier les <strong>valeurs techniques</strong> (utilisées par l'API et la base) des <strong>libellés d'affichage</strong> (affichés aux utilisateurs dans l'interface React).
                 </p>
                 <div className="p-3 bg-slate-900 rounded-lg font-mono text-xs text-emerald-300 border border-indigo-700">
-                  # taskflow-contract.md (Version arbitrée)<br/>
-                  Valeurs techniques : todo | in_progress | done<br/>
-                  Libellés UI :<br/>
-                  - todo : "À faire"<br/>
-                  - in_progress : "En cours"<br/>
+                  # taskflow-contract.md (Version arbitrée)<br />
+                  Valeurs techniques : todo | in_progress | done<br />
+                  Libellés UI :<br />
+                  - todo : "À faire"<br />
+                  - in_progress : "En cours"<br />
                   - done : "Terminée"
                 </div>
               </div>
@@ -208,7 +203,7 @@ export const Chapitre7Content: React.FC = () => {
               <div className="space-y-2">
                 <div className="text-emerald-400 font-bold">$ git add taskflow-contract.md && git merge --continue</div>
                 <div className="text-slate-300">
-                  ✓ Conflit résolu sans perte d'intention métier !<br/>
+                  ✓ Conflit résolu sans perte d'intention métier !<br />
                   Commit de fusion enregistré sur <code>main</code> avec la bénédiction formelle du PM humain.
                 </div>
               </div>
@@ -224,7 +219,7 @@ export const Chapitre7Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 7
+            Quiz d'évaluation — Chapitre 7
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos réflexes sur la gestion des conflits entre Worktrees (10 questions)

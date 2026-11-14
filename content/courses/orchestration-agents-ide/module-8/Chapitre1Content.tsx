@@ -86,7 +86,7 @@ export function updateStatus(req: Request, res: Response) {
             Contrôle Qualité & Prévention des Risques
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           8.1 — Comprendre pourquoi le travail des agents doit être vérifié
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -104,9 +104,7 @@ export function updateStatus(req: Request, res: Response) {
       {/* Section 1.2 : Les 5 Risques Majeurs du Code Produit par Agents */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="exclamation-triangle" className="w-5 h-5 text-amber-600 shrink-0" />
-          1.2 — Les 5 Risques Majeurs du Travail Non Vérifié des Agents
-        </h2>
+          <Icon name="exclamation-triangle" className="w-5 h-5 text-amber-600 shrink-0" /> 1. Les 5 Risques Majeurs du Travail Non Vérifié des Agents</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Même avec des prompts détaillés, le travail des agents peut être affecté par cinq défaillances typiques :
         </p>
@@ -153,9 +151,7 @@ export function updateStatus(req: Request, res: Response) {
       {/* Section 1.4 : Réalisation vs Vérification vs Validation */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="check-badge" className="w-5 h-5 text-indigo-600 shrink-0" />
-          1.4 — Distinguer Réalisation, Vérification et Validation
-        </h2>
+          <Icon name="check-badge" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Distinguer Réalisation, Vérification et Validation</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-sm text-blue-700 dark:text-blue-400">1. La Réalisation (L'agent produit le travail)</span>
@@ -212,11 +208,13 @@ export function updateStatus(req: Request, res: Response) {
 
         {/* Diagnostic du cas */}
         <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-3 w-full min-w-0 max-w-full">
-          <div className="overflow-x-auto font-mono text-xs text-slate-100 bg-slate-900 p-3 rounded-lg max-w-full min-w-0">
-            <pre>{currentCase.codeSnippet}</pre>
+          <div className="font-mono text-xs text-slate-100 bg-slate-900 p-3 rounded-lg max-w-full min-w-0">
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+              {currentCase.codeSnippet}
+            </div>
           </div>
 
-          <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-normal break-words [overflow-wrap:anywhere]">
             {currentCase.diagnostic}
           </div>
 
@@ -224,7 +222,7 @@ export function updateStatus(req: Request, res: Response) {
             {currentCase.analysis}
           </p>
 
-          <div className="p-3 rounded-lg bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/40 text-xs sm:text-sm text-indigo-900 dark:text-indigo-200">
+          <div className="p-3 rounded-lg bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/40 text-xs sm:text-sm text-indigo-900 dark:text-indigo-200 whitespace-normal break-words [overflow-wrap:anywhere]">
             <strong>Verdict qualité :</strong> {currentCase.verdict}
           </div>
         </div>
@@ -237,7 +235,7 @@ export function updateStatus(req: Request, res: Response) {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 8.1
+            Quiz de validation du Chapitre 1
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Testez votre compréhension de la nécessité du contrôle qualité, des régressions et de la séparation réalisation/vérification/validation.

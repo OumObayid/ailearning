@@ -100,7 +100,7 @@ export const Chapitre7Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 7 — Définir les règles de coordination et de validation
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -150,9 +150,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.2
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             La coordination d'une équipe multi-agents
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -215,9 +213,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.3
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Les règles de lancement d'une mission
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -289,9 +285,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.5
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 3 </span>
             Le cycle de vie d'une mission en 7 statuts
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -327,20 +321,18 @@ export const Chapitre7Content: React.FC = () => {
               <button
                 key={stage.id}
                 onClick={() => setActiveStageIndex(idx)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left flex items-center gap-2 ${
-                  activeStageIndex === idx
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left flex items-center gap-2 ${activeStageIndex === idx
                     ? 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900 font-bold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white'
-                }`}
+                  }`}
               >
-                <span className={`w-2 h-2 rounded-full ${
-                  stage.id === 'blocked' ? 'bg-rose-400' :
-                  stage.id === 'accepted' ? 'bg-emerald-400' :
-                  stage.id === 'review' ? 'bg-purple-400' :
-                  stage.id === 'inprogress' ? 'bg-blue-400' :
-                  stage.id === 'waiting' ? 'bg-amber-400' :
-                  'bg-slate-400'
-                }`} />
+                <span className={`w-2 h-2 rounded-full ${stage.id === 'blocked' ? 'bg-rose-400' :
+                    stage.id === 'accepted' ? 'bg-emerald-400' :
+                      stage.id === 'review' ? 'bg-purple-400' :
+                        stage.id === 'inprogress' ? 'bg-blue-400' :
+                          stage.id === 'waiting' ? 'bg-amber-400' :
+                            'bg-slate-400'
+                  }`} />
                 {stage.status.split(' ')[1]}
               </button>
             ))}
@@ -389,26 +381,7 @@ export const Chapitre7Content: React.FC = () => {
               </div>
             </div>
 
-            {/* Navigation rapide dans le stepper */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-700/80">
-              <button
-                disabled={activeStageIndex === 0}
-                onClick={() => setActiveStageIndex(prev => Math.max(0, prev - 1))}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
-              >
-                ← Statut précédent
-              </button>
-              <span className="text-xs text-slate-400">
-                Étape {activeStageIndex + 1} / {workflowStages.length}
-              </span>
-              <button
-                disabled={activeStageIndex === workflowStages.length - 1}
-                onClick={() => setActiveStageIndex(prev => Math.min(workflowStages.length - 1, prev + 1))}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
-              >
-                Statut suivant →
-              </button>
-            </div>
+
           </div>
         </div>
 
@@ -431,9 +404,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.7
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 4 </span>
             Le processus de validation en 4 niveaux
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -560,9 +531,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.12
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 5 </span>
             Exemple pas-à-pas complet : Suppression d'une tâche dans TaskFlow
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -673,9 +642,7 @@ export const Chapitre7Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              7.14
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 6 </span>
             Synthèse des règles d'or de coordination
           </h2>
         </div>
@@ -717,7 +684,7 @@ export const Chapitre7Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 7
+            Quiz d'évaluation — Chapitre 7
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez votre maîtrise des règles de coordination et de validation (12 questions)

@@ -66,7 +66,7 @@ export const Chapitre1Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">45 min de lecture & cadrage</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Présenter le projet TaskFlow et définir son périmètre
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -86,7 +86,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>10.1.1 à 10.1.3 — Présentation et les 6 fonctionnalités clés</span>
+          <span>1. Présentation et les 6 fonctionnalités clés</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -112,7 +112,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>10.1.4 & 10.1.5 — Stack technique et fonctionnalités exclues</span>
+          <span>2. Stack technique et fonctionnalités exclues</span>
         </h2>
         <div className="grid grid-cols-1 gap-3 text-xs">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-2">
@@ -139,7 +139,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Explorateur des Spécifications Initiales</span>
+          <span>3. Atelier Interactif — Explorateur des Spécifications Initiales</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">

@@ -21,7 +21,7 @@ export const Chapitre8Content: React.FC = () => {
             Auditabilité, Artifacts & Recette
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.8 — Organiser les rapports et les livrables des agents
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -39,9 +39,7 @@ export const Chapitre8Content: React.FC = () => {
       {/* Section 8.1 : Rapport vs Livrable */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="document-text" className="w-5 h-5 text-primary-600 shrink-0" />
-          8.1 — Distinguer le Rapport du Livrable Concret
-        </h2>
+          <Icon name="document-text" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer le Rapport du Livrable Concret</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-sm text-blue-700 dark:text-blue-400">Le Rapport : L'explication et la traçabilité</span>
@@ -61,9 +59,7 @@ export const Chapitre8Content: React.FC = () => {
       {/* Section 8.4 : Les Artifacts d'Antigravity */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="cube" className="w-5 h-5 text-indigo-600 shrink-0" />
-          8.4 — Les 4 Types d'Artifacts Structurés dans Google Antigravity
-        </h2>
+          <Icon name="cube" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Les 4 Types d'Artifacts Structurés dans Google Antigravity</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-xs text-slate-900 dark:text-slate-100">1. Implementation Plan</span>
@@ -125,12 +121,13 @@ export const Chapitre8Content: React.FC = () => {
         {/* Diagnostic du rapport */}
         <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-3 w-full min-w-0 max-w-full">
           {selectedReportType === 'fact_based' ? (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 min-w-0 max-w-full">
               <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
                 Exemple de compte rendu factuel certifié :
               </span>
-              <div className="overflow-x-auto font-mono text-xs text-slate-100 bg-slate-900 p-3 rounded-lg">
-                <pre>{`MISSION : M2 - Changement de statut Backend
+              <div className="font-mono text-xs text-slate-100 bg-slate-900 p-3 rounded-lg min-w-0 max-w-full">
+                <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`MISSION : M2 - Changement de statut Backend
 LIVRABLES :
 - backend/src/routes/taskRoutes.ts (ligne 45: router.patch('/:id/status'))
 - backend/tests/status.test.ts
@@ -140,21 +137,24 @@ $ npm test backend/tests/status.test.ts
 ✓ should return 400 for invalid status (8ms)
 ✓ should return 404 for unknown task (6ms)
 Tests: 3 passed, 3 total | Exit code: 0
-POINTS RESTANTS : Attente de recette intégration par le QA.`}</pre>
+POINTS RESTANTS : Attente de recette intégration par le QA.`}
+                </div>
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
+              <p className="text-xs text-slate-600 dark:text-slate-400 whitespace-normal break-words [overflow-wrap:anywhere]">
                 Ce rapport mentionne les fichiers exacts, la commande exécutée et la sortie standard. Il permet un contrôle immédiat.
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 min-w-0 max-w-full">
               <span className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wide">
                 Exemple de compte rendu irrecevable :
               </span>
-              <div className="overflow-x-auto font-mono text-xs text-slate-800 dark:text-slate-200 bg-rose-50 dark:bg-rose-950/30 p-3 rounded-lg border border-rose-200 dark:border-rose-800/40">
-                <pre>{`« C'est bon, j'ai tout terminé ! La route est prête et tous les tests passent sans problème. Tu peux merger sur main ! »`}</pre>
+              <div className="font-mono text-xs text-slate-800 dark:text-slate-200 bg-rose-50 dark:bg-rose-950/30 p-3 rounded-lg border border-rose-200 dark:border-rose-800/40 min-w-0 max-w-full">
+                <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`« C'est bon, j'ai tout terminé ! La route est prête et tous les tests passent sans problème. Tu peux merger sur main ! »`}
+                </div>
               </div>
-              <p className="text-xs text-rose-700 dark:text-rose-300">
+              <p className="text-xs text-rose-700 dark:text-rose-300 whitespace-normal break-words [overflow-wrap:anywhere]">
                 Aucun fichier cité, aucune preuve de test, invitation au merge non autorisée : rejet immédiat à l'état « À vérifier ».
               </p>
             </div>
@@ -169,7 +169,7 @@ POINTS RESTANTS : Attente de recette intégration par le QA.`}</pre>
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.8
+            Quiz de validation du Chapitre 8
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Testez vos connaissances sur la standardisation des livrables, l'usage des Artifacts et le contrôle d'audit.

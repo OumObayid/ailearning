@@ -67,7 +67,7 @@ export const Chapitre3Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           Chapitre 3 — Distinguer assistant IA, agent IA et sous-agent
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -96,52 +96,76 @@ export const Chapitre3Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">1</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            3.1 à 3.4 — Les trois statuts fonctionnels dans l&apos;IDE
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 1 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Les trois statuts fonctionnels dans l&apos;IDE</h2>
         </div>
 
         <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Dans la documentation et les outils d&apos;IA, les termes « assistant », « agent » et « sous-agent » sont souvent employés de façon confuse. Pourtant, sur le plan organisationnel, ils répondent à des besoins diamétralement différents.
         </p>
 
-        {/* Sélecteur interactif des rôles */}
-        <div className="flex flex-col gap-3 w-full min-w-0 max-w-full pt-2">
-          {(['assistant', 'agent', 'subagent'] as const).map((r) => {
-            const isSel = selectedRole === r;
-            const data = rolesData[r];
-            return (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setSelectedRole(r)}
-                className={`p-4 rounded-2xl border-2 text-left transition cursor-pointer flex flex-col justify-between w-full min-w-0 max-w-full ${
-                  isSel
-                    ? 'border-indigo-600 bg-indigo-600 text-white shadow-md'
-                    : 'border-slate-200 bg-white hover:border-slate-400 text-slate-800'
-                }`}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Icon name={data.icon} className={`w-5 h-5 ${isSel ? 'text-white' : 'text-indigo-600'}`} />
-                    <span className={`text-[11px] font-black uppercase px-2 py-0.5 rounded ${isSel ? 'bg-indigo-700 text-indigo-100' : 'bg-slate-100 text-slate-600'}`}>
+        {/* Sélecteur interactif des rôles : 1 bouton sur ligne (petite largeur), 2 boutons sur ligne (sidebar repliée), 3 boutons sur ligne (écran plein) */}
+        <div className="@container w-full min-w-0 max-w-full pt-2">
+          <div className="grid grid-cols-1 @[480px]:grid-cols-2 @[760px]:grid-cols-3 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-3 items-stretch">
+            {(['assistant', 'agent', 'subagent'] as const).map((r) => {
+              const isSel = selectedRole === r;
+              const data = rolesData[r];
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setSelectedRole(r)}
+                  className={`group p-3 sm:p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between h-full w-full min-w-0 ${
+                    isSel
+                      ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-300'
+                      : 'border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50 text-slate-800 shadow-2xs'
+                  }`}
+                >
+                  {/* En-tête : Icône et Badge alignés */}
+                  <div className="flex items-center justify-between gap-2 w-full">
+                    <div
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                        isSel
+                          ? 'bg-indigo-700/90 text-white'
+                          : 'bg-indigo-50 text-indigo-700 border border-indigo-200/60'
+                      }`}
+                    >
+                      <Icon name={data.icon} className="w-3.5 h-3.5" />
+                    </div>
+                    <span
+                      className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border whitespace-nowrap shrink-0 ${
+                        isSel
+                          ? 'bg-indigo-700 border-indigo-500 text-indigo-100'
+                          : 'bg-slate-100 border-slate-200 text-slate-600'
+                      }`}
+                    >
                       {data.badge}
                     </span>
                   </div>
-                  <div className="font-black text-sm sm:text-base leading-tight">{data.title.split('(')[0].trim()}</div>
-                </div>
-                <div className={`text-xs mt-3 font-semibold ${isSel ? 'text-indigo-200' : 'text-slate-500'}`}>
-                  Cliquez pour examiner
-                </div>
-              </button>
-            );
-          })}
+
+                  {/* Titre du rôle & Flèche indicatrice */}
+                  <div className="pt-2 w-full flex items-center justify-between gap-2">
+                    <div className="font-black text-sm sm:text-base leading-tight tracking-tight">
+                      {data.title.split('(')[0].trim()}
+                    </div>
+                    <span
+                      className={`text-sm sm:text-base font-black transition-transform group-hover:translate-x-1 shrink-0 ${
+                        isSel ? 'text-white' : 'text-indigo-600'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      →
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Fiche détaillée du rôle sélectionné */}
-        <div className={`p-5 sm:p-6 rounded-2xl border-2 ${active.color} space-y-4 w-full min-w-0 max-w-full`}>
-          <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-slate-300/60">
+        <div className={`p-5 sm:p-6 rounded-2xl border-2 ${active.color} space-y-4 w-full min-w-0 max-w-full overflow-hidden`}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-300/60 min-w-0 max-w-full">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="p-2 rounded-xl bg-white/80 shadow-xs text-indigo-700 shrink-0">
                 <Icon name={active.icon} className="w-5 h-5" />
@@ -150,9 +174,10 @@ export const Chapitre3Content: React.FC = () => {
                 {active.title}
               </h3>
             </div>
-            <span className="text-xs font-bold text-slate-700 bg-white/90 px-3 py-1 rounded-full border border-slate-300 shrink-0">
-              Interlocuteur direct : {active.target}
-            </span>
+            <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-bold text-slate-700 bg-white/90 px-3 py-1.5 rounded-xl border border-slate-300 whitespace-normal break-words [overflow-wrap:anywhere] max-w-full">
+              <span className="text-slate-500 font-semibold shrink-0">Interlocuteur direct :</span>
+              <span className="text-slate-900 font-bold whitespace-normal break-words [overflow-wrap:anywhere]">{active.target}</span>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3 w-full min-w-0 max-w-full text-xs sm:text-sm">
@@ -184,10 +209,8 @@ export const Chapitre3Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">2</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            3.5 & 3.6 — Comment fonctionne la délégation par sous-agents ?
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 2 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Comment fonctionne la délégation par sous-agents ?</h2>
         </div>
 
         <p className="text-base text-slate-700 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -254,10 +277,8 @@ export const Chapitre3Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">3</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            3.8 — Matrice de décision : Quel intervenant mobiliser ?
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 3 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Matrice de décision : Quel intervenant mobiliser ?</h2>
         </div>
 
         <div className="overflow-x-auto w-full min-w-0 max-w-full -mx-1 sm:mx-0">
@@ -314,9 +335,7 @@ export const Chapitre3Content: React.FC = () => {
       <section className="space-y-6 pt-4 border-t-2 border-slate-200">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">✓</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            3.10 — Quiz de compréhension (8 questions)
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Quiz de compréhension (8 questions)</h2>
         </div>
 
         <QuickQuiz

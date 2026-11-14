@@ -31,7 +31,7 @@ export function Chapitre5Content() {
             Chapitre 10.5
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Installer et configurer les dépendances de TaskFlow
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -51,9 +51,7 @@ export function Chapitre5Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="folder" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              5.2. Dépendances de Production vs Dépendances de Développement
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Dépendances de Production vs Dépendances de Développement</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -90,9 +88,7 @@ export function Chapitre5Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              5.3 & 5.4. Commandes d&apos;installation Frontend et Backend
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Commandes d&apos;installation Frontend et Backend</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -104,12 +100,12 @@ export function Chapitre5Content() {
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">React / Vite</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`cd taskflow/frontend
 npm install
 npm install -D vitest
 npm pkg set "scripts.test=vitest run"`}
-            </pre>
+            </div>
           </div>
 
           {/* Backend */}
@@ -120,7 +116,7 @@ npm pkg set "scripts.test=vitest run"`}
               </span>
               <Badge variant="secondary" className="text-xs shrink-0">Express / TypeScript</Badge>
             </div>
-            <pre className="p-2.5 rounded bg-muted/40 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+            <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`cd taskflow/backend
 # 1. Dépendance de production
 npm install express
@@ -137,7 +133,7 @@ npm pkg set "scripts.dev=tsx watch src/server.ts"
 npm pkg set "scripts.build=tsc -p tsconfig.json"
 npm pkg set "scripts.start=node dist/server.js"
 npm pkg set "scripts.test=vitest run"`}
-            </pre>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -147,9 +143,7 @@ npm pkg set "scripts.test=vitest run"`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="code" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Fichiers de Configuration & Pipeline Build
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Fichiers de Configuration & Pipeline Build</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Explorez les fichiers cruciaux de configuration et simulez la compilation TypeScript pour observer la transformation de <code>src/</code> vers <code>dist/</code>.
@@ -200,7 +194,7 @@ npm pkg set "scripts.test=vitest run"`}
                   <span className="font-semibold text-xs text-foreground font-mono">backend/tsconfig.json</span>
                   <Badge variant="outline" className="text-xs">NodeNext ES2022</Badge>
                 </div>
-                <pre className="p-2.5 rounded bg-muted/30 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`{
   "compilerOptions": {
     "target": "ES2022",
@@ -215,7 +209,7 @@ npm pkg set "scripts.test=vitest run"`}
   },
   "include": ["src"]
 }`}
-                </pre>
+                </div>
                 <div className="text-xs text-muted-foreground flex flex-col gap-1 mt-1">
                   <p><strong>NodeNext :</strong> Les imports TypeScript relatifs doivent comporter l&apos;extension <code>.js</code> (ex: <code>import &#123; app &#125; from &quot;./app.js&quot;;</code>) même si le fichier source est <code>app.ts</code>.</p>
                   <p><strong>outDir : &quot;dist&quot; :</strong> Les fichiers JavaScript compilés sont isolés dans <code>dist/</code> sans polluer le dossier des sources.</p>
@@ -229,7 +223,7 @@ npm pkg set "scripts.test=vitest run"`}
                   <span className="font-semibold text-xs text-foreground font-mono">backend/package.json</span>
                   <Badge variant="outline" className="text-xs">type: module</Badge>
                 </div>
-                <pre className="p-2.5 rounded bg-muted/30 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`{
   "name": "taskflow-backend",
   "version": "1.0.0",
@@ -253,7 +247,7 @@ npm pkg set "scripts.test=vitest run"`}
     "vitest": "^2.0.0"
   }
 }`}
-                </pre>
+                </div>
               </div>
             )}
 
@@ -263,7 +257,7 @@ npm pkg set "scripts.test=vitest run"`}
                   <span className="font-semibold text-xs text-foreground font-mono">frontend/package.json</span>
                   <Badge variant="outline" className="text-xs">Vite React TS</Badge>
                 </div>
-                <pre className="p-2.5 rounded bg-muted/30 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`{
   "name": "taskflow-frontend",
   "private": true,
@@ -288,7 +282,7 @@ npm pkg set "scripts.test=vitest run"`}
     "vitest": "^2.0.0"
   }
 }`}
-                </pre>
+                </div>
               </div>
             )}
 
@@ -298,7 +292,7 @@ npm pkg set "scripts.test=vitest run"`}
                   <span className="font-semibold text-xs text-foreground font-mono">taskflow/.gitignore</span>
                   <Badge variant="outline" className="text-xs">Sécurité & Propreté</Badge>
                 </div>
-                <pre className="p-2.5 rounded bg-muted/30 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                <div className="p-2.5 rounded bg-black border border-slate-800 text-xs font-mono text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`# Dépendances (à ne jamais versionner)
 node_modules/
 
@@ -314,7 +308,7 @@ dist/
 *.log
 .DS_Store
 Thumbs.db`}
-                </pre>
+                </div>
               </div>
             )}
           </div>
@@ -353,7 +347,7 @@ Thumbs.db`}
                   <Icon name="check-circle" className="h-4 w-4 shrink-0 text-emerald-500" />
                   <span>Compilation réussie avec succès (0 erreurs TypeScript) !</span>
                 </div>
-                <div className="font-mono text-[11px] p-2 rounded bg-background/80 text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                <div className="font-mono text-[11px] p-2 rounded bg-black border border-slate-800 text-white text-foreground whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
 {`> taskflow-backend@1.0.0 build
 > tsc -p tsconfig.json
 
@@ -375,9 +369,7 @@ Fichiers émis dans backend/dist/`}
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

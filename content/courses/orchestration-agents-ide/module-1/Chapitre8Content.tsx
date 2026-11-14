@@ -104,7 +104,7 @@ export const Chapitre8Content: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-[24px] leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl leading-tight font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
           Chapitre 8 — TP Pratique : Analyser un environnement multi-agents et concevoir la charte de collaboration
         </h1>
         <p className="text-base sm:text-lg text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -133,10 +133,8 @@ export const Chapitre8Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-5">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">1</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            Mise en situation : Le projet TaskFlow
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 1 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Mise en situation : Le projet TaskFlow</h2>
         </div>
 
         <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -186,15 +184,13 @@ export const Chapitre8Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">2</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            Guide d&apos;exécution pas à pas du TP
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 2 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Guide d&apos;exécution pas à pas du TP</h2>
         </div>
 
-        {/* Timeline des étapes */}
+        {/* Timeline des étapes : 2 boutons par ligne en petite largeur, 3 boutons par ligne avec sidebar repliée ou en plein écran */}
         <div className="p-5 sm:p-7 rounded-3xl border-2 border-slate-300 bg-white shadow-sm space-y-6">
-          <div className="flex items-center justify-between gap-1 sm:gap-2 overflow-x-auto pb-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             {tpSteps.map((st) => (
               <button
                 key={st.num}
@@ -203,14 +199,22 @@ export const Chapitre8Content: React.FC = () => {
                   setActiveStep(st.num);
                   setShowSolution(false);
                 }}
-                className={`flex-1 min-w-[70px] sm:min-w-[110px] py-2 px-2 rounded-xl text-center border-2 transition cursor-pointer ${
+                className={`py-2.5 sm:py-3 px-2 sm:px-3 rounded-2xl text-center border-2 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[68px] sm:min-h-[74px] ${
                   activeStep === st.num
                     ? 'border-indigo-600 bg-indigo-600 text-white font-bold shadow-sm'
-                    : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-400 font-semibold text-xs'
+                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-400 hover:bg-slate-100 font-semibold'
                 }`}
               >
-                <div className="text-[10px] opacity-80 uppercase tracking-wider">Étape {st.num}</div>
-                <div className="text-xs sm:text-sm truncate">{st.title.split('—')[1]?.trim() || st.title}</div>
+                <div
+                  className={`text-[11px] font-bold uppercase tracking-wider mb-0.5 ${
+                    activeStep === st.num ? 'text-indigo-100' : 'text-indigo-600'
+                  }`}
+                >
+                  Étape {st.num}
+                </div>
+                <div className="text-xs sm:text-sm font-bold leading-snug">
+                  {st.title.split('—')[1]?.trim() || st.title}
+                </div>
               </button>
             ))}
           </div>
@@ -269,32 +273,7 @@ export const Chapitre8Content: React.FC = () => {
             )}
           </div>
 
-          {/* Navigation étapes */}
-          <div className="flex items-center justify-between pt-1">
-            <button
-              type="button"
-              disabled={activeStep === 1}
-              onClick={() => {
-                setActiveStep((p) => Math.max(1, p - 1));
-                setShowSolution(false);
-              }}
-              className="px-4 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 cursor-pointer"
-            >
-              ← Étape précédente
-            </button>
-            <span className="text-xs font-bold text-slate-500">Étape {activeStep} sur 6</span>
-            <button
-              type="button"
-              disabled={activeStep === 6}
-              onClick={() => {
-                setActiveStep((p) => Math.min(6, p + 1));
-                setShowSolution(false);
-              }}
-              className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-700 cursor-pointer"
-            >
-              Étape suivante →
-            </button>
-          </div>
+        
         </div>
       </section>
 
@@ -303,10 +282,8 @@ export const Chapitre8Content: React.FC = () => {
          ========================================================================= */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b-2 border-slate-200 pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">3</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            Grille d&apos;auto-évaluation du TP (Critères de réussite)
-          </h2>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm"> 3 </span>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Grille d&apos;auto-évaluation du TP (Critères de réussite)</h2>
         </div>
 
         <div className="overflow-x-auto w-full min-w-0 max-w-full -mx-1 sm:mx-0">
@@ -355,9 +332,7 @@ export const Chapitre8Content: React.FC = () => {
       <section className="space-y-6 pt-4 border-t-2 border-slate-200">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">✓</span>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-            Quiz de clôture du TP Pratique (5 questions)
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-950 whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">Quiz de clôture du TP Pratique (5 questions)</h2>
         </div>
 
         <QuickQuiz

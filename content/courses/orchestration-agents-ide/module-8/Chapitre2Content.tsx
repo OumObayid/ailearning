@@ -98,7 +98,7 @@ export const Chapitre2Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">55 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Définir le rôle de l'agent QA
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -118,7 +118,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>2.1 & 2.2 — Assurance Qualité (QA) vs Contrôle Qualité (QC)</span>
+          <span>1. Assurance Qualité (QA) vs Contrôle Qualité (QC)</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -164,7 +164,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>2.3 — Les 6 responsabilités majeures de l'agent QA</span>
+          <span>2. Les 6 responsabilités majeures de l'agent QA</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-2">
@@ -233,7 +233,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="shield" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>2.4 & 2.5 — Périmètre strict et distinction QA vs Reviewer</span>
+          <span>3. Périmètre strict et distinction QA vs Reviewer</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -278,7 +278,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="code" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Matrice de Tests QA & Fiche d'Anomalie</span>
+          <span>4. Atelier Interactif — Matrice de Tests QA & Fiche d'Anomalie</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -405,15 +405,16 @@ export const Chapitre2Content: React.FC = () => {
 
       {/* Section 5 : Modèle de Prompt pour l'Agent QA */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
-        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
           <Icon name="file-text" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>2.11 — Modèle de mission pour l'Agent QA</span>
+          <span>5. Modèle de mission pour l'Agent QA</span>
         </h2>
-        <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 min-w-0 max-w-full">
+          <p className="text-xs text-muted-foreground leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
             Pour cadrer rigoureusement un agent QA dans un IDE, utilisez une fiche d'instruction structurée empêchant les dérives :
           </p>
-          <pre className="p-4 rounded-lg bg-muted font-mono text-xs text-foreground overflow-x-auto leading-relaxed border border-border">
+          <div className="p-4 rounded-lg bg-muted font-mono text-xs text-foreground leading-relaxed border border-border min-w-0 max-w-full">
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
 {`Tu es l'agent QA de l'équipe TaskFlow.
 Ta mission :
 1. Lire les spécifications dans docs/specs/task-status.md
@@ -426,7 +427,8 @@ Règles strictes :
 - Ne modifie JAMAIS les fichiers du dossier backend/src/ (code de production)
 - Si un test échoue, documente une fiche d'anomalie complète et assigne-la au développeur
 - Tu n'es pas autorisé à exécuter git merge, git rebase ou git push sans accord du PM humain.`}
-          </pre>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -434,7 +436,7 @@ Règles strictes :
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>2.14 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 2 : Rôle de l'agent QA"

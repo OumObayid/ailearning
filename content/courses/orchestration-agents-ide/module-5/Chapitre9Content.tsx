@@ -22,7 +22,7 @@ export const Chapitre9Content: React.FC = () => {
             Mise en Situation Opérationnelle Complète
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           TP de fin de module : Préparer les instructions d'une équipe d'agents spécialisée dans le développement de TaskFlow
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">

@@ -191,7 +191,7 @@ export function Chapitre8Content() {
             Chapitre 10.8
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Configurer les agents et leurs instructions
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -211,9 +211,7 @@ export function Chapitre8Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="layout" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              8.2. Les trois niveaux d&apos;instructions dans un projet multi-agents
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Les trois niveaux d&apos;instructions dans un projet multi-agents</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -260,9 +258,7 @@ export function Chapitre8Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="user" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              8.3. Chaîne hiérarchique et complémentarité QA vs Reviewer
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Chaîne hiérarchique et complémentarité QA vs Reviewer</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -299,9 +295,7 @@ export function Chapitre8Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="bot" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Explorateur de Configuration d&apos;Agents
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Explorateur de Configuration d&apos;Agents</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Sélectionnez un fichier de configuration pour examiner ses métadonnées YAML, ses directives d&apos;encadrement et ses frontières de sécurité.
@@ -365,9 +359,9 @@ export function Chapitre8Content() {
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Frontmatter YAML (En-tête de configuration Antigravity) :
                   </span>
-                  <pre className="p-2.5 rounded bg-muted/40 font-mono text-xs text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                  <div className="p-2.5 rounded bg-black border border-slate-800 font-mono text-xs text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
                     {activeProfile.yamlMeta}
-                  </pre>
+                  </div>
                 </div>
               )}
 
@@ -375,9 +369,9 @@ export function Chapitre8Content() {
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Extrait des instructions Markdown :
                 </span>
-                <pre className="p-2.5 rounded bg-muted/20 border border-border/40 font-mono text-xs text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+                <div className="p-2.5 rounded bg-black border border-slate-800 border border-border/40 font-mono text-xs text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
                   {activeProfile.markdownSnippet}
-                </pre>
+                </div>
               </div>
             </div>
           </div>
@@ -389,9 +383,7 @@ export function Chapitre8Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

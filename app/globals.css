@@ -87,3 +87,10 @@ pre {
   font-weight: 800;
   color: #020617;
 }
+
+/* Grille responsive pour les composants d'IDE (1 col sur petite largeur, 2 col si conteneur étendu / sidebar replié ou plein écran) */
+@container (min-width: 650px) {
+  .ide-components-2col {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}

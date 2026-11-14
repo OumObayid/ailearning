@@ -21,7 +21,7 @@ export const Chapitre5Content: React.FC = () => {
             Parallélisme & Git Worktrees
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.5 — Déterminer les tâches réalisables en parallèle
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -39,9 +39,7 @@ export const Chapitre5Content: React.FC = () => {
       {/* Section 5.1 & 5.2 : Séquentiel vs Parallèle */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="bolt" className="w-5 h-5 text-primary-600 shrink-0" />
-          5.2 — Comparer l'Approche Séquentielle et l'Approche Parallèle
-        </h2>
+          <Icon name="bolt" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Comparer l'Approche Séquentielle et l'Approche Parallèle</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Un projet logiciel équilibré alterne intelligemment phases séquentielles de cadrage et phases d'exécution parallèle :
         </p>
@@ -73,9 +71,7 @@ export const Chapitre5Content: React.FC = () => {
       {/* Section 5.4 & 5.6 : Contrats Partagés et Git Worktrees */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="cube-transparent" className="w-5 h-5 text-indigo-600 shrink-0" />
-          5.4 & 5.6 — Le Contrat d'Interface et l'Isolation par Git Worktrees
-        </h2>
+          <Icon name="cube-transparent" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Le Contrat d'Interface et l'Isolation par Git Worktrees</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour que le parallélisme fonctionne sans cacophonie, deux piliers techniques sont indispensables :
         </p>
@@ -181,9 +177,7 @@ export const Chapitre5Content: React.FC = () => {
       {/* Section 5.8 : Quand NE PAS travailler en parallèle */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="exclamation-triangle" className="w-5 h-5 text-amber-600 shrink-0" />
-          5.8 — Quand Faut-il Proscrire le Parallélisme ?
-        </h2>
+          <Icon name="exclamation-triangle" className="w-5 h-5 text-amber-600 shrink-0" /> 3. Quand Faut-il Proscrire le Parallélisme ?</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Le travail en parallèle n'est pas une fin en soi. Il devient contre-productif dans 4 situations critiques :
         </p>
@@ -226,7 +220,7 @@ export const Chapitre5Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.5
+            Quiz de validation du Chapitre 5
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Testez vos réflexes sur l'identification des tâches parallélisables, l'usage des contrats et les limites de la simultanéité.

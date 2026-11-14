@@ -50,7 +50,7 @@ export const Chapitre6Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 6 — Définir les responsabilités et les limites des agents
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -100,9 +100,7 @@ export const Chapitre6Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              6.8
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Matrice des responsabilités et de gouvernance de TaskFlow
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -185,25 +183,22 @@ export const Chapitre6Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setActiveScenario('backend_crossing')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeScenario === 'backend_crossing' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeScenario === 'backend_crossing' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. Backend voulant éditer l'UI
             </button>
             <button
               onClick={() => setActiveScenario('frontend_bug')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeScenario === 'frontend_bug' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeScenario === 'frontend_bug' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. Frontend voulant corriger l'API
             </button>
             <button
               onClick={() => setActiveScenario('git_override')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeScenario === 'git_override' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeScenario === 'git_override' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. Tentative de git push sauvage
             </button>
@@ -240,7 +235,7 @@ export const Chapitre6Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 6
+            Quiz d'évaluation — Chapitre 6
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Validez votre maîtrise de la répartition des responsabilités et des limites (10 questions)

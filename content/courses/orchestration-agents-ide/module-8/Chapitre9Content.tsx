@@ -72,7 +72,7 @@ export const Chapitre9Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">50 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Valider les livrables avant leur intégration
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -92,7 +92,7 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>8.9.1 & 8.9.2 — Les 5 états du cycle de vie d'un livrable</span>
+          <span>1. Les 5 états du cycle de vie d'un livrable</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-2">
@@ -151,35 +151,35 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>8.9.6 — Les 3 décisions possibles lors de la revue d'acceptation</span>
+          <span>2. Les 3 décisions possibles lors de la revue d'acceptation</span>
         </h2>
         <div className="grid grid-cols-1 gap-3 text-xs">
-          <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-emerald-400 text-sm">1. ACCEPTÉ (Validé)</span>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Prêt pour fusion</span>
+          <div className="p-4 rounded-xl border border-emerald-500/40 bg-slate-900 flex flex-col gap-2 min-w-0 max-w-full">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+              <span className="font-bold text-emerald-400 text-sm sm:text-base">1. ACCEPTÉ (Validé)</span>
+              <span className="text-xs uppercase font-bold px-2.5 py-1 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-700/60 shrink-0">Prêt pour fusion</span>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-slate-200 leading-relaxed text-xs sm:text-sm whitespace-normal break-words [overflow-wrap:anywhere]">
               Le livrable répond à 100% des critères : tests passants avec preuves de logs, compilation TypeScript sans warning bloquant, diff propre et revue favorable.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-amber-400 text-sm">2. SUSPENDU (En attente d'éléments)</span>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">Compléments requis</span>
+          <div className="p-4 rounded-xl border border-amber-500/40 bg-slate-900 flex flex-col gap-2 min-w-0 max-w-full">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+              <span className="font-bold text-amber-400 text-sm sm:text-base">2. SUSPENDU (En attente d'éléments)</span>
+              <span className="text-xs uppercase font-bold px-2.5 py-1 rounded-md bg-amber-950 text-amber-300 border border-amber-700/60 shrink-0">Compléments requis</span>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-slate-200 leading-relaxed text-xs sm:text-sm whitespace-normal break-words [overflow-wrap:anywhere]">
               Le code semble correct mais une preuve matérielle manque : suite de tests non exécutée, rapport QA incomplet, ou ambiguïté sur une dépendance externe.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-rose-400 text-sm">3. REFUSÉ (Rejeté)</span>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">À retravailler</span>
+          <div className="p-4 rounded-xl border border-rose-500/40 bg-slate-900 flex flex-col gap-2 min-w-0 max-w-full">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+              <span className="font-bold text-rose-400 text-sm sm:text-base">3. REFUSÉ (Rejeté)</span>
+              <span className="text-xs uppercase font-bold px-2.5 py-1 rounded-md bg-rose-950 text-rose-300 border border-rose-700/60 shrink-0">À retravailler</span>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-slate-200 leading-relaxed text-xs sm:text-sm whitespace-normal break-words [overflow-wrap:anywhere]">
               Présence d'anomalies majeures ou bloquantes, dérive de périmètre non autorisée, non-respect du contrat d'API ou régression sur les fonctionnalités existantes.
             </p>
           </div>
@@ -190,7 +190,7 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="file-text" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Comité de Validation & Recette Finale</span>
+          <span>3. Atelier Interactif — Comité de Validation & Recette Finale</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -250,30 +250,32 @@ export const Chapitre9Content: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">Preuve Git (git status & diff) :</span>
-                <span className="text-foreground">{currentSub.proofs.gitStatus}</span>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-0.5">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Preuve Git (git status & diff) :</span>
+                <span className="text-white font-medium">{currentSub.proofs.gitStatus}</span>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">Preuve d'exécution des tests (Vitest) :</span>
-                <span className="text-foreground">{currentSub.proofs.tests}</span>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-0.5">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Preuve d'exécution des tests (Vitest) :</span>
+                <span className="text-white font-medium">{currentSub.proofs.tests}</span>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">Contrôle TypeScript (npx tsc) :</span>
-                <span className="text-foreground">{currentSub.proofs.typeCheck}</span>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-0.5">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Contrôle TypeScript (npx tsc) :</span>
+                <span className="text-white font-medium">{currentSub.proofs.typeCheck}</span>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">Verdict du Reviewer :</span>
-                <span className="text-foreground">{currentSub.proofs.reviewerVerdict}</span>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-0.5">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Verdict du Reviewer :</span>
+                <span className="text-white font-medium">{currentSub.proofs.reviewerVerdict}</span>
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-black/40 border border-border flex flex-col gap-1 font-mono text-[11px]">
-              <span className="text-muted-foreground font-sans text-xs font-semibold">Motivation de la décision :</span>
-              <p className="text-sky-300 leading-relaxed font-sans text-xs">{currentSub.justification}</p>
+            <div className="p-3.5 rounded-xl bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
+              <span className="text-slate-400 font-sans text-xs font-semibold">Motivation de la décision :</span>
+              <p className="text-white leading-relaxed font-sans text-xs sm:text-sm whitespace-normal break-words [overflow-wrap:anywhere]">
+                {currentSub.justification}
+              </p>
             </div>
           </div>
         </div>
@@ -283,7 +285,7 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>8.9.11 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 9 : Valider les livrables avant leur intégration"

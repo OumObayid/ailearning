@@ -1,18 +1,20 @@
 ﻿'use client';
 
 import React from 'react';
-import { Chapitre1Content } from './Chapitre1Content';
-import { Chapitre2Content } from './Chapitre2Content';
-import { Chapitre3Content } from './Chapitre3Content';
-import { Chapitre4Content } from './Chapitre4Content';
-import { Chapitre5Content } from './Chapitre5Content';
-import { Chapitre6Content } from './Chapitre6Content';
-import { Chapitre7Content } from './Chapitre7Content';
-import { Chapitre8Content } from './Chapitre8Content';
-import { Chapitre9Content } from './Chapitre9Content';
-import { Chapitre10Content } from './Chapitre10Content';
+import dynamic from 'next/dynamic';
 
 export * from './data';
+
+const Chapitre1Content = dynamic(() => import('./Chapitre1Content').then((mod) => mod.Chapitre1Content), { ssr: true });
+const Chapitre2Content = dynamic(() => import('./Chapitre2Content').then((mod) => mod.Chapitre2Content), { ssr: true });
+const Chapitre3Content = dynamic(() => import('./Chapitre3Content').then((mod) => mod.Chapitre3Content), { ssr: true });
+const Chapitre4Content = dynamic(() => import('./Chapitre4Content').then((mod) => mod.Chapitre4Content), { ssr: true });
+const Chapitre5Content = dynamic(() => import('./Chapitre5Content').then((mod) => mod.Chapitre5Content), { ssr: true });
+const Chapitre6Content = dynamic(() => import('./Chapitre6Content').then((mod) => mod.Chapitre6Content), { ssr: true });
+const Chapitre7Content = dynamic(() => import('./Chapitre7Content').then((mod) => mod.Chapitre7Content), { ssr: true });
+const Chapitre8Content = dynamic(() => import('./Chapitre8Content').then((mod) => mod.Chapitre8Content), { ssr: true });
+const Chapitre9Content = dynamic(() => import('./Chapitre9Content').then((mod) => mod.Chapitre9Content), { ssr: true });
+const Chapitre10Content = dynamic(() => import('./Chapitre10Content').then((mod) => mod.Chapitre10Content), { ssr: true });
 
 export const OrchestrationModule8Renderer: React.FC<{ slug: string }> = ({ slug }) => {
   switch (slug.toLowerCase()) {

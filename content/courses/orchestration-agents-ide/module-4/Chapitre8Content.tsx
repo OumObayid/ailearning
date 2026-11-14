@@ -55,7 +55,7 @@ export const Chapitre8Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 8 — Entretenir et supprimer les Worktrees
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -105,9 +105,7 @@ export const Chapitre8Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              8.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Distinguer la suppression d'un Worktree de celle d'une branche
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -217,9 +215,7 @@ export const Chapitre8Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              8.13
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Synthèse des commandes d'administration des Worktrees
           </h2>
         </div>
@@ -271,7 +267,7 @@ export const Chapitre8Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 8
+            Quiz d'évaluation — Chapitre 8
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Validez vos compétences sur la maintenance et la suppression des Worktrees (10 questions)

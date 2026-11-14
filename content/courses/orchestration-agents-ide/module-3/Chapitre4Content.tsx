@@ -25,7 +25,7 @@ export const Chapitre4Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 4 — Organiser les branches d'une équipe
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -75,9 +75,7 @@ export const Chapitre4Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              4.5
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Règles de nommage et branches par mission
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -146,9 +144,7 @@ export const Chapitre4Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              4.7
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Gérer les dépendances entre branches et organiser le contrôle
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -170,11 +166,10 @@ export const Chapitre4Content: React.FC = () => {
               </h3>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`text-xs px-3 py-1 rounded-full font-bold border ${
-                isContractReady
+              <span className={`text-xs px-3 py-1 rounded-full font-bold border ${isContractReady
                   ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
                   : 'bg-amber-950 text-amber-300 border-amber-700'
-              }`}>
+                }`}>
                 {isContractReady ? "✓ Contrat d'API validé" : "⏳ En attente du contrat"}
               </span>
             </div>
@@ -201,33 +196,29 @@ export const Chapitre4Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setActiveTab('backend')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'backend' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'backend' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. feature/task-creation-api
             </button>
             <button
               onClick={() => setActiveTab('frontend')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'frontend' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'frontend' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. feature/task-creation-ui
             </button>
             <button
               onClick={() => setActiveTab('qa')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'qa' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'qa' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. test/task-creation-api
             </button>
             <button
               onClick={() => setActiveTab('pr')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'pr' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'pr' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               4. Pull Request & Cadenas PM
             </button>
@@ -311,7 +302,7 @@ export const Chapitre4Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 4
+            Quiz d'évaluation — Chapitre 4
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez votre compréhension de l'organisation des branches d'une équipe (10 questions)

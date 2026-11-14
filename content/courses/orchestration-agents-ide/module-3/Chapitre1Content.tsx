@@ -80,7 +80,7 @@ Push suspendu jusqu'à validation de la Pull Request.`,
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 1 — Comprendre le rôle de Git
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -130,9 +130,7 @@ Push suspendu jusqu'à validation de la Pull Request.`,
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.2
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Qu'est-ce que Git et pourquoi l'utiliser ?
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -195,9 +193,7 @@ Push suspendu jusqu'à validation de la Pull Request.`,
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Comprendre le fonctionnement général : Les trois zones de Git
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -277,17 +273,15 @@ Push suspendu jusqu'à validation de la Pull Request.`,
               <button
                 key={idx}
                 onClick={() => setGitStage(idx)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left flex items-center gap-2 ${
-                  gitStage === idx
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left flex items-center gap-2 ${gitStage === idx
                     ? 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900 font-bold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white'
-                }`}
+                  }`}
               >
-                <span className={`w-2 h-2 rounded-full ${
-                  idx === 3 ? 'bg-rose-400' :
-                  idx === 2 ? 'bg-purple-400' :
-                  idx === 1 ? 'bg-blue-400' : 'bg-amber-400'
-                }`} />
+                <span className={`w-2 h-2 rounded-full ${idx === 3 ? 'bg-rose-400' :
+                    idx === 2 ? 'bg-purple-400' :
+                      idx === 1 ? 'bg-blue-400' : 'bg-amber-400'
+                  }`} />
                 Étape {idx + 1}
               </button>
             ))}
@@ -327,27 +321,6 @@ Push suspendu jusqu'à validation de la Pull Request.`,
               </span>
               <span className="text-xs text-slate-300">{currentStage.pmNotice}</span>
             </div>
-
-            {/* Navigation rapide */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-700/80">
-              <button
-                disabled={gitStage === 0}
-                onClick={() => setGitStage(prev => Math.max(0, prev - 1))}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
-              >
-                ← Étape précédente
-              </button>
-              <span className="text-xs text-slate-400">
-                Étape {gitStage + 1} / {stageStates.length}
-              </span>
-              <button
-                disabled={gitStage === stageStates.length - 1}
-                onClick={() => setGitStage(prev => Math.min(stageStates.length - 1, prev + 1))}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
-              >
-                Étape suivante →
-              </button>
-            </div>
           </div>
         </div>
       </section>
@@ -358,9 +331,7 @@ Push suspendu jusqu'à validation de la Pull Request.`,
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.5
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 3 </span>
             Distinguer Git des plateformes d'hébergement (GitHub, GitLab)
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -420,9 +391,7 @@ Push suspendu jusqu'à validation de la Pull Request.`,
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.7
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 4 </span>
             Ce que Git ne fait pas : Les limites fondamentales
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -476,9 +445,7 @@ Push suspendu jusqu'à validation de la Pull Request.`,
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.9
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 5 </span>
             Synthèse du Chapitre 1
           </h2>
         </div>
@@ -520,7 +487,7 @@ Push suspendu jusqu'à validation de la Pull Request.`,
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 1
+            Quiz d'évaluation — Chapitre 1
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Vérifiez votre compréhension du rôle de Git dans une équipe multi-agents (9 questions)

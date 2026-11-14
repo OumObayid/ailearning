@@ -60,7 +60,7 @@ export const Chapitre9Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">50 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Évaluer le travail de l'équipe et améliorer son organisation
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -80,7 +80,7 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="activity" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.9.1 & 9.9.2 — Les 3 niveaux d'évaluation et les critères objectifs</span>
+          <span>1. Les 3 niveaux d'évaluation et les critères objectifs</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -114,7 +114,7 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="bar-chart-2" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.9.4 — Écarter les métriques d'illusion</span>
+          <span>2. Écarter les métriques d'illusion</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3 text-xs">
@@ -143,7 +143,7 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Rétrospective d'Équipe & Méthode des 5 Pourquoi</span>
+          <span>3. Atelier Interactif — Rétrospective d'Équipe & Méthode des 5 Pourquoi</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -185,25 +185,25 @@ export const Chapitre9Content: React.FC = () => {
             </button>
           </div>
 
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs">
-            <div className="p-2.5 rounded bg-background border border-border">
-              <span className="text-[10px] text-muted-foreground font-semibold">Problème observé en rétrospective :</span>
-              <p className="text-rose-400 font-semibold mt-0.5">{currentCase.problem}</p>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <div className="p-3.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Problème observé en rétrospective :</span>
+              <p className="text-rose-300 font-bold text-xs sm:text-sm mt-0.5 whitespace-normal break-words [overflow-wrap:anywhere]">{currentCase.problem}</p>
             </div>
 
-            <div className="flex flex-col gap-1.5 font-mono text-[11px]">
+            <div className="flex flex-col gap-2 font-mono text-xs min-w-0 max-w-full">
               {currentCase.fiveWhys.map((step, idx) => (
-                <div key={idx} className="p-2 rounded bg-black/40 border border-border/60">
-                  <span className="text-sky-300 font-bold">{step.level} </span>
-                  <span className="text-foreground">{step.answer}</span>
+                <div key={idx} className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col sm:flex-row sm:items-start gap-1.5 sm:gap-2 min-w-0 max-w-full">
+                  <span className="text-sky-400 font-bold text-xs shrink-0">{step.level}</span>
+                  <span className="text-white text-xs leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word]">{step.answer}</span>
                 </div>
               ))}
             </div>
 
-            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex flex-col gap-1">
-              <span className="font-bold text-emerald-400">Plan d'action adopté pour le prochain sprint :</span>
-              <p className="text-foreground text-xs leading-relaxed">{currentCase.improvementAction}</p>
-              <span className="text-[10px] text-muted-foreground mt-1">Responsable désigné : {currentCase.owner}</span>
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/40 flex flex-col gap-1.5 min-w-0 max-w-full">
+              <span className="font-bold text-emerald-400 text-xs sm:text-sm">Plan d'action adopté pour le prochain sprint :</span>
+              <p className="text-slate-200 text-xs sm:text-sm leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">{currentCase.improvementAction}</p>
+              <span className="text-xs text-slate-400 mt-1 font-medium">Responsable désigné : <strong className="text-white">{currentCase.owner}</strong></span>
             </div>
           </div>
         </div>
@@ -213,7 +213,7 @@ export const Chapitre9Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.9.11 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 9 : Évaluer le travail de l'équipe et s'améliorer"

@@ -54,7 +54,7 @@ export const Chapitre3Content: React.FC = () => {
             Livrables, Spécifications & Vérifiabilité
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.3 — Définir les objectifs et les résultats attendus
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -72,9 +72,7 @@ export const Chapitre3Content: React.FC = () => {
       {/* Section 3.1 : Objectif vs Résultat attendu */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="crosshair" className="w-5 h-5 text-primary-600 shrink-0" />
-          3.1 — Distinguer l'Objectif du Résultat Attendu
-        </h2>
+          <Icon name="crosshair" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Distinguer l'Objectif du Résultat Attendu</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Bien que complémentaires, ces deux concepts répondent à des questions différentes :
         </p>
@@ -164,9 +162,7 @@ export const Chapitre3Content: React.FC = () => {
       {/* Section 3.7 : Adapter les résultats attendus au rôle */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="users" className="w-5 h-5 text-purple-600 shrink-0" />
-          3.7 — Adapter les Résultats Attendus au Domaine de Responsabilité
-        </h2>
+          <Icon name="users" className="w-5 h-5 text-purple-600 shrink-0" /> 2. Adapter les Résultats Attendus au Domaine de Responsabilité</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Chaque agent expert produit des artefacts spécifiques à son périmètre :
         </p>
@@ -212,11 +208,10 @@ export const Chapitre3Content: React.FC = () => {
       {/* Fiche modèle : T4 TaskFlow */}
       <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="document-check" className="w-5 h-5 text-emerald-600 shrink-0" />
-          3.9 — Modèle de Fiche Objectif & Résultats Attendus (Tâche T4)
-        </h2>
-        <div className="overflow-x-auto p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
-          <pre>{`## Fiche de Spécification de Tâche : T4
+          <Icon name="document-check" className="w-5 h-5 text-emerald-600 shrink-0" /> 3. Modèle de Fiche Objectif & Résultats Attendus (Tâche T4)</h2>
+        <div className="p-4 rounded-xl font-mono text-xs md:text-sm bg-slate-900 text-slate-100 max-w-full min-w-0">
+          <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+{`## Fiche de Spécification de Tâche : T4
 - Identifiant : T4
 - Intitulé : Développer l'API REST de création d'une tâche
 - Domaine : Backend (Agent Backend)
@@ -228,7 +223,8 @@ export const Chapitre3Content: React.FC = () => {
   4. Enregistrement dans le store mémoire avec retour HTTP 201 en JSON.
   5. Tests unitaires et d'intégration validés sous Vitest.
 - Périmètre : backend/src/controllers/ et backend/src/routes/.
-- Hors périmètre : Interface React, persistance SQL, authentification.`}</pre>
+- Hors périmètre : Interface React, persistance SQL, authentification.`}
+          </div>
         </div>
       </div>
 
@@ -239,7 +235,7 @@ export const Chapitre3Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.3
+            Quiz de validation du Chapitre 3
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise de la formulation d'objectifs précis, des résultats vérifiables et de l'adaptation au rôle des agents.

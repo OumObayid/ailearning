@@ -25,7 +25,7 @@ export const Chapitre10Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">1 h 30 d'atelier pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           TP — Contrôler les livrables d'une équipe d'agents et organiser leur vérification et leur correction
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -71,7 +71,7 @@ export const Chapitre10Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="list" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Les 9 Étapes du Contrôle Qualité</span>
+          <span>1. Atelier Interactif — Les 9 Étapes du Contrôle Qualité</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           {/* Navigation entre les 9 étapes */}
@@ -195,12 +195,13 @@ export const Chapitre10Content: React.FC = () => {
             )}
 
             {activeStep === 6 && (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 min-w-0 max-w-full">
                 <span className="font-bold text-foreground text-sm">Étape 6 — Organiser les demandes de correction ciblées</span>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere]">
                   Vous rédigez les prompts de correction assignés respectivement au Backend et au Frontend avec périmètre confiné :
                 </p>
-                <pre className="p-3 rounded bg-black/60 font-mono text-[11px] text-sky-300 overflow-x-auto leading-relaxed">
+                <div className="p-3 rounded bg-black font-mono text-[11px] text-white leading-relaxed border border-slate-800 min-w-0 max-w-full">
+                  <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
 {`// Demande adressée à l'Agent Backend pour AN-01 :
 Contexte : Validation des statuts autorisés sur PATCH /api/tasks/:id
 Anomalie : Statuts invalides acceptés avec HTTP 200.
@@ -208,7 +209,8 @@ Consigne : Ajouter une liste blanche stricte ['todo', 'in_progress', 'done'].
 Si invalide, renvoyer HTTP 400 avec {"error": "Invalid status"}.
 Fichier autorisé : backend/src/controllers/taskController.ts uniquement.
 Validation : Le test QA-02 doit passer à 100%.`}
-                </pre>
+                  </div>
+                </div>
               </div>
             )}
 

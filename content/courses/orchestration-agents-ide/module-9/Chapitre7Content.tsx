@@ -65,7 +65,7 @@ export const Chapitre7Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">55 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Identifier les risques liés au travail autonome des agents
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -85,7 +85,7 @@ export const Chapitre7Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="alert-octagon" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.7.1 & 9.7.2 — Les 6 grandes familles de risques du travail autonome</span>
+          <span>1. Les 6 grandes familles de risques du travail autonome</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-1.5">
@@ -136,7 +136,7 @@ export const Chapitre7Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.7.5 — La graduation des 4 niveaux d'autonomie</span>
+          <span>2. La graduation des 4 niveaux d'autonomie</span>
         </h2>
         <div className="grid grid-cols-1 gap-2.5 text-xs">
           <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 flex flex-col gap-1">
@@ -165,7 +165,7 @@ export const Chapitre7Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Diagnostic d'Incident & Procédure de Réaction</span>
+          <span>3. Atelier Interactif — Diagnostic d'Incident & Procédure de Réaction</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -207,33 +207,33 @@ export const Chapitre7Content: React.FC = () => {
             </button>
           </div>
 
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2">
-              <span className="font-bold text-foreground font-mono">{currentInc.id} — {currentInc.title}</span>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-400">Incident</span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between border-b border-slate-800 pb-2.5 gap-2">
+              <span className="font-bold text-white text-sm sm:text-base font-mono">{currentInc.id} — {currentInc.title}</span>
+              <span className="text-xs uppercase font-bold px-2.5 py-1 rounded-md bg-rose-950 text-rose-300 border border-rose-700/60 shrink-0">Incident</span>
             </div>
 
-            <div className="p-2.5 rounded bg-background border border-border">
-              <span className="text-[10px] text-muted-foreground font-semibold">Déclencheur observé :</span>
-              <p className="text-foreground mt-0.5">{currentInc.trigger}</p>
+            <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Déclencheur observé :</span>
+              <p className="text-white mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{currentInc.trigger}</p>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Impact applicatif :</span>
-                <p className="text-rose-400 font-medium mt-0.5">{currentInc.impact}</p>
+              <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-rose-300 font-semibold uppercase tracking-wider">Impact applicatif :</span>
+                <p className="text-rose-200 font-medium mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{currentInc.impact}</p>
               </div>
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Réversibilité & Diagnostic :</span>
-                <p className="text-muted-foreground mt-0.5">{currentInc.reversibility} — {currentInc.level}</p>
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Réversibilité & Diagnostic :</span>
+                <p className="text-white mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{currentInc.reversibility} — <span className="text-slate-300">{currentInc.level}</span></p>
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex flex-col gap-1 text-xs">
-              <span className="font-bold text-indigo-400">Protocole de remédiation immédiate :</span>
-              <div className="space-y-1 text-foreground font-mono text-[11px] mt-1">
+            <div className="p-3.5 rounded-xl bg-black border border-slate-800 flex flex-col gap-2 text-xs min-w-0 max-w-full">
+              <span className="font-bold text-indigo-400 text-xs sm:text-sm">Protocole de remédiation immédiate :</span>
+              <div className="space-y-1.5 text-white font-mono text-xs leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
                 {currentInc.reactionProcedure.map((step, i) => (
-                  <div key={i}>{step}</div>
+                  <div key={i} className="p-1 rounded bg-slate-900/60 border border-slate-800/50">{step}</div>
                 ))}
               </div>
             </div>
@@ -245,7 +245,7 @@ export const Chapitre7Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.7.12 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 7 : Risques liés au travail autonome"

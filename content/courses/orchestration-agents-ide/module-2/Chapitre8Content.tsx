@@ -180,8 +180,8 @@ Chaque agent nouvellement instancié lit ce fichier pour connaître immédiateme
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
-          TP de fin de module : Concevoir l'organisation d'une équipe d'agents IA
+        <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] mb-3 min-w-0 max-w-full">
+          TP de fin de module : Concevoir l&apos;organisation d&apos;une équipe d&apos;agents IA
         </h1>
         <p className="text-sm sm:text-base text-slate-700 font-medium whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Dans ce travail pratique complet, vous allez concevoir et formaliser l'organisation d'une équipe multi-agents dédiée au développement de l'application <strong>TaskFlow</strong>. Vous définirez les rôles, les responsabilités, la matrice des permissions, les formats d'échanges standardisés, le cycle de vie des tâches et la chaîne de validation humaine finale.
@@ -306,32 +306,7 @@ Chaque agent nouvellement instancié lit ce fichier pour connaître immédiateme
             </div>
           )}
 
-          {/* Navigation dans les étapes */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-            <button
-              disabled={activeStep === 1}
-              onClick={() => {
-                setActiveStep(prev => Math.max(1, prev - 1));
-                setShowSolution(false);
-              }}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
-            >
-              ← Étape précédente
-            </button>
-            <span className="text-xs text-slate-400">
-              {activeStep} / {tpSteps.length}
-            </span>
-            <button
-              disabled={activeStep === tpSteps.length}
-              onClick={() => {
-                setActiveStep(prev => Math.min(tpSteps.length, prev + 1));
-                setShowSolution(false);
-              }}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
-            >
-              Étape suivante →
-            </button>
-          </div>
+     
         </div>
       </div>
 

@@ -114,15 +114,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Link
               href="/"
               onClick={handleLinkClick}
-              className="flex items-center overflow-hidden focus:outline-none py-1.5 group"
+              className="flex items-center overflow-hidden focus:outline-none py-1.5 group w-100 pb-4 ps-3"
             >
               <Image
                 src="/images/logo.png"
                 alt={APP_NAME}
-                width={190}
-                height={63}
+                width={160}
+                height={48}
                 priority
-                className="h-12 sm:h-13 w-auto object-contain transition-transform group-hover:scale-105"
+                className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105"
               />
             </Link>
           )}
@@ -132,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             onClick={onToggleCollapse}
             className={cn(
-              'hidden lg:flex items-center justify-center mt-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer active:scale-95',
+              'hidden lg:flex items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer active:scale-95',
               isCollapsed && !isMobileOpen
                 ? 'h-10 w-10 bg-slate-50 border border-slate-200/80 shadow-xs'
                 : 'h-9 w-9 hover:bg-slate-100'

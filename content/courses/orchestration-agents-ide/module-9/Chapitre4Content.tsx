@@ -68,7 +68,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
           </span>
           <span className="text-xs text-muted-foreground">1 h 15 de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Résoudre les conflits et vérifier les modifications
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -88,7 +88,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="alert-triangle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.4.1 & 9.4.2 — Conflits Git vs Conflits Fonctionnels Silencieux</span>
+          <span>1. Conflits Git vs Conflits Fonctionnels Silencieux</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -121,7 +121,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.4.7 — La boîte à outils de gestion et d'abandon de conflit</span>
+          <span>2. La boîte à outils de gestion et d'abandon de conflit</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-1.5">
@@ -170,7 +170,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="git-branch" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.4.4 & 9.4.5 — Les 4 stratégies d'arbitrage et la coordination d'équipe</span>
+          <span>3. Les 4 stratégies d'arbitrage et la coordination d'équipe</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 text-xs">
           <div className="grid grid-cols-1 gap-2">
@@ -194,7 +194,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Résolution de Conflit sur TaskStatus</span>
+          <span>4. Atelier Interactif — Résolution de Conflit sur TaskStatus</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -247,30 +247,32 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
             </button>
           </div>
 
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2">
-              <span className="font-bold text-foreground font-mono">{current.title}</span>
-              <span className="text-[11px] font-mono text-muted-foreground">{current.status}</span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-2.5 gap-2 min-w-0 max-w-full">
+              <span className="font-bold text-white text-sm sm:text-base font-mono break-words [overflow-wrap:anywhere]">{current.title}</span>
+              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere] max-w-full">{current.status}</span>
             </div>
 
-            <pre className="p-3 rounded bg-black/60 font-mono text-xs text-sky-300 overflow-x-auto whitespace-pre-wrap leading-relaxed">
-              {current.snippet}
-            </pre>
+            <div className="p-4 rounded-xl bg-black border border-slate-800 font-mono text-xs text-white leading-relaxed min-w-0 max-w-full">
+              <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+                {current.snippet}
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Diagnostic d'impact :</span>
-                <p className="text-foreground mt-0.5">{current.diagnosis}</p>
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Diagnostic d'impact :</span>
+                <p className="text-white mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere] leading-relaxed">{current.diagnosis}</p>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Conformité aux critères d'acceptation :</span>
-                <p className="text-foreground mt-0.5">{current.compliance}</p>
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Conformité aux critères d'acceptation :</span>
+                <p className="text-white mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere] leading-relaxed">{current.compliance}</p>
               </div>
             </div>
 
-            <div className="p-2.5 rounded bg-muted/40 border border-border text-xs text-muted-foreground font-sans">
-              <strong>Recommandation du Team Leader :</strong> {current.recommendation}
+            <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs sm:text-sm text-slate-200 font-sans whitespace-normal break-words [overflow-wrap:anywhere]">
+              <strong className="text-white font-semibold">Recommandation du Team Leader : </strong>{current.recommendation}
             </div>
           </div>
         </div>
@@ -280,7 +282,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.4.12 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 4 : Résolution des conflits et vérifications"

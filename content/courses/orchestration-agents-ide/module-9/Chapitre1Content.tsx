@@ -42,7 +42,7 @@ export const Chapitre1Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">50 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Comprendre le processus d'intégration
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -62,7 +62,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="git-merge" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.1.1 & 9.1.2 — Définition : Fusion Git vs Intégration Logicielle</span>
+          <span>1. Définition : Fusion Git vs Intégration Logicielle</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -106,7 +106,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.1.3 & 9.1.4 — Les contributions et la topologie des branches</span>
+          <span>2. Les contributions et la topologie des branches</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -120,11 +120,13 @@ export const Chapitre1Content: React.FC = () => {
               <li>Perte de la capacité à annuler proprement une seule fonctionnalité défectueuse.</li>
             </ul>
 
-            <div className="mt-3 p-4 rounded-lg bg-black/40 font-mono text-xs text-sky-300 border border-border leading-relaxed">
-              main (Branche de référence protégée)<br />
-              &nbsp;├── feature/backend-task-status (Agent Backend : API REST & contrôleurs)<br />
-              &nbsp;├── feature/frontend-task-status (Agent Frontend : Menus & cartes React)<br />
-              &nbsp;└── test/task-status-tests (Agent QA : Suites Vitest & scénarios Supertest)
+            <div className="mt-3 p-4 rounded-xl bg-black border border-slate-800 font-mono text-xs text-white leading-relaxed min-w-0 max-w-full">
+              <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+                <span className="text-emerald-400 font-bold">main</span> <span className="text-slate-400">(Branche de référence protégée)</span>{'\n'}
+                {' ├── '}<span className="text-sky-300 font-semibold">feature/backend-task-status</span> <span className="text-slate-300">(Agent Backend : API REST & contrôleurs)</span>{'\n'}
+                {' ├── '}<span className="text-purple-300 font-semibold">feature/frontend-task-status</span> <span className="text-slate-300">(Agent Frontend : Menus & cartes React)</span>{'\n'}
+                {' └── '}<span className="text-amber-300 font-semibold">test/task-status-tests</span> <span className="text-slate-300">(Agent QA : Suites Vitest & scénarios Supertest)</span>
+              </div>
             </div>
             <p className="text-xs text-muted-foreground italic">
               Une branche isole le travail jusqu'à ce que la preuve factuelle de conformité soit apportée par le QA et le Reviewer.
@@ -137,7 +139,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="list" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.1.5 — Les 6 étapes du processus d'intégration contrôlée</span>
+          <span>3. Les 6 étapes du processus d'intégration contrôlée</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-1.5">
@@ -206,7 +208,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Fusion Aveugle vs Intégration Contrôlée</span>
+          <span>4. Atelier Interactif — Fusion Aveugle vs Intégration Contrôlée</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -236,34 +238,36 @@ export const Chapitre1Content: React.FC = () => {
             </button>
           </div>
 
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs">
-            <span className="font-bold text-foreground text-sm">{currentSim.title}</span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <span className="font-bold text-white text-sm">{currentSim.title}</span>
 
             <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">État Git rapporté :</span>
-                <pre className="font-mono text-[11px] text-sky-300 whitespace-pre-wrap">{currentSim.gitStatus}</pre>
+              <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">État Git rapporté :</span>
+                <div className="font-mono text-xs text-white whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
+                  {currentSim.gitStatus}
+                </div>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">Attente Backend :</span>
-                <span className="text-foreground font-mono">{currentSim.backendBehavior}</span>
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-0.5 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Attente Backend :</span>
+                <span className="text-white font-mono text-xs break-words [overflow-wrap:anywhere]">{currentSim.backendBehavior}</span>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border flex flex-col gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">Comportement Frontend :</span>
-                <span className="text-foreground font-mono">{currentSim.frontendBehavior}</span>
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-0.5 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Comportement Frontend :</span>
+                <span className="text-white font-mono text-xs break-words [overflow-wrap:anywhere]">{currentSim.frontendBehavior}</span>
               </div>
             </div>
 
-            <div className={`p-3 rounded-lg border flex flex-col gap-1 ${
-              integrationMode === 'blind_merge' ? 'bg-rose-500/10 border-rose-500/30' : 'bg-emerald-500/10 border-emerald-500/30'
+            <div className={`p-3.5 rounded-lg border flex flex-col gap-1.5 min-w-0 max-w-full ${
+              integrationMode === 'blind_merge' ? 'bg-rose-950/60 border-rose-800/60' : 'bg-emerald-950/60 border-emerald-800/60'
             }`}>
-              <span className={`font-bold text-xs ${integrationMode === 'blind_merge' ? 'text-rose-400' : 'text-emerald-400'}`}>
+              <span className={`font-bold text-xs sm:text-sm ${integrationMode === 'blind_merge' ? 'text-rose-300' : 'text-emerald-300'}`}>
                 {currentSim.resultStatus}
               </span>
-              <p className="text-muted-foreground leading-relaxed">{currentSim.resultDetails}</p>
-              <p className="text-[11px] font-semibold text-foreground mt-1">💡 {currentSim.verdict}</p>
+              <p className="text-slate-200 leading-relaxed text-xs whitespace-normal break-words [overflow-wrap:anywhere]">{currentSim.resultDetails}</p>
+              <p className="text-xs font-semibold text-white mt-1 break-words [overflow-wrap:anywhere]">💡 {currentSim.verdict}</p>
             </div>
           </div>
         </div>
@@ -273,7 +277,7 @@ export const Chapitre1Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.1.10 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 1 : Le processus d'intégration"

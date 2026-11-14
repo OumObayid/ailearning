@@ -25,7 +25,7 @@ export const Chapitre6Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 6 — Organiser plusieurs travaux en parallèle
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -75,9 +75,7 @@ export const Chapitre6Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              6.5
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Gérer les dépendances entre chantiers parallèles
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -157,11 +155,10 @@ export const Chapitre6Content: React.FC = () => {
                     setPortCollision(true);
                   }
                 }}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
-                  backendPort === 3000
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${backendPort === 3000
                     ? 'bg-rose-600 hover:bg-rose-500 text-white'
                     : 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                }`}
+                  }`}
               >
                 {backendPort === 3000 ? "Corriger le port du Backend (PORT=3001)" : "Provoquer collision (PORT=3000)"}
               </button>
@@ -214,7 +211,7 @@ export const Chapitre6Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 6
+            Quiz d'évaluation — Chapitre 6
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos connaissances sur l'organisation des travaux parallèles (10 questions)

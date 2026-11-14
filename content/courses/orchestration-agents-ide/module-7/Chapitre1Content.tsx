@@ -62,7 +62,7 @@ export const Chapitre1Content: React.FC = () => {
             Pilotage, Coordination & Limites
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.1 — Comprendre le rôle du Team Leader dans l'orchestration
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -80,9 +80,7 @@ export const Chapitre1Content: React.FC = () => {
       {/* Section 1.2 & 1.3 : La place du Team Leader et des spécialistes */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="users" className="w-5 h-5 text-primary-600 shrink-0" />
-          1.2 & 1.3 — La Place Charnière du Team Leader dans l'Équipe
-        </h2>
+          <Icon name="users" className="w-5 h-5 text-primary-600 shrink-0" /> 1. La Place Charnière du Team Leader dans l'Équipe</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour préserver l'efficacité du collectif, la distinction entre gouvernance humaine, coordination et exécution technique doit être absolue :
         </p>
@@ -124,9 +122,7 @@ export const Chapitre1Content: React.FC = () => {
       {/* Section 1.5 : Coordination vs Supervision vs Exécution */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="adjustments-horizontal" className="w-5 h-5 text-indigo-600 shrink-0" />
-          1.5 — Distinguer Coordination, Supervision et Exécution
-        </h2>
+          <Icon name="adjustments-horizontal" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Distinguer Coordination, Supervision et Exécution</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-sm text-blue-700 dark:text-blue-400">Coordination : Organiser les interactions</span>
@@ -212,7 +208,7 @@ export const Chapitre1Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.1
+            Quiz de validation du Chapitre 1
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise du rôle du Team Leader, de la distinction avec les spécialistes et de la relation avec le Project Manager humain.

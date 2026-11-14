@@ -67,7 +67,7 @@ export const Chapitre6Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">50 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Contrôler les accès et les autorisations
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -87,7 +87,7 @@ export const Chapitre6Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="lock" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.6.1 & 9.6.2 — Authentification vs Autorisation et Moindre Privilège</span>
+          <span>1. Authentification vs Autorisation et Moindre Privilège</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -121,7 +121,7 @@ export const Chapitre6Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="shield" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.6.6 — Protection des secrets et des informations sensibles</span>
+          <span>2. Protection des secrets et des informations sensibles</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 text-xs leading-relaxed">
           <p className="text-muted-foreground">
@@ -139,95 +139,95 @@ export const Chapitre6Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Matrice des Permissions & Détection de Fuite</span>
+          <span>3. Atelier Interactif — Matrice des Permissions & Détection de Fuite</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
             Sélectionnez un rôle pour inspecter sa matrice d'autorisations appliquée au projet TaskFlow, puis testez le détecteur de secrets.
           </p>
 
-          <div className="flex flex-wrap gap-1.5 text-xs">
+          <div className="flex flex-wrap gap-2 text-xs">
             <button
               onClick={() => setSelectedRole('backend')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                selectedRole === 'backend' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                selectedRole === 'backend' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Agent Backend
             </button>
             <button
               onClick={() => setSelectedRole('qa')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                selectedRole === 'qa' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                selectedRole === 'qa' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Agent QA
             </button>
             <button
               onClick={() => setSelectedRole('reviewer')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                selectedRole === 'reviewer' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                selectedRole === 'reviewer' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Agent Reviewer
             </button>
             <button
               onClick={() => setSelectedRole('team_leader')}
-              className={`py-1.5 px-3 rounded font-semibold transition-all ${
-                selectedRole === 'team_leader' ? 'bg-indigo-600 text-white shadow' : 'bg-muted/40 text-muted-foreground hover:bg-muted/80'
+              className={`py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                selectedRole === 'team_leader' ? 'bg-indigo-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
               }`}
             >
               Team Leader IA
             </button>
           </div>
 
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2">
-              <span className="font-bold text-foreground font-mono">{currentRole.role}</span>
-              <span className="text-[11px] text-muted-foreground">Périmètre : <code>{currentRole.scope}</code></span>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between border-b border-slate-800 pb-2.5 gap-2">
+              <span className="font-bold text-white text-sm sm:text-base font-mono">{currentRole.role}</span>
+              <span className="text-xs text-slate-400">Périmètre : <code className="text-emerald-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">{currentRole.scope}</code></span>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Droits en écriture de fichiers :</span>
-                <p className="text-foreground mt-0.5">{currentRole.fileWrite}</p>
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Droits en écriture de fichiers :</span>
+                <p className="text-white mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{currentRole.fileWrite}</p>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Commandes terminal autorisées :</span>
-                <p className="text-foreground mt-0.5 font-mono text-[11px]">{currentRole.terminal}</p>
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Commandes terminal autorisées :</span>
+                <p className="text-white mt-0.5 font-mono text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{currentRole.terminal}</p>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-rose-400 font-semibold">Actions strictement interdites :</span>
-                <p className="text-rose-300 mt-0.5">{currentRole.forbiddenActions}</p>
+              <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-rose-300 font-semibold uppercase tracking-wider">Actions strictement interdites :</span>
+                <p className="text-rose-200 mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere] font-medium">{currentRole.forbiddenActions}</p>
               </div>
             </div>
 
-            <div className="p-2.5 rounded bg-muted/40 border border-border text-xs text-muted-foreground font-sans">
-              <strong>Politique appliquée :</strong> {currentRole.verdict}
+            <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs sm:text-sm text-slate-200 font-sans whitespace-normal break-words [overflow-wrap:anywhere]">
+              <strong className="text-white font-semibold">Politique appliquée : </strong>{currentRole.verdict}
             </div>
           </div>
 
           {/* Détecteur de secret interactif */}
-          <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-2.5 text-xs">
-            <span className="font-bold text-foreground flex items-center gap-1.5">
-              <Icon name="search" className="w-4 h-4 text-indigo-400" />
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-900 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <span className="font-bold text-white text-sm flex items-center gap-2">
+              <Icon name="search" className="w-4 h-4 text-indigo-400 shrink-0" />
               Scanner de Sécurité : Détection de Secrets dans les Fichiers Proposés
             </span>
             <input
               type="text"
               value={secretAuditInput}
               onChange={(e) => setSecretAuditInput(e.target.value)}
-              className="p-2 rounded border border-border bg-background font-mono text-xs w-full text-foreground"
+              className="p-3 rounded-lg border border-slate-800 bg-black font-mono text-xs w-full text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
               placeholder="Entrez une ligne de configuration ou code pour analyse..."
             />
             {hasSecretLeak ? (
-              <div className="p-2.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-300 font-medium">
+              <div className="p-3 rounded-lg bg-rose-950/80 border border-rose-700/80 text-rose-200 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
                 🛑 ALERTE SÉCURITÉ : Un secret ou identifiant en clair a été détecté dans la chaîne ! Bloquer immédiatement le commit et placer la valeur dans .env (hors dépôt).
               </div>
             ) : (
-              <div className="p-2.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium">
+              <div className="p-3 rounded-lg bg-emerald-950/80 border border-emerald-700/80 text-emerald-200 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
                 ✅ Aucun secret critique identifié dans la chaîne analysée.
               </div>
             )}
@@ -239,7 +239,7 @@ export const Chapitre6Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.6.11 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 6 : Contrôler les accès et autorisations"

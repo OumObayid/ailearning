@@ -64,7 +64,7 @@ export const Chapitre3Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">55 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Organiser les demandes de fusion et les validations
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -84,7 +84,7 @@ export const Chapitre3Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="git-pull-request" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.3.1 & 9.3.2 — Le rôle et la structure d'une Pull Request</span>
+          <span>1. Le rôle et la structure d'une Pull Request</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -125,7 +125,7 @@ export const Chapitre3Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="users" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.3.3 — Répartition stricte des rôles pendant la revue</span>
+          <span>2. Répartition stricte des rôles pendant la revue</span>
         </h2>
         <div className="grid grid-cols-1 gap-3 text-xs">
           <div className="p-4 rounded-xl border border-blue-500/30 bg-blue-500/5 flex flex-col gap-1">
@@ -162,7 +162,7 @@ export const Chapitre3Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-square" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.3.5 & 9.3.6 — Les 8 états d'une demande et les critères de blocage</span>
+          <span>3. Les 8 états d'une demande et les critères de blocage</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -189,7 +189,7 @@ export const Chapitre3Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Cycle de Vie d'une Pull Request Multi-Agents</span>
+          <span>4. Atelier Interactif — Cycle de Vie d'une Pull Request Multi-Agents</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -240,7 +240,7 @@ export const Chapitre3Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.3.12 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 3 : Demandes de fusion et validations"

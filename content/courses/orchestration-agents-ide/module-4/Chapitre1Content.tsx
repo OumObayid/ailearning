@@ -59,7 +59,7 @@ export const Chapitre1Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 1 — Comprendre le fonctionnement de Git Worktrees
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -109,9 +109,7 @@ export const Chapitre1Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.1
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Le problème du répertoire unique et la solution Git Worktrees
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -146,9 +144,7 @@ export const Chapitre1Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Architecture interne : Ce qui est partagé vs Ce qui est isolé
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -221,31 +217,28 @@ export const Chapitre1Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setSelectedWorktree('main')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedWorktree === 'main'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedWorktree === 'main'
                   ? 'bg-indigo-600 text-white shadow-lg ring-2 ring-indigo-400'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
+                }`}
             >
               📁 taskflow (main)
             </button>
             <button
               onClick={() => setSelectedWorktree('backend')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedWorktree === 'backend'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedWorktree === 'backend'
                   ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
+                }`}
             >
               📁 taskflow-backend (Backend)
             </button>
             <button
               onClick={() => setSelectedWorktree('frontend')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedWorktree === 'frontend'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedWorktree === 'frontend'
                   ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-400'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
+                }`}
             >
               📁 taskflow-frontend (Frontend)
             </button>
@@ -288,7 +281,7 @@ export const Chapitre1Content: React.FC = () => {
                   ⚡ État de l'Index (Staging Area) & HEAD :
                 </span>
                 <div className="text-xs text-slate-300 font-mono">
-                  Index : {current.indexStatus}<br/>
+                  Index : {current.indexStatus}<br />
                   HEAD : {current.headCommit}
                 </div>
               </div>
@@ -303,9 +296,7 @@ export const Chapitre1Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.7
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 3 </span>
             Les limites fondamentales de Git Worktrees
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -356,7 +347,7 @@ export const Chapitre1Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 1
+            Quiz d'évaluation — Chapitre 1
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Validez votre compréhension des bases de Git Worktrees (10 questions)

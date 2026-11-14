@@ -26,7 +26,7 @@ export const Chapitre2Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">50 min de lecture & spécifications</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Préparer les spécifications fonctionnelles
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -46,7 +46,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="file-text" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>10.2.1 & 10.2.2 — Besoin, Spécification fonctionnelle et Choix technique</span>
+          <span>1. Besoin, Spécification fonctionnelle et Choix technique</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -77,7 +77,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>10.2.4 & 10.2.6 — Les 4 attributs d'une tâche et les règles métier clés</span>
+          <span>2. Les 4 attributs d'une tâche et les règles métier clés</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3 text-xs leading-relaxed">
           <div className="grid grid-cols-1 gap-2">
@@ -105,7 +105,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="check-square" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Banc de Validation des Critères de Spécification</span>
+          <span>3. Atelier Interactif — Banc de Validation des Critères de Spécification</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">

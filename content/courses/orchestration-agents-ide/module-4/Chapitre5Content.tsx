@@ -57,7 +57,7 @@ export const Chapitre5Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 5 — Associer un agent à son espace de travail
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -107,9 +107,7 @@ export const Chapitre5Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              5.6
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Gabarit officiel d'instructions pour affectation de Worktree
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -143,25 +141,22 @@ export const Chapitre5Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => { setSelectedAgentRole('backend'); setVerificationDone(false); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedAgentRole === 'backend' ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedAgentRole === 'backend' ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               Agent Backend
             </button>
             <button
               onClick={() => { setSelectedAgentRole('frontend'); setVerificationDone(false); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedAgentRole === 'frontend' ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedAgentRole === 'frontend' ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               Agent Frontend
             </button>
             <button
               onClick={() => { setSelectedAgentRole('qa'); setVerificationDone(false); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedAgentRole === 'qa' ? 'bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedAgentRole === 'qa' ? 'bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               Agent QA
             </button>
@@ -212,7 +207,7 @@ export const Chapitre5Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 5
+            Quiz d'évaluation — Chapitre 5
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Validez vos compétences sur l'affectation et le contrôle des espaces de travail (10 questions)

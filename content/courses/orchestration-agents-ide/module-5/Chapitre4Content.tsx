@@ -89,7 +89,7 @@ export const Chapitre4Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 4 — Rédiger les instructions propres à chaque agent
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -158,49 +158,43 @@ export const Chapitre4Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setActiveRole('leader')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeRole === 'leader' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeRole === 'leader' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. Team Leader IA
             </button>
             <button
               onClick={() => setActiveRole('architect')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeRole === 'architect' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeRole === 'architect' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. Architect
             </button>
             <button
               onClick={() => setActiveRole('backend')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeRole === 'backend' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeRole === 'backend' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. Backend
             </button>
             <button
               onClick={() => setActiveRole('frontend')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeRole === 'frontend' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeRole === 'frontend' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               4. Frontend
             </button>
             <button
               onClick={() => setActiveRole('qa')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeRole === 'qa' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeRole === 'qa' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               5. QA
             </button>
             <button
               onClick={() => setActiveRole('reviewer')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeRole === 'reviewer' ? 'bg-rose-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${activeRole === 'reviewer' ? 'bg-rose-600 text-white shadow-md' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               6. Reviewer
             </button>
@@ -257,7 +251,7 @@ export const Chapitre4Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 4
+            Quiz d'évaluation — Chapitre 4
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos connaissances sur la rédaction des fiches spécialisées d'agents (10 questions)

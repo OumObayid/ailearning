@@ -41,7 +41,7 @@ export const Chapitre5Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 5 — Créer des commits et consulter l'historique
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -91,9 +91,7 @@ export const Chapitre5Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              5.4
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Examiner les modifications : git diff vs git diff --staged
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -119,7 +117,7 @@ export const Chapitre5Content: React.FC = () => {
               Compare le <strong>répertoire de travail</strong> avec la <strong>zone de préparation</strong>. Il affiche les modifications qui n'ont pas encore été ajoutées avec <code>git add</code>.
             </p>
             <div className="p-3 bg-slate-900 rounded-lg text-xs font-mono text-slate-200">
-              <span className="text-rose-400">- const status = "pending";</span><br/>
+              <span className="text-rose-400">- const status = "pending";</span><br />
               <span className="text-emerald-400">+ const status = "todo";</span>
             </div>
           </div>
@@ -137,7 +135,7 @@ export const Chapitre5Content: React.FC = () => {
               Compare la <strong>zone de préparation</strong> avec le <strong>dernier commit</strong> de la branche courante. Il affiche exactement ce qui sera scellé si vous exécutez <code>git commit</code> à cet instant.
             </p>
             <div className="p-3 bg-slate-900 rounded-lg text-xs font-mono text-slate-200">
-              <span className="text-slate-400">diff --git a/src/routes/tasks.ts b/src/routes/tasks.ts</span><br/>
+              <span className="text-slate-400">diff --git a/src/routes/tasks.ts b/src/routes/tasks.ts</span><br />
               <span className="text-emerald-400">+ router.post('/tasks', taskController.create);</span>
             </div>
           </div>
@@ -175,11 +173,10 @@ export const Chapitre5Content: React.FC = () => {
               </div>
               <button
                 onClick={() => handleStageFile('src/routes/tasks.ts')}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-                  stagedFiles.includes('src/routes/tasks.ts')
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${stagedFiles.includes('src/routes/tasks.ts')
                     ? 'bg-emerald-600 text-white'
                     : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
+                  }`}
               >
                 {stagedFiles.includes('src/routes/tasks.ts') ? "✓ Préparé (Staged)" : "+ git add"}
               </button>
@@ -193,11 +190,10 @@ export const Chapitre5Content: React.FC = () => {
               </div>
               <button
                 onClick={() => handleStageFile('src/services/task-service.ts')}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
-                  stagedFiles.includes('src/services/task-service.ts')
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${stagedFiles.includes('src/services/task-service.ts')
                     ? 'bg-emerald-600 text-white'
                     : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
+                  }`}
               >
                 {stagedFiles.includes('src/services/task-service.ts') ? "✓ Préparé (Staged)" : "+ git add"}
               </button>
@@ -208,33 +204,29 @@ export const Chapitre5Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-4">
             <button
               onClick={() => setActiveView('status')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
-                activeView === 'status' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${activeView === 'status' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               $ git status
             </button>
             <button
               onClick={() => setActiveView('diff')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
-                activeView === 'diff' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${activeView === 'diff' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               $ git diff
             </button>
             <button
               onClick={() => setActiveView('stagedDiff')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
-                activeView === 'stagedDiff' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${activeView === 'stagedDiff' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               $ git diff --staged
             </button>
             <button
               onClick={() => setActiveView('log')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
-                activeView === 'log' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${activeView === 'log' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               $ git log ({committedCount} commits)
             </button>
@@ -244,22 +236,22 @@ export const Chapitre5Content: React.FC = () => {
           <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 min-h-[140px] mb-6">
             {activeView === 'status' && (
               <pre className="whitespace-pre-wrap">
-{`On branch feature/task-creation-api
+                {`On branch feature/task-creation-api
 Changes to be committed:
 ${stagedFiles.length > 0 ? stagedFiles.map(f => `  modified:   ${f}`).join('\n') : '  (no changes added to commit)'}
 
 Changes not staged for commit:
 ${['src/routes/tasks.ts', 'src/services/task-service.ts']
-  .filter(f => !stagedFiles.includes(f))
-  .map(f => `  modified:   ${f}`).join('\n') || '  (all changes are staged)'}`}
+                    .filter(f => !stagedFiles.includes(f))
+                    .map(f => `  modified:   ${f}`).join('\n') || '  (all changes are staged)'}`}
               </pre>
             )}
 
             {activeView === 'diff' && (
               <pre className="whitespace-pre-wrap">
-{['src/routes/tasks.ts', 'src/services/task-service.ts'].filter(f => !stagedFiles.includes(f)).length === 0
-  ? "(Aucune modification non préparée - Tout est dans la zone de staging)"
-  : `--- non-staged diffs ---
+                {['src/routes/tasks.ts', 'src/services/task-service.ts'].filter(f => !stagedFiles.includes(f)).length === 0
+                  ? "(Aucune modification non préparée - Tout est dans la zone de staging)"
+                  : `--- non-staged diffs ---
 + router.post('/tasks', taskController.create);
 + tasksMap.set(newTask.id, newTask);`}
               </pre>
@@ -267,9 +259,9 @@ ${['src/routes/tasks.ts', 'src/services/task-service.ts']
 
             {activeView === 'stagedDiff' && (
               <pre className="whitespace-pre-wrap">
-{stagedFiles.length === 0
-  ? "(Aucun fichier dans la zone de staging. Utilisez git add pour préparer vos modifications)"
-  : stagedFiles.map(f => `--- staged: ${f} ---
+                {stagedFiles.length === 0
+                  ? "(Aucun fichier dans la zone de staging. Utilisez git add pour préparer vos modifications)"
+                  : stagedFiles.map(f => `--- staged: ${f} ---
 + export function createTask(data: CreateTaskDto) {
 +   return taskService.save(data);
 + }`).join('\n\n')}
@@ -278,7 +270,7 @@ ${['src/routes/tasks.ts', 'src/services/task-service.ts']
 
             {activeView === 'log' && (
               <pre className="whitespace-pre-wrap text-emerald-400">
-{`* a8f31c2 (HEAD -> feature/task-creation-api) feat(backend): add task creation API
+                {`* a8f31c2 (HEAD -> feature/task-creation-api) feat(backend): add task creation API
 * 3b5e120 (main) chore: initialize TaskFlow project`}
               </pre>
             )}
@@ -307,9 +299,7 @@ ${['src/routes/tasks.ts', 'src/services/task-service.ts']
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              5.8
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Rédiger de bons messages de commit (Conventional Commits)
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -327,9 +317,9 @@ ${['src/routes/tasks.ts', 'src/services/task-service.ts']
               ❌ Mauvais exemples à bannir :
             </span>
             <p className="text-xs font-mono text-rose-900">
-              "correction bug"<br/>
-              "wip"<br/>
-              "code terminé"<br/>
+              "correction bug"<br />
+              "wip"<br />
+              "code terminé"<br />
               "changes for review"
             </p>
           </div>
@@ -339,9 +329,9 @@ ${['src/routes/tasks.ts', 'src/services/task-service.ts']
               ✓ Bons exemples conventionnels :
             </span>
             <p className="text-xs font-mono text-emerald-900 space-y-1">
-              <strong>feat(backend):</strong> add task creation POST endpoint<br/>
-              <strong>fix(frontend):</strong> correct task status badge background color<br/>
-              <strong>test(api):</strong> add integration tests for 404 responses<br/>
+              <strong>feat(backend):</strong> add task creation POST endpoint<br />
+              <strong>fix(frontend):</strong> correct task status badge background color<br />
+              <strong>test(api):</strong> add integration tests for 404 responses<br />
               <strong>docs(architecture):</strong> update state machine diagram in ARCHITECTURE.md
             </p>
           </div>
@@ -355,7 +345,7 @@ ${['src/routes/tasks.ts', 'src/services/task-service.ts']
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 5
+            Quiz d'évaluation — Chapitre 5
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez votre maîtrise de la création de commits et de l'historique Git (10 questions)

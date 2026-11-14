@@ -36,7 +36,7 @@ export function Chapitre18Content() {
             Chapitre 10.18
           </Badge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Valider et livrer la version finale de TaskFlow
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -56,9 +56,7 @@ export function Chapitre18Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="folder" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              18.2. Préparation, Validation et Livraison
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">1. Préparation, Validation et Livraison</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -105,9 +103,7 @@ export function Chapitre18Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="user" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              18.6. Recueil des avis techniques formels
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">2. Recueil des avis techniques formels</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 text-xs sm:text-sm leading-relaxed text-muted-foreground">
@@ -124,9 +120,7 @@ export function Chapitre18Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="academic-cap" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Simulateur interactif : Comité de Validation & Tag de Release Git
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">3. Simulateur interactif : Comité de Validation & Tag de Release Git</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
             Incarnez le Chef de Projet humain pour examiner le dossier, signer le bon de validation et sceller la version officielle <code>v1.0.0</code>.
@@ -215,10 +209,10 @@ export function Chapitre18Content() {
                 <Icon name="document-text" className="h-4 w-4 shrink-0 text-purple-500" />
                 <span>Tag Git &quot;v1.0.0&quot; créé et scellé avec succès !</span>
               </div>
-              <pre className="p-2 rounded bg-background/80 font-mono text-[11px] text-foreground overflow-x-auto whitespace-pre-wrap break-all">
+              <div className="p-2 rounded bg-black border border-slate-800 font-mono text-[11px] text-white whitespace-pre-wrap whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full font-mono">
 {`git tag -a v1.0.0 -m "Release v1.0.0 TaskFlow - Projet Multi-Agents validé"
 [OK] Version prête pour archivage ou déploiement.`}
-              </pre>
+              </div>
             </div>
           )}
         </CardContent>
@@ -229,9 +223,7 @@ export function Chapitre18Content() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon name="shield-check" className="h-5 w-5 text-primary shrink-0" />
-            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-              Vérifier les connaissances — Quiz officiel
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">4. Vérifier les connaissances — Quiz officiel</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

@@ -64,7 +64,7 @@ trigger: always_on
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 1 — Découvrir la configuration des agents dans Google Antigravity
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -114,9 +114,7 @@ trigger: always_on
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.2
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Les mécanismes de configuration dans Google Antigravity
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -184,50 +182,49 @@ trigger: always_on
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setActiveCategory('rules')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeCategory === 'rules' ? 'bg-indigo-600 text-white shadow-lg ring-2 ring-indigo-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeCategory === 'rules' ? 'bg-indigo-600 text-white shadow-lg ring-2 ring-indigo-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               1. Rules (Règles)
             </button>
             <button
               onClick={() => setActiveCategory('workflows')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeCategory === 'workflows' ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeCategory === 'workflows' ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               2. Workflows (Procédures)
             </button>
             <button
               onClick={() => setActiveCategory('scope')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeCategory === 'scope' ? 'bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeCategory === 'scope' ? 'bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-400' : 'bg-slate-800 text-slate-300'
+                }`}
             >
               3. Portée (Globale vs Projet)
             </button>
           </div>
 
           {/* Panneau de détail */}
-          <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/90 p-5 sm:p-6 backdrop-blur-sm space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/80 pb-4">
-              <div>
+          <div className="rounded-2xl border border-indigo-500/30 bg-slate-800/90 p-5 sm:p-6 backdrop-blur-sm space-y-4 min-w-0 max-w-full">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/80 pb-4 min-w-0 max-w-full">
+              <div className="min-w-0 max-w-full">
                 <span className={`px-2.5 py-1 rounded-md text-xs font-extrabold border ${curr.badgeColor}`}>
                   {curr.title}
                 </span>
-                <h4 className="text-base sm:text-lg font-bold text-white mt-2">
-                  Emplacement sur le disque : <code className="text-emerald-400">{curr.location}</code>
+                <h4 className="text-base sm:text-lg font-bold text-white mt-2 whitespace-normal break-words [overflow-wrap:anywhere]">
+                  Emplacement sur le disque : <code className="text-emerald-400 whitespace-normal break-words [overflow-wrap:anywhere]">{curr.location}</code>
                 </h4>
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-200">
+            <p className="text-xs sm:text-sm text-slate-200 whitespace-normal break-words [overflow-wrap:anywhere]">
               {curr.description}
             </p>
 
-            <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 space-y-1">
+            <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 space-y-1 min-w-0 max-w-full">
               <span className="text-indigo-400 font-bold block mb-1">Exemple concret TaskFlow :</span>
-              <pre className="whitespace-pre-wrap">{curr.example}</pre>
+              <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] text-slate-200 leading-relaxed font-mono text-xs sm:text-sm min-w-0 max-w-full">
+                {curr.example}
+              </div>
             </div>
           </div>
         </div>
@@ -239,9 +236,7 @@ trigger: always_on
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              1.7
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Distinguer la configuration globale de la configuration de projet
           </h2>
         </div>
@@ -280,7 +275,7 @@ trigger: always_on
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 1
+            Quiz d'évaluation — Chapitre 1
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos connaissances sur la configuration des agents dans Google Antigravity (10 questions)

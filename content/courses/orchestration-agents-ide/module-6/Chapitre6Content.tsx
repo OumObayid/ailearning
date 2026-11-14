@@ -66,7 +66,7 @@ export const Chapitre6Content: React.FC = () => {
             Matrice RACI & Rôles Spécialisés
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.6 — Attribuer les missions aux agents
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -84,9 +84,7 @@ export const Chapitre6Content: React.FC = () => {
       {/* Section 6.2 : Les 6 profils experts TaskFlow */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="users" className="w-5 h-5 text-primary-600 shrink-0" />
-          6.2 — Les Responsabilités des 6 Agents de l'Équipe TaskFlow
-        </h2>
+          <Icon name="users" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Les Responsabilités des 6 Agents de l'Équipe TaskFlow</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Chaque agent possède une vocation précise au sein de l'organisation :
         </p>
@@ -140,9 +138,7 @@ export const Chapitre6Content: React.FC = () => {
       {/* Section 6.4 : Responsable, Contributeur et Validateur */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="briefcase" className="w-5 h-5 text-emerald-600 shrink-0" />
-          6.4 — Distinguer Responsable, Contributeur et Validateur
-        </h2>
+          <Icon name="briefcase" className="w-5 h-5 text-emerald-600 shrink-0" /> 2. Distinguer Responsable, Contributeur et Validateur</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour éviter toute ambiguïté sur une même tâche, appliquez cette distinction :
         </p>
@@ -246,7 +242,7 @@ export const Chapitre6Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.6
+            Quiz de validation du Chapitre 6
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre maîtrise de la répartition des tâches, de la matrice de responsabilités et de l'étanchéité des compétences.

@@ -83,7 +83,7 @@ export const Chapitre6Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">1 h 10 de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Comprendre et exécuter les tests d'intégration
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -103,7 +103,7 @@ export const Chapitre6Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="git-merge" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>6.1 à 6.3 — De l'unité isolée à la chaîne complète</span>
+          <span>1. De l'unité isolée à la chaîne complète</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -136,16 +136,16 @@ export const Chapitre6Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="layers" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>6.5 — Règle d'architecture : Séparer app.ts et server.ts</span>
+          <span>2. Règle d'architecture : Séparer app.ts et server.ts</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
             C'est l'erreur la plus fréquente des agents juniors : regrouper la création de l'application Express et l'appel à <code>app.listen(PORT)</code> dans le même fichier.
           </p>
-          <div className="grid grid-cols-1 gap-3 text-xs">
-            <div className="p-3 rounded-lg bg-black/40 border border-border flex flex-col gap-1.5">
+          <div className="grid grid-cols-1 gap-3 text-xs min-w-0 max-w-full">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
               <span className="font-mono font-bold text-sky-400">backend/src/app.ts (Exportation de l'application)</span>
-              <pre className="font-mono text-[11px] text-muted-foreground overflow-x-auto leading-relaxed">
+              <div className="font-mono text-[11px] text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
 {`import express from 'express';
 import { taskRouter } from './routes/taskRoutes';
 
@@ -153,19 +153,19 @@ export const app = express();
 app.use(express.json());
 app.use('/api/tasks', taskRouter);
 // ⚠️ Pas de app.listen ici !`}
-              </pre>
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-black/40 border border-border flex flex-col gap-1.5">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
               <span className="font-mono font-bold text-emerald-400">backend/src/server.ts (Point d'entrée de production)</span>
-              <pre className="font-mono text-[11px] text-muted-foreground overflow-x-auto leading-relaxed">
+              <div className="font-mono text-[11px] text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
 {`import { app } from './app';
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(\`TaskFlow Backend écoute sur http://localhost:\${PORT}\`);
 });`}
-              </pre>
+              </div>
             </div>
           </div>
           <p className="text-xs text-emerald-400/90 font-medium mt-1">
@@ -178,10 +178,11 @@ app.listen(PORT, () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="code" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>6.7 — Structure d'un test d'intégration avec Supertest & Vitest</span>
+          <span>3. Structure d'un test d'intégration avec Supertest & Vitest</span>
         </h2>
-        <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
-          <pre className="p-4 rounded-lg bg-muted font-mono text-xs text-foreground overflow-x-auto leading-relaxed border border-border">
+        <div className="p-5 rounded-xl border border-slate-800 bg-card flex flex-col gap-3 min-w-0 max-w-full">
+          <div className="p-4 rounded-lg bg-black font-mono text-xs text-white leading-relaxed border border-slate-800 min-w-0 max-w-full">
+            <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed min-w-0 max-w-full">
 {`import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../src/app';
@@ -212,7 +213,8 @@ describe('Tests d\\'intégration : PATCH /api/tasks/:id', () => {
     expect(response.body).toHaveProperty('error');
   });
 });`}
-          </pre>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -220,7 +222,7 @@ describe('Tests d\\'intégration : PATCH /api/tasks/:id', () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>Atelier Interactif — Banc d'Intégration Express & Supertest</span>
+          <span>4. Atelier Interactif — Banc d'Intégration Express & Supertest</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -299,19 +301,19 @@ describe('Tests d\\'intégration : PATCH /api/tasks/:id', () => {
             </div>
 
             {/* Réponse Supertest */}
-            <div className="p-3 rounded-lg bg-black/60 border border-border flex flex-col gap-1.5 font-mono">
+            <div className="p-3 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 font-mono min-w-0 max-w-full">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-muted-foreground">Réponse Supertest reçue :</span>
+                <span className="text-slate-400">Réponse Supertest reçue :</span>
                 <span className={`px-2 py-0.5 rounded font-bold ${
-                  currentFlow.statusCode === 200 ? 'bg-emerald-500/20 text-emerald-400' :
-                  currentFlow.statusCode === 400 ? 'bg-amber-500/20 text-amber-400' : 'bg-rose-500/20 text-rose-400'
+                  currentFlow.statusCode === 200 ? 'bg-emerald-500/20 text-emerald-300' :
+                  currentFlow.statusCode === 400 ? 'bg-amber-500/20 text-amber-300' : 'bg-rose-500/20 text-rose-300'
                 }`}>
                   HTTP {currentFlow.statusCode}
                 </span>
               </div>
-              <pre className="text-[11px] text-foreground overflow-x-auto leading-relaxed">
+              <div className="text-[11px] text-white leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full font-mono">
                 {currentFlow.responsePayload}
-              </pre>
+              </div>
             </div>
 
             <div className="p-2.5 rounded bg-muted/40 text-muted-foreground text-xs font-sans">
@@ -325,7 +327,7 @@ describe('Tests d\\'intégration : PATCH /api/tasks/:id', () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>6.17 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 6 : Tests d'intégration"

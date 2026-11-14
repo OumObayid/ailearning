@@ -58,7 +58,7 @@ export const Chapitre4Content: React.FC = () => {
             Ordonnancement, Synchronisation & Worktrees
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           7.4 — Coordonner les travaux séquentiels et parallèles
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -76,9 +76,7 @@ export const Chapitre4Content: React.FC = () => {
       {/* Section 4.1 & 4.2 : Séquentiel vs Parallèle */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="arrows-right-left" className="w-5 h-5 text-primary-600 shrink-0" />
-          4.1 & 4.2 — Les Deux Modes d'Ordonnancement Complémentaires
-        </h2>
+          <Icon name="arrows-right-left" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Les Deux Modes d'Ordonnancement Complémentaires</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-sm text-blue-700 dark:text-blue-400">Le Travail Séquentiel : Sécuriser les Fondations</span>
@@ -98,9 +96,7 @@ export const Chapitre4Content: React.FC = () => {
       {/* Section 4.7 : Prévenir les 4 pièges du parallélisme */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="exclamation-triangle" className="w-5 h-5 text-amber-600 shrink-0" />
-          4.7 — Prévenir les 4 Risques Majeurs du Travail Parallèle
-        </h2>
+          <Icon name="exclamation-triangle" className="w-5 h-5 text-amber-600 shrink-0" /> 2. Prévenir les 4 Risques Majeurs du Travail Parallèle</h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-1 w-full min-w-0 max-w-full">
             <span className="font-semibold text-xs text-slate-900 dark:text-slate-100">1. Modifications concurrentes sur les mêmes fichiers</span>
@@ -194,7 +190,7 @@ export const Chapitre4Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 7.4
+            Quiz de validation du Chapitre 4
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Testez votre compréhension du travail séquentiel, du parallélisme avec Worktrees et des points de synchronisation.

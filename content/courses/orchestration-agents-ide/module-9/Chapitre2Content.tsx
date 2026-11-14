@@ -60,7 +60,7 @@ export const Chapitre2Content: React.FC = () => {
           </span>
           <span className="text-xs text-muted-foreground">55 min de lecture & pratique</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
           Préparer l'intégration des branches
         </h1>
         <p className="text-base text-muted-foreground whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 max-w-full leading-relaxed">
@@ -80,7 +80,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="search" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.2.1 & 9.2.2 — Identifier les branches sources et la branche cible</span>
+          <span>1. Identifier les branches sources et la branche cible</span>
         </h2>
         <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
           <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
@@ -107,7 +107,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="terminal" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.2.3 à 9.2.6 — La boîte à outils de l'audit de branche Git</span>
+          <span>2. La boîte à outils de l'audit de branche Git</span>
         </h2>
         <div className="flex flex-col gap-3 w-full min-w-0 max-w-full">
           <div className="p-4 rounded-xl border border-border bg-card flex flex-col gap-1.5">
@@ -156,7 +156,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="git-pull-request" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.2.7 & 9.2.8 — Analyse des dépendances et séquencement</span>
+          <span>3. Analyse des dépendances et séquencement</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -191,7 +191,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="cpu" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>Atelier Interactif — Banc d'Audit Préalable de Branche</span>
+          <span>4. Atelier Interactif — Banc d'Audit Préalable de Branche</span>
         </h2>
         <div className="p-5 rounded-xl border border-border bg-card flex flex-col gap-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -233,44 +233,46 @@ export const Chapitre2Content: React.FC = () => {
             </button>
           </div>
 
-          <div className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3 text-xs">
-            <div className="flex items-center justify-between border-b border-border/40 pb-2">
-              <div>
-                <span className="font-bold text-foreground font-mono">{current.name}</span>
-                <p className="text-[11px] text-muted-foreground">Cible : <code>{current.target}</code> • Auteur : {current.author}</p>
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 flex flex-col gap-3 text-xs min-w-0 max-w-full">
+            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between border-b border-slate-800 pb-2.5 gap-2">
+              <div className="min-w-0">
+                <span className="font-bold text-white text-sm sm:text-base font-mono">{current.name}</span>
+                <p className="text-xs text-slate-400 mt-0.5">Cible : <code className="text-emerald-400">{current.target}</code> • Auteur : <span className="text-slate-300">{current.author}</span></p>
               </div>
-              <span className={`px-2.5 py-1 rounded text-xs font-bold ${
-                current.stateColor === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' :
-                current.stateColor === 'amber' ? 'bg-amber-500/20 text-amber-400' : 'bg-rose-500/20 text-rose-400'
+              <span className={`px-2.5 py-1 rounded-md text-xs font-bold shrink-0 ${
+                current.stateColor === 'emerald' ? 'bg-emerald-950 text-emerald-300 border border-emerald-700/60' :
+                current.stateColor === 'amber' ? 'bg-amber-950 text-amber-300 border border-amber-700/60' : 'bg-rose-950 text-rose-300 border border-rose-700/60'
               }`}>
                 {current.stateProposal}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Contrôle local (git status) :</span>
-                <p className="text-foreground mt-0.5 font-mono text-[11px]">{current.statusCheck}</p>
+            <div className="grid grid-cols-1 gap-2.5">
+              <div className="p-3.5 rounded-lg bg-black border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Contrôle local (git status) :</span>
+                <p className="text-white mt-0.5 font-mono text-xs break-words [overflow-wrap:anywhere]">{current.statusCheck}</p>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Synchronisation distante (git fetch) :</span>
-                <p className="text-foreground mt-0.5">{current.fetchState}</p>
+              <div className="p-3.5 rounded-lg bg-black border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Synchronisation distante (git fetch) :</span>
+                <p className="text-white mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{current.fetchState}</p>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Résumé du diff (git diff --stat) :</span>
-                <pre className="text-sky-300 mt-0.5 font-mono text-[11px] whitespace-pre-wrap">{current.diffSummary}</pre>
+              <div className="p-3.5 rounded-lg bg-black border border-slate-800 flex flex-col gap-1.5 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Résumé du diff (git diff --stat) :</span>
+                <div className="text-white font-mono text-xs leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0 max-w-full">
+                  {current.diffSummary}
+                </div>
               </div>
 
-              <div className="p-2.5 rounded bg-background border border-border">
-                <span className="text-[10px] text-muted-foreground font-semibold">Dépendances techniques :</span>
-                <p className="text-foreground mt-0.5">{current.dependencies}</p>
+              <div className="p-3.5 rounded-lg bg-black border border-slate-800 flex flex-col gap-1 min-w-0 max-w-full">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Dépendances techniques :</span>
+                <p className="text-white mt-0.5 text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{current.dependencies}</p>
               </div>
             </div>
 
-            <div className="p-2.5 rounded bg-muted/40 border border-border text-xs text-muted-foreground font-sans">
-              <strong>Observation du Team Leader :</strong> {current.notes}
+            <div className="p-3.5 rounded-lg bg-slate-900 border border-slate-800 text-xs sm:text-sm text-slate-200 font-sans whitespace-normal break-words [overflow-wrap:anywhere]">
+              <strong className="text-white font-semibold">Observation du Team Leader : </strong>{current.notes}
             </div>
           </div>
         </div>
@@ -280,7 +282,7 @@ export const Chapitre2Content: React.FC = () => {
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full pt-4">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Icon name="help-circle" className="w-5 h-5 text-indigo-500 shrink-0" />
-          <span>9.2.13 — Quiz de vérification des connaissances</span>
+          <span>Quiz de vérification des connaissances</span>
         </h2>
         <QuickQuiz
           title="Évaluation des connaissances — Chapitre 2 : Préparer l'intégration des branches"

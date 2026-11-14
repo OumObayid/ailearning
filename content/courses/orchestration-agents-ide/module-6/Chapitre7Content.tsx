@@ -58,7 +58,7 @@ export const Chapitre7Content: React.FC = () => {
             Conditions de Succès & Preuves de Recette
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           6.7 — Définir les critères d'acceptation
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -76,9 +76,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.2 : Objectif vs Résultat attendu vs Critère d'acceptation */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="check-badge" className="w-5 h-5 text-primary-600 shrink-0" />
-          7.2 — Objectif, Résultat Attendu et Critère d'Acceptation
-        </h2>
+          <Icon name="check-badge" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Objectif, Résultat Attendu et Critère d'Acceptation</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour maîtriser le cycle de vie d'une tâche, conjuguez ces trois notions :
         </p>
@@ -111,9 +109,7 @@ export const Chapitre7Content: React.FC = () => {
       {/* Section 7.4 : Les 5 catégories de critères d'acceptation */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="tag" className="w-5 h-5 text-indigo-600 shrink-0" />
-          7.4 — Les 5 Catégories de Critères d'Acceptation
-        </h2>
+          <Icon name="tag" className="w-5 h-5 text-indigo-600 shrink-0" /> 2. Les 5 Catégories de Critères d'Acceptation</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour évaluer exhaustivement un livrable, structurez les critères selon ces cinq axes :
         </p>
@@ -219,7 +215,7 @@ export const Chapitre7Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Quiz de validation du Chapitre 6.7
+            Quiz de validation du Chapitre 7
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Vérifiez que vous savez formuler des critères précis, associer des méthodes de vérification et évaluer objectivement les preuves.

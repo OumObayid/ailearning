@@ -58,7 +58,7 @@ export const Chapitre8Content: React.FC = () => {
             Hiérarchie, Arbitrage & Cohérence
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 whitespace-normal break-words [overflow-wrap:anywhere]">
           5.8 — Organiser les priorités entre les différentes instructions
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
@@ -76,9 +76,7 @@ export const Chapitre8Content: React.FC = () => {
       {/* Section 8.1 : Les sources d'instructions */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="layers" className="w-5 h-5 text-primary-600 shrink-0" />
-          8.1 — Les 6 Sources d'Instructions d'un Agent
-        </h2>
+          <Icon name="layers" className="w-5 h-5 text-primary-600 shrink-0" /> 1. Les 6 Sources d'Instructions d'un Agent</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour comprendre d'où proviennent les directives interprétées par un agent, visualisez ces six strates :
         </p>
@@ -150,9 +148,7 @@ export const Chapitre8Content: React.FC = () => {
       {/* Section 8.3 & 8.4 : Méthode de résolution des contradictions en 5 étapes */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="check-circle" className="w-5 h-5 text-emerald-600 shrink-0" />
-          8.4 — La Méthode de Résolution des Contradictions en 5 Étapes
-        </h2>
+          <Icon name="check-circle" className="w-5 h-5 text-emerald-600 shrink-0" /> 2. La Méthode de Résolution des Contradictions en 5 Étapes</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Lorsqu'un agent détecte une divergence entre ce qu'on lui demande et les règles enregistrées, il doit appliquer rigoureusement cet algorithme décisionnel :
         </p>
@@ -279,9 +275,7 @@ export const Chapitre8Content: React.FC = () => {
       {/* Section 8.8 & 8.9 : Prévention et Bonnes pratiques */}
       <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 whitespace-normal break-words [overflow-wrap:anywhere]">
-          <Icon name="wrench-screwdriver" className="w-5 h-5 text-indigo-600 shrink-0" />
-          8.8 & 8.9 — Prévenir les Contradictions et Maintenir la Cohérence
-        </h2>
+          <Icon name="wrench-screwdriver" className="w-5 h-5 text-indigo-600 shrink-0" /> 3. Prévenir les Contradictions et Maintenir la Cohérence</h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-normal break-words [overflow-wrap:anywhere]">
           Pour garantir un fonctionnement fluide au sein de votre escouade, appliquez ces trois principes d'ingénierie d'instructions :
         </p>
@@ -323,7 +317,7 @@ export const Chapitre8Content: React.FC = () => {
             Évaluation des connaissances
           </span>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            8.11 — Quiz officiel de validation du Chapitre 8
+            Quiz officiel de validation du Chapitre 8
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
             Validez votre compréhension des mécanismes d'arbitrage et de hiérarchie des instructions dans Antigravity avec 10 questions officielles.

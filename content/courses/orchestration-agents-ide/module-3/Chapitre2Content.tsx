@@ -62,7 +62,7 @@ export const Chapitre2Content: React.FC = () => {
             Temps de lecture estimé : 25 min
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-3">
           Chapitre 2 — Comprendre les dépôts et les versions d'un projet
         </h1>
         <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -112,9 +112,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              2.2
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 1 </span>
             Qu'est-ce qu'un dépôt Git ? Local vs Distant
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -204,9 +202,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              2.6
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 2 </span>
             Initialiser ou cloner un projet : git init vs git clone
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -267,9 +263,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              2.9
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 3 </span>
             Comprendre les échanges entre dépôts : fetch, pull et push
           </h2>
           <p className="text-sm text-slate-600 mt-1">
@@ -303,31 +297,28 @@ export const Chapitre2Content: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setSelectedAction('fetch')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedAction === 'fetch'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedAction === 'fetch'
                   ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
+                }`}
             >
               1. git fetch origin
             </button>
             <button
               onClick={() => setSelectedAction('pull')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedAction === 'pull'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedAction === 'pull'
                   ? 'bg-amber-600 text-white shadow-lg ring-2 ring-amber-400'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
+                }`}
             >
               2. git pull origin main
             </button>
             <button
               onClick={() => setSelectedAction('push')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedAction === 'push'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedAction === 'push'
                   ? 'bg-rose-600 text-white shadow-lg ring-2 ring-rose-400'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
+                }`}
             >
               3. git push origin main
             </button>
@@ -380,9 +371,7 @@ export const Chapitre2Content: React.FC = () => {
       <section className="space-y-6">
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold">
-              2.11
-            </span>
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold"> 4 </span>
             Bonnes pratiques pour gérer les dépôts et les versions
           </h2>
         </div>
@@ -424,7 +413,7 @@ export const Chapitre2Content: React.FC = () => {
         <div className="border-b border-slate-200 pb-3">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Icon name="help-circle" className="w-6 h-6 text-indigo-600" />
-            Quiz officiel d'évaluation — Chapitre 2
+            Quiz d'évaluation — Chapitre 2
           </h2>
           <p className="text-sm text-slate-600 mt-1">
             Testez vos connaissances sur les dépôts locaux, distants et les versions (9 questions)
